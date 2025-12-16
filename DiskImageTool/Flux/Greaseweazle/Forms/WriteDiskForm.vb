@@ -76,9 +76,9 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function CheckCompatibility() As Boolean
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
-            If Opt.Type = FloppyDriveType.DriveUnknown Then
+            If Opt Is Nothing OrElse Opt.Type = FloppyDriveType.DriveUnknown Then
                 Return True
             End If
 
@@ -358,8 +358,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshProcessButtonState()
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            ButtonProcess.Enabled = Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
+            Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
+            ButtonProcess.Enabled = Opt IsNot Nothing AndAlso Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
         End Sub
 
         Private Sub RefreshVerifyButtonState()
@@ -382,10 +382,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
             Dim TrackCount As UShort
-            If Opt.Type = FloppyDriveType.DriveUnknown Then
+            If Opt Is Nothing OrElse Opt.Type = FloppyDriveType.DriveUnknown Then
                 If _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity Then
                     TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 Else
@@ -453,9 +453,9 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub WriteDisk(FilePath As String, TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads)
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
-            If Opt.Id = "" Then
+            If Opt Is Nothing OrElse Opt.Id = "" Then
                 Exit Sub
             End If
 
@@ -517,9 +517,9 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
-            If Opt.Id = "" Then
+            If Opt Is Nothing OrElse Opt.Id = "" Then
                 Exit Sub
             End If
 

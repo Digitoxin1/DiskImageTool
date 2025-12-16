@@ -20,6 +20,10 @@ Module Utility
         Return SB.ToString
     End Function
 
+    Public Function CeilDiv(value As UInteger, divisor As UInteger) As UInteger
+        Return (value + divisor - 1UI) \ divisor
+    End Function
+
     Public Function CleanFileName(FileName As String) As String
         Return CleanString(FileName, IO.Path.GetInvalidFileNameChars(), "_")
     End Function

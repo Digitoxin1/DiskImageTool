@@ -474,7 +474,7 @@ Public Class FloppyDB
         Dim Version As String = ""
 
         If OverridePath <> "" Then
-            BasePath = App.AppSettings.DatabasePath
+            BasePath = OverridePath
         Else
             BasePath = GetAppPath()
         End If
