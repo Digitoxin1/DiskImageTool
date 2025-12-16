@@ -118,7 +118,7 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub CashFilenameTemplate()
+        Private Sub CacheFilenameTemplate()
             Dim Filename = TextBoxFileName.Text
 
             If ContainsPlaceholder(Filename) Then
@@ -172,6 +172,10 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function CheckIsFluxOutput() As Boolean
+            If ComboOutputType.SelectedValue Is Nothing Then
+                Return False
+            End If
+
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
             Return (OutputType = ReadDiskOutputTypes.RAW)
         End Function
@@ -223,7 +227,7 @@ Namespace Flux.Greaseweazle
             CheckBoxSelect.Checked = False
 
             If Not DeleteOutputFile Then
-                CashFilenameTemplate()
+                CacheFilenameTemplate()
                 TextBoxFileName.Text = _CachedFileNameTemplate
             ElseIf RefreshState Then
                 TextBoxFileName.Text = ""
@@ -239,7 +243,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub CloseForm(NewFilePath As String, NewFileName As String)
-            CashFilenameTemplate()
+            CacheFilenameTemplate()
 
             _NewFilePath = NewFilePath
             _NewFileName = NewFileName
@@ -951,7 +955,7 @@ Namespace Flux.Greaseweazle
 
             Dim Format = SelectedDiskFormat()
 
-            If Not Format.Value Then
+            If Not Format.HasValue Then
                 Exit Sub
             End If
 
@@ -986,6 +990,11 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
             Dim DiskParams = SelectedDiskParams()
+
+            If Not DiskParams.HasValue Then
+                Exit Sub
+            End If
+
             Dim PrevDoubleStep = UseDoubleStep(PrevOption.Type, DiskParams.Value.Format)
             Dim Doublestep = UseDoubleStep(CurrentOption.Type, DiskParams.Value.Format)
             If PrevDoubleStep <> Doublestep Then
