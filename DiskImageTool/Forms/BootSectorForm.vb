@@ -290,7 +290,7 @@ Public Class BootSectorForm
             Array.Copy(BootSector.Data, DataStart, Data, 0, DataLength)
 
             HexBox1.ByteProvider = New DynamicByteProvider(Data)
-            Dim LineCount As Integer = Math.Ceiling(DataLength / HexBox1.BytesPerLine)
+            Dim LineCount As Integer = CeilDiv(DataLength, CUInt(HexBox1.BytesPerLine))
             If LineCount = 1 Then
                 LineCount = 2
             ElseIf LineCount > 10 Then

@@ -163,8 +163,8 @@
             End Sub
 
             Private Function BitsToBytes(Bitstream As BitArray) As Byte()
-                Dim Length = Bitstream.Length \ 8
-                Dim PaddedLength = Math.Ceiling(Length / 256) * 256
+                Dim Length As UInteger = Bitstream.Length \ 8
+                Dim PaddedLength = AlignUp(Length, 256)
 
                 Dim buffer(Length - 1) As Byte
 

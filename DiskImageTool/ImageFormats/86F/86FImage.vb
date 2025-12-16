@@ -274,7 +274,7 @@ Namespace ImageFormats
                                 fs.Write(Buffer, 0, Buffer.Length)
 
                                 If BitcellMode And AlternateBitcellCalculation Then
-                                    AllocatedLength = Math.Ceiling(Track.Bitstream.Length / 16) * 2
+                                    AllocatedLength = CeilDiv(CUInt(Track.Bitstream.Length), 16) * 2
                                     BitCellCount = AllocatedLength * 8
                                 Else
                                     Dim IsMFM = Track.Encoding = Encoding.MFM
@@ -295,7 +295,7 @@ Namespace ImageFormats
                                         If Track.SurfaceData IsNot Nothing Then
                                             Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0, Reverse)
                                         Else
-                                            Buffer = New Byte(Math.Ceiling(BitCellCount / 8)) {}
+                                            Buffer = New Byte(CeilDiv(BitCellCount, 8) - 1) {}
                                         End If
 
                                         fs.Write(Buffer, 0, Buffer.Length)
@@ -370,7 +370,7 @@ Namespace ImageFormats
                                         D86FTrack.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
                                         If AlternateBitcellCalculation Then
                                             BitCellCount = D86FTrack.BitCellCount
-                                            AllocatedLength = Math.Ceiling(D86FTrack.BitCellCount / 8)
+                                            AllocatedLength = CeilDiv(D86FTrack.BitCellCount, 8)
                                         End If
                                         Offset += 4
                                     End If

@@ -138,7 +138,7 @@ Namespace ImageFormats
                                 fs.WriteByte(0)
                             Next
                         Next
-                        Dim Offset As UInteger = Math.Ceiling(fs.Position / 1024) * 1024
+                        Dim Offset As UInteger = AlignUp(CULng(fs.Position), 1024UL)
                         For i = 0 To _TrackCount - 1
                             For j = 0 To _SideCount - 1
                                 fs.Seek(Offset, IO.SeekOrigin.Begin)
@@ -148,7 +148,7 @@ Namespace ImageFormats
                                 fs.Write(Buffer, 0, Buffer.Length)
                                 fs.Seek(Pos, IO.SeekOrigin.Begin)
                                 Dim MFMTrack = GetTrack(i, j)
-                                Dim BitLength = Math.Ceiling(MFMTrack.Bitstream.Length / 4096) * 4096
+                                Dim BitLength = AlignUp(CUInt(MFMTrack.Bitstream.Length), 4096)
                                 'Dim Padding = BitLength - MFMTrack.Bitstream.Length
                                 'Buffer = IBM_MFM.BitsToBytes(MFMTrack.Bitstream, Padding)
                                 Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(MFMTrack.Bitstream, BitLength), 0)

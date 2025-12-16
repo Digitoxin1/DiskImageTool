@@ -789,7 +789,7 @@ Public Class HexViewForm
             End If
             e.SuppressKeyPress = True
         ElseIf e.KeyCode = Keys.Down Then
-            Dim LineCount = Math.Ceiling(HexBox1.ByteProvider.Length / HexBox1.HorizontalByteCount)
+            Dim LineCount = CeilDiv(CULng(HexBox1.ByteProvider.Length), CULng(HexBox1.HorizontalByteCount))
             If HexBox1.CurrentLine >= LineCount Then
                 If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
                     Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount

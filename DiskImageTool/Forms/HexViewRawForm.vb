@@ -651,7 +651,7 @@ Public Class HexViewRawForm
 
         If Sector IsNot Nothing Then
             Dim Offset = Sector.StartIndex
-            Dim MaxLineCount = Math.Ceiling(HexBox1.ByteProvider.Length / HexBox1.BytesPerLine)
+            Dim MaxLineCount = CeilDiv(CULng(HexBox1.ByteProvider.Length), CULng(HexBox1.BytesPerLine))
             Dim Line = Offset \ HexBox1.BytesPerLine
             If MaxLineCount - Line < HexBox1.VerticalByteCount Then
                 Line -= HexBox1.VerticalByteCount - (MaxLineCount - Line)
@@ -689,7 +689,7 @@ Public Class HexViewRawForm
         End If
 
         ToolStripStatusBits.Text = FormatThousands(RegionData.NumBits) & " " & My.Resources.Label_Bits
-        ToolStripStatusBytes.Text = FormatThousands(Math.Ceiling(RegionData.NumBits / 16)) & " " & My.Resources.Label_Bytes
+        ToolStripStatusBytes.Text = FormatThousands(CeilDiv(RegionData.NumBits, 16)) & " " & My.Resources.Label_Bytes
 
         _LastSearch = New HexSearch
 
@@ -1003,7 +1003,7 @@ Public Class HexViewRawForm
             PanelSectors.Height = 0
             PanelSectors.Visible = False
         Else
-            Dim NumRows As Integer = Math.Ceiling(_RegionData.Sectors.Count / MaxSectors)
+            Dim NumRows As Integer = CeilDiv(CUInt(_RegionData.Sectors.Count), CUInt(MaxSectors))
             Dim PanelHeight = SECTOR_HEIGHT * NumRows + PADDING_ROWS * (NumRows - 1) + PanelSectors.Padding.Top + PanelSectors.Padding.Bottom
 
             PanelSectors.Height = PanelHeight

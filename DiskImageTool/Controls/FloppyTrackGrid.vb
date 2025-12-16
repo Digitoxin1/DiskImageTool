@@ -212,7 +212,7 @@ Public Class FloppyTrackGrid
                 Return 0
             End If
 
-            Return CInt(Math.Ceiling(_TrackCount / COLUMNS))
+            Return CeilDiv(CUInt(_TrackCount), CUInt(COLUMNS))
         End Get
     End Property
 

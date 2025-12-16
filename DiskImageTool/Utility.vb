@@ -4,6 +4,14 @@ Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Utility
+    Public Function AlignUp(value As UInteger, alignment As UInteger) As UInteger
+        Return CeilDiv(value, alignment) * alignment
+    End Function
+
+    Public Function AlignUp(value As ULong, alignment As ULong) As ULong
+        Return CeilDiv(value, alignment) * alignment
+    End Function
+
     Public Sub ApplyResourcesToControls(ctrl As Control, res As System.ComponentModel.ComponentResourceManager)
         res.ApplyResources(ctrl, ctrl.Name)
 
@@ -22,6 +30,10 @@ Module Utility
 
     Public Function CeilDiv(value As UInteger, divisor As UInteger) As UInteger
         Return (value + divisor - 1UI) \ divisor
+    End Function
+
+    Public Function CeilDiv(value As ULong, divisor As ULong) As ULong
+        Return (value + divisor - 1UL) \ divisor
     End Function
 
     Public Function CleanFileName(FileName As String) As String

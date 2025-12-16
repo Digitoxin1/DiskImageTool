@@ -249,12 +249,12 @@ Namespace ImageFormats
                                 If Side < _Sides Then
                                     TransCopyTrack = GetTrack(Track, Side)
                                     If TransCopyTrack IsNot Nothing Then
-                                        Dim BitLength = Math.Ceiling(TransCopyTrack.Bitstream.Length / 2048) * 2048
+                                        Dim BitLength = AlignUp(CUInt(TransCopyTrack.Bitstream.Length), 2048)
                                         'Dim Padding = BitLength - TransCopyTrack.Bitstream.Length
                                         'buffer = IBM_MFM.BitsToBytes(TransCopyTrack.Bitstream, Padding)
                                         buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(TransCopyTrack.Bitstream, BitLength), 0)
                                         Dim Offset = fs.Position
-                                        Dim NextBoundary = Math.Ceiling(Offset / 65536) * 65536
+                                        Dim NextBoundary = AlignUp(CULng(Offset), 65536UL)
                                         If Offset + buffer.Length > NextBoundary Then
                                             For Counter = 0 To NextBoundary - Offset - 1
                                                 fs.WriteByte(&H0)

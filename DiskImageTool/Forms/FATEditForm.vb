@@ -241,13 +241,13 @@ Public Class FATEditForm
         Dim Size As Integer = 3
         Dim GridWidth As Integer = Int(PictureBoxFAT.Width / Size)
         Dim GridHeight As Integer = Int(PictureBoxFAT.Height / Size)
-        Dim RequiredHeight As Integer = Math.Ceiling(Count / GridWidth)
+        Dim RequiredHeight As Integer = CeilDiv(CUInt(Count), CUInt(GridWidth))
 
         Do While RequiredHeight < GridHeight
             Size += 1
             GridWidth = Int(PictureBoxFAT.Width / Size)
             GridHeight = Int(PictureBoxFAT.Height / Size)
-            RequiredHeight = Math.Ceiling(Count / GridWidth)
+            RequiredHeight = CeilDiv(CUInt(Count), CUInt(GridWidth))
         Loop
 
         If RequiredHeight > GridHeight Then
@@ -366,7 +366,7 @@ Public Class FATEditForm
         Dim LeftPos As Integer = Int(e.X / _GridSize)
         Dim TopPos As Integer = Int(e.Y / _GridSize)
         Dim MaxWidth As Integer = Int(PictureBoxFAT.Width / _GridSize)
-        Dim MaxHeight As Integer = Math.Ceiling(Length / MaxWidth)
+        Dim MaxHeight As Integer = CeilDiv(CUInt(Length), CUInt(MaxWidth))
 
         If LeftPos < MaxWidth And TopPos < MaxHeight Then
             Index = TopPos * MaxWidth + LeftPos

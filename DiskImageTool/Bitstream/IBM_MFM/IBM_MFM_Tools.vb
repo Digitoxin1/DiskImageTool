@@ -127,7 +127,7 @@
             End Function
 
             Public Function BytesToBits(bytes() As Byte, Offset As UInteger, BitLength As UInteger, Optional Reverse As Boolean = True) As BitArray
-                Dim bufferSize = Math.Ceiling(BitLength / 8)
+                Dim bufferSize = CeilDiv(BitLength, 8)
                 Dim buffer(bufferSize - 1) As Byte
 
                 For i As Integer = 0 To bufferSize - 1
@@ -146,7 +146,7 @@
             End Function
 
             Public Function BitsToBytes(Bitstream As BitArray, Padding As UInteger, Optional Reverse As Boolean = True) As Byte()
-                Dim Length = Math.Ceiling((Bitstream.Length + Padding) / 8)
+                Dim Length = CeilDiv(CUInt(Bitstream.Length) + Padding, 8)
 
                 Dim buffer(Length - 1) As Byte
 

@@ -114,7 +114,7 @@ Namespace Flux.Greaseweazle
             End If
 
             If _DoubleStep Then
-                TrackCount = Math.Ceiling(TrackCount / 2)
+                TrackCount = CeilDiv(CUInt(TrackCount), 2)
             End If
 
             Return TrackCount - 1

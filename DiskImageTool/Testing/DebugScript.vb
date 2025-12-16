@@ -78,7 +78,7 @@ Module DebugScript
             SB_B.AppendLine(DebugLoad(0, 1, Sector, 1))
             SegmentList = SectorDict.Item(Sector)
             For Each Segment In SegmentList
-                For I = 0 To Math.Ceiling(Segment.Data.Length / ByteLenPerLine) - 1
+                For I = 0 To CeilDiv(CUInt(Segment.Data.Length), ByteLenPerLine) - 1
                     Dim SourceIndex As Integer = I * ByteLenPerLine
                     Dim SegmentOffset As Integer = Segment.Offset + SourceIndex
                     Dim Length As Integer = Math.Min(ByteLenPerLine, Segment.Data.Length - SourceIndex)

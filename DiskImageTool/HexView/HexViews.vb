@@ -265,7 +265,7 @@ Module HexViews
                 Length = Disk.BPB.BytesPerCluster
                 FileSize = Length
             Else
-                Length = Math.Ceiling(DirectoryEntry.FileSize / Disk.BPB.BytesPerCluster) * Disk.BPB.BytesPerCluster
+                Length = AlignUp(DirectoryEntry.FileSize, Disk.BPB.BytesPerCluster)
                 FileSize = DirectoryEntry.FileSize
             End If
 

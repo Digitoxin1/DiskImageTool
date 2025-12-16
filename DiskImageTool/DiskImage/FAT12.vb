@@ -290,7 +290,7 @@
         End Function
 
         Public Shared Function EncodeFAT12(FATTable() As UShort) As Byte()
-            Dim Size As Integer = Math.Ceiling(FATTable.Length / 2 * 3)
+            Dim Size As Integer = CeilDiv(CUInt(FATTable.Length * 3), 2)
 
             Dim FatBytes(Size - 1) As Byte
 

@@ -265,7 +265,7 @@ Namespace ImageFormats
                         FillArray(Buffer, &HFF)
                         fs.Write(Buffer, 0, Buffer.Length)
 
-                        Dim OffsetBlockSize = Math.Ceiling(TrackCount * 4 / 512) * 512
+                        Dim OffsetBlockSize = AlignUp(CUInt(TrackCount * 4), 512)
                         Dim TrackDataOffset As UShort = (fs.Position + OffsetBlockSize) \ 512
                         Dim TrackOffsets(TrackCount - 1) As UShort
                         Dim BlockCount As UShort
@@ -284,7 +284,7 @@ Namespace ImageFormats
                             TrackDataLength = TrackLength * 2
 
                             TrackOffsets(i) = TrackDataOffset
-                            BlockCount = Math.Ceiling(TrackDataLength / 512)
+                            BlockCount = CeilDiv(TrackDataLength, 512)
 
                             Buffer = BitConverter.GetBytes(TrackDataOffset)
                             fs.Write(Buffer, 0, Buffer.Length)
@@ -320,7 +320,7 @@ Namespace ImageFormats
                             DataSide0 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track0.Bitstream, TrackLength * 8), 0, False)
 
                             TrackDataLength = TrackLength * 2
-                            BlockCount = Math.Ceiling(TrackDataLength / 512)
+                            BlockCount = CeilDiv(TrackDataLength, 512)
 
                             For j = 0 To BlockCount - 1
                                 Dim DataOffset = j * 256
@@ -402,7 +402,7 @@ Namespace ImageFormats
                                 DataSide1 = New Byte(TrackDataLength / 2 - 1) {}
                             End If
 
-                            Dim BlockCount As UInteger = Math.Ceiling(TrackDataLength / 512)
+                            Dim BlockCount As UInteger = CeilDiv(TrackDataLength, 512)
 
                             For j = 0 To BlockCount - 1
                                 Dim BlockOffset = j * 512

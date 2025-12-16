@@ -42,7 +42,7 @@ Namespace ImageFormats
                 Set
                     _Bitstream = Value
                     '_Length = _Bitstream.Length \ 8
-                    _Length = Math.Ceiling(_Bitstream.Length / 8)
+                    _Length = CeilDiv(CUInt(_Bitstream.Length), 8)
                 End Set
             End Property
 

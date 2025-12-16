@@ -116,7 +116,7 @@ Public Class ImportFileForm
         Dim SubItem As ListViewItem.ListViewSubItem
         Dim BytesPerCluster = Parent.Root.BytesPerCluster
         Dim RowForeColor As Color
-        Dim SizeOnDisk As Long = Math.Ceiling(File.Length / BytesPerCluster) * BytesPerCluster
+        Dim SizeOnDisk As Long = AlignUp(CULng(File.Length), BytesPerCluster)
 
         Dim ImportFile = Parent.AddFile(File.FullName, File.Name, SizeOnDisk)
 
@@ -564,8 +564,8 @@ Public Class ImportDirectory
         Dim EntryCount As Integer = _EntriesRequired - _AvailableEntries
 
         If EntryCount > 0 Then
-            Dim EntriesPerCluster = Root.BytesPerCluster \ 32
-            RequiredBytes = Math.Ceiling(EntryCount / EntriesPerCluster) * Root.BytesPerCluster
+            Dim EntriesPerCluster As UInteger = Root.BytesPerCluster \ 32
+            RequiredBytes = CeilDiv(CUInt(EntryCount), EntriesPerCluster) * Root.BytesPerCluster
         End If
 
         Return RequiredBytes
@@ -773,7 +773,7 @@ Public MustInherit Class ImportFileBase
 
         If Not UseNTExtensions Or Not _CanUseNTExtensions Then
             If UseLFN And _IsLongFileName Then
-                EntriesRequired += Math.Ceiling(_FileName.Length / 26)
+                EntriesRequired += CeilDiv(CUInt(_FileName.Length), 26)
             End If
         End If
 

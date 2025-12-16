@@ -400,7 +400,7 @@ Namespace DiskImage
         Private Sub BuildSectorMap()
             Dim BitstreamTrack As IBitstreamTrack
 
-            Dim TrackCount = Math.Ceiling(_Image.TrackCount / _Image.TrackStep)
+            Dim TrackCount = CeilDiv(_Image.TrackCount, _Image.TrackStep)
 
             SetTracks(TrackCount, _Image.SideCount)
 

@@ -180,7 +180,7 @@ Namespace DiskImage
         End Function
 
         Public Function BytesToSector(Bytes As UInteger) As UInteger
-            Return Math.Ceiling(Bytes / BytesPerSector)
+            Return CeilDiv(Bytes, BytesPerSector)
         End Function
 
         Public Function ClusterToOffset(Cluster As UShort) As UInteger

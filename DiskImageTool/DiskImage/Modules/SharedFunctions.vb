@@ -185,8 +185,8 @@ Namespace DiskImage
             Dim Buffer() As Byte
             Dim LFNBuffer() As Byte
 
-            Dim FileBytes = System.Text.Encoding.Unicode.GetBytes(FileName)
-            Dim Count = Math.Ceiling(FileBytes.Length / 26)
+            Dim FileBytes = Encoding.Unicode.GetBytes(FileName)
+            Dim Count = CeilDiv(CUInt(FileBytes.Length), 26)
 
             For i = 0 To Count - 1
                 Dim Offset As Long = i * 26
@@ -266,7 +266,7 @@ Namespace DiskImage
         End Function
 
         Public Function InitializeAddFile(Directory As DirectoryBase, Options As AddFileOptions, Index As Integer, FileInfo As IO.FileInfo) As AddFileData
-            Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
+            Dim ClustersRequired As UShort = CeilDiv(CULng(FileInfo.Length), Directory.Disk.BPB.BytesPerCluster)
 
             Dim AddFileData = InitializeAddFile(Directory, Options, Index, FileInfo.Name, ClustersRequired)
             AddFileData.FileInfo = FileInfo
@@ -446,7 +446,7 @@ Namespace DiskImage
 
             If FileData.FileInfo.Length > 0 Then
                 'Load file into buffer, padding with empty space if needed            
-                Dim FileSize = Math.Ceiling(FileData.FileInfo.Length / ClusterSize) * ClusterSize
+                Dim FileSize = AlignUp(CULng(FileData.FileInfo.Length), ClusterSize)
                 Dim FileBuffer = ReadFileIntoBuffer(FileData.FileInfo, FileSize, 0)
 
                 Dim LastCluster As UShort = 0

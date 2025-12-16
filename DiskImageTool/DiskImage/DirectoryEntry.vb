@@ -91,7 +91,7 @@
             If IsDirectory Then
                 ClusterCount = 1
             Else
-                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+                ClusterCount = CeilDiv(FileSize, _BPB.BytesPerCluster)
             End If
 
             If StartingCluster + ClusterCount - 1 > Size Then
@@ -138,7 +138,7 @@
         End Sub
 
         Public Function GetAllocatedSize() As UInteger
-            Return Math.Ceiling(FileSize / _BPB.BytesPerCluster) * _BPB.BytesPerCluster
+            Return AlignUp(FileSize, _BPB.BytesPerCluster)
         End Function
 
         Public Function GetAllocatedSizeFromFAT() As UInteger
@@ -308,7 +308,7 @@
             If IsDirectory Then
                 ClusterCount = 1
             Else
-                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+                ClusterCount = CeilDiv(FileSize, _BPB.BytesPerCluster)
             End If
 
             If ClusterCount > 0 Then
