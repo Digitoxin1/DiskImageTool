@@ -1,9 +1,6 @@
 ﻿Namespace ImageFormats.TD0
 
-    ''' <summary>
-    ''' Parsed TD0 image header (12 bytes, never compressed).
-    ''' </summary>
-    Public NotInheritable Class TD0Header
+    Public Structure TD0Header
         Public Const LENGTH As Integer = 12
 
         Private ReadOnly _header As Byte()
@@ -118,7 +115,7 @@
             End Get
         End Property
 
-        Public ReadOnly Property VersionByte As Byte
+        Public ReadOnly Property VersionRaw As Byte
             Get
                 Return _header(4)
             End Get
@@ -126,13 +123,19 @@
 
         Public ReadOnly Property VersionMajor As Integer
             Get
-                Return (VersionByte >> 4) And &HF
+                Return (VersionRaw \ 10) Mod 10
             End Get
         End Property
 
         Public ReadOnly Property VersionMinor As Integer
             Get
-                Return VersionByte And &HF
+                Return VersionRaw Mod 10
+            End Get
+        End Property
+
+        Public ReadOnly Property VersionString As String
+            Get
+                Return $"{VersionMajor}.{VersionMinor}"
             End Get
         End Property
 
@@ -140,9 +143,15 @@
             Return TD0Crc16.Compute(_header, 0, 10)
         End Function
 
-        Public Function HeaderCrcValid() As Boolean
+        Public Function CrcValid() As Boolean
             Return StoredCrc16 = ComputedCrc16()
         End Function
-    End Class
+
+        Public Function GetBytes() As Byte()
+            Dim b(LENGTH - 1) As Byte
+            Array.Copy(_header, 0, b, 0, LENGTH)
+            Return b
+        End Function
+    End Structure
 
 End Namespace

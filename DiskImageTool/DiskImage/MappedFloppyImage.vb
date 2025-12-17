@@ -431,10 +431,12 @@ Namespace DiskImage
             Dim Head = SectorToHead(Sector)
             Dim SectorId = SectorToTrackSector(Sector) + 1
 
+            Dim SectorOffset = OffsetInSector(Offset)
+
             Dim MappedData As New MappedData With {
                 .Sector = Sector,
-                .Offset = SectorToOffset(Offset),
-                .Size = _BPB.BytesPerSector,
+                .Offset = SectorOffset,
+                .Size = _BPB.BytesPerSector - SectorOffset,
                 .CanWrite = False
             }
 
@@ -445,8 +447,8 @@ Namespace DiskImage
                 If BitstreamSector Is Nothing Then
                     MappedData.Data = _EmptySector
                 Else
-                    If BitstreamSector.Size < MappedData.Size Then
-                        MappedData.Data = New Byte(MappedData.Size - 1) {}
+                    If BitstreamSector.Size < _BPB.BytesPerSector Then
+                        MappedData.Data = New Byte(_BPB.BytesPerSector - 1) {}
                         BitstreamSector.Data.CopyTo(MappedData.Data, 0)
                     Else
                         MappedData.Data = BitstreamSector.Data
@@ -630,7 +632,7 @@ Namespace DiskImage
             Return Int(Sector / _BPB.SectorsPerTrack) Mod _BPB.NumberOfHeads
         End Function
 
-        Private Function SectorToOffset(Offset As UInteger) As UInteger
+        Private Function OffsetInSector(Offset As UInteger) As UInteger
             Return Offset Mod _BPB.BytesPerSector
         End Function
 

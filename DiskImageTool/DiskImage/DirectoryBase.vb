@@ -66,8 +66,8 @@
                         ParentDirectory.Data.EndOfDirectory = True
                     End If
 
-                    If Not ParentDirectory.Data.HasBootSector And CheckBootSector Then
-                        If BootSector.ValidJumpInstructuon.Contains(Buffer(0)) Then
+                    If Not ParentDirectory.Data.HasBootSector AndAlso CheckBootSector Then
+                        If BootSector.ValidJumpInstruction.Contains(Buffer(0)) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
                                 Dim BootSectorData = RootDirectory.Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
                                 Dim BootSector As New BootSector(BootSectorData)

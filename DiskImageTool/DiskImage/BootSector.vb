@@ -6,7 +6,7 @@
         Public Shared ReadOnly ValidBootStrapSignature() As UShort = {&HAA55, &H0, &H4254}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
-        Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
+        Public Shared ReadOnly ValidJumpInstruction() As Byte = {&HEB, &HE9}
         Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _Offset As UInteger

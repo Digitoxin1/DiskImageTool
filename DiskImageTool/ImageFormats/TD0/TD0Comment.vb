@@ -106,7 +106,7 @@ Namespace ImageFormats.TD0
             End Get
         End Property
 
-        Public Function CommentCrcValid() As Boolean
+        Public Function CrcValid() As Boolean
             Return StoredCrc16 = ComputedCrc16()
         End Function
 

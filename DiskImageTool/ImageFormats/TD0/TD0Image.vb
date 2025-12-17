@@ -51,6 +51,12 @@ Namespace ImageFormats.TD0
                     Return False
                 End If
 
+                If Not _Header.CrcValid Then
+                    Debug.Print("TD0: Header CRC invalid")
+                End If
+
+                Debug.Print($"TD0: Version {_Header.VersionMajor}.{_Header.VersionMinor}, Compressed={_Header.IsCompressed}, SidesField={_Header.SidesField}, SingleDensityGlobal={_Header.IsSingleDensityGlobal}, CommentBlock={_Header.HasCommentBlock}")
+
                 Dim imageLen As Integer = fileBytes.Length - TD0Header.LENGTH
 
                 If imageLen <= 0 Then
@@ -77,6 +83,10 @@ Namespace ImageFormats.TD0
 
                     _Comment = New TD0Comment(imagebuf, 0)
 
+                    If Not _Comment.CrcValid Then
+                        Debug.Print("TD0: Comment CRC invalid")
+                    End If
+
                     ofs = _Comment.TotalLength
                 End If
 
@@ -91,10 +101,10 @@ Namespace ImageFormats.TD0
         Private Function DecodeCompressed(imagebuf() As Byte) As Byte()
             If _Header.VersionMajor >= 2 Then
                 ' Teledisk 2.x => LZHUF
-                Return TD0Lzhuf.DecompressToBuffer(imagebuf, TD0_MAX_BUFSZ)
+                Return TD0Lzhuf.Decompress(imagebuf, TD0_MAX_BUFSZ)
             Else
                 ' Teledisk 1.x => LZW
-                Return TD0Lzw.DecompressToBuffer(imagebuf, TD0_MAX_BUFSZ)
+                Return TD0Lzw.Decompress(imagebuf, TD0_MAX_BUFSZ)
             End If
         End Function
 
@@ -113,6 +123,11 @@ Namespace ImageFormats.TD0
                 End If
 
                 Dim TrackHeader = New TD0TrackHeader(imagebuf, ofs)
+
+                If Not TrackHeader.CrcValid Then
+                    Debug.Print($"TD0: Track header CRC invalid: Cylinder {TrackHeader.PhysicalCylinder}, Head {TrackHeader.PhysicalHead}")
+                End If
+
                 ofs += TD0TrackHeader.LENGTH
 
                 If TrackHeader.IsEndOfTracks Then
@@ -262,7 +277,11 @@ Namespace ImageFormats.TD0
                     End Select
 
                     sec.SetData(SectorDataHeader, Data)
-                    Debug.Print(sec.CrcValid())
+
+                    If Not sec.CrcValid Then
+                        Debug.Print($"TD0: Sector header CRC invalid: Cylinder {sec.Cylinder}, Head {sec.Head}, Sector Id {sec.SectorId}")
+                    End If
+
                     trk.AddSector(sec)
                 Next
 
@@ -284,5 +303,4 @@ Namespace ImageFormats.TD0
             Return Tracks.Count > 0
         End Function
     End Class
-
 End Namespace

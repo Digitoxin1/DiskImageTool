@@ -1,5 +1,7 @@
-﻿Namespace ImageFormats.TD0
-    Public NotInheritable Class TD0SectorHeader
+﻿Imports System.IO
+
+Namespace ImageFormats.TD0
+    Public Structure TD0SectorHeader
         Public Const LENGTH As Integer = 6
 
         Private ReadOnly _header As Byte()
@@ -90,17 +92,17 @@
                 Return _header(3)
             End Get
         End Property
+
         Public ReadOnly Property StoredCrcLow As Byte
             Get
                 Return _header(5)
             End Get
         End Property
-        Public Function ComputedBaseCrc16() As UShort
-            Return TD0Crc16.Compute(_header, 0, 5)
-        End Function
 
-        Public Function ComputedBaseCrcLow() As Byte
-            Return CByte(ComputedBaseCrc16() And &HFFUS)
+        Public Function CrcValid(data As Byte()) As Boolean
+            Dim crc As UShort = TD0Crc16.Compute(data, 0, data.Length)
+
+            Return StoredCrcLow = CByte(crc And &HFFUS)
         End Function
 
         Public Function GetBytes() As Byte()
@@ -118,29 +120,5 @@
 
             Return 128 << sc
         End Function
-
-        Public Function CrcValid(sectorDataHeader3 As Byte(), decodedSectorData As Byte()) As Boolean
-            Dim crc As UShort = TD0Crc16.Compute(_header, 0, 5)
-
-            If HasDataBlock Then
-                If sectorDataHeader3 Is Nothing OrElse sectorDataHeader3.Length <> TD0SectorDataHeader.LENGTH Then
-                    Return False
-                End If
-
-                If decodedSectorData Is Nothing Then
-                    Return False
-                End If
-
-                For i = 0 To sectorDataHeader3.Length - 1
-                    crc = TD0Crc16.Update(crc, sectorDataHeader3(i))
-                Next
-
-                For i = 0 To decodedSectorData.Length - 1
-                    crc = TD0Crc16.Update(crc, decodedSectorData(i))
-                Next
-            End If
-
-            Return StoredCrcLow = CByte(crc And &HFFUS)
-        End Function
-    End Class
+    End Structure
 End Namespace

@@ -1,5 +1,5 @@
 ﻿Namespace ImageFormats.TD0
-    Public NotInheritable Class TD0TrackHeader
+    Public Structure TD0TrackHeader
         Public Const LENGTH As Integer = 4
 
         Private ReadOnly _header As Byte()
@@ -80,5 +80,5 @@
 
             Return b
         End Function
-    End Class
+    End Structure
 End Namespace

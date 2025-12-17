@@ -62,12 +62,14 @@
             End Get
         End Property
 
-        Public Function CrcValid() As Boolean
-            Return _header.CrcValid(_DataHeader?.GetBytes(), _Data)
-        End Function
-
         Public Function GetSizeBytes() As Integer
             Return _header.GetSectorSizeBytes
+        End Function
+
+        Public Function CrcValid() As Boolean
+            Dim crc As UShort = TD0Crc16.Compute(_Data, 0, Data.Length)
+
+            Return _header.StoredCrcLow = CByte(crc And &HFFUS)
         End Function
 
         Public Sub SetData(DataHeader As TD0SectorDataHeader, Data As Byte())

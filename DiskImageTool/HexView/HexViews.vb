@@ -387,7 +387,7 @@ Module HexViews
                     EndOfDirectory = True
                 End If
                 If Not HasBootSector And CheckBootSector Then
-                    If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
+                    If BootSector.ValidJumpInstruction.Contains(FirstByte) Then
                         If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
                             Dim BootSectorData = Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
                             Dim BootSector As New BootSector(BootSectorData)

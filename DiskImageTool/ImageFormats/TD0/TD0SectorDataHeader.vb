@@ -1,5 +1,5 @@
 ﻿Namespace ImageFormats.TD0
-    Public Class TD0SectorDataHeader
+    Public Structure TD0SectorDataHeader
         Public Const LENGTH As Integer = 3
 
         Private ReadOnly _header As Byte()
@@ -34,5 +34,5 @@
             Array.Copy(_header, 0, b, 0, LENGTH)
             Return b
         End Function
-    End Class
+    End Structure
 End Namespace
