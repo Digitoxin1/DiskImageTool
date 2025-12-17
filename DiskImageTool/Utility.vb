@@ -191,6 +191,8 @@ Module Utility
             Return FloppyImageType.D86FImage
         ElseIf FileExt = ".imd" Then
             Return FloppyImageType.IMDImage
+        ElseIf FileExt = ".td0" Then
+            Return FloppyImageType.TD0Image
         Else
             Return FloppyImageType.BasicSectorImage
         End If
@@ -211,6 +213,8 @@ Module Utility
             Return FloppyImageType.PRIImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
             Return FloppyImageType.IMDImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 2).ToUpper = "TD" Then
+            Return FloppyImageType.TD0Image
         ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
             Return FloppyImageType.TranscopyImage
         Else

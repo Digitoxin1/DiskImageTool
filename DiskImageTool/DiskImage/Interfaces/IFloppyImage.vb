@@ -10,6 +10,7 @@ Namespace DiskImage
         D86FImage
         HFEImage
         IMDImage
+        TD0Image
     End Enum
 
     Public Interface IFloppyImage

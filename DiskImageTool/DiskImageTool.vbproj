@@ -197,6 +197,20 @@
     <Compile Include="Forms\ImagePreview.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ImageFormats\TD0\TD0Comment.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Crc16.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Enums.vb" />
+    <Compile Include="ImageFormats\TD0\TD0FloppyImage.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Header.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Image.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Loader.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Lzhuf.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Lzw.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Sector.vb" />
+    <Compile Include="ImageFormats\TD0\TD0SectorDataHeader.vb" />
+    <Compile Include="ImageFormats\TD0\TD0SectorHeader.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Track.vb" />
+    <Compile Include="ImageFormats\TD0\TD0TrackHeader.vb" />
     <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Modules\FileIO.vb" />
     <Compile Include="Scanners\FilterScanner.vb" />

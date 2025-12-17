@@ -4,7 +4,7 @@ Imports DiskImageTool.DiskImage
 
 Module ImageIO
     Public Const BASIC_SECTOR_FILE_EXTENSIONS As String = ".ima,.img,.vfd,.flp"
-    Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi"}
+    Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi", ".td0"}
     Public ReadOnly AllFileExtensions As New List(Of String)
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
@@ -216,6 +216,14 @@ Module ImageIO
                         ImageData.InvalidImage = True
                     End If
 
+                ElseIf FloppyImageType = FloppyImageType.TD0Image Then
+                    Dim TD0Image = ImageFormats.TD0.ImageLoad(Data)
+                    If TD0Image IsNot Nothing Then
+                        FloppyImage = TD0Image
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
                 Else
                     FloppyImage = New BasicSectorImage(Data)
                 End If
@@ -317,6 +325,8 @@ Module ImageIO
                 Return GetImageTypeName(FloppyImageType.MFMImage)
             Case ".tc"
                 Return GetImageTypeName(FloppyImageType.TranscopyImage)
+            Case ".td0"
+                Return GetImageTypeName(FloppyImageType.TD0Image)
         End Select
 
         If BasicSectorFileExtensions.Contains(Extension) Then
@@ -352,6 +362,9 @@ Module ImageIO
 
         ExtensionList = New List(Of String) From {".imd"}
         FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.IMDImage), ExtensionList)
+
+        ExtensionList = New List(Of String) From {".td0"}
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.TD0Image), ExtensionList)
 
         ExtensionList = New List(Of String) From {".pri"}
         FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.PRIImage), ExtensionList)
@@ -774,7 +787,7 @@ Module ImageIO
         Select Case ImageType
             Case FloppyImageType.HFEImage, FloppyImageType.MFMImage, FloppyImageType.TranscopyImage, FloppyImageType.D86FImage, FloppyImageType.PRIImage
                 Return FloppyImageGroup.BitstreamImage
-            Case FloppyImageType.IMDImage, FloppyImageType.PSIImage
+            Case FloppyImageType.IMDImage, FloppyImageType.PSIImage, FloppyImageType.TD0Image
                 Return FloppyImageGroup.AdvancedSectorImage
             Case Else
                 Return FloppyImageGroup.BasicSectorImage
