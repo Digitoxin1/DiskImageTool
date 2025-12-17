@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Text
 Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
@@ -9,6 +10,17 @@ Module ImageIO
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
+
+    Private ReadOnly ImageLoaders As New Dictionary(Of FloppyImageType, Func(Of Byte(), IFloppyImage)) From {
+        {FloppyImageType.TranscopyImage, Function(d) ImageFormats.TC.ImageLoad(d)},
+        {FloppyImageType.PSIImage, Function(d) ImageFormats.PSI.ImageLoad(d)},
+        {FloppyImageType.PRIImage, Function(d) ImageFormats.PRI.ImageLoad(d)},
+        {FloppyImageType.IMDImage, Function(d) ImageFormats.IMD.ImageLoad(d)},
+        {FloppyImageType.MFMImage, Function(d) ImageFormats.MFM.ImageLoad(d)},
+        {FloppyImageType.D86FImage, Function(d) ImageFormats.D86F.ImageLoad(d)},
+        {FloppyImageType.HFEImage, Function(d) ImageFormats.HFE.ImageLoad(d)},
+        {FloppyImageType.TD0Image, Function(d) ImageFormats.TD0.ImageLoad(d)}
+    }
 
     Public Enum SaveImageResponse
         Success
@@ -23,6 +35,7 @@ Module ImageIO
         AdvancedSectorImage
         BitstreamImage
     End Enum
+
     Public Function CreateBackupIfExists(FilePath As String) As Boolean
         If Not IO.File.Exists(FilePath) Then
             Return True
@@ -134,131 +147,62 @@ Module ImageIO
             FileInfo.LastAccessTime = DirectoryEntry.GetLastAccessDate.DateObject
         End If
     End Sub
-
     Public Function DiskImageLoadFromImageData(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
         Dim Data() As Byte
-        Dim LastChecksum As UInteger
+        Dim LastChecksum As UInteger = ImageData.Checksum
         Dim FloppyImage As IFloppyImage = Nothing
 
         ImageData.InvalidImage = False
 
-        If FloppyImage Is Nothing AndAlso IO.File.Exists(ImageData.SourceFile) Then
-            Try
-                If ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
-                    ImageData.ReadOnly = True
-                    Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
-                Else
-                    ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                    Data = IO.File.ReadAllBytes(ImageData.SourceFile)
-                End If
-
-                Dim FloppyImageType = GetImageTypeFromHeader(Data)
-                'Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
-
-                LastChecksum = ImageData.Checksum
-                If SetChecksum Then
-                    ImageData.Checksum = CRC32.ComputeChecksum(Data)
-                End If
-
-                If FloppyImageType = FloppyImageType.TranscopyImage Then
-                    Dim TCImage = ImageFormats.TC.ImageLoad(Data)
-                    If TCImage IsNot Nothing Then
-                        FloppyImage = TCImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.PSIImage Then
-                    Dim PSIImage = ImageFormats.PSI.ImageLoad(Data)
-                    If PSIImage IsNot Nothing Then
-                        FloppyImage = PSIImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.PRIImage Then
-                    Dim PRIImage = ImageFormats.PRI.ImageLoad(Data)
-                    If PRIImage IsNot Nothing Then
-                        FloppyImage = PRIImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.IMDImage Then
-                    Dim IMDImage = ImageFormats.IMD.ImageLoad(Data)
-                    If IMDImage IsNot Nothing Then
-                        FloppyImage = IMDImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.MFMImage Then
-                    Dim MFMImage = ImageFormats.MFM.ImageLoad(Data)
-                    If MFMImage IsNot Nothing Then
-                        FloppyImage = MFMImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.D86FImage Then
-                    Dim D86FImage = ImageFormats.D86F.ImageLoad(Data)
-                    If D86FImage IsNot Nothing Then
-                        FloppyImage = D86FImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.HFEImage Then
-                    Dim HFEImage = ImageFormats.HFE.ImageLoad(Data)
-                    If HFEImage IsNot Nothing Then
-                        FloppyImage = HFEImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.TD0Image Then
-                    Dim TD0Image = ImageFormats.TD0.ImageLoad(Data)
-                    If TD0Image IsNot Nothing Then
-                        FloppyImage = TD0Image
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                Else
-                    FloppyImage = New BasicSectorImage(Data)
-                End If
-                'If ImageData.XDFMiniDisk Then
-                '    ImageData.ReadOnly = True
-                '    Dim NewData(ImageData.XDFLength - 1) As Byte
-                '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
-                '    Data = NewData
-                'End If
-            Catch ex As Exception
-                DebugException(ex)
-                FloppyImage = Nothing
-            End Try
-        End If
-
-        If FloppyImage Is Nothing Then
+        If Not IO.File.Exists(ImageData.SourceFile) Then
             Return Nothing
-        Else
-            If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
-                If ImageData.Modifications IsNot Nothing AndAlso ImageData.Modifications.Count > 0 Then
-                    ImageData.Modifications.Clear()
-                    ImageData.ExternalModified = True
-                ElseIf SetChecksum Then
-                    ImageData.ExternalModified = False
-                End If
-            End If
-            If SetChecksum Then
-                ImageData.Loaded = True
-            End If
-
-            Dim Disk As New DiskImage.Disk(FloppyImage, ImageData.FATIndex, ImageData.Modifications)
-            ImageData.Modifications = Disk.Image.History.Changes
-
-            Return Disk
         End If
+
+        Try
+            If ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
+                ImageData.ReadOnly = True
+                Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+            Else
+                ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+            End If
+
+            Dim FloppyImageType = GetImageTypeFromHeader(Data)
+
+            If SetChecksum Then
+                ImageData.Checksum = CRC32.ComputeChecksum(Data)
+            End If
+
+            FloppyImage = TryLoadTypedImage(FloppyImageType, Data)
+            If FloppyImage Is Nothing Then
+                If ImageLoaders.ContainsKey(FloppyImageType) Then
+                    ImageData.InvalidImage = True
+                    Return Nothing
+                End If
+                FloppyImage = New BasicSectorImage(Data)
+            End If
+        Catch ex As Exception
+            DebugException(ex)
+            Return Nothing
+        End Try
+
+        If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
+            If ImageData.Modifications IsNot Nothing AndAlso ImageData.Modifications.Count > 0 Then
+                ImageData.Modifications.Clear()
+                ImageData.ExternalModified = True
+            ElseIf SetChecksum Then
+                ImageData.ExternalModified = False
+            End If
+        End If
+
+        If SetChecksum Then
+            ImageData.Loaded = True
+        End If
+
+        Dim Disk As New DiskImage.Disk(FloppyImage, ImageData.FATIndex, ImageData.Modifications)
+        ImageData.Modifications = Disk.Image.History.Changes
+
+        Return Disk
     End Function
 
     Public Sub EmptyTempImagePath()
@@ -303,6 +247,78 @@ Module ImageIO
     Public Function GetAppPath() As String
         Return IO.Path.GetDirectoryName(Application.ExecutablePath)
     End Function
+
+    Public Function GetImageExtensionFromType(ImageType As FloppyImageType) As String
+        Select Case ImageType
+            Case FloppyImageType.TD0Image
+                Return ".td0"
+            Case FloppyImageType.PSIImage
+                Return ".psi"
+            Case FloppyImageType.PRIImage
+                Return ".pri"
+            Case FloppyImageType.IMDImage
+                Return ".imd"
+            Case FloppyImageType.D86FImage
+                Return ".86f"
+            Case FloppyImageType.HFEImage
+                Return ".hfe"
+            Case FloppyImageType.MFMImage
+                Return ".mfm"
+            Case FloppyImageType.TranscopyImage
+                Return ".tc"
+            Case Else
+                Return ".ima"
+        End Select
+    End Function
+
+    Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
+        Dim FileExt = IO.Path.GetExtension(FileName).ToLower
+
+        If FileExt = ".tc" Then
+            Return FloppyImageType.TranscopyImage
+        ElseIf FileExt = ".psi" Then
+            Return FloppyImageType.PSIImage
+        ElseIf FileExt = ".pri" Then
+            Return FloppyImageType.PRIImage
+        ElseIf FileExt = ".mfm" Then
+            Return FloppyImageType.MFMImage
+        ElseIf FileExt = ".hfe" Then
+            Return FloppyImageType.HFEImage
+        ElseIf FileExt = ".86f" Then
+            Return FloppyImageType.D86FImage
+        ElseIf FileExt = ".imd" Then
+            Return FloppyImageType.IMDImage
+        ElseIf FileExt = ".td0" Then
+            Return FloppyImageType.TD0Image
+        Else
+            Return FloppyImageType.BasicSectorImage
+        End If
+    End Function
+
+    Public Function GetImageTypeFromHeader(Data() As Byte) As FloppyImageType
+        If Encoding.UTF8.GetString(Data, 0, 8) = "HXCPICFE" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
+            Return FloppyImageType.D86FImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
+            Return FloppyImageType.MFMImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
+            Return FloppyImageType.PSIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PRI " Then
+            Return FloppyImageType.PRIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
+            Return FloppyImageType.IMDImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 2).ToUpper = "TD" Then
+            Return FloppyImageType.TD0Image
+        ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
+            Return FloppyImageType.TranscopyImage
+        Else
+            Return FloppyImageType.BasicSectorImage
+        End If
+    End Function
+
     Public Function GetImageTypeNameFromExtension(Extension As String) As String
         Extension = Extension.ToLower()
 
@@ -344,45 +360,28 @@ Module ImageIO
 
     Public Function GetLoadDialogFilters() As String
         Dim FileFilter As String
-        Dim ExtensionList As List(Of String)
 
         FileFilter = FileDialogGetFilter(My.Resources.FileType_AllDiskImages, AllFileExtensions)
-
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FloppyImageType_BasicSectorImage, BasicSectorFileExtensions)
-
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_AdvancedSectorImage, AdvancedSectorFileExtensions)
-
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_BitstreamImage, BitstreamFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_IMZ, ".imz")
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_VFD, ".vfd", ".flp")
 
-        ExtensionList = New List(Of String) From {".imz"}
-        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_IMZ, ExtensionList)
+        Dim ImageTypes = {
+            FloppyImageType.IMDImage,
+            FloppyImageType.TD0Image,
+            FloppyImageType.PRIImage,
+            FloppyImageType.PSIImage,
+            FloppyImageType.D86FImage,
+            FloppyImageType.HFEImage,
+            FloppyImageType.MFMImage,
+            FloppyImageType.TranscopyImage
+        }
 
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_VFD, ExtensionList)
-
-        ExtensionList = New List(Of String) From {".imd"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.IMDImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".td0"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.TD0Image), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".pri"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.PRIImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".psi"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.PSIImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".86f"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.D86FImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".hfe"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.HFEImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".mfm"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.MFMImage), ExtensionList)
-
-        ExtensionList = New List(Of String) From {".tc"}
-        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.TranscopyImage), ExtensionList)
+        For Each t In ImageTypes
+            FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(t), GetImageExtensionFromType(t))
+        Next
 
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_ZipArchive, ".zip")
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_All, ".*")
@@ -391,123 +390,55 @@ Module ImageIO
     End Function
 
     Public Function GetSaveDialogFilters(DiskFormat As FloppyDiskFormat, ImageType As FloppyImageType, FileExt As String) As (Filter As String, FilterIndex As Integer)
-        Dim Response As (Filter As String, FilterIndex As Integer)
+        Dim Filter As String = ""
+        Dim FilterIndex As Integer = 0
         Dim CurrentIndex As Integer = 1
-        Dim Extension As String
-        Dim ExtensionList As List(Of String)
-        Dim ImageGroup = GetImageGroup(ImageType)
 
-        Response.FilterIndex = 0
+        Dim imageGroup = GetImageGroup(ImageType)
 
-        ExtensionList = New List(Of String) From {".ima", ".img"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogGetFilter(My.Resources.FileType_FloppyDiskImage, ExtensionList)
-        CurrentIndex += 1
+        AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_FloppyDiskImage, ".ima", ".img")
+        AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_VFD, ".vfd", ".flp")
 
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, My.Resources.FileType_VFD, ExtensionList)
-        CurrentIndex += 1
-
-        If ImageType = FloppyImageType.IMDImage Or ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
-            ExtensionList = New List(Of String) From {".imd"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.IMDImage), ExtensionList)
-            CurrentIndex += 1
+        If ImageType = FloppyImageType.IMDImage OrElse imageGroup <> FloppyImageGroup.AdvancedSectorImage Then
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.IMDImage)
         End If
 
-        If ImageType = FloppyImageType.PSIImage Or ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
-            ExtensionList = New List(Of String) From {".psi"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.PSIImage), ExtensionList)
-            CurrentIndex += 1
+        If ImageType = FloppyImageType.PSIImage OrElse imageGroup <> FloppyImageGroup.AdvancedSectorImage Then
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.PSIImage)
         End If
 
-        If ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
-            ExtensionList = New List(Of String) From {".86f"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.D86FImage), ExtensionList)
-            CurrentIndex += 1
-
-            ExtensionList = New List(Of String) From {".hfe"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.HFEImage), ExtensionList)
-            CurrentIndex += 1
-
-            ExtensionList = New List(Of String) From {".mfm"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.MFMImage), ExtensionList)
-            CurrentIndex += 1
-
-            ExtensionList = New List(Of String) From {".pri"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.PRIImage), ExtensionList)
-            CurrentIndex += 1
-
-            ExtensionList = New List(Of String) From {".tc"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.TranscopyImage), ExtensionList)
-            CurrentIndex += 1
+        If ImageType = FloppyImageType.TD0Image Then
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.TD0Image)
         End If
 
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
-        For Each Item As Integer In Items
-            Extension = FloppyDiskFormatGetParams(Item).FileExtension
+        If imageGroup <> FloppyImageGroup.AdvancedSectorImage Then
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.D86FImage)
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.HFEImage)
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.MFMImage)
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.PRIImage)
+            AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, FloppyImageType.TranscopyImage)
+        End If
+
+
+        For Each Item As FloppyDiskFormat In System.Enum.GetValues(GetType(FloppyDiskFormat))
+            Dim Extension = FloppyDiskFormatGetParams(Item).FileExtension
             If Extension <> "" Then
                 Dim Description = FloppyDiskFormatGetFileFilterDescription(Item)
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    Response.FilterIndex = CurrentIndex
-                    CurrentIndex += 1
+                    AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, Description, Extension)
                 ElseIf Item = DiskFormat Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    CurrentIndex += 1
+                    AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, Description, Extension)
                 End If
             End If
         Next
 
-        Response.Filter = FileDialogAppendFilter(Response.Filter, My.Resources.FileType_All, ".*")
-        If Response.FilterIndex = 0 Then
-            Response.FilterIndex = CurrentIndex
+        AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_All, ".*")
+
+        If FilterIndex = 0 Then
+            FilterIndex = CurrentIndex - 1
         End If
 
-        Return Response
+        Return (Filter, FilterIndex)
     End Function
 
     Public Function GetTempPath() As String
@@ -576,6 +507,7 @@ Module ImageIO
 
         Return TempPath
     End Function
+
     Public Function InitTempPath() As String
         Dim TempPath = GetTempPath()
 
@@ -720,6 +652,33 @@ Module ImageIO
         Return Response
     End Function
 
+    Private Sub AppendFilterAndTrackIndex(ByRef filter As String, ByRef filterIndex As Integer, ByRef currentIndex As Integer, fileExt As String, ImageType As FloppyImageType)
+        AppendFilterAndTrackIndex(filter, filterIndex, currentIndex, fileExt, GetImageTypeName(ImageType), GetImageExtensionFromType(ImageType))
+    End Sub
+
+    Private Sub AppendFilterAndTrackIndex(ByRef filter As String, ByRef filterIndex As Integer, ByRef currentIndex As Integer, fileExt As String, description As String, ParamArray exts() As String)
+        If exts Is Nothing OrElse exts.Length = 0 Then
+            Return
+        End If
+
+        If filterIndex = 0 Then
+            For Each e In exts
+                If fileExt.Equals(e, StringComparison.OrdinalIgnoreCase) Then
+                    filterIndex = currentIndex
+                    Exit For
+                End If
+            Next
+        End If
+
+        If String.IsNullOrEmpty(filter) Then
+            filter = FileDialogGetFilter(description, exts.ToList())
+        Else
+            filter = FileDialogAppendFilter(filter, description, exts)
+        End If
+
+        currentIndex += 1
+    End Sub
+
     Private Function CheckCompatibility(FileImageType As FloppyImageType, FloppyImage As IFloppyImage, Format As FloppyDiskFormat) As Boolean
         Dim Msg As String
 
@@ -793,7 +752,18 @@ Module ImageIO
                 Return FloppyImageGroup.BasicSectorImage
         End Select
     End Function
+
     Private Function HasWeakBitsSupport(ImageType As FloppyImageType) As Boolean
         Return (ImageType = FloppyImageType.PSIImage Or ImageType = FloppyImageType.PRIImage Or ImageType = FloppyImageType.D86FImage)
+    End Function
+
+    Private Function TryLoadTypedImage(ImgType As FloppyImageType, Data As Byte()) As IFloppyImage
+        Dim Loader As Func(Of Byte(), IFloppyImage) = Nothing
+
+        If ImageLoaders.TryGetValue(ImgType, Loader) Then
+            Return Loader(Data)
+        End If
+
+        Return Nothing
     End Function
 End Module

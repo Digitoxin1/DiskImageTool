@@ -1,7 +1,5 @@
 ﻿Imports System.Globalization
 Imports System.Runtime.InteropServices
-Imports System.Text
-Imports DiskImageTool.DiskImage
 
 Module Utility
     Public Function AlignUp(value As UInteger, alignment As UInteger) As UInteger
@@ -71,16 +69,21 @@ Module Utility
         Return NewTable
     End Function
 
-    Public Function FileDialogAppendFilter(FileFilter As String, Description As String, Extension As String) As String
-        Return FileFilter & If(FileFilter = "", "", "|") & FileDialogGetFilter(Description, Extension)
-    End Function
-
     Public Function FileDialogAppendFilter(FileFilter As String, Description As String, ExtensionList As List(Of String)) As String
         Return FileFilter & If(FileFilter = "", "", "|") & FileDialogGetFilter(Description, ExtensionList)
     End Function
 
+    Public Function FileDialogAppendFilter(FileFilter As String, Description As String, ParamArray Extensions() As String) As String
+        If Extensions Is Nothing OrElse Extensions.Length = 0 Then
+            Return FileFilter
+        End If
+
+
+        Return FileDialogAppendFilter(FileFilter, Description, Extensions.ToList())
+    End Function
+
     Public Function FileDialogGetFilter(Description As String, Extension As String) As String
-        Return Description & " (*" & Extension & ")|" & "*" & Extension
+        Return FileDialogGetFilter(Description, New List(Of String) From {Extension})
     End Function
 
     Public Function FileDialogGetFilter(Description As String, ExtensionList As List(Of String)) As String
@@ -172,54 +175,6 @@ Module Utility
         End If
 
         Return Result
-    End Function
-
-    Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
-        Dim FileExt = IO.Path.GetExtension(FileName).ToLower
-
-        If FileExt = ".tc" Then
-            Return FloppyImageType.TranscopyImage
-        ElseIf FileExt = ".psi" Then
-            Return FloppyImageType.PSIImage
-        ElseIf FileExt = ".pri" Then
-            Return FloppyImageType.PRIImage
-        ElseIf FileExt = ".mfm" Then
-            Return FloppyImageType.MFMImage
-        ElseIf FileExt = ".hfe" Then
-            Return FloppyImageType.HFEImage
-        ElseIf FileExt = ".86f" Then
-            Return FloppyImageType.D86FImage
-        ElseIf FileExt = ".imd" Then
-            Return FloppyImageType.IMDImage
-        ElseIf FileExt = ".td0" Then
-            Return FloppyImageType.TD0Image
-        Else
-            Return FloppyImageType.BasicSectorImage
-        End If
-    End Function
-
-    Public Function GetImageTypeFromHeader(Data() As Byte) As FloppyImageType
-        If Encoding.UTF8.GetString(Data, 0, 8) = "HXCPICFE" Then
-            Return FloppyImageType.HFEImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
-            Return FloppyImageType.HFEImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
-            Return FloppyImageType.D86FImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
-            Return FloppyImageType.MFMImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
-            Return FloppyImageType.PSIImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PRI " Then
-            Return FloppyImageType.PRIImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
-            Return FloppyImageType.IMDImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 2).ToUpper = "TD" Then
-            Return FloppyImageType.TD0Image
-        ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
-            Return FloppyImageType.TranscopyImage
-        Else
-            Return FloppyImageType.BasicSectorImage
-        End If
     End Function
 
     Public Function GetVersionString() As String
