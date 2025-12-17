@@ -129,7 +129,7 @@
                 Case FloppyImageType.IMDImage
                     Return My.Resources.FloppyImageType_IMDImage
                 Case FloppyImageType.TD0Image
-                    Return "TeleDisk Sector Image"
+                    Return My.Resources.FloppyImageType_TD0Image
                 Case Else
                     Return My.Resources.Label_Unknown
             End Select

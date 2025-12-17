@@ -2113,6 +2113,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to TeleDisk Sector Image.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_TD0Image() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_TD0Image", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Transcopy Image.
         '''</summary>
         Friend ReadOnly Property FloppyImageType_TranscopyImage() As String

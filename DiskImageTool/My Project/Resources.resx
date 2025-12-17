@@ -2148,4 +2148,7 @@ Do you wish to overwrite?</value>
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Error: Unable to detect image format.</value>
   </data>
+  <data name="FloppyImageType_TD0Image" xml:space="preserve">
+    <value>TeleDisk Sector Image</value>
+  </data>
 </root>
