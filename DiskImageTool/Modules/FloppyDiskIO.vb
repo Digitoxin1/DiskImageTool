@@ -1,5 +1,4 @@
-﻿Imports System.ComponentModel
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
     Private Const BYTES_PER_SECTOR As UShort = 512
