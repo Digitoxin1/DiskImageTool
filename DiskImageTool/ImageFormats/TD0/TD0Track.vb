@@ -37,12 +37,12 @@
         Public Sub AddSector(sec As TD0Sector)
             Sectors.Add(sec)
 
-            If FirstSectorId = -1 OrElse sec.SectorId < FirstSectorId Then
-                FirstSectorId = sec.SectorId
+            If FirstSectorId = -1 OrElse sec.Header.SectorId < FirstSectorId Then
+                FirstSectorId = sec.Header.SectorId
             End If
 
-            If sec.SectorId > LastSectorId Then
-                LastSectorId = sec.SectorId
+            If sec.Header.SectorId > LastSectorId Then
+                LastSectorId = sec.Header.SectorId
             End If
         End Sub
 

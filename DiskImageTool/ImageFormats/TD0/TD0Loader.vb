@@ -25,7 +25,7 @@ Namespace ImageFormats.TD0
 
             If td0.Tracks IsNot Nothing AndAlso td0.Tracks.Count > 0 Then
                 For Each s In td0.Tracks(0).Sectors
-                    If s IsNot Nothing AndAlso Not s.Unavailable AndAlso Not s.ChecksumError AndAlso s.Data IsNot Nothing Then
+                    If s IsNot Nothing AndAlso Not s.Header.NoData AndAlso Not s.Header.HasCrcError AndAlso s.Data IsNot Nothing Then
                         total += CUInt(s.Data.Length)
                     End If
                 Next

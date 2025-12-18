@@ -59,7 +59,7 @@ Namespace ImageFormats.TD0
             For Each Track In _Image.Tracks
                 TrackData = SetTrack(Track.Cylinder, Track.Head)
                 If Track.Sectors.Count > 0 AndAlso Track.Sectors(0) IsNot Nothing Then
-                    TrackData.SectorSize = CUInt(Math.Max(0, Track.Sectors(0).GetSizeBytes()))
+                    TrackData.SectorSize = CUInt(Math.Max(0, Track.Sectors(0).Header.GetSectorSizeBytes))
                 End If
                 TrackData.Encoding = GetEncoding(Track.IsFM)
                 TrackData.FirstSectorId = Track.FirstSectorId
@@ -77,7 +77,7 @@ Namespace ImageFormats.TD0
         Private Function CalculateHash(hashAlg As HashAlgorithm) As String
             For Each trk In _Image.Tracks
                 For Each s In trk.Sectors
-                    If s IsNot Nothing AndAlso Not s.Unavailable AndAlso Not s.ChecksumError AndAlso s.Data IsNot Nothing Then
+                    If s IsNot Nothing AndAlso Not s.Header.NoData AndAlso Not s.Header.HasCrcError AndAlso s.Data IsNot Nothing Then
                         hashAlg.TransformBlock(s.Data, 0, s.Data.Length, Nothing, 0)
                     End If
                 Next
@@ -95,15 +95,15 @@ Namespace ImageFormats.TD0
                 Return False
             End If
 
-            If Sector.SectorId < 1 Or Sector.SectorId > MaxSectors Then
+            If Sector.Header.SectorId < 1 Or Sector.Header.SectorId > MaxSectors Then
                 Return False
             End If
 
-            If Sector.Unavailable Or Sector.Deleted Or Sector.ChecksumError Then
+            If Sector.Header.NoData Or Sector.Header.IsDeletedDataMark Or Sector.Header.HasCrcError Or Sector.Data Is Nothing Then
                 Return False
             End If
 
-            If Sector.Cylinder <> Track.Cylinder Or Sector.Head <> Track.Head Then
+            If Sector.Header.Cylinder <> Track.Cylinder Or Sector.Header.Head <> Track.Head Then
                 Return False
             End If
 
@@ -119,17 +119,17 @@ Namespace ImageFormats.TD0
             For Each Sector In Track.Sectors
                 IsStandard = IsStandardSector(Track, Sector, SECTOR_COUNT)
                 If IsStandard Then
-                    BitstreamSector = GetSector(Track.Cylinder, Track.Head, Sector.SectorId)
+                    BitstreamSector = GetSector(Track.Cylinder, Track.Head, Sector.Header.SectorId)
                     If BitstreamSector Is Nothing Then
                         SectorSize = Sector.Data.Length
                         If SectorSize > 0 And SectorSize < 512 Then
                             Buffer = New Byte(511) {}
                             Array.Copy(Sector.Data, 0, Buffer, 0, SectorSize)
                             BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
-                            SetSector(Track.Cylinder, Track.Head, Sector.SectorId, BitstreamSector)
+                            SetSector(Track.Cylinder, Track.Head, Sector.Header.SectorId, BitstreamSector)
                         ElseIf SectorSize = 512 Then
                             BitstreamSector = New BitstreamSector(Sector.Data, Sector.Data.Length, IsStandard)
-                            SetSector(Track.Cylinder, Track.Head, Sector.SectorId, BitstreamSector)
+                            SetSector(Track.Cylinder, Track.Head, Sector.Header.SectorId, BitstreamSector)
                         End If
                     Else
                         BitstreamSector.IsStandard = False
@@ -148,7 +148,7 @@ Namespace ImageFormats.TD0
                 IsStandard = IsStandardSector(Track, Sector, 4)
                 If IsStandard And Sector.Data.Length = 1024 Then
                     For i = 0 To 1
-                        NewSectorId = (Sector.SectorId - 1) * 2 + 1 + i
+                        NewSectorId = (Sector.Header.SectorId - 1) * 2 + 1 + i
                         BitstreamSector = GetSector(Track.Cylinder, Track.Head, NewSectorId)
                         If BitstreamSector Is Nothing Then
                             Buffer = New Byte(511) {}

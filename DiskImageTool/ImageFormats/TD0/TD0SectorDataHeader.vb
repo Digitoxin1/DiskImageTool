@@ -1,5 +1,5 @@
 ﻿Namespace ImageFormats.TD0
-    Public Structure TD0SectorDataHeader
+    Public Class TD0SectorDataHeader
         Public Const LENGTH As Integer = 3
 
         Private ReadOnly _header As Byte()
@@ -8,6 +8,12 @@
             BlockSize = 0
             EncodingMethod = 2
         End Enum
+
+        Public Sub New(BlockSize As Integer, EncodingMethod As TD0EncodingMethod)
+            _header = New Byte(LENGTH - 1) {}
+            Me.BlockSize = BlockSize
+            Me.EncodingMethod = EncodingMethod
+        End Sub
 
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(LENGTH - 1) {}
@@ -22,10 +28,13 @@
             Array.Copy(imagebuf, offset, _header, 0, LENGTH)
         End Sub
 
-        Public ReadOnly Property BlockSize As Integer
+        Public Property BlockSize As Integer
             Get
                 Return ReadUInt16LE(_header, Offset.BlockSize)
             End Get
+            Set(value As Integer)
+                WriteUInt16LE(_header, Offset.BlockSize, value)
+            End Set
         End Property
 
         Public Property EncodingMethod As TD0EncodingMethod
@@ -42,5 +51,5 @@
             Array.Copy(_header, 0, b, 0, LENGTH)
             Return b
         End Function
-    End Structure
+    End Class
 End Namespace

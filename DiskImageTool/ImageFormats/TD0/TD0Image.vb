@@ -42,6 +42,7 @@ Namespace ImageFormats.TD0
                 DeleteFileIfExists(FilePath)
 
                 _Header.IsCompressed = False
+                _Header.DosAllocationFlag = 0
                 _Header.RefreshStoredCrc16()
 
                 Using fs As New IO.FileStream(FilePath, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
@@ -51,42 +52,50 @@ Namespace ImageFormats.TD0
                         fs.Write(_Comment.GetBytes(), 0, _Comment.TotalLength)
                     End If
 
+                    Dim TrackHeaderBytes = New Byte() {&HFF, 0, 0, 0}
+
                     For Each Track In _Tracks
-                        fs.Write(Track.GetHeaderBytes(), 0, TD0TrackHeader.LENGTH)
+                        TrackHeaderBytes = Track.GetHeaderBytes
+                        fs.Write(TrackHeaderBytes, 0, TD0TrackHeader.LENGTH)
 
                         For Each Sector In Track.Sectors
-                            Dim HasData = (Sector.HasDataBlock AndAlso Sector.GetSizeBytes > 0)
+                            Dim HasData = (Not Sector.Header.NoData AndAlso Sector.Header.GetSectorSizeBytes > 0)
 
                             If HasData Then
+                                If Sector.Header.DosSkipped Then
+                                    Sector.Header.DosSkipped = False
+                                End If
                                 Sector.RefreshStoredCrc16()
                             End If
 
-                            fs.Write(Sector.GetHeaderBytes, 0, TD0SectorHeader.LENGTH)
+                            fs.Write(Sector.Header.GetBytes, 0, TD0SectorHeader.LENGTH)
 
                             If HasData Then
                                 Dim DataOut() As Byte
 
                                 If BytePatternCanEncode(Sector.Data) Then
-                                    Sector.EncodingMethod = TD0EncodingMethod.Repeat2BytePattern
+                                    Sector.DataHeader.EncodingMethod = TD0EncodingMethod.Repeat2BytePattern
                                     DataOut = BytePatternEncode(Sector.Data)
                                 Else
                                     Dim r = RleEncode(Sector.Data)
                                     Dim UseRle As Boolean = r.Result AndAlso r.Data.Length <= (Sector.Data.Length - 2)
 
                                     If UseRle Then
-                                        Sector.EncodingMethod = TD0EncodingMethod.Rle
+                                        Sector.DataHeader.EncodingMethod = TD0EncodingMethod.Rle
                                         DataOut = r.Data
                                     Else
-                                        Sector.EncodingMethod = TD0EncodingMethod.Raw
+                                        Sector.DataHeader.EncodingMethod = TD0EncodingMethod.Raw
                                         DataOut = Sector.Data
                                     End If
                                 End If
 
-                                fs.Write(Sector.GetDataHeaderBytes(), 0, TD0SectorDataHeader.LENGTH)
+                                fs.Write(Sector.DataHeader.GetBytes(), 0, TD0SectorDataHeader.LENGTH)
                                 fs.Write(DataOut, 0, DataOut.Length)
                             End If
                         Next
                     Next
+                    TrackHeaderBytes(0) = &HFF ' End of tracks  
+                    fs.Write(TrackHeaderBytes, 0, TD0TrackHeader.LENGTH)
                 End Using
             Catch ex As Exception
                 DebugException(ex)
@@ -116,7 +125,10 @@ Namespace ImageFormats.TD0
                     Debug.Print("TD0: Header CRC invalid")
                 End If
 
-                Debug.Print($"TD0: Version {_Header.VersionMajor}.{_Header.VersionMinor}, Compressed={_Header.IsCompressed}, SidesField={_Header.SidesField}, SingleDensityGlobal={_Header.IsSingleDensityGlobal}, CommentBlock={_Header.HasCommentBlock}")
+                Debug.Print($"TD0: Version {_Header.VersionMajor}.{_Header.VersionMinor}, Compressed={_Header.IsCompressed}" &
+                            $", Sides={_Header.Sides}, IsSingleDensity={_Header.IsSingleDensity}, HasCommentBlock={_Header.HasCommentBlock}" &
+                            $", Stepping={_Header.Stepping}, DataRate={_Header.DataRate}, DriveType={_Header.DriveType}" &
+                            $", DosAllocFlag={_Header.DosAllocationFlag}, Sequence={_Header.Sequence}, CheckSequence={_Header.CheckSequence}")
 
                 Dim imageLen As Integer = fileBytes.Length - TD0Header.LENGTH
 
@@ -185,6 +197,8 @@ Namespace ImageFormats.TD0
 
                 Dim TrackHeader = New TD0TrackHeader(imagebuf, ofs)
 
+                'Debug.Print($"TD0: Track Header: Sector Count {TrackHeader.SectorCount}, Cylinder {TrackHeader.PhysicalCylinder}, HeadAndFlags {TrackHeader.HeadAndFlags}, CrcLow {TrackHeader.StoredCrcLow}")
+
                 If Not TrackHeader.CrcValid Then
                     Debug.Print($"TD0: Track header CRC invalid: Cylinder {TrackHeader.PhysicalCylinder}, Head {TrackHeader.PhysicalHead}")
                 End If
@@ -199,7 +213,7 @@ Namespace ImageFormats.TD0
                     Exit While
                 End If
 
-                Dim trk As New TD0Track(TrackHeader, _Header.IsSingleDensityGlobal)
+                Dim trk As New TD0Track(TrackHeader, _Header.IsSingleDensity)
 
                 For i = 0 To TrackHeader.SectorCount - 1
                     If ofs + TD0SectorHeader.LENGTH > imagebuf.Length Then
@@ -207,17 +221,21 @@ Namespace ImageFormats.TD0
                     End If
 
                     Dim SectorHeader = New TD0SectorHeader(imagebuf, ofs)
+
+                    'Debug.Print($"TD0: Sector Header: Cylinder {SectorHeader.Cylinder}, Head {SectorHeader.Head}, SectorId {SectorHeader.SectorId}" &
+                    '$", SizeCode {SectorHeader.SizeCode}, Flags {SectorHeader.Flags}")
+
                     ofs += TD0SectorHeader.LENGTH
 
                     Dim sec As New TD0Sector(SectorHeader)
 
-                    Dim size As Integer = sec.GetSizeBytes()
+                    Dim size As Integer = sec.Header.GetSectorSizeBytes
                     If size <= 0 Then
                         trk.AddSector(sec)
                         Continue For
                     End If
 
-                    If Not SectorHeader.HasDataBlock Then
+                    If SectorHeader.IsDosSkipped OrElse SectorHeader.NoData Then
                         Dim FillData = New Byte(size - 1) {}
                         Dim fill As Byte = If(SectorHeader.IsDosSkipped, CByte(&HF6), CByte(&H0))
                         For b = 0 To FillData.Length - 1
@@ -233,6 +251,9 @@ Namespace ImageFormats.TD0
                     End If
 
                     Dim SectorDataHeader = New TD0SectorDataHeader(imagebuf, ofs)
+
+                    'Debug.Print($"TD0: Sector Data Header: EncodingMethod {SectorDataHeader.EncodingMethod}, BlockSize {SectorDataHeader.BlockSize}")
+
                     ofs += TD0SectorDataHeader.LENGTH
 
                     If SectorDataHeader.BlockSize <= 0 Then
@@ -277,7 +298,7 @@ Namespace ImageFormats.TD0
                     sec.SetData(SectorDataHeader, Data)
 
                     If Not sec.CrcValid Then
-                        Debug.Print($"TD0: Sector header CRC invalid: Cylinder {sec.Cylinder}, Head {sec.Head}, Sector Id {sec.SectorId}")
+                        Debug.Print($"TD0: Sector header CRC invalid: Cylinder {sec.Header.Cylinder}, Head {sec.Header.Head}, Sector Id {sec.Header.SectorId}")
                     End If
 
                     trk.AddSector(sec)
@@ -295,7 +316,7 @@ Namespace ImageFormats.TD0
             End While
 
             TrackCount = _TrackCount
-            SideCount = If(_Header.SidesField = 1, CByte(1), CByte(Math.Max(1, _SideCount)))
+            SideCount = If(_Header.Sides = 1, CByte(1), CByte(Math.Max(1, _SideCount)))
 
             Return _Tracks.Count > 0
         End Function

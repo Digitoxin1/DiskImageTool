@@ -1,6 +1,6 @@
 ﻿Namespace ImageFormats.TD0
 
-    Public Structure TD0Header
+    Public Class TD0Header
         Public Const LENGTH As Integer = 12
         Private Const CHECKSUM_LENGTH As Integer = 10
 
@@ -16,9 +16,15 @@
             DriveType = 6
             Stepping = 7
             DosAllocFlag = 8
-            SidesField = 9
+            Sides = 9
             Crc16 = 10
         End Enum
+
+        Public Sub New()
+            _header = New Byte(LENGTH - 1) {}
+            ' Set default signature
+            SignatureText = "TD"
+        End Sub
 
         Public Sub New(fileBytes As Byte())
             _header = New Byte(LENGTH - 1) {}
@@ -29,42 +35,57 @@
             Array.Copy(fileBytes, 0, _header, 0, LENGTH)
         End Sub
 
-        Public ReadOnly Property CheckSequence As Byte
+        Public Property CheckSequence As Byte
             Get
                 Return _header(Offset.CheckSequence)
             End Get
+            Set(value As Byte)
+                _header(Offset.CheckSequence) = value
+            End Set
         End Property
 
-        Public ReadOnly Property DataRate As Byte
+        Public Property DataRate As TD0DataRate
             Get
-                Return _header(Offset.DataRate)
+                Return CType(CByte(_header(Offset.DataRate) And &H3), TD0DataRate)
             End Get
+            Set(value As TD0DataRate)
+                Dim b As Byte = _header(Offset.DataRate)
+
+                b = CByte((b And Not &H3) Or (CByte(value) And &H3))
+
+                _header(Offset.DataRate) = b
+            End Set
         End Property
 
-        Public ReadOnly Property DataRateCode As Integer
-            ' 0=250,1=300,2=500 (lower 2 bits)
-            Get
-                Return CInt(DataRate And &H3)
-            End Get
-        End Property
-
-        Public ReadOnly Property DosAllocationFlag As Byte
+        Public Property DosAllocationFlag As Byte
             Get
                 Return _header(Offset.DosAllocFlag)
             End Get
+            Set(value As Byte)
+                _header(Offset.DosAllocFlag) = value
+            End Set
         End Property
 
-        Public ReadOnly Property DriveType As Byte
+        Public Property DriveType As TD0DriveType
             Get
-                Return _header(Offset.DriveType)
+                Return CType(_header(Offset.DriveType), TD0DriveType)
             End Get
+            Set(value As TD0DriveType)
+                _header(Offset.DriveType) = CByte(value)
+            End Set
         End Property
 
-        Public ReadOnly Property HasCommentBlock As Boolean
-            ' bit7 of stepping
+        Public Property HasCommentBlock As Boolean
             Get
-                Return (Stepping And &H80) <> 0
+                Return (_header(Offset.Stepping) And &H80) <> 0
             End Get
+            Set(value As Boolean)
+                Dim b As Byte = _header(Offset.Stepping)
+
+                b = If(value, CByte(b Or &H80), CByte(b And Not &H80))
+
+                _header(Offset.Stepping) = b
+            End Set
         End Property
 
         Public Property IsCompressed As Boolean
@@ -77,11 +98,18 @@
             End Set
         End Property
 
-        Public ReadOnly Property IsSingleDensityGlobal As Boolean
+        Public Property IsSingleDensity As Boolean
             ' bit7 (old/legacy, sometimes unused)
             Get
-                Return (DataRate And &H80) <> 0
+                Return (_header(Offset.DataRate) And &H80) <> 0
             End Get
+            Set(value As Boolean)
+                Dim b As Byte = _header(Offset.DataRate)
+
+                b = If(value, CByte(b Or &H80), CByte(b And Not &H80))
+
+                _header(Offset.DataRate) = b
+            End Set
         End Property
 
         Public ReadOnly Property IsValidSignature As Boolean
@@ -91,17 +119,23 @@
             End Get
         End Property
 
-        Public ReadOnly Property Sequence As Byte
+        Public Property Sequence As Byte
             Get
                 Return _header(Offset.Sequence)
             End Get
+            Set(value As Byte)
+                _header(Offset.Sequence) = value
+            End Set
         End Property
 
-        Public ReadOnly Property SidesField As Byte
+        Public Property Sides As Byte
             ' 1=single, else=double (per notes)
             Get
-                Return _header(Offset.SidesField)
+                Return _header(Offset.Sides)
             End Get
+            Set(value As Byte)
+                _header(Offset.Sides) = value
+            End Set
         End Property
 
         Public ReadOnly Property Signature0 As Byte
@@ -129,10 +163,18 @@
                 _header(Offset.Signature1) = CByte(AscW(value(1)))
             End Set
         End Property
-        Public ReadOnly Property Stepping As Byte
+
+        Public Property Stepping As TD0Stepping
             Get
-                Return _header(Offset.Stepping)
+                Return CType(CByte(_header(Offset.Stepping) And &H3), TD0Stepping)
             End Get
+            Set(value As TD0Stepping)
+                Dim b As Byte = _header(Offset.Stepping)
+
+                b = CByte((b And Not &H3) Or (CByte(value) And &H3))
+
+                _header(Offset.Stepping) = b
+            End Set
         End Property
 
         Public ReadOnly Property StoredCrc16 As UShort
@@ -141,23 +183,43 @@
             End Get
         End Property
 
-        Public ReadOnly Property VersionMajor As Integer
+        Public Property VersionMajor As Integer
             Get
                 Return (VersionRaw \ 10) Mod 10
             End Get
+            Set(value As Integer)
+                If value < 0 OrElse value > 9 Then
+                    Throw New ArgumentOutOfRangeException(NameOf(value))
+                End If
+
+                Dim minor As Integer = VersionMinor
+                VersionRaw = (value * 10) + minor
+            End Set
         End Property
 
-        Public ReadOnly Property VersionMinor As Integer
+        Public Property VersionMinor As Integer
             Get
                 Return VersionRaw Mod 10
             End Get
+            Set(value As Integer)
+                If value < 0 OrElse value > 9 Then
+                    Throw New ArgumentOutOfRangeException(NameOf(value))
+                End If
+
+                Dim major As Integer = VersionMajor
+                VersionRaw = (major * 10) + value
+            End Set
         End Property
 
-        Public ReadOnly Property VersionRaw As Byte
+        Public Property VersionRaw As Byte
             Get
                 Return _header(Offset.VersionRaw)
             End Get
+            Set(value As Byte)
+                _header(Offset.VersionRaw) = value
+            End Set
         End Property
+
         Public ReadOnly Property VersionString As String
             Get
                 Return $"{VersionMajor}.{VersionMinor}"
@@ -181,6 +243,6 @@
         Public Sub RefreshStoredCrc16()
             WriteUInt16LE(_header, Offset.Crc16, ComputedCrc16())
         End Sub
-    End Structure
+    End Class
 
 End Namespace

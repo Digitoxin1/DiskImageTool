@@ -16,6 +16,28 @@
         Rle = 2
     End Enum
 
+    Public Enum TD0DataRate As Byte
+        Rate250Kbps = 0
+        Rate300Kbps = 1
+        Rate500Kbps = 2
+    End Enum
+
+    Public Enum TD0DriveType As Byte
+        Drive5_25_96TPI = 0
+        Drive360K = 1
+        Drive1200K = 2
+        Drive720K = 3
+        Drive1440K = 4
+        Drive8_Inch = 5
+        Drive3_5_Unknown = 6
+    End Enum
+
+    Public Enum TD0Stepping As Byte
+        SteppingSingle = 0
+        SteppingDouble = 1
+        SteppingEvenOnly = 2
+    End Enum
+
     Friend Module TD0Helpers
         Friend Const TD0_MAX_BUFSZ As Integer = 1024 * 1024 * 4 ' 4 MiB
         Friend Function ReadUInt16LE(buf As Byte(), offset As Integer) As Integer
@@ -31,5 +53,13 @@
             buf(offset) = CByte(value And &HFF)
             buf(offset + 1) = CByte((value >> 8) And &HFF)
         End Sub
+
+        Friend Function SetFlagByte(original As Byte, flag As Byte, enabled As Boolean) As Byte
+            If enabled Then
+                Return CByte(original Or flag)
+            Else
+                Return CByte(original And Not flag)
+            End If
+        End Function
     End Module
 End Namespace

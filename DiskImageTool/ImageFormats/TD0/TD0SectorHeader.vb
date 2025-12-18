@@ -1,8 +1,12 @@
 ﻿Namespace ImageFormats.TD0
-    Public Structure TD0SectorHeader
+    Public Class TD0SectorHeader
         Public Const LENGTH As Integer = 6
 
         Private ReadOnly _header As Byte()
+
+        Private Enum HeadBits As Byte
+            HeadMask = &H1
+        End Enum
 
         Private Enum Offset As Integer
             Cylinder = 0
@@ -13,9 +17,9 @@
             CrcLow = 5
         End Enum
 
-        Private Enum HeadBits As Byte
-            HeadMask = &H1
-        End Enum
+        Public Sub New()
+            _header = New Byte(LENGTH - 1) {}
+        End Sub
 
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(LENGTH - 1) {}
@@ -28,10 +32,31 @@
             Array.Copy(imagebuf, offset, _header, 0, LENGTH)
         End Sub
 
-        Public ReadOnly Property Cylinder As Byte
+        Public Property Cylinder As Byte
             Get
                 Return _header(Offset.Cylinder)
             End Get
+            Set(value As Byte)
+                _header(Offset.Cylinder) = value
+            End Set
+        End Property
+
+        Public Property DataNoId As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.DataNoId) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.DataNoId), value)
+            End Set
+        End Property
+
+        Public Property DosSkipped As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.DosSkipped) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.DosSkipped), value)
+            End Set
         End Property
 
         Public ReadOnly Property Flags As TD0SectorFlags
@@ -40,81 +65,90 @@
             End Get
         End Property
 
-        Public ReadOnly Property HasCrcError As Boolean
+        Public Property HasCrcError As Boolean
             Get
                 Return (Flags And TD0SectorFlags.CrcError) <> 0
             End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.CrcError), value)
+            End Set
         End Property
-
-        Public ReadOnly Property HasDataBlock As Boolean
-            Get
-                Return (Flags And (TD0SectorFlags.DosSkipped Or TD0SectorFlags.NoData)) = 0
-            End Get
-        End Property
-
-        Public ReadOnly Property HasDataButNoId As Boolean
-            Get
-                Return (Flags And TD0SectorFlags.DataNoId) <> 0
-            End Get
-        End Property
-
-        Public ReadOnly Property HasIdButNoData As Boolean
-            Get
-                Return (Flags And TD0SectorFlags.NoData) <> 0
-            End Get
-        End Property
-
         Public ReadOnly Property Head As Byte
             Get
                 Return CByte(HeadRaw And HeadBits.HeadMask)
             End Get
         End Property
 
-        Public ReadOnly Property HeadRaw As Byte
+        Public Property HeadRaw As Byte
             Get
                 Return _header(Offset.HeadRaw)
             End Get
-        End Property
-        Public ReadOnly Property IsDeletedDataMark As Boolean
-            Get
-                Return (Flags And TD0SectorFlags.DeletedData) <> 0
-            End Get
-        End Property
-
-        Public ReadOnly Property IsDosSkipped As Boolean
-            Get
-                Return (Flags And TD0SectorFlags.DosSkipped) <> 0
-            End Get
-        End Property
-
-        Public ReadOnly Property IsDuplicate As Boolean
-            Get
-                Return (Flags And TD0SectorFlags.Duplicated) <> 0
-            End Get
-        End Property
-
-        Public ReadOnly Property SectorId As Byte
-            Get
-                Return _header(Offset.SectorId)
-            End Get
-        End Property
-
-        Public ReadOnly Property SizeCode As Byte
-            Get
-                Return _header(Offset.SizeCode)
-            End Get
-        End Property
-
-        Public Property StoredCrcLow As Byte
-            Get
-                Return _header(Offset.CrcLow)
-            End Get
             Set(value As Byte)
-                _header(Offset.CrcLow) = value
+                _header(Offset.HeadRaw) = value
             End Set
         End Property
 
-        Public Function ComputedCrc16(data As Byte()) As Byte
+        Public Property IsDeletedDataMark As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.DeletedData) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.DeletedData), value)
+            End Set
+        End Property
+
+        Public Property IsDosSkipped As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.DosSkipped) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.DosSkipped), value)
+            End Set
+        End Property
+
+        Public Property IsDuplicated As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.Duplicated) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.Duplicated), value)
+            End Set
+        End Property
+
+        Public Property NoData As Boolean
+            Get
+                Return (Flags And TD0SectorFlags.NoData) <> 0
+            End Get
+            Set(value As Boolean)
+                _header(Offset.Flags) = SetFlagByte(_header(Offset.Flags), CByte(TD0SectorFlags.NoData), value)
+            End Set
+        End Property
+
+        Public Property SectorId As Byte
+            Get
+                Return _header(Offset.SectorId)
+            End Get
+            Set(value As Byte)
+                _header(Offset.SectorId) = value
+            End Set
+        End Property
+
+        Public Property SizeCode As Byte
+            Get
+                Return _header(Offset.SizeCode)
+            End Get
+            Set(value As Byte)
+                _header(Offset.SizeCode) = value
+            End Set
+        End Property
+
+        Public ReadOnly Property StoredCrcLow As Byte
+            Get
+                Return _header(Offset.CrcLow)
+            End Get
+        End Property
+
+        Public Function ComputedCrcLow(data As Byte()) As Byte
             If data Is Nothing Then
                 Return 0
             End If
@@ -125,12 +159,8 @@
         End Function
 
         Public Function CrcValid(data As Byte()) As Boolean
-            Return StoredCrcLow = ComputedCrc16(data)
+            Return StoredCrcLow = ComputedCrcLow(data)
         End Function
-
-        Public Sub RefreshStoredCrc16(data As Byte())
-            StoredCrcLow = ComputedCrc16(data)
-        End Sub
 
         Public Function GetBytes() As Byte()
             Dim b(LENGTH - 1) As Byte
@@ -147,5 +177,33 @@
 
             Return 128 << sc
         End Function
-    End Structure
+
+        Public Sub RefreshStoredCrcLow(data As Byte())
+            _header(Offset.CrcLow) = ComputedCrcLow(data)
+        End Sub
+
+        Public Function TrySetSectorSizeBytes(sizeBytes As Integer) As Boolean
+            If sizeBytes < 128 Then
+                Return False
+            End If
+
+            If (sizeBytes And (sizeBytes - 1)) <> 0 Then
+                Return False ' not power of two
+            End If
+
+            If sizeBytes Mod 128 <> 0 Then
+                Return False
+            End If
+
+            Dim sc As Integer = CInt(Math.Log(sizeBytes \ 128, 2))
+
+            If sc < 0 OrElse sc > 7 Then
+                Return False
+            End If
+
+            SizeCode = sc
+
+            Return True
+        End Function
+    End Class
 End Namespace

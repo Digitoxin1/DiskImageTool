@@ -2,23 +2,11 @@
     Public Class TD0Sector
         Private ReadOnly _header As TD0SectorHeader
         Private _Data As Byte() = Nothing
-        Private _DataHeader As TD0SectorDataHeader
+        Private _DataHeader As TD0SectorDataHeader = Nothing
 
         Public Sub New(Header As TD0SectorHeader)
             _header = Header
         End Sub
-
-        Public ReadOnly Property ChecksumError As Boolean
-            Get
-                Return _header.HasCrcError
-            End Get
-        End Property
-
-        Public ReadOnly Property Cylinder As Byte
-            Get
-                Return _header.Cylinder
-            End Get
-        End Property
 
         Public ReadOnly Property Data As Byte()
             Get
@@ -26,54 +14,15 @@
             End Get
         End Property
 
-        Public ReadOnly Property Deleted As Boolean
+        Public ReadOnly Property DataHeader As TD0SectorDataHeader
             Get
-                Return _header.IsDeletedDataMark
+                Return _DataHeader
             End Get
         End Property
 
-        Public Property EncodingMethod As TD0EncodingMethod
+        Public ReadOnly Property Header As TD0SectorHeader
             Get
-                Return _DataHeader.EncodingMethod
-            End Get
-            Set(value As TD0EncodingMethod)
-                _DataHeader.EncodingMethod = value
-            End Set
-        End Property
-
-        Public ReadOnly Property Flags As TD0SectorFlags
-            Get
-                Return _header.Flags
-            End Get
-        End Property
-
-        Public ReadOnly Property HasDataBlock As Boolean
-            Get
-                Return _header.HasDataBlock
-            End Get
-        End Property
-
-        Public ReadOnly Property Head As Byte
-            Get
-                Return _header.Head
-            End Get
-        End Property
-
-        Public ReadOnly Property SectorId As Byte
-            Get
-                Return _header.SectorId
-            End Get
-        End Property
-
-        Public ReadOnly Property SizeCode As Byte
-            Get
-                Return _header.SizeCode
-            End Get
-        End Property
-
-        Public ReadOnly Property Unavailable As Boolean
-            Get
-                Return (Not _header.HasDataBlock OrElse Data Is Nothing)
+                Return _header
             End Get
         End Property
 
@@ -81,24 +30,17 @@
             Return _header.CrcValid(_Data)
         End Function
 
-        Public Function GetDataHeaderBytes() As Byte()
-            Return _DataHeader.GetBytes()
-        End Function
-
-        Public Function GetHeaderBytes() As Byte()
-            Return _header.GetBytes()
-        End Function
-
-        Public Function GetSizeBytes() As Integer
-            Return _header.GetSectorSizeBytes
-        End Function
-
         Public Sub RefreshStoredCrc16()
-            _header.RefreshStoredCrc16(_Data)
+            _header.RefreshStoredCrcLow(_Data)
         End Sub
 
         Public Sub SetData(DataHeader As TD0SectorDataHeader, Data As Byte())
-            _DataHeader = DataHeader
+            If DataHeader Is Nothing Then
+                _DataHeader = New TD0SectorDataHeader(Data.Length, TD0EncodingMethod.Raw)
+            Else
+                _DataHeader = DataHeader
+            End If
+
             _Data = Data
         End Sub
     End Class

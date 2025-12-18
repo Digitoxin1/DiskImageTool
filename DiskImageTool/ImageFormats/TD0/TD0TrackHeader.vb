@@ -1,5 +1,5 @@
 ﻿Namespace ImageFormats.TD0
-    Public Structure TD0TrackHeader
+    Public Class TD0TrackHeader
         Public Const LENGTH As Integer = 4
         Private Const CHECKSUM_LENGTH As Integer = 3
 
@@ -17,6 +17,10 @@
             CrcLow = 3
         End Enum
 
+        Public Sub New()
+            _header = New Byte(LENGTH - 1) {}
+        End Sub
+
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(LENGTH - 1) {}
 
@@ -30,11 +34,6 @@
 
             Array.Copy(imagebuf, offset, _header, 0, LENGTH)
         End Sub
-        Public ReadOnly Property HeadAndFlags As Byte
-            Get
-                Return _header(Offset.HeadAndFlags)
-            End Get
-        End Property
 
         Public ReadOnly Property IsEndOfTracks As Boolean
             Get
@@ -42,29 +41,47 @@
             End Get
         End Property
 
-        Public ReadOnly Property IsFMTrack As Boolean
+        Public Property IsFMTrack As Boolean
             Get
-                Return (HeadAndFlags And HeadFlag.FM) <> 0
+                Return (_header(Offset.HeadAndFlags) And HeadFlag.FM) <> 0
             End Get
+            Set(value As Boolean)
+                _header(Offset.HeadAndFlags) = SetFlagByte(_header(Offset.HeadAndFlags), CByte(HeadFlag.FM), value)
+            End Set
         End Property
 
-        Public ReadOnly Property PhysicalCylinder As Byte
+        Public Property PhysicalCylinder As Byte
             Get
                 Return _header(Offset.PhysicalCylinder)
             End Get
+            Set(value As Byte)
+                _header(Offset.PhysicalCylinder) = value
+            End Set
         End Property
 
-        Public ReadOnly Property PhysicalHead As Byte
+        Public Property PhysicalHead As Byte
             Get
-                Return CByte(HeadAndFlags And HeadFlag.HeadMask)
+                Return CByte(_header(Offset.HeadAndFlags) And HeadFlag.HeadMask)
             End Get
+            Set(value As Byte)
+                Dim headBit As Byte = If(value >= 1, CByte(1), CByte(0))
+
+                Dim b As Byte = _header(Offset.HeadAndFlags)
+                b = CByte((b And Not HeadFlag.HeadMask) Or headBit)
+
+                _header(Offset.HeadAndFlags) = b
+            End Set
         End Property
 
-        Public ReadOnly Property SectorCount As Byte
+        Public Property SectorCount As Byte
             Get
                 Return _header(Offset.SectorCount)
             End Get
+            Set(value As Byte)
+                _header(Offset.SectorCount) = value
+            End Set
         End Property
+
         Public ReadOnly Property StoredCrcLow As Byte
             Get
                 Return _header(Offset.CrcLow)
@@ -93,5 +110,9 @@
 
             Return b
         End Function
-    End Structure
+
+        Public Sub RefreshStoredCrcLow()
+            _header(Offset.CrcLow) = ComputedCrcLow()
+        End Sub
+    End Class
 End Namespace
