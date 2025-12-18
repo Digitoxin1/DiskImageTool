@@ -3,9 +3,22 @@
 Namespace ImageFormats.TD0
     Public NotInheritable Class TD0Comment
         Public Const HEADER_LENGTH As Integer = 10
+        Private Const CRC_START As Integer = Offset.DataLength
+        Private Const CRC_END As Integer = Offset.Second
 
         Private ReadOnly _data As Byte()
         Private ReadOnly _header As Byte()
+
+        Private Enum Offset As Integer
+            Crc16 = 0
+            DataLength = 2
+            Year = 4
+            Month0 = 5
+            Day = 6
+            Hour = 7
+            Minute = 8
+            Second = 9
+        End Enum
 
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(HEADER_LENGTH - 1) {}
@@ -35,33 +48,44 @@ Namespace ImageFormats.TD0
             End If
         End Sub
 
+        Public Function GetBytes() As Byte()
+            Dim totalLen As Integer = TotalLength
+            Dim buf(totalLen - 1) As Byte
+            ' header
+            Array.Copy(_header, 0, buf, 0, HEADER_LENGTH)
+            ' data
+            Array.Copy(_data, 0, buf, HEADER_LENGTH, _data.Length)
+
+            Return buf
+        End Function
+
         Public ReadOnly Property DataLength As Integer
             Get
-                Return ReadUInt16LE(_header, 2)
+                Return ReadUInt16LE(_header, Offset.DataLength)
             End Get
         End Property
 
         Public ReadOnly Property Day As Integer
             Get
-                Return _header(6)
+                Return _header(Offset.Day)
             End Get
         End Property
 
         Public ReadOnly Property Hour As Integer
             Get
-                Return _header(7)
+                Return _header(Offset.Hour)
             End Get
         End Property
 
         Public ReadOnly Property Minute As Integer
             Get
-                Return _header(8)
+                Return _header(Offset.Minute)
             End Get
         End Property
 
         Public ReadOnly Property Month As Integer
             Get
-                Return _header(5) + 1
+                Return _header(Offset.Month0) + 1
             End Get
         End Property
 
@@ -73,13 +97,13 @@ Namespace ImageFormats.TD0
 
         Public ReadOnly Property Second As Integer
             Get
-                Return _header(9)
+                Return _header(Offset.Second)
             End Get
         End Property
 
         Public ReadOnly Property StoredCrc16 As UShort
             Get
-                Return ReadUInt16LE(_header, 0)
+                Return ReadUInt16LE(_header, Offset.Crc16)
             End Get
         End Property
 
@@ -102,7 +126,7 @@ Namespace ImageFormats.TD0
         Public ReadOnly Property Year As Integer
             Get
                 ' year since 1900
-                Return 1900 + _header(4)
+                Return 1900 + _header(Offset.Year)
             End Get
         End Property
 
@@ -113,8 +137,7 @@ Namespace ImageFormats.TD0
         Public Function ComputedCrc16() As UShort
             Dim crc As UShort = 0US
 
-            ' header bytes [2..9]
-            For i = 2 To 9
+            For i = CRC_START To CRC_END
                 crc = TD0Crc16.Update(crc, _header(i))
             Next
 

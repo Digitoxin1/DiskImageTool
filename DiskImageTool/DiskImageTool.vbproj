@@ -197,6 +197,7 @@
     <Compile Include="Forms\ImagePreview.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ImageFormats\TD0\TD0BytePattern.vb" />
     <Compile Include="ImageFormats\TD0\TD0Comment.vb" />
     <Compile Include="ImageFormats\TD0\TD0Crc16.vb" />
     <Compile Include="ImageFormats\TD0\TD0Enums.vb" />
@@ -206,6 +207,7 @@
     <Compile Include="ImageFormats\TD0\TD0Loader.vb" />
     <Compile Include="ImageFormats\TD0\TD0Lzhuf.vb" />
     <Compile Include="ImageFormats\TD0\TD0Lzw.vb" />
+    <Compile Include="ImageFormats\TD0\TD0Rle.vb" />
     <Compile Include="ImageFormats\TD0\TD0Sector.vb" />
     <Compile Include="ImageFormats\TD0\TD0SectorDataHeader.vb" />
     <Compile Include="ImageFormats\TD0\TD0SectorHeader.vb" />

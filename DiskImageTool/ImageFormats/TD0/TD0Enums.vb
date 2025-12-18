@@ -16,10 +16,20 @@
         Rle = 2
     End Enum
 
-    Friend Module TD0Constants
+    Friend Module TD0Helpers
         Friend Const TD0_MAX_BUFSZ As Integer = 1024 * 1024 * 4 ' 4 MiB
         Friend Function ReadUInt16LE(buf As Byte(), offset As Integer) As Integer
             Return CInt(buf(offset)) Or (CInt(buf(offset + 1)) << 8)
         End Function
+
+        Friend Sub WriteUInt16LE(buf As Byte(), offset As Integer, value As UShort)
+            buf(offset) = CByte(value And &HFFUS)
+            buf(offset + 1) = CByte((value >> 8) And &HFFUS)
+        End Sub
+
+        Friend Sub WriteUInt16LE(buf As Byte(), offset As Integer, value As Integer)
+            buf(offset) = CByte(value And &HFF)
+            buf(offset + 1) = CByte((value >> 8) And &HFF)
+        End Sub
     End Module
 End Namespace

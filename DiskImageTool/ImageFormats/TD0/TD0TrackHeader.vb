@@ -1,8 +1,21 @@
 ﻿Namespace ImageFormats.TD0
     Public Structure TD0TrackHeader
         Public Const LENGTH As Integer = 4
+        Private Const CHECKSUM_LENGTH As Integer = 3
 
         Private ReadOnly _header As Byte()
+
+        Private Enum HeadFlag As Byte
+            FM = &H80
+            HeadMask = &H1
+        End Enum
+
+        Private Enum Offset As Integer
+            SectorCount = 0
+            PhysicalCylinder = 1
+            HeadAndFlags = 2
+            CrcLow = 3
+        End Enum
 
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(LENGTH - 1) {}
@@ -19,7 +32,7 @@
         End Sub
         Public ReadOnly Property HeadAndFlags As Byte
             Get
-                Return _header(2)
+                Return _header(Offset.HeadAndFlags)
             End Get
         End Property
 
@@ -31,35 +44,35 @@
 
         Public ReadOnly Property IsFMTrack As Boolean
             Get
-                Return (HeadAndFlags And &H80) <> 0
+                Return (HeadAndFlags And HeadFlag.FM) <> 0
             End Get
         End Property
 
         Public ReadOnly Property PhysicalCylinder As Byte
             Get
-                Return _header(1)
+                Return _header(Offset.PhysicalCylinder)
             End Get
         End Property
 
         Public ReadOnly Property PhysicalHead As Byte
             Get
-                Return CByte(HeadAndFlags And 1)
+                Return CByte(HeadAndFlags And HeadFlag.HeadMask)
             End Get
         End Property
 
         Public ReadOnly Property SectorCount As Byte
             Get
-                Return _header(0)
+                Return _header(Offset.SectorCount)
             End Get
         End Property
         Public ReadOnly Property StoredCrcLow As Byte
             Get
-                Return _header(3)
+                Return _header(Offset.CrcLow)
             End Get
         End Property
 
         Public Function ComputedCrc16() As UShort
-            Return TD0Crc16.Compute(_header, 0, 3)
+            Return TD0Crc16.Compute(_header, 0, CHECKSUM_LENGTH)
         End Function
 
         Public Function ComputedCrcLow() As Byte

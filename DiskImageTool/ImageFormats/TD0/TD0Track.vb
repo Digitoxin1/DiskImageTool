@@ -1,8 +1,7 @@
 ﻿Namespace ImageFormats.TD0
     Public Class TD0Track
-        Private ReadOnly _TrackHeader As TD0TrackHeader
         Private ReadOnly _IsSingleDensityGlobal As Boolean
-
+        Private ReadOnly _TrackHeader As TD0TrackHeader
         Public Sub New(TrackHeader As TD0TrackHeader, IsSingleDensityGlobal As Boolean)
             _TrackHeader = TrackHeader
             _IsSingleDensityGlobal = IsSingleDensityGlobal
@@ -46,5 +45,9 @@
                 LastSectorId = sec.SectorId
             End If
         End Sub
+
+        Public Function GetHeaderBytes() As Byte()
+            Return _TrackHeader.GetBytes()
+        End Function
     End Class
 End Namespace

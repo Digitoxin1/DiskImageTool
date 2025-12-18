@@ -4,6 +4,11 @@
 
         Private ReadOnly _header As Byte()
 
+        Private Enum Offset As Integer
+            BlockSize = 0
+            EncodingMethod = 2
+        End Enum
+
         Public Sub New(imagebuf As Byte(), offset As Integer)
             _header = New Byte(LENGTH - 1) {}
             If imagebuf Is Nothing Then
@@ -19,14 +24,17 @@
 
         Public ReadOnly Property BlockSize As Integer
             Get
-                Return ReadUInt16LE(_header, 0)
+                Return ReadUInt16LE(_header, Offset.BlockSize)
             End Get
         End Property
 
-        Public ReadOnly Property EncodingMethod As TD0EncodingMethod
+        Public Property EncodingMethod As TD0EncodingMethod
             Get
-                Return CType(_header(2), TD0EncodingMethod)
+                Return CType(_header(Offset.EncodingMethod), TD0EncodingMethod)
             End Get
+            Set(value As TD0EncodingMethod)
+                _header(Offset.EncodingMethod) = CByte(value)
+            End Set
         End Property
 
         Public Function GetBytes() As Byte()

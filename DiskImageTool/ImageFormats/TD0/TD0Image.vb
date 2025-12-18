@@ -7,6 +7,7 @@ Namespace ImageFormats.TD0
 
         Private _Header As TD0Header
         Private _Comment As TD0Comment = Nothing
+        Private _Tracks As List(Of TD0Track)
 
         Public Sub New()
             _Header = New TD0Header(Nothing)
@@ -29,10 +30,70 @@ Namespace ImageFormats.TD0
 
         Public Overloads Property SideCount As Byte Implements IBitstreamImage.SideCount
         Public Overloads Property TrackCount As UShort Implements IBitstreamImage.TrackCount
-        Public Property Tracks As List(Of TD0Track)
+
+        Public ReadOnly Property Tracks As List(Of TD0Track)
+            Get
+                Return _Tracks
+            End Get
+        End Property
 
         Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
-            Return False ' not implemented
+            Try
+                DeleteFileIfExists(FilePath)
+
+                _Header.IsCompressed = False
+                _Header.RefreshStoredCrc16()
+
+                Using fs As New IO.FileStream(FilePath, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                    fs.Write(_Header.GetBytes(), 0, TD0Header.LENGTH)
+
+                    If _Comment IsNot Nothing Then
+                        fs.Write(_Comment.GetBytes(), 0, _Comment.TotalLength)
+                    End If
+
+                    For Each Track In _Tracks
+                        fs.Write(Track.GetHeaderBytes(), 0, TD0TrackHeader.LENGTH)
+
+                        For Each Sector In Track.Sectors
+                            Dim HasData = (Sector.HasDataBlock AndAlso Sector.GetSizeBytes > 0)
+
+                            If HasData Then
+                                Sector.RefreshStoredCrc16()
+                            End If
+
+                            fs.Write(Sector.GetHeaderBytes, 0, TD0SectorHeader.LENGTH)
+
+                            If HasData Then
+                                Dim DataOut() As Byte
+
+                                If BytePatternCanEncode(Sector.Data) Then
+                                    Sector.EncodingMethod = TD0EncodingMethod.Repeat2BytePattern
+                                    DataOut = BytePatternEncode(Sector.Data)
+                                Else
+                                    Dim r = RleEncode(Sector.Data)
+                                    Dim UseRle As Boolean = r.Result AndAlso r.Data.Length <= (Sector.Data.Length - 2)
+
+                                    If UseRle Then
+                                        Sector.EncodingMethod = TD0EncodingMethod.Rle
+                                        DataOut = r.Data
+                                    Else
+                                        Sector.EncodingMethod = TD0EncodingMethod.Raw
+                                        DataOut = Sector.Data
+                                    End If
+                                End If
+
+                                fs.Write(Sector.GetDataHeaderBytes(), 0, TD0SectorDataHeader.LENGTH)
+                                fs.Write(DataOut, 0, DataOut.Length)
+                            End If
+                        Next
+                    Next
+                End Using
+            Catch ex As Exception
+                DebugException(ex)
+                Return False
+            End Try
+
+            Return True
         End Function
 
         Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
@@ -109,7 +170,7 @@ Namespace ImageFormats.TD0
         End Function
 
         Private Function ParseImagebuf(imagebuf() As Byte, ofs As Integer) As Boolean
-            _Tracks = New List(Of TD0Track)()
+            _Tracks = New List(Of TD0Track)
             _TrackCount = 0
             _SideCount = 0
 
@@ -181,96 +242,33 @@ Namespace ImageFormats.TD0
                     Dim Data = New Byte(size - 1) {}
 
                     Select Case SectorDataHeader.EncodingMethod
-                        Case 0
+                        Case TD0EncodingMethod.Raw
                             If ofs + size > imagebuf.Length Then
                                 Return False
                             End If
                             Array.Copy(imagebuf, ofs, Data, 0, size)
                             ofs += size
 
-                        Case 1
-                            ' Encoding 1: repeated 2-byte pattern, multiple entries possible.
-                            ' Count is u16 BIG-endian and represents number of 16-bit WORDS.
+                        Case TD0EncodingMethod.Repeat2BytePattern
+                            Dim payloadBytes As Integer = SectorDataHeader.BlockSize - 1
+                            Dim r = BytePatternDecode(imagebuf, ofs, size, payloadBytes)
 
-                            Dim payloadBytes As Integer = SectorDataHeader.BlockSize - 1 ' blockSize includes the enc byte
-                            Dim endOfPayload As Integer = ofs + payloadBytes
-                            Dim pos As Integer = 0
+                            If Not r.Result OrElse r.BytesWritten <> size Then
+                                Return False
+                            End If
 
-                            While pos < size AndAlso (ofs + 4) <= endOfPayload AndAlso (ofs + 4) <= imagebuf.Length
-                                ' u16 BE
-                                Dim countWords As Integer = ReadUInt16LE(imagebuf, ofs)
-                                Dim p0 As Byte = imagebuf(ofs + 2)
-                                Dim p1 As Byte = imagebuf(ofs + 3)
-                                ofs += 4
+                            Data = r.Data
+                            ofs += r.BytesConsumed
 
-                                If countWords <= 0 Then
-                                    Exit While
-                                End If
+                        Case TD0EncodingMethod.Rle
+                            Dim r = RleDecode(imagebuf, ofs, size)
 
-                                Dim bytesToWrite As Integer = countWords * 2
-                                If bytesToWrite > (size - pos) Then
-                                    bytesToWrite = (size - pos)
-                                End If
+                            If Not r.Result OrElse r.BytesWritten <> size Then
+                                Return False
+                            End If
 
-                                Dim j As Integer = 0
-                                While j + 1 < bytesToWrite
-                                    Data(pos) = p0
-                                    Data(pos + 1) = p1
-                                    pos += 2
-                                    j += 2
-                                End While
-
-                                ' odd tail (shouldn't happen for normal sector sizes, but safe)
-                                If j < bytesToWrite Then
-                                    Data(pos) = p0
-                                    pos += 1
-                                End If
-                            End While
-
-                        Case 2
-                            ' RLE: lenCode -> blockLen = 1 << lenCode  (86Box)
-                            Dim k As Integer = 0
-                            While k < size
-                                If ofs + 2 > imagebuf.Length Then
-                                    Return False
-                                End If
-                                Dim lenCode As Integer = imagebuf(ofs)
-                                Dim rep As Integer = imagebuf(ofs + 1)
-                                ofs += 2
-
-                                If lenCode = 0 Then
-                                    If ofs + rep > imagebuf.Length Then
-                                        Return False
-                                    End If
-                                    Dim copyLen As Integer = Math.Min(rep, size - k)
-                                    Array.Copy(imagebuf, ofs, Data, k, copyLen)
-                                    ofs += rep
-                                    k += copyLen
-                                Else
-                                    Dim blockLen As Integer = (1 << lenCode)
-                                    If ofs + blockLen > imagebuf.Length Then
-                                        Return False
-                                    End If
-
-                                    Dim total As Integer = blockLen * rep
-                                    If total > (size - k) Then
-                                        total = (size - k)
-                                    End If
-
-                                    Dim pattern(blockLen - 1) As Byte
-                                    Array.Copy(imagebuf, ofs, pattern, 0, blockLen)
-                                    ofs += blockLen
-
-                                    Dim wrote As Integer = 0
-                                    While wrote < total
-                                        Dim n As Integer = Math.Min(blockLen, total - wrote)
-                                        Array.Copy(pattern, 0, Data, k + wrote, n)
-                                        wrote += n
-                                    End While
-
-                                    k += total
-                                End If
-                            End While
+                            Data = r.Data
+                            ofs += r.BytesConsumed
 
                         Case Else
                             Return False
@@ -296,11 +294,10 @@ Namespace ImageFormats.TD0
                 End If
             End While
 
-            Tracks = DirectCast(_Tracks, List(Of TD0Track))
             TrackCount = _TrackCount
             SideCount = If(_Header.SidesField = 1, CByte(1), CByte(Math.Max(1, _SideCount)))
 
-            Return Tracks.Count > 0
+            Return _Tracks.Count > 0
         End Function
     End Class
 End Namespace
