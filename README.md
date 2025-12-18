@@ -26,6 +26,7 @@ DiskImageTool suports the following image formats:
 - Basic Sector Images (.ima, .img, .vfd, .flp, .160, .180, .320, .360, .720, .120, .144, .288, .dmf, .xdf)
 - WinImage Compressed Disk Image (.imz)
 - ImageDisk Sector Image (.imd)
+- TeleDisk Sector Image (.td0)
 - PCE Sector Image (.psi)
 - PCE Bitstream Image (.pri)
 - 86Box 86F Image (.86f)
