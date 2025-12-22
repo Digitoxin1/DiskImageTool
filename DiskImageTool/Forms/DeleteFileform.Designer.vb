@@ -146,6 +146,7 @@ Partial Class DeleteFileForm
         '
         Me.LblCaption.AutoSize = True
         Me.LblCaption.Location = New System.Drawing.Point(61, 34)
+        Me.LblCaption.Margin = New System.Windows.Forms.Padding(3, 0, 16, 0)
         Me.LblCaption.Name = "LblCaption"
         Me.LblCaption.Size = New System.Drawing.Size(51, 13)
         Me.LblCaption.TabIndex = 0

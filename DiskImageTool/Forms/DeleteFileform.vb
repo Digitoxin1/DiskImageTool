@@ -37,10 +37,21 @@
     End Property
 
     Public Shared Function Display(Caption As String, Title As String, CanFill As Boolean) As DeleteFileFormResult
-        Using Form As New DeleteFileForm(Caption, Title, CanFill)
-            Form.ShowDialog()
-            Return Form.Result
-        End Using
+        If CanFill Then
+            Using Form As New DeleteFileForm(Caption, Title, CanFill)
+                Form.ShowDialog()
+                Return Form.Result
+            End Using
+        Else
+            Dim MsgBoxResult = MsgBox(Caption, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2, Title)
+            Dim Result As New DeleteFileFormResult With {
+                .Clear = False,
+                .FillChar = &H0,
+                .Cancelled = (MsgBoxResult = MsgBoxResult.No)
+            }
+
+            Return Result
+        End If
     End Function
 
     Private Sub SetResult(Cancelled As Boolean)
