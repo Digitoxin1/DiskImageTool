@@ -1928,6 +1928,10 @@ Public Class MainForm
         ChangeLogDisplay()
     End Sub
 
+    Private Sub MenuHelpDocs_Click(sender As Object, e As EventArgs) Handles MenuHelpDocs.Click
+        ProjectDocsDisplay()
+    End Sub
+
     Private Sub MenuHelpProjectPage_Click(sender As Object, e As EventArgs) Handles MenuHelpProjectPage.Click
         ProjectPageDisplay()
     End Sub
@@ -2086,6 +2090,5 @@ Public Class MainForm
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
     End Sub
-
 #End Region
 End Class

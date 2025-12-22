@@ -255,4 +255,7 @@
   <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
     <value>Generar tracklayout.txt</value>
   </data>
+  <data name="MenuHelpDocs.Text" xml:space="preserve">
+    <value>&amp;Documentación</value>
+  </data>
 </root>

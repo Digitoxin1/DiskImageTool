@@ -205,7 +205,7 @@ Public Class BootSectorForm
 
         HelpString = My.Resources.Label_ExtendedBootSignature &
             Environment.NewLine & Environment.NewLine &
-            My.Resources.HelpStrings.BootSectorForm_TypicalValues &
+            My.Resources.HelpStrings.BootSectorForm_TypicalValues & Environment.NewLine &
             My.Resources.HelpStrings.BootSectorForm_ExtendedBootSignature
         SetHelpString(HelpString, lblExtendedBootSignature, HexExtendedBootSignature)
 

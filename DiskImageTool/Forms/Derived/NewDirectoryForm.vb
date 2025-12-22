@@ -15,7 +15,7 @@ Public Class NewDirectoryForm
 
     Public ReadOnly Property NewDirectoryData As Byte()
         Get
-            Return _NewDirectoryEntry.Data
+            Return _NewDirectoryEntry?.Data
         End Get
     End Property
 

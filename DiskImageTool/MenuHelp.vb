@@ -67,4 +67,8 @@ Module MenuHelp
     Public Sub ProjectPageDisplay()
         Process.Start(My.Resources.URL_Repository)
     End Sub
+
+    Public Sub ProjectDocsDisplay()
+        Process.Start(My.Resources.URL_Documentation)
+    End Sub
 End Module

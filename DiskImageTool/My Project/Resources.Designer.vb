@@ -2150,6 +2150,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property HelpTableOfContents() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("HelpTableOfContents", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Deleted Directory.
         '''</summary>
         Friend ReadOnly Property HexView_DeletedDirectory() As String
@@ -6065,6 +6075,15 @@ Namespace My.Resources
         Friend ReadOnly Property URL_DBAPI_EndPoint() As String
             Get
                 Return ResourceManager.GetString("URL_DBAPI_EndPoint", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to https://github.com/Digitoxin1/DiskImageTool/wiki.
+        '''</summary>
+        Friend ReadOnly Property URL_Documentation() As String
+            Get
+                Return ResourceManager.GetString("URL_Documentation", resourceCulture)
             End Get
         End Property
         
