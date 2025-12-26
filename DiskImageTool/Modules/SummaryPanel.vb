@@ -763,7 +763,7 @@ Public Class SummaryPanel
         Row("Year").Value = Result.GetYearList
         Row("OperatingSystem").Value = TitleData.GetOperatingSystem
         Row("Region").Value = Result.GetRegionList
-        Row("Language").Value = TitleData.GetLanguage
+        Row("Language").Value = Result.GetLanguageList
         Row("Version").Value = Result.GetVersionDisplay
         Row("Disk").Value = TitleData.GetDisk
         Row("CopyProtection").Value = TitleData.GetCopyProtection

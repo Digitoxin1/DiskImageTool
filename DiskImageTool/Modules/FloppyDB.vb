@@ -1022,27 +1022,27 @@ Public Class FloppyDB
         End Property
 
         Public Function GetIntList() As String
-            Return JoinDistinct(Function(d) d.GetInt())
+            Return JoinDistinctStrings(Function(d) d.GetInt())
         End Function
 
         Public Function GetLanguageList() As String
-            Return JoinDistinct(Function(d) d.GetLanguage())
+            Return JoinDistinctCommaValues(Function(d) d.GetLanguage())
         End Function
 
         Public Function GetNameList() As String
-            Return JoinDistinct(Function(d) d.GetName(), vbNewLine)
+            Return JoinDistinctStrings(Function(d) d.GetName(), vbNewLine)
         End Function
 
         Public Function GetPublisherList() As String
-            Return JoinDistinct(Function(d) d.GetPublisher())
+            Return JoinDistinctStrings(Function(d) d.GetPublisher())
         End Function
 
         Public Function GetRegionList() As String
-            Return JoinDistinct(Function(d) d.GetRegion())
+            Return JoinDistinctCommaValues(Function(d) d.GetRegion())
         End Function
 
         Public Function GetSerialList() As String
-            Return JoinDistinct(Function(d) d.GetSerial())
+            Return JoinDistinctStrings(Function(d) d.GetSerial())
         End Function
 
         Public Function GetVersionDisplay() As String
@@ -1106,10 +1106,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetVersionList() As String
-            Return JoinDistinct(Function(d) d.GetVersion())
+            Return JoinDistinctStrings(Function(d) d.GetVersion())
         End Function
         Public Function GetYearList() As String
-            Return JoinDistinct(Function(d) d.GetYear())
+            Return JoinDistinctStrings(Function(d) d.GetYear())
         End Function
 
         Private Shared Function Normalize(s As String) As String
@@ -1134,6 +1134,27 @@ Public Class FloppyDB
             Return result
         End Function
 
+        Private Function DistinctCommaValues(selector As Func(Of FloppyData, String)) As List(Of String)
+            Dim result As New List(Of String)
+            Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+
+            For Each d In Matches
+                Dim value = selector(d)
+                If String.IsNullOrWhiteSpace(value) Then Continue For
+
+                For Each part In value.Split(","c)
+                    Dim s = part.Trim()
+                    If s = "" Then Continue For
+
+                    If seen.Add(s) Then
+                        result.Add(s)
+                    End If
+                Next
+            Next
+
+            Return result
+        End Function
+
         Private Function FormatOne(d As FloppyData) As String
             Dim ver = Normalize(d.GetVersion())
             Dim ser = Normalize(d.GetSerial())
@@ -1153,8 +1174,12 @@ Public Class FloppyDB
             Return String.Join(", ", seg)
         End Function
 
-        Private Function JoinDistinct(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
+        Private Function JoinDistinctStrings(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
             Return String.Join(Separator, DistinctStrings(selector))
+        End Function
+
+        Private Function JoinDistinctCommaValues(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
+            Return String.Join(Separator, DistinctCommaValues(selector))
         End Function
 
         Private Function MakeKey(d As FloppyData) As String
