@@ -271,6 +271,14 @@ Public Class FloppyDB
         Return Nothing
     End Function
 
+    Private Shared Function GetAttr(node As Xml.XmlElement, name As String) As String
+        If node.HasAttribute(name) Then
+            Return node.GetAttribute(name)
+        End If
+
+        Return Nothing
+    End Function
+
     Private Shared Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
         Select Case Status
             Case "V"
@@ -354,98 +362,36 @@ Public Class FloppyDB
 
     Private Function GetTitleData(Node As Xml.XmlElement, Parent As FloppyData) As FloppyData
         Dim TitleData As New FloppyData With {
-            .Parent = Parent
+            .Parent = Parent,
+            .Name = GetAttr(Node, "name"),
+            .Variation = GetAttr(Node, "variation"),
+            .Compilation = GetAttr(Node, "compilation"),
+            .Year = GetAttr(Node, "year"),
+            .Version = GetAttr(Node, "version"),
+            .Int = GetAttr(Node, "int"),
+            .Serial = GetAttr(Node, "serial"),
+            .Disk = GetAttr(Node, "disk"),
+            .Publisher = GetAttr(Node, "publisher"),
+            .Region = GetAttr(Node, "region"),
+            .Language = GetAttr(Node, "language"),
+            .CopyProtection = GetAttr(Node, "cp"),
+            .OperatingSystem = GetAttr(Node, "os")
         }
 
-        Dim Value As String
-
-        Value = Node.GetAttribute("name")
-        If Value <> "" Then
-            TitleData.Name = Value
+        If Node.HasAttribute("media") Then
+            TitleData.Media = FloppyDiskFormatGet(Node.GetAttribute("media"))
         End If
 
-        Value = Node.GetAttribute("variation")
-        If Value <> "" Then
-            TitleData.Variation = Value
+        If Node.HasAttribute("status") Then
+            TitleData.Status = GetFloppyDBStatus(Node.GetAttribute("status"))
         End If
 
-        Value = Node.GetAttribute("compilation")
-        If Value <> "" Then
-            TitleData.Compilation = Value
+        If Node.HasAttribute("tdc") Then
+            TitleData.IsTDC = (Node.GetAttribute("tdc") = "1")
         End If
 
-        Value = Node.GetAttribute("year")
-        If Value <> "" Then
-            TitleData.Year = Value
-        End If
-
-        Value = Node.GetAttribute("version")
-        If Value <> "" Then
-            TitleData.Version = Value
-        End If
-
-        Value = Node.GetAttribute("int")
-        If Value <> "" Then
-            TitleData.Int = Value
-        End If
-
-        Value = Node.GetAttribute("serial")
-        If Value <> "" Then
-            TitleData.Serial = Value
-        End If
-
-        Value = Node.GetAttribute("disk")
-        If Value <> "" Then
-            TitleData.Disk = Value
-        End If
-
-        Value = Node.GetAttribute("media")
-        If Value <> "" Then
-            TitleData.Media = FloppyDiskFormatGet(Value)
-        End If
-
-        Value = Node.GetAttribute("publisher")
-        If Value <> "" Then
-            TitleData.Publisher = Value
-        End If
-
-        Value = Node.GetAttribute("status")
-        If Value <> "" Then
-            TitleData.Status = GetFloppyDBStatus(Value)
-        End If
-
-        Value = Node.GetAttribute("region")
-        If Value <> "" Then
-            TitleData.Region = Value
-        End If
-
-        Value = Node.GetAttribute("language")
-        If Value <> "" Then
-            TitleData.Language = Value
-        End If
-
-        Value = Node.GetAttribute("cp")
-        If Value <> "" Then
-            TitleData.CopyProtection = Value
-        End If
-
-        Value = Node.GetAttribute("os")
-        If Value <> "" Then
-            TitleData.OperatingSystem = Value
-        End If
-
-        Value = Node.GetAttribute("tdc")
-        If Value <> "" Then
-            If Value = "1" Then
-                TitleData.IsTDC = True
-            End If
-        End If
-
-        Value = Node.GetAttribute("fixed")
-        If Value <> "" Then
-            If Value = "1" Then
-                TitleData.Fixed = True
-            End If
+        If Node.HasAttribute("fixed") Then
+            TitleData.Fixed = (Node.GetAttribute("fixed") = "1")
         End If
 
         Return TitleData
@@ -721,294 +667,126 @@ Public Class FloppyDB
     End Class
 
     Public Class FloppyData
-        Public Property Compilation As String = ""
-        Public Property CopyProtection As String = ""
-        Public Property Disk As String = ""
+        Public Property Compilation As String = Nothing
+        Public Property CopyProtection As String = Nothing
+        Public Property Disk As String = Nothing
         Public Property Fixed As Boolean? = Nothing
-        Public Property Int As String = ""
+        Public Property Int As String = Nothing
         Public Property IsTDC As Boolean? = Nothing
-        Public Property Language As String = ""
-        Public Property Media As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-        Public Property Name As String = ""
-        Public Property OperatingSystem As String = ""
+        Public Property Language As String = Nothing
+        Public Property Media As FloppyDiskFormat? = Nothing
+        Public Property Name As String = Nothing
+        Public Property OperatingSystem As String = Nothing
         Public Property Parent As FloppyData = Nothing
-        Public Property Publisher As String = ""
-        Public Property Region As String = ""
-        Public Property Serial As String = ""
-        Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
-        Public Property Variation As String = ""
-        Public Property Version As String = ""
-        Public Property Year As String = ""
+        Public Property Publisher As String = Nothing
+        Public Property Region As String = Nothing
+        Public Property Serial As String = Nothing
+        Public Property Status As FloppyDBStatus? = Nothing
+        Public Property Variation As String = Nothing
+        Public Property Version As String = Nothing
+        Public Property Year As String = Nothing
 
         Public Function GetCompilation() As String
-            If Me.Compilation <> "" Then
-                Return Me.Compilation
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Compilation <> "" Then
-                        Return Parent.Compilation
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Compilation)
         End Function
 
         Public Function GetCopyProtection() As String
-            If Me.CopyProtection <> "" Then
-                Return Me.CopyProtection
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.CopyProtection <> "" Then
-                        Return Parent.CopyProtection
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.CopyProtection)
         End Function
 
         Public Function GetDisk() As String
-            If Me.Disk <> "" Then
-                Return Me.Disk
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Disk <> "" Then
-                        Return Parent.Disk
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Disk)
         End Function
 
         Public Function GetFixed() As Boolean
-            If Me.Fixed.HasValue Then
-                Return Me.Fixed.Value
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Fixed.HasValue Then
-                        Return Parent.Fixed.Value
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return False
+            Return ResolveBoolean(Me, Function(d) d.Fixed)
         End Function
 
         Public Function GetInt() As String
-            If Me.Int <> "" Then
-                Return Me.Int
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Int <> "" Then
-                        Return Parent.Int
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Int)
         End Function
 
         Public Function GetIsTDC() As Boolean
-            If Me.IsTDC.HasValue Then
-                Return Me.IsTDC.Value
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.IsTDC.HasValue Then
-                        Return Parent.IsTDC.Value
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return False
+            Return ResolveBoolean(Me, Function(d) d.IsTDC)
         End Function
 
         Public Function GetLanguage() As String
-            If Me.Language <> "" Then
-                Return Me.Language
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Language <> "" Then
-                        Return Parent.Language
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Language)
         End Function
 
         Public Function GetMedia() As FloppyDiskFormat
-            If Me.Media <> FloppyDiskFormat.FloppyUnknown Then
-                Return Me.Media
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Media <> FloppyDiskFormat.FloppyUnknown Then
-                        Return Parent.Media
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return FloppyDiskFormat.FloppyUnknown
+            Return ResolveNullable(Of FloppyDiskFormat)(Me, Function(d) d.Media, FloppyDiskFormat.FloppyUnknown)
         End Function
 
         Public Function GetName() As String
-            If Me.Name <> "" Then
-                Return Me.Name
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Name <> "" Then
-                        Return Parent.Name
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Name)
         End Function
 
         Public Function GetOperatingSystem() As String
-            If Me.OperatingSystem <> "" Then
-                Return Me.OperatingSystem
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.OperatingSystem <> "" Then
-                        Return Parent.OperatingSystem
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return "MS-DOS"
+            Return ResolveString(Me, Function(d) d.OperatingSystem, "MS-DOS")
         End Function
 
         Public Function GetPublisher() As String
-            If Me.Publisher <> "" Then
-                Return Me.Publisher
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Publisher <> "" Then
-                        Return Parent.Publisher
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Publisher)
         End Function
 
         Public Function GetRegion() As String
-            If Me.Region <> "" Then
-                Return Me.Region
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Region <> "" Then
-                        Return Parent.Region
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Region)
         End Function
 
         Public Function GetSerial() As String
-            If Me.Serial <> "" Then
-                Return Me.Serial
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Serial <> "" Then
-                        Return Parent.Serial
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Serial)
         End Function
 
         Public Function GetStatus() As FloppyDBStatus
-            If Me.Status <> FloppyDBStatus.Unknown Then
-                Return Me.Status
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Status <> FloppyDBStatus.Unknown Then
-                        Return Parent.Status
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return FloppyDBStatus.Unverified
+            Return ResolveNullable(Of FloppyDBStatus)(Me, Function(d) d.Status, FloppyDBStatus.Unverified)
         End Function
 
         Public Function GetVariation() As String
-            If Me.Variation <> "" Then
-                Return Me.Variation
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Variation <> "" Then
-                        Return Parent.Variation
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Variation)
         End Function
 
         Public Function GetVersion() As String
-            If Me.Version <> "" Then
-                Return Me.Version
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Version <> "" Then
-                        Return Parent.Version
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
+            Return ResolveString(Me, Function(d) d.Version)
         End Function
         Public Function GetYear() As String
-            If Me.Year <> "" Then
-                Return Me.Year
-            Else
-                Dim Parent = Me.Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Year <> "" Then
-                        Return Parent.Year
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
+            Return ResolveString(Me, Function(d) d.Year)
+        End Function
 
-            Return ""
+        Private Shared Function ResolveBoolean(Start As FloppyData, Selector As Func(Of FloppyData, Boolean?), Optional DefaultValue As Boolean = False) As Boolean
+            Return ResolveNullable(Start, Selector, DefaultValue)
+        End Function
+
+        Private Shared Function ResolveNullable(Of T As Structure)(Start As FloppyData, Selector As Func(Of FloppyData, Nullable(Of T)), DefaultValue As T) As T
+            Dim Current = Start
+
+            Do While Current IsNot Nothing
+                Dim Value = Selector(Current)
+
+                If Value.HasValue Then
+                    Return Value.Value
+                End If
+
+                Current = Current.Parent
+            Loop
+
+            Return DefaultValue
+        End Function
+
+        Private Shared Function ResolveString(Start As FloppyData, Selector As Func(Of FloppyData, String), Optional DefaultValue As String = "") As String
+            Dim Current = Start
+
+            Do While Current IsNot Nothing
+                Dim Value = Selector(Current)
+
+                If Value IsNot Nothing Then
+                    Return Value
+                End If
+
+                Current = Current.Parent
+            Loop
+
+            Return DefaultValue
         End Function
     End Class
 
@@ -1116,24 +894,6 @@ Public Class FloppyDB
             Return If(s, "").Trim()
         End Function
 
-        Private Function DistinctStrings(selector As Func(Of FloppyData, String)) As List(Of String)
-            Dim result As New List(Of String)
-            Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-
-            For Each d In Matches
-                Dim s = selector(d)
-                If String.IsNullOrWhiteSpace(s) Then
-                    Continue For
-                End If
-                s = s.Trim()
-                If seen.Add(s) Then
-                    result.Add(s)
-                End If
-            Next
-
-            Return result
-        End Function
-
         Private Function DistinctCommaValues(selector As Func(Of FloppyData, String)) As List(Of String)
             Dim result As New List(Of String)
             Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
@@ -1155,6 +915,23 @@ Public Class FloppyDB
             Return result
         End Function
 
+        Private Function DistinctStrings(selector As Func(Of FloppyData, String)) As List(Of String)
+            Dim result As New List(Of String)
+            Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+
+            For Each d In Matches
+                Dim s = selector(d)
+                If String.IsNullOrWhiteSpace(s) Then
+                    Continue For
+                End If
+                s = s.Trim()
+                If seen.Add(s) Then
+                    result.Add(s)
+                End If
+            Next
+
+            Return result
+        End Function
         Private Function FormatOne(d As FloppyData) As String
             Dim ver = Normalize(d.GetVersion())
             Dim ser = Normalize(d.GetSerial())
@@ -1174,14 +951,13 @@ Public Class FloppyDB
             Return String.Join(", ", seg)
         End Function
 
-        Private Function JoinDistinctStrings(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
-            Return String.Join(Separator, DistinctStrings(selector))
-        End Function
-
         Private Function JoinDistinctCommaValues(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
             Return String.Join(Separator, DistinctCommaValues(selector))
         End Function
 
+        Private Function JoinDistinctStrings(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
+            Return String.Join(Separator, DistinctStrings(selector))
+        End Function
         Private Function MakeKey(d As FloppyData) As String
             Dim ver = Normalize(d.GetVersion())
             Dim ser = Normalize(d.GetSerial())
