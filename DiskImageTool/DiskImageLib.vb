@@ -686,7 +686,7 @@ Module DiskImageLib
         Return ImageImportProcess(ParentDirectory, FileNames, Index)
     End Function
 
-    Private Sub ImageImportFiles(FileList As List(Of ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
+    Private Sub ImageImportFiles(FileList As List(Of ImportFileForm.ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each File In FileList
             If File.IsSelected Then
                 Dim FileInfo As New IO.FileInfo(File.FilePath)
@@ -701,7 +701,7 @@ Module DiskImageLib
         Next
     End Sub
 
-    Private Sub ImageImportFolders(FolderList As List(Of ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
+    Private Sub ImageImportFolders(FolderList As List(Of ImportFileForm.ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each Folder In FolderList
             If Folder.SelectedFiles > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
@@ -756,20 +756,22 @@ Module DiskImageLib
             Return False
         End If
 
-        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
+        Dim CurrentDirectory = Response.FileList.CurrentDirectory
+
+        Dim UseTransaction = CurrentDirectory.Disk.BeginTransaction
 
         Dim FilesAdded As UInteger = 0
         Dim FileCount As UInteger = Response.FileList.SelectedFiles
 
-        ImageImportFolders(Response.FileList.DirectoryList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
-        ImageImportFiles(Response.FileList.FileList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
+        ImageImportFolders(Response.FileList.DirectoryList, CurrentDirectory, Index, Response.FileList.Options, FilesAdded)
+        ImageImportFiles(Response.FileList.FileList, CurrentDirectory, Index, Response.FileList.Options, FilesAdded)
 
         If FilesAdded < FileCount Then
             MsgBox(String.Format(My.Resources.Dialog_InsufficientDiskSpaceWarning, Environment.NewLine, FilesAdded, FileCount), MsgBoxStyle.Exclamation)
         End If
 
         If UseTransaction Then
-            ParentDirectory.Disk.EndTransaction()
+            CurrentDirectory.Disk.EndTransaction()
         End If
 
         Return FilesAdded > 0

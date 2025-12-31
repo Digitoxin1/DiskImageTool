@@ -23,10 +23,13 @@ Partial Class ImportFileForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim PanelTop As System.Windows.Forms.FlowLayoutPanel
+        Dim FlowLayoutPanel1 As System.Windows.Forms.FlowLayoutPanel
         Me.ChkLFN = New System.Windows.Forms.CheckBox()
         Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.ChkCreated = New System.Windows.Forms.CheckBox()
         Me.ChkLastAccessed = New System.Windows.Forms.CheckBox()
+        Me.LabelDirectoryList = New System.Windows.Forms.Label()
+        Me.ComboDirectoryList = New System.Windows.Forms.ComboBox()
         Me.FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileSizeOnDisk = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileDisabled = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -47,7 +50,9 @@ Partial Class ImportFileForm
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         PanelTop = New System.Windows.Forms.FlowLayoutPanel()
+        FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         PanelTop.SuspendLayout()
+        FlowLayoutPanel1.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.FlowLayoutTotals.SuspendLayout()
         Me.SuspendLayout()
@@ -108,6 +113,36 @@ Partial Class ImportFileForm
         Me.ChkLastAccessed.Text = "{Last Accessed Date}"
         Me.ChkLastAccessed.UseVisualStyleBackColor = True
         '
+        'FlowLayoutPanel1
+        '
+        FlowLayoutPanel1.AutoSize = True
+        FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        FlowLayoutPanel1.Controls.Add(Me.LabelDirectoryList)
+        FlowLayoutPanel1.Controls.Add(Me.ComboDirectoryList)
+        FlowLayoutPanel1.Location = New System.Drawing.Point(12, 65)
+        FlowLayoutPanel1.Name = "FlowLayoutPanel1"
+        FlowLayoutPanel1.Size = New System.Drawing.Size(246, 27)
+        FlowLayoutPanel1.TabIndex = 2
+        '
+        'LabelDirectoryList
+        '
+        Me.LabelDirectoryList.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LabelDirectoryList.AutoSize = True
+        Me.LabelDirectoryList.Location = New System.Drawing.Point(3, 7)
+        Me.LabelDirectoryList.Name = "LabelDirectoryList"
+        Me.LabelDirectoryList.Size = New System.Drawing.Size(44, 13)
+        Me.LabelDirectoryList.TabIndex = 0
+        Me.LabelDirectoryList.Text = "{Import}"
+        '
+        'ComboDirectoryList
+        '
+        Me.ComboDirectoryList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboDirectoryList.FormattingEnabled = True
+        Me.ComboDirectoryList.Location = New System.Drawing.Point(53, 3)
+        Me.ComboDirectoryList.Name = "ComboDirectoryList"
+        Me.ComboDirectoryList.Size = New System.Drawing.Size(190, 21)
+        Me.ComboDirectoryList.TabIndex = 1
+        '
         'FileName
         '
         Me.FileName.Text = "{Filename}"
@@ -131,7 +166,7 @@ Partial Class ImportFileForm
         Me.LabelBytesRequired.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
         Me.LabelBytesRequired.Name = "LabelBytesRequired"
         Me.LabelBytesRequired.Size = New System.Drawing.Size(90, 13)
-        Me.LabelBytesRequired.TabIndex = 6
+        Me.LabelBytesRequired.TabIndex = 4
         Me.LabelBytesRequired.Text = "{Bytes Required:}"
         Me.LabelBytesRequired.UseMnemonic = False
         '
@@ -142,7 +177,7 @@ Partial Class ImportFileForm
         Me.LabelBytesFree.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
         Me.LabelBytesFree.Name = "LabelBytesFree"
         Me.LabelBytesFree.Size = New System.Drawing.Size(68, 13)
-        Me.LabelBytesFree.TabIndex = 7
+        Me.LabelBytesFree.TabIndex = 2
         Me.LabelBytesFree.Text = "{Bytes Free:}"
         Me.LabelBytesFree.UseMnemonic = False
         '
@@ -153,7 +188,7 @@ Partial Class ImportFileForm
         Me.LabelFilesSelected.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
         Me.LabelFilesSelected.Name = "LabelFilesSelected"
         Me.LabelFilesSelected.Size = New System.Drawing.Size(84, 13)
-        Me.LabelFilesSelected.TabIndex = 8
+        Me.LabelFilesSelected.TabIndex = 0
         Me.LabelFilesSelected.Text = "{Files Selected:}"
         Me.LabelFilesSelected.UseMnemonic = False
         '
@@ -173,7 +208,7 @@ Partial Class ImportFileForm
         Me.LabelOptions.Location = New System.Drawing.Point(18, 5)
         Me.LabelOptions.Name = "LabelOptions"
         Me.LabelOptions.Size = New System.Drawing.Size(51, 13)
-        Me.LabelOptions.TabIndex = 3
+        Me.LabelOptions.TabIndex = 1
         Me.LabelOptions.Text = "{Options}"
         Me.LabelOptions.UseMnemonic = False
         '
@@ -199,10 +234,10 @@ Partial Class ImportFileForm
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(12, 64)
+        Me.ListViewFiles.Location = New System.Drawing.Point(12, 98)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(760, 452)
-        Me.ListViewFiles.TabIndex = 1
+        Me.ListViewFiles.Size = New System.Drawing.Size(760, 418)
+        Me.ListViewFiles.TabIndex = 3
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -217,7 +252,7 @@ Partial Class ImportFileForm
         Me.Panel1.Margin = New System.Windows.Forms.Padding(3, 3, 50, 3)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(784, 42)
-        Me.Panel1.TabIndex = 2
+        Me.Panel1.TabIndex = 4
         '
         'FlowLayoutTotals
         '
@@ -232,7 +267,7 @@ Partial Class ImportFileForm
         Me.FlowLayoutTotals.Location = New System.Drawing.Point(12, 17)
         Me.FlowLayoutTotals.Name = "FlowLayoutTotals"
         Me.FlowLayoutTotals.Size = New System.Drawing.Size(591, 13)
-        Me.FlowLayoutTotals.TabIndex = 6
+        Me.FlowLayoutTotals.TabIndex = 0
         '
         'LblSelected
         '
@@ -240,7 +275,7 @@ Partial Class ImportFileForm
         Me.LblSelected.Margin = New System.Windows.Forms.Padding(0)
         Me.LblSelected.Name = "LblSelected"
         Me.LblSelected.Size = New System.Drawing.Size(82, 13)
-        Me.LblSelected.TabIndex = 3
+        Me.LblSelected.TabIndex = 1
         Me.LblSelected.Text = "{FilesSelected}"
         Me.LblSelected.UseMnemonic = False
         '
@@ -250,7 +285,7 @@ Partial Class ImportFileForm
         Me.LblBytesFree.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
         Me.LblBytesFree.Name = "LblBytesFree"
         Me.LblBytesFree.Size = New System.Drawing.Size(76, 13)
-        Me.LblBytesFree.TabIndex = 4
+        Me.LblBytesFree.TabIndex = 3
         Me.LblBytesFree.Text = "{BytesFree}"
         Me.LblBytesFree.UseMnemonic = False
         '
@@ -273,7 +308,7 @@ Partial Class ImportFileForm
         Me.BtnOK.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnOK.Name = "BtnOK"
         Me.BtnOK.Size = New System.Drawing.Size(75, 23)
-        Me.BtnOK.TabIndex = 0
+        Me.BtnOK.TabIndex = 1
         Me.BtnOK.Text = "{Import}"
         Me.BtnOK.UseVisualStyleBackColor = True
         '
@@ -286,7 +321,7 @@ Partial Class ImportFileForm
         Me.BtnCancel.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
-        Me.BtnCancel.TabIndex = 1
+        Me.BtnCancel.TabIndex = 2
         Me.BtnCancel.Text = "{Cancel}"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
@@ -295,6 +330,7 @@ Partial Class ImportFileForm
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(784, 561)
+        Me.Controls.Add(FlowLayoutPanel1)
         Me.Controls.Add(Me.LabelOptions)
         Me.Controls.Add(PanelTop)
         Me.Controls.Add(Me.Panel1)
@@ -308,6 +344,8 @@ Partial Class ImportFileForm
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         PanelTop.ResumeLayout(False)
         PanelTop.PerformLayout()
+        FlowLayoutPanel1.ResumeLayout(False)
+        FlowLayoutPanel1.PerformLayout()
         Me.Panel1.ResumeLayout(False)
         Me.FlowLayoutTotals.ResumeLayout(False)
         Me.FlowLayoutTotals.PerformLayout()
@@ -339,4 +377,6 @@ Partial Class ImportFileForm
     Friend WithEvents FileDisabled As ColumnHeader
     Friend WithEvents FileSizeOnDisk As ColumnHeader
     Friend WithEvents FileName As ColumnHeader
+    Friend WithEvents LabelDirectoryList As Label
+    Friend WithEvents ComboDirectoryList As ComboBox
 End Class

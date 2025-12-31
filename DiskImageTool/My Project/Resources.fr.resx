@@ -1909,4 +1909,7 @@ Voulez-vous écraser ?</value>
   <data name="FloppyImageType_TD0Image" xml:space="preserve">
     <value>TeleDisk Sector Image</value>
   </data>
+  <data name="Label_ImportIntoDirectory" xml:space="preserve">
+    <value>Importer dans le dossier</value>
+  </data>
 </root>

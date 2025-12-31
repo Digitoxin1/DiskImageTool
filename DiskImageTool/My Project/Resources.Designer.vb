@@ -3558,6 +3558,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Import into Directory.
+        '''</summary>
+        Friend ReadOnly Property Label_ImportIntoDirectory() As String
+            Get
+                Return ResourceManager.GetString("Label_ImportIntoDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Info.
         '''</summary>
         Friend ReadOnly Property Label_Info() As String

@@ -1,60 +1,32 @@
 ﻿Imports System.IO
-Imports System.Runtime.CompilerServices
 Imports DiskImageTool.DiskImage
-Imports Microsoft.VisualBasic.Logging
 
 Public Class ImportFileForm
     Private Const COLUMN_CREATION_TIME As String = "CreationTime"
-    Private Const COLUMN_LAST_ACCESS_TIME As String = "LastAccessTime"
     Private Const COLUMN_IS_SELECTED As String = "IsSelected"
-    Private ReadOnly _Directory As IDirectory
+    Private Const COLUMN_LAST_ACCESS_TIME As String = "LastAccessTime"
+    Private ReadOnly _FileNames() As String
+    Private ReadOnly _SelectionByPath As New Dictionary(Of String, Boolean)
     Private _FileList As ImportDirectoryRoot
     Private _HasLFN As Boolean
     Private _HasNTExtensions As Boolean
     Private _IgnoreEvent As Boolean = False
+    Private _LastSelectedIndex As Integer = -1
     Private _ListViewHeader As ListViewHeader
-
-    Public Sub New(Directory As IDirectory, FileNames() As String)
+    Public Sub New(CurrentDirectory As IDirectory, FileNames() As String)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
         LocalizeForm()
+        _FileNames = FileNames
 
         _IgnoreEvent = True
-        _Directory = Directory
-        PopulateFileList(Directory, FileNames)
-        RefreshTotals()
+        PopulateDirectoryList(CurrentDirectory.Disk.RootDirectory, CurrentDirectory)
         _IgnoreEvent = False
-    End Sub
 
-    Public Shared Function Display(Directory As IDirectory, FileNames() As String) As (Result As Boolean, FileList As ImportDirectoryRoot)
-        Using Dlg As New ImportFileForm(Directory, FileNames)
-            Dim Result = Dlg.ShowDialog(App.CurrentFormInstance)
-            Return (Result = DialogResult.OK, Dlg.FileList)
-        End Using
-    End Function
-
-    Private Sub LocalizeForm()
-        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
-        BtnOK.Text = WithoutHotkey(My.Resources.Label_Import)
-        ChkCreated.Text = My.Resources.Label_CreatedDate
-        ChkLastAccessed.Text = My.Resources.Label_LastAccessedDate
-        ChkLFN.Text = My.Resources.Label_LongFileNames
-        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
-        FileCreationDate.Text = My.Resources.Label_Created
-        FileDisabled.Text = My.Resources.Label_Disabled
-        FileLastAccessDate.Text = My.Resources.Label_LastAccessed
-        FileLastWriteDate.Text = My.Resources.Label_LastWritten
-        FileName.Text = My.Resources.Label_FileName
-        FileSize.Text = My.Resources.Label_Size
-        FileSizeOnDisk.Text = My.Resources.Label_SizeOnDisk
-        LabelBytesFree.Text = My.Resources.Label_BytesFree & ":"
-        LabelBytesRequired.Text = My.Resources.Label_BytesRequired & ":"
-        LabelFilesSelected.Text = My.Resources.Label_FilesSelected & ":"
-        LabelOptions.Text = My.Resources.Label_Options
-        Me.Text = My.Resources.Label_ImportFiles
+        RefreshFileList()
     End Sub
 
     Public ReadOnly Property FileList As ImportDirectoryRoot
@@ -62,6 +34,13 @@ Public Class ImportFileForm
             Return _FileList
         End Get
     End Property
+
+    Public Shared Function Display(CurrentDirectory As IDirectory, FileNames() As String) As (Result As Boolean, FileList As ImportDirectoryRoot)
+        Using Dlg As New ImportFileForm(CurrentDirectory, FileNames)
+            Dim Result = Dlg.ShowDialog(App.CurrentFormInstance)
+            Return (Result = DialogResult.OK, Dlg.FileList)
+        End Using
+    End Function
 
     Public Function GetAvailableFileName(FileName As String, UseNTExtensions As Boolean, ExistingFiles As HashSet(Of String)) As String
         Dim FileParts = SplitFilename(FileName)
@@ -93,6 +72,64 @@ Public Class ImportFileForm
         Return NewFileName
     End Function
 
+    Private Sub AutoSizeComboWidth(cbo As ComboBox, Optional extraPadding As Integer = 6)
+        Dim maxWidth As Integer = 0
+
+        Using g = cbo.CreateGraphics()
+            For Each item In cbo.Items
+                Dim w = g.MeasureString(item.ToString(), cbo.Font).Width
+                maxWidth = Math.Max(maxWidth, CInt(Math.Ceiling(w)))
+            Next
+        End Using
+
+        maxWidth += SystemInformation.VerticalScrollBarWidth
+        maxWidth += SystemInformation.BorderSize.Width * 2
+        maxWidth += extraPadding
+
+        cbo.Width = maxWidth
+    End Sub
+
+    Private Sub ChkCreated_CheckedChanged(sender As Object, e As EventArgs) Handles ChkCreated.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.Options.UseCreatedDate = ChkCreated.Checked
+        RefreshCreated()
+    End Sub
+
+    Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.Options.UseLastAccessedDate = ChkLastAccessed.Checked
+        RefreshLastAccessed()
+    End Sub
+
+    Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        ChkNTExtensions.Enabled = ChkLFN.Checked
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
+
+    Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
+
+    Private Sub ComboDirectoryList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDirectoryList.SelectedIndexChanged
+        If _IgnoreEvent Then Exit Sub
+
+        If _LastSelectedIndex = ComboDirectoryList.SelectedIndex Then
+            Exit Sub
+        End If
+
+        _LastSelectedIndex = ComboDirectoryList.SelectedIndex
+
+        RefreshFileList()
+    End Sub
+
     Private Function GetPathString(Directory As IDirectory) As String
         Dim PathString As String = ""
         Dim Parent As IDirectory
@@ -117,11 +154,13 @@ Public Class ImportFileForm
         Dim BytesPerCluster = Parent.Root.BytesPerCluster
         Dim RowForeColor As Color
         Dim SizeOnDisk As Long = AlignUp(CULng(File.Length), BytesPerCluster)
+        Dim DefaultSelected As Boolean
 
         Dim ImportFile = Parent.AddFile(File.FullName, File.Name, SizeOnDisk)
 
         If ImportFile.IsFileTooLarge Then
             ImportFile.IsSelected = False
+            DefaultSelected = False
 
             RowForeColor = Color.Gray
         Else
@@ -133,7 +172,11 @@ Public Class ImportFileForm
                 _HasLFN = True
             End If
 
-            ImportFile.IsSelected = True
+            Dim PreviousSelected As Boolean = False
+            Dim HasPrevious As Boolean = _SelectionByPath.TryGetValue(File.FullName, PreviousSelected)
+
+            ImportFile.IsSelected = Not HasPrevious OrElse PreviousSelected
+            DefaultSelected = True
 
             RowForeColor = SystemColors.WindowText
         End If
@@ -173,7 +216,7 @@ Public Class ImportFileForm
         SubItem.ForeColor = Color.Gray
         SubItem.Name = COLUMN_LAST_ACCESS_TIME
 
-        SubItem = Item.SubItems.Add(If(ImportFile.IsSelected, 0, 1))
+        SubItem = Item.SubItems.Add(If(DefaultSelected, 0, 1))
         SubItem.Name = COLUMN_IS_SELECTED
 
         ListViewFiles.Items.Add(Item)
@@ -194,6 +237,74 @@ Public Class ImportFileForm
 
         ProcessFolders(ImportDirectory, GroupPath, Folder.GetDirectories.ToList)
         ProcessFiles(ImportDirectory, Group, Folder.GetFiles.ToList)
+    End Sub
+
+    Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        ListViewFiles.DoubleBuffer
+        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
+    End Sub
+
+    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
+        e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
+        e.Cancel = True
+    End Sub
+
+    Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
+        If _IgnoreEvent Then Exit Sub
+
+        If e.NewValue = e.CurrentValue Then
+            Exit Sub
+        End If
+
+        Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
+
+        Dim FileData As ImportFile = Item.Tag
+
+        If FileData.IsFileTooLarge Then
+            If e.NewValue Then
+                e.NewValue = False
+            End If
+        Else
+            FileData.IsSelected = e.NewValue
+        End If
+
+        RefreshTotals()
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
+        BtnOK.Text = WithoutHotkey(My.Resources.Label_Import)
+        ChkCreated.Text = My.Resources.Label_CreatedDate
+        ChkLastAccessed.Text = My.Resources.Label_LastAccessedDate
+        ChkLFN.Text = My.Resources.Label_LongFileNames
+        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
+        FileCreationDate.Text = My.Resources.Label_Created
+        FileDisabled.Text = My.Resources.Label_Disabled
+        FileLastAccessDate.Text = My.Resources.Label_LastAccessed
+        FileLastWriteDate.Text = My.Resources.Label_LastWritten
+        FileName.Text = My.Resources.Label_FileName
+        FileSize.Text = My.Resources.Label_Size
+        FileSizeOnDisk.Text = My.Resources.Label_SizeOnDisk
+        LabelBytesFree.Text = My.Resources.Label_BytesFree & ":"
+        LabelBytesRequired.Text = My.Resources.Label_BytesRequired & ":"
+        LabelDirectoryList.Text = My.Resources.Label_ImportIntoDirectory
+        LabelFilesSelected.Text = My.Resources.Label_FilesSelected & ":"
+        LabelOptions.Text = My.Resources.Label_Options
+        Me.Text = My.Resources.Label_ImportFiles
+    End Sub
+
+    Private Sub PopulateDirectoryList(RootDirectory As IDirectory, CurrentDirectory As IDirectory)
+        ComboDirectoryList.Items.Clear()
+
+        ProcessDirectoryEntries(RootDirectory, "", CurrentDirectory)
+
+        If ComboDirectoryList.SelectedIndex = -1 AndAlso ComboDirectoryList.Items.Count > 0 Then
+            ComboDirectoryList.SelectedIndex = 0
+        End If
+
+        _LastSelectedIndex = ComboDirectoryList.SelectedIndex
+
+        AutoSizeComboWidth(ComboDirectoryList)
     End Sub
 
     Private Sub PopulateFileList(Directory As IDirectory, FileNames() As String)
@@ -223,7 +334,7 @@ Public Class ImportFileForm
         ListViewFiles.Items.Clear()
         ListViewFiles.Groups.Clear()
 
-        _FileList = New ImportDirectoryRoot(Directory.Data.AvailableEntryCount, Directory.Disk.BPB.BytesPerCluster, Directory.Disk.FAT.GetFreeSpace)
+        _FileList = New ImportDirectoryRoot(Directory)
 
         'PopulateExistingFileNames(Directory, _FileList)
 
@@ -253,6 +364,40 @@ Public Class ImportFileForm
         ListViewFiles.EndUpdate()
     End Sub
 
+    Private Sub ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Path As String, CurrentDirectory As IDirectory)
+        Dim DirectoryName As String = If(Path = "", InParens(My.Resources.Label_Root), Path)
+
+        Dim Item As New DirectoryComboItem With {
+            .Text = DirectoryName,
+            .Directory = Directory
+        }
+
+        Dim Index As Integer = ComboDirectoryList.Items.Add(Item)
+
+        If Directory Is CurrentDirectory Then
+            ComboDirectoryList.SelectedIndex = Index
+        End If
+
+        For Counter = 0 To Directory.Data.EntryCount - 1
+            Dim DirectoryEntry = Directory.GetFile(Counter)
+            If Not DirectoryEntry.IsLink Then
+                If DirectoryEntry.IsDirectory AndAlso DirectoryEntry.SubDirectory IsNot Nothing Then
+                    Dim NewPath = DirectoryEntry.GetFullFileName
+                    If Path <> "" Then
+                        NewPath = Path & "\" & NewPath
+                    End If
+                    ProcessDirectoryEntries(DirectoryEntry.SubDirectory, NewPath, CurrentDirectory)
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub ProcessFiles(Parent As ImportDirectory, Group As ListViewGroup, FileList As List(Of IO.FileInfo))
+        For Each File In FileList
+            GridAddFile(Parent, Group, File)
+        Next
+    End Sub
+
     'Private Sub PopulateExistingFileNames(Directory As IDirectory, ImportDirectory As ImportDirectory)
     '    If Directory.Data.EntryCount > 0 Then
     '        For Counter As UInteger = 0 To Directory.Data.EntryCount - 1
@@ -263,13 +408,6 @@ Public Class ImportFileForm
     '        Next
     '    End If
     'End Sub
-
-    Private Sub ProcessFiles(Parent As ImportDirectory, Group As ListViewGroup, FileList As List(Of IO.FileInfo))
-        For Each File In FileList
-            GridAddFile(Parent, Group, File)
-        Next
-    End Sub
-
     Private Sub ProcessFolders(Parent As ImportDirectory, GroupPath As String, FolderList As List(Of DirectoryInfo))
         For Each Folder In FolderList
             GridAddFolder(Parent, GroupPath, Folder)
@@ -291,6 +429,21 @@ Public Class ImportFileForm
             End If
             Item.SubItems.Item(COLUMN_CREATION_TIME).ForeColor = ForeColor
         Next
+    End Sub
+
+    Private Sub RefreshFileList()
+        SaveSelections()
+
+        Dim Item = TryCast(ComboDirectoryList.SelectedItem, DirectoryComboItem)
+
+        If Item Is Nothing Then
+            Exit Sub
+        End If
+
+        _IgnoreEvent = True
+        PopulateFileList(Item.Directory, _FileNames)
+        RefreshTotals()
+        _IgnoreEvent = False
     End Sub
 
     Private Sub RefreshLastAccessed()
@@ -349,6 +502,431 @@ Public Class ImportFileForm
         BtnOK.Enabled = _FileList.SelectedFiles > 0 And _FileList.TotalSpaceRequired <= _FileList.FreeSpace
     End Sub
 
+    Private Sub SaveSelections()
+        If _FileList Is Nothing Then
+            Exit Sub
+        End If
+
+        _SelectionByPath.Clear()
+        SaveSelectionsFromDirectory(_FileList)
+    End Sub
+
+    Private Sub SaveSelectionsFromDirectory(dir As ImportDirectory)
+        ' Files in this directory
+        For Each f In dir.FileList
+            _SelectionByPath(f.FilePath) = f.IsSelected
+        Next
+
+        ' Recurse into subdirectories
+        For Each subDir In dir.DirectoryList
+            SaveSelectionsFromDirectory(subDir)
+        Next
+    End Sub
+    Public Class ImportDirectory
+        Inherits ImportFileBase
+
+        Private ReadOnly _AvailableEntries As Integer
+        Private ReadOnly _DirectoryList As List(Of ImportDirectory)
+        Private ReadOnly _FileList As List(Of ImportFile)
+        'Private ReadOnly _FileNames As HashSet(Of String)
+        Private ReadOnly _Root As ImportDirectoryRoot
+        Private _EntriesRequired As Integer
+        Private _SelectedFiles As Integer
+
+        Public Sub New(FilePath As String, FileName As String, Root As ImportDirectoryRoot, Parent As ImportDirectory)
+            MyBase.New(FilePath, FileName, Parent)
+
+            _Root = Root
+            _FileList = New List(Of ImportFile)
+            _DirectoryList = New List(Of ImportDirectory)
+            '_FileNames = New HashSet(Of String)
+            _SelectedFiles = 0
+            _EntriesRequired = 0
+            _AvailableEntries = 0
+        End Sub
+
+        Public Sub New(AvailableEntries As Integer)
+            MyBase.New("", "", Nothing)
+            _Root = Nothing
+            _FileList = New List(Of ImportFile)
+            _DirectoryList = New List(Of ImportDirectory)
+            '_FileNames = New HashSet(Of String)
+            _SelectedFiles = 0
+            _EntriesRequired = 0
+            _AvailableEntries = AvailableEntries
+        End Sub
+
+        Public ReadOnly Property DirectoryList As List(Of ImportDirectory)
+            Get
+                Return _DirectoryList
+            End Get
+        End Property
+
+        Public Property EntriesRequired As Integer
+            Get
+                Return _EntriesRequired
+            End Get
+            Set(value As Integer)
+                If _EntriesRequired <> value Then
+                    Dim PrevRequiredBytes = GetRequiredBytes()
+                    _EntriesRequired = value
+                    Dim Diff = GetRequiredBytes() - PrevRequiredBytes
+                    If Diff <> 0 Then
+                        If Root IsNot Nothing Then
+                            Root.TotalSpaceRequired += Diff
+                        End If
+                    End If
+                End If
+            End Set
+        End Property
+
+        Public ReadOnly Property FileList As List(Of ImportFile)
+            Get
+                Return _FileList
+            End Get
+        End Property
+
+        'Public ReadOnly Property FileNames As HashSet(Of String)
+        '    Get
+        '        Return _FileNames
+        '    End Get
+        'End Property
+
+        Public ReadOnly Property Root As ImportDirectoryRoot
+            Get
+                If _Root Is Nothing Then
+                    Return Me
+                Else
+                    Return _Root
+                End If
+            End Get
+        End Property
+
+        Public Property SelectedFiles As Integer
+            Get
+                Return _SelectedFiles
+            End Get
+            Set(value As Integer)
+                If _SelectedFiles <> value Then
+                    Dim PrevRequiredEntries As Integer = 0
+                    Dim RequiredEntries As Integer = 0
+                    If _SelectedFiles > 0 Then
+                        PrevRequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
+                    End If
+                    _SelectedFiles = value
+                    If _SelectedFiles > 0 Then
+                        RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
+                    End If
+
+                    If Parent IsNot Nothing Then
+                        Dim EntriesRequired = RequiredEntries - PrevRequiredEntries
+                        If EntriesRequired <> 0 Then
+                            Parent.EntriesRequired += EntriesRequired
+                        End If
+                    End If
+                End If
+            End Set
+        End Property
+
+        Public Function AddDirectory(FilePath As String, FileName As String) As ImportDirectory
+            Dim NewDirectory As New ImportDirectory(FilePath, FileName, Root, Me)
+            _DirectoryList.Add(NewDirectory)
+
+            Return NewDirectory
+        End Function
+
+        Public Function AddFile(FilePath As String, FileName As String, SizeOnDisk As Long) As ImportFile
+            Dim NewFile As New ImportFile(FilePath, FileName, SizeOnDisk, Root, Me)
+            _FileList.Add(NewFile)
+
+            Return NewFile
+        End Function
+
+        Public Sub RefreshRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean)
+            If _SelectedFiles > 0 Then
+                Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
+                Dim NewRequiredEntries = GetRequiredEntries(UseLFN, UseNTExtensions)
+                Dim Diff = NewRequiredEntries - RequiredEntries
+                If Diff <> 0 Then
+                    If Parent IsNot Nothing Then
+                        Parent.EntriesRequired += Diff
+                    End If
+                End If
+            End If
+        End Sub
+        Private Function GetRequiredBytes() As Integer
+            Dim RequiredBytes As Integer = 0
+            Dim EntryCount As Integer = _EntriesRequired - _AvailableEntries
+
+            If EntryCount > 0 Then
+                Dim EntriesPerCluster As UInteger = Root.BytesPerCluster \ 32
+                RequiredBytes = CeilDiv(CUInt(EntryCount), EntriesPerCluster) * Root.BytesPerCluster
+            End If
+
+            Return RequiredBytes
+        End Function
+    End Class
+
+    Public Class ImportDirectoryRoot
+        Inherits ImportDirectory
+
+        Private ReadOnly _BytesPerCluster As UInteger
+        Private ReadOnly _CurrentDirectory As IDirectory
+        Private ReadOnly _FreeSpace As UInteger
+        Private ReadOnly _Options As AddFileOptions
+        Private _TotalSpaceRequired As Long
+        Public Sub New(CurrentDirectory As IDirectory)
+            MyBase.New(CurrentDirectory.Data.AvailableEntryCount)
+
+            _CurrentDirectory = CurrentDirectory
+            _BytesPerCluster = CurrentDirectory.Disk.BPB.BytesPerCluster
+            _FreeSpace = CurrentDirectory.Disk.FAT.GetFreeSpace
+
+            _Options = New AddFileOptions With {
+            .UseLFN = True,
+            .UseNTExtensions = False
+        }
+
+            _TotalSpaceRequired = 0
+        End Sub
+
+        Public ReadOnly Property BytesPerCluster As UInteger
+            Get
+                Return _BytesPerCluster
+            End Get
+        End Property
+
+        Public ReadOnly Property CurrentDirectory As IDirectory
+            Get
+                Return _CurrentDirectory
+            End Get
+        End Property
+        Public ReadOnly Property FreeSpace As UInteger
+            Get
+                Return _FreeSpace
+            End Get
+        End Property
+
+        Public ReadOnly Property Options As AddFileOptions
+            Get
+                Return _Options
+            End Get
+        End Property
+
+        Public Property TotalSpaceRequired As Long
+            Get
+                Return _TotalSpaceRequired
+            End Get
+            Set(value As Long)
+                _TotalSpaceRequired = value
+            End Set
+        End Property
+
+        Public Sub SetOptions(LFN As Boolean, NTExtensions As Boolean)
+
+            RefreshDirectoryList(DirectoryList, LFN, NTExtensions)
+            RefreshFileList(FileList, LFN, NTExtensions)
+
+            _Options.UseLFN = LFN
+            _Options.UseNTExtensions = NTExtensions
+        End Sub
+
+        Private Sub RefreshDirectoryList(DirectoryList As List(Of ImportDirectory), LFN As Boolean, NTExtensions As Boolean)
+            For Each Directory In DirectoryList
+                If Directory.SelectedFiles > 0 Then
+                    Directory.RefreshRequiredEntries(LFN, NTExtensions)
+                End If
+                RefreshDirectoryList(Directory.DirectoryList, LFN, NTExtensions)
+                RefreshFileList(Directory.FileList, LFN, NTExtensions)
+            Next
+        End Sub
+
+        Private Sub RefreshFileList(FileList As List(Of ImportFile), LFN As Boolean, NTExtensions As Boolean)
+            For Each File In FileList
+                If File.IsSelected Then
+                    File.RefreshRequiredEntries(LFN, NTExtensions)
+                End If
+            Next
+        End Sub
+    End Class
+
+    Public Class ImportFile
+        Inherits ImportFileBase
+
+        Private ReadOnly _Root As ImportDirectoryRoot
+        Private ReadOnly _SizeOnDisk As Long
+        Private _IsSelected As Boolean
+
+        Public Sub New(FilePath As String, FileName As String, SizeOnDisk As Long, Root As ImportDirectoryRoot, Parent As ImportDirectory)
+            MyBase.New(FilePath, FileName, Parent)
+
+            _Root = Root
+            _IsSelected = False
+            _SizeOnDisk = SizeOnDisk
+        End Sub
+
+        Public Property IsSelected As Boolean
+            Get
+                Return _IsSelected
+            End Get
+            Set(value As Boolean)
+                If _IsSelected <> value Then
+                    _IsSelected = value
+                    Dim Diff = If(value, 1, -1)
+                    Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
+                    Dim Directory = Parent
+                    If Directory IsNot Nothing Then
+                        Directory.EntriesRequired += (RequiredEntries * Diff)
+                        Do
+                            Directory.SelectedFiles += Diff
+                            Directory = Directory.Parent
+                        Loop Until Directory Is Nothing
+                    End If
+                    If _Root IsNot Nothing Then
+                        _Root.TotalSpaceRequired += (_SizeOnDisk * Diff)
+                    End If
+                End If
+            End Set
+        End Property
+
+        Public ReadOnly Property Root As ImportDirectoryRoot
+            Get
+                Return _Root
+            End Get
+        End Property
+
+        Public ReadOnly Property SizeOnDisk As Long
+            Get
+                Return _SizeOnDisk
+            End Get
+        End Property
+
+        Public Function IsFileTooLarge() As Boolean
+            Return _SizeOnDisk > _Root.FreeSpace
+        End Function
+
+        Public Sub RefreshRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean)
+            If _IsSelected Then
+                Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
+                Dim NewRequiredEntries = GetRequiredEntries(UseLFN, UseNTExtensions)
+                Dim Diff = NewRequiredEntries - RequiredEntries
+                If Diff <> 0 Then
+                    Parent.EntriesRequired += Diff
+                End If
+            End If
+        End Sub
+    End Class
+
+    Public MustInherit Class ImportFileBase
+        Private ReadOnly _CanUseNTExtensions As Boolean
+        Private ReadOnly _FileName As String
+        Private ReadOnly _FilePath As String
+        Private ReadOnly _IsLongFileName As Boolean
+        Private ReadOnly _Parent As ImportDirectory
+
+        Public Sub New(FilePath As String, FileName As String, Parent As ImportDirectory)
+            _Parent = Parent
+            _FilePath = FilePath
+            _FileName = FileName
+            _IsLongFileName = CalcIsLongFileName()
+            If _IsLongFileName Then
+                _CanUseNTExtensions = CalcCanUseNTExtensions()
+            Else
+                _CanUseNTExtensions = False
+            End If
+        End Sub
+
+        Public ReadOnly Property CanUseNTExtensions As Boolean
+            Get
+                Return _CanUseNTExtensions
+            End Get
+        End Property
+
+        Public ReadOnly Property FileName As String
+            Get
+                Return _FileName
+            End Get
+        End Property
+
+        Public ReadOnly Property FilePath As String
+            Get
+                Return _FilePath
+            End Get
+        End Property
+
+        Public ReadOnly Property IsLongFileName As Boolean
+            Get
+                Return _IsLongFileName
+            End Get
+        End Property
+
+        Public ReadOnly Property Parent As ImportDirectory
+            Get
+                Return _Parent
+            End Get
+        End Property
+
+        Public Function GetRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean) As Integer
+            If _FileName.Length = 0 Then
+                Return 0
+            End If
+
+            Dim EntriesRequired As Integer = 1
+
+            If Not UseNTExtensions Or Not _CanUseNTExtensions Then
+                If UseLFN And _IsLongFileName Then
+                    EntriesRequired += CeilDiv(CUInt(_FileName.Length), 26)
+                End If
+            End If
+
+            Return EntriesRequired
+        End Function
+
+        Private Function CalcCanUseNTExtensions() As Boolean
+            Dim FileParts = SplitFilename(_FileName)
+
+            If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
+                Return False
+            Else
+                Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+                Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
+
+                If CleanFileName = FileParts.Name.ToUpper And CleanExtension = FileParts.Extension.ToUpper Then
+                    If (CleanFileName = FileParts.Name Or FileParts.Name.ToLower = FileParts.Name) And (CleanExtension = FileParts.Extension Or FileParts.Extension.ToLower = FileParts.Extension) Then
+                        Return True
+                    End If
+                End If
+            End If
+
+            Return False
+        End Function
+
+        Private Function CalcIsLongFileName() As Boolean
+            Dim FileParts = SplitFilename(_FileName)
+
+            If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
+                Return True
+            Else
+                Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+                Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
+
+                If CleanFileName <> FileParts.Name Or CleanExtension <> FileParts.Extension Then
+                    Return True
+                End If
+            End If
+
+            Return False
+        End Function
+    End Class
+
+    Private Class DirectoryComboItem
+        Public Property Directory As IDirectory
+        Public Property Text As String
+        Public Overrides Function ToString() As String
+            Return Text
+        End Function
+    End Class
+
     Private Class ListViewItemComparer
         Implements IComparer
 
@@ -359,461 +937,4 @@ Public Class ImportFileForm
             Return Value1.CompareTo(Value2)
         End Function
     End Class
-
-#Region "Events"
-
-    Private Sub ChkCreated_CheckedChanged(sender As Object, e As EventArgs) Handles ChkCreated.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.Options.UseCreatedDate = ChkCreated.Checked
-        RefreshCreated()
-    End Sub
-
-    Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.Options.UseLastAccessedDate = ChkLastAccessed.Checked
-        RefreshLastAccessed()
-    End Sub
-
-    Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        ChkNTExtensions.Enabled = ChkLFN.Checked
-        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-        RefreshTotals()
-    End Sub
-
-    Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-        RefreshTotals()
-    End Sub
-
-    Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        ListViewFiles.DoubleBuffer
-        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
-    End Sub
-
-
-    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
-        e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
-        e.Cancel = True
-    End Sub
-
-    Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
-        If _IgnoreEvent Then Exit Sub
-
-        If e.NewValue = e.CurrentValue Then
-            Exit Sub
-        End If
-
-        Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
-
-        Dim FileData As ImportFile = Item.Tag
-
-        If FileData.IsFileTooLarge Then
-            If e.NewValue Then
-                e.NewValue = False
-            End If
-        Else
-            FileData.IsSelected = e.NewValue
-        End If
-
-        RefreshTotals()
-    End Sub
-#End Region
 End Class
-
-#Region "Classes"
-Public Class ImportDirectory
-    Inherits ImportFileBase
-
-    Private ReadOnly _AvailableEntries As Integer
-    Private ReadOnly _DirectoryList As List(Of ImportDirectory)
-    Private ReadOnly _FileList As List(Of ImportFile)
-    'Private ReadOnly _FileNames As HashSet(Of String)
-    Private ReadOnly _Root As ImportDirectoryRoot
-    Private _EntriesRequired As Integer
-    Private _SelectedFiles As Integer
-
-    Public Sub New(FilePath As String, FileName As String, Root As ImportDirectoryRoot, Parent As ImportDirectory)
-        MyBase.New(FilePath, FileName, Parent)
-
-        _Root = Root
-        _FileList = New List(Of ImportFile)
-        _DirectoryList = New List(Of ImportDirectory)
-        '_FileNames = New HashSet(Of String)
-        _SelectedFiles = 0
-        _EntriesRequired = 0
-        _AvailableEntries = 0
-    End Sub
-
-    Public Sub New(AvailableEntries As Integer)
-        MyBase.New("", "", Nothing)
-        _Root = Nothing
-        _FileList = New List(Of ImportFile)
-        _DirectoryList = New List(Of ImportDirectory)
-        '_FileNames = New HashSet(Of String)
-        _SelectedFiles = 0
-        _EntriesRequired = 0
-        _AvailableEntries = AvailableEntries
-    End Sub
-
-    Public ReadOnly Property DirectoryList As List(Of ImportDirectory)
-        Get
-            Return _DirectoryList
-        End Get
-    End Property
-
-    Public Property EntriesRequired As Integer
-        Get
-            Return _EntriesRequired
-        End Get
-        Set(value As Integer)
-            If _EntriesRequired <> value Then
-                Dim PrevRequiredBytes = GetRequiredBytes()
-                _EntriesRequired = value
-                Dim Diff = GetRequiredBytes() - PrevRequiredBytes
-                If Diff <> 0 Then
-                    If Root IsNot Nothing Then
-                        Root.TotalSpaceRequired += Diff
-                    End If
-                End If
-            End If
-        End Set
-    End Property
-
-    Public ReadOnly Property FileList As List(Of ImportFile)
-        Get
-            Return _FileList
-        End Get
-    End Property
-
-    'Public ReadOnly Property FileNames As HashSet(Of String)
-    '    Get
-    '        Return _FileNames
-    '    End Get
-    'End Property
-
-    Public ReadOnly Property Root As ImportDirectoryRoot
-        Get
-            If _Root Is Nothing Then
-                Return Me
-            Else
-                Return _Root
-            End If
-        End Get
-    End Property
-
-    Public Property SelectedFiles As Integer
-        Get
-            Return _SelectedFiles
-        End Get
-        Set(value As Integer)
-            If _SelectedFiles <> value Then
-                Dim PrevRequiredEntries As Integer = 0
-                Dim RequiredEntries As Integer = 0
-                If _SelectedFiles > 0 Then
-                    PrevRequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
-                End If
-                _SelectedFiles = value
-                If _SelectedFiles > 0 Then
-                    RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
-                End If
-
-                If Parent IsNot Nothing Then
-                    Dim EntriesRequired = RequiredEntries - PrevRequiredEntries
-                    If EntriesRequired <> 0 Then
-                        Parent.EntriesRequired += EntriesRequired
-                    End If
-                End If
-            End If
-        End Set
-    End Property
-
-    Public Function AddDirectory(FilePath As String, FileName As String) As ImportDirectory
-        Dim NewDirectory As New ImportDirectory(FilePath, FileName, Root, Me)
-        _DirectoryList.Add(NewDirectory)
-
-        Return NewDirectory
-    End Function
-
-    Public Function AddFile(FilePath As String, FileName As String, SizeOnDisk As Long) As ImportFile
-        Dim NewFile As New ImportFile(FilePath, FileName, SizeOnDisk, Root, Me)
-        _FileList.Add(NewFile)
-
-        Return NewFile
-    End Function
-
-    Public Sub RefreshRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean)
-        If _SelectedFiles > 0 Then
-            Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
-            Dim NewRequiredEntries = GetRequiredEntries(UseLFN, UseNTExtensions)
-            Dim Diff = NewRequiredEntries - RequiredEntries
-            If Diff <> 0 Then
-                If Parent IsNot Nothing Then
-                    Parent.EntriesRequired += Diff
-                End If
-            End If
-        End If
-    End Sub
-    Private Function GetRequiredBytes() As Integer
-        Dim RequiredBytes As Integer = 0
-        Dim EntryCount As Integer = _EntriesRequired - _AvailableEntries
-
-        If EntryCount > 0 Then
-            Dim EntriesPerCluster As UInteger = Root.BytesPerCluster \ 32
-            RequiredBytes = CeilDiv(CUInt(EntryCount), EntriesPerCluster) * Root.BytesPerCluster
-        End If
-
-        Return RequiredBytes
-    End Function
-End Class
-
-Public Class ImportDirectoryRoot
-    Inherits ImportDirectory
-
-    Private ReadOnly _BytesPerCluster As UInteger
-    Private ReadOnly _FreeSpace As UInteger
-    Private ReadOnly _Options As AddFileOptions
-    Private _TotalSpaceRequired As Long
-
-    Public Sub New(AvailableEntries As Integer, BytesPerCluster As UInteger, FreeSpace As UInteger)
-        MyBase.New(AvailableEntries)
-
-        _BytesPerCluster = BytesPerCluster
-        _FreeSpace = FreeSpace
-
-        _Options = New AddFileOptions With {
-            .UseLFN = True,
-            .UseNTExtensions = False
-        }
-
-        _TotalSpaceRequired = 0
-    End Sub
-
-    Public ReadOnly Property BytesPerCluster As UInteger
-        Get
-            Return _BytesPerCluster
-        End Get
-    End Property
-
-    Public ReadOnly Property FreeSpace As UInteger
-        Get
-            Return _FreeSpace
-        End Get
-    End Property
-
-    Public ReadOnly Property Options As AddFileOptions
-        Get
-            Return _Options
-        End Get
-    End Property
-
-    Public Property TotalSpaceRequired As Long
-        Get
-            Return _TotalSpaceRequired
-        End Get
-        Set(value As Long)
-            _TotalSpaceRequired = value
-        End Set
-    End Property
-
-    Public Sub SetOptions(LFN As Boolean, NTExtensions As Boolean)
-
-        RefreshDirectoryList(DirectoryList, LFN, NTExtensions)
-        RefreshFileList(FileList, LFN, NTExtensions)
-
-        _Options.UseLFN = LFN
-        _Options.UseNTExtensions = NTExtensions
-    End Sub
-
-    Private Sub RefreshDirectoryList(DirectoryList As List(Of ImportDirectory), LFN As Boolean, NTExtensions As Boolean)
-        For Each Directory In DirectoryList
-            If Directory.SelectedFiles > 0 Then
-                Directory.RefreshRequiredEntries(LFN, NTExtensions)
-            End If
-            RefreshDirectoryList(Directory.DirectoryList, LFN, NTExtensions)
-            RefreshFileList(Directory.FileList, LFN, NTExtensions)
-        Next
-    End Sub
-
-    Private Sub RefreshFileList(FileList As List(Of ImportFile), LFN As Boolean, NTExtensions As Boolean)
-        For Each File In FileList
-            If File.IsSelected Then
-                File.RefreshRequiredEntries(LFN, NTExtensions)
-            End If
-        Next
-    End Sub
-End Class
-Public Class ImportFile
-    Inherits ImportFileBase
-
-    Private ReadOnly _Root As ImportDirectoryRoot
-    Private ReadOnly _SizeOnDisk As Long
-    Private _IsSelected As Boolean
-
-    Public Sub New(FilePath As String, FileName As String, SizeOnDisk As Long, Root As ImportDirectoryRoot, Parent As ImportDirectory)
-        MyBase.New(FilePath, FileName, Parent)
-
-        _Root = Root
-        _IsSelected = False
-        _SizeOnDisk = SizeOnDisk
-    End Sub
-
-    Public Property IsSelected As Boolean
-        Get
-            Return _IsSelected
-        End Get
-        Set(value As Boolean)
-            If _IsSelected <> value Then
-                _IsSelected = value
-                Dim Diff = If(value, 1, -1)
-                Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
-                Dim Directory = Parent
-                If Directory IsNot Nothing Then
-                    Directory.EntriesRequired += (RequiredEntries * Diff)
-                    Do
-                        Directory.SelectedFiles += Diff
-                        Directory = Directory.Parent
-                    Loop Until Directory Is Nothing
-                End If
-                If _Root IsNot Nothing Then
-                    _Root.TotalSpaceRequired += (_SizeOnDisk * Diff)
-                End If
-            End If
-        End Set
-    End Property
-
-    Public ReadOnly Property Root As ImportDirectoryRoot
-        Get
-            Return _Root
-        End Get
-    End Property
-
-    Public ReadOnly Property SizeOnDisk As Long
-        Get
-            Return _SizeOnDisk
-        End Get
-    End Property
-
-    Public Function IsFileTooLarge() As Boolean
-        Return _SizeOnDisk > _Root.FreeSpace
-    End Function
-
-    Public Sub RefreshRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean)
-        If _IsSelected Then
-            Dim RequiredEntries = GetRequiredEntries(Root.Options.UseLFN, Root.Options.UseNTExtensions)
-            Dim NewRequiredEntries = GetRequiredEntries(UseLFN, UseNTExtensions)
-            Dim Diff = NewRequiredEntries - RequiredEntries
-            If Diff <> 0 Then
-                Parent.EntriesRequired += Diff
-            End If
-        End If
-    End Sub
-End Class
-
-Public MustInherit Class ImportFileBase
-    Private ReadOnly _CanUseNTExtensions As Boolean
-    Private ReadOnly _FileName As String
-    Private ReadOnly _FilePath As String
-    Private ReadOnly _IsLongFileName As Boolean
-    Private ReadOnly _Parent As ImportDirectory
-
-    Public Sub New(FilePath As String, FileName As String, Parent As ImportDirectory)
-        _Parent = Parent
-        _FilePath = FilePath
-        _FileName = FileName
-        _IsLongFileName = CalcIsLongFileName()
-        If _IsLongFileName Then
-            _CanUseNTExtensions = CalcCanUseNTExtensions()
-        Else
-            _CanUseNTExtensions = False
-        End If
-    End Sub
-
-    Public ReadOnly Property CanUseNTExtensions As Boolean
-        Get
-            Return _CanUseNTExtensions
-        End Get
-    End Property
-
-    Public ReadOnly Property FileName As String
-        Get
-            Return _FileName
-        End Get
-    End Property
-
-    Public ReadOnly Property FilePath As String
-        Get
-            Return _FilePath
-        End Get
-    End Property
-
-    Public ReadOnly Property IsLongFileName As Boolean
-        Get
-            Return _IsLongFileName
-        End Get
-    End Property
-
-    Public ReadOnly Property Parent As ImportDirectory
-        Get
-            Return _Parent
-        End Get
-    End Property
-
-    Public Function GetRequiredEntries(UseLFN As Boolean, UseNTExtensions As Boolean) As Integer
-        If _FileName.Length = 0 Then
-            Return 0
-        End If
-
-        Dim EntriesRequired As Integer = 1
-
-        If Not UseNTExtensions Or Not _CanUseNTExtensions Then
-            If UseLFN And _IsLongFileName Then
-                EntriesRequired += CeilDiv(CUInt(_FileName.Length), 26)
-            End If
-        End If
-
-        Return EntriesRequired
-    End Function
-
-    Private Function CalcCanUseNTExtensions() As Boolean
-        Dim FileParts = SplitFilename(_FileName)
-
-        If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
-            Return False
-        Else
-            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
-            Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
-
-            If CleanFileName = FileParts.Name.ToUpper And CleanExtension = FileParts.Extension.ToUpper Then
-                If (CleanFileName = FileParts.Name Or FileParts.Name.ToLower = FileParts.Name) And (CleanExtension = FileParts.Extension Or FileParts.Extension.ToLower = FileParts.Extension) Then
-                    Return True
-                End If
-            End If
-        End If
-
-        Return False
-    End Function
-
-    Private Function CalcIsLongFileName() As Boolean
-        Dim FileParts = SplitFilename(_FileName)
-
-        If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
-            Return True
-        Else
-            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
-            Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
-
-            If CleanFileName <> FileParts.Name Or CleanExtension <> FileParts.Extension Then
-                Return True
-            End If
-        End If
-
-        Return False
-    End Function
-End Class
-#End Region
