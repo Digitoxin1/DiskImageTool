@@ -578,20 +578,13 @@ Public Class MainForm
         Return ModifyImageList
     End Function
 
-    Private Sub SetDropHighlight(ActivePanel As Panel)
-        Dim HighlightColor = SystemColors.ControlLight
-        Dim NormalColor = SystemColors.Window
-
-        PanelOverlayTopZone.BackColor = If(ActivePanel Is PanelOverlayTopZone, HighlightColor, NormalColor)
-        PanelOverlayBottomZone.BackColor = If(ActivePanel Is PanelOverlayBottomZone, HighlightColor, NormalColor)
-    End Sub
-
     Private Function GetNewFileName() As String
         Dim FileName As String = "New Image" & If(_NewImageSequence > 1, " " & _NewImageSequence.ToString(), "") & ".ima"
         _NewImageSequence += 1
 
         Return FileName
     End Function
+
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
@@ -735,6 +728,7 @@ Public Class MainForm
             ImageFilters.ScanWin9xClean(Disk, ImageData)
         End If
     End Sub
+
     Private Sub InitButtonState(CurrentImage As DiskImageContainer)
         Dim Disk As Disk = Nothing
         Dim FATTablesMatch As Boolean = True
@@ -855,7 +849,10 @@ Public Class MainForm
     Private Function IsImportDrop(e As DragEventArgs) As Boolean
         Dim pt = PanelOverlay.PointToClient(New Point(e.X, e.Y))
 
-        Return PanelOverlayBottomZone.Bounds.Contains(pt)
+        Dim r As Rectangle = PanelOverlayBottomZone.Bounds
+        r.Inflate(1, 1)
+
+        Return r.Contains(pt)
     End Function
 
     Private Sub LaunchNewInstance(FilePath As String)
@@ -1424,6 +1421,18 @@ Public Class MainForm
         StatusBarFileName.Visible = True
     End Sub
 
+    Private Sub SetDropHighlight(ActivePanel As Panel)
+        Dim HighlightForeColor = Color.RoyalBlue
+        Dim HighlightBackColor = Color.FromArgb(255, 230, 240, 255)
+        Dim NormalForeColor = Color.Gray
+        Dim NormalBackColor = Color.FromArgb(255, 245, 245, 245)
+
+        LabelOpenImages.ForeColor = If(ActivePanel Is PanelOverlayTopZone, HighlightForeColor, NormalForeColor)
+        LabelImportFiles.ForeColor = If(ActivePanel Is PanelOverlayBottomZone, HighlightForeColor, NormalForeColor)
+
+        PanelOverlayTopZone.BackColor = If(ActivePanel Is PanelOverlayTopZone, HighlightBackColor, NormalBackColor)
+        PanelOverlayBottomZone.BackColor = If(ActivePanel Is PanelOverlayBottomZone, HighlightBackColor, NormalBackColor)
+    End Sub
     Private Sub SetImagesLoaded(Value As Boolean)
         _ImagesLoaded = Value
         StatusBarImageCount.Visible = Value

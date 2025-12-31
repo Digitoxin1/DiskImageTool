@@ -258,4 +258,10 @@
   <data name="MenuHelpDocs.Text" xml:space="preserve">
     <value>&amp;Documentation</value>
   </data>
+  <data name="LabelOpenImages.Text" xml:space="preserve">
+    <value>Ouvrir des images disque</value>
+  </data>
+  <data name="LabelImportFiles.Text" xml:space="preserve">
+    <value>Importer des fichiers</value>
+  </data>
 </root>

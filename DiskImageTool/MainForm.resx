@@ -367,13 +367,13 @@
     <value>True</value>
   </data>
   <data name="LabelOpenImages.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 14.25pt, style=Bold</value>
   </data>
   <data name="LabelOpenImages.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 99</value>
+    <value>273, 102</value>
   </data>
   <data name="LabelOpenImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>134, 16</value>
+    <value>180, 24</value>
   </data>
   <data name="LabelOpenImages.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -397,10 +397,13 @@
     <value>Fill</value>
   </data>
   <data name="PanelOverlayTopZone.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 4</value>
+    <value>1, 1</value>
+  </data>
+  <data name="PanelOverlayTopZone.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
   <data name="PanelOverlayTopZone.Size" type="System.Drawing.Size, System.Drawing">
-    <value>670, 224</value>
+    <value>676, 230</value>
   </data>
   <data name="PanelOverlayTopZone.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -427,16 +430,16 @@
     <value>True</value>
   </data>
   <data name="LabelImportFiles.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 14.25pt, style=Bold</value>
   </data>
   <data name="LabelImportFiles.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="LabelImportFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>293, 106</value>
+    <value>296, 109</value>
   </data>
   <data name="LabelImportFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>88, 16</value>
+    <value>119, 24</value>
   </data>
   <data name="LabelImportFiles.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -460,10 +463,13 @@
     <value>Fill</value>
   </data>
   <data name="PanelOverlayBottomZone.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 235</value>
+    <value>1, 232</value>
+  </data>
+  <data name="PanelOverlayBottomZone.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
   <data name="PanelOverlayBottomZone.Size" type="System.Drawing.Size, System.Drawing">
-    <value>670, 225</value>
+    <value>676, 231</value>
   </data>
   <data name="PanelOverlayBottomZone.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
