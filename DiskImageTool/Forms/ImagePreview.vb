@@ -38,7 +38,7 @@
         FilePanelMain.Load(CurrentImage, False, FullDisplay)
     End Sub
 
-    Public Shared Function Display(FileName As String, ImageParams As DiskImage.FloppyDiskParams, Caption As String, owner As IWin32Window) As Boolean
+    Public Shared Function Display(FileName As String, ImageParams As DiskImage.FloppyDiskParams, Caption As String) As Boolean
         Dim OpenResponse = FileOpenBinary(FileName)
 
         If Not OpenResponse.Result Then
@@ -63,7 +63,7 @@
             Dim FloppyImage As New DiskImage.BasicSectorImage(Buffer)
             Dim Disk As New DiskImage.Disk(FloppyImage, 0)
 
-            Display(Disk, False, Caption, owner)
+            Display(Disk, False, Caption)
         Catch ex As Exception
             MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
 
@@ -73,7 +73,7 @@
         Return True
     End Function
 
-    Public Shared Function Display(ImageData As ImageData, Caption As String, owner As IWin32Window) As Boolean
+    Public Shared Function Display(ImageData As ImageData, Caption As String) As Boolean
         Dim Disk = DiskImageLoadFromImageData(ImageData)
 
         If Disk Is Nothing Then
@@ -81,14 +81,14 @@
             Return False
         End If
 
-        Display(Disk, True, Caption, owner)
+        Display(Disk, True, Caption)
 
         Return True
     End Function
 
-    Public Shared Sub Display(Disk As DiskImage.Disk, FullDisplay As Boolean, Caption As String, owner As IWin32Window)
-        Using Dialog As New ImagePreview(Disk, FullDisplay, Caption)
-            Dialog.ShowDialog(owner)
+    Public Shared Sub Display(Disk As DiskImage.Disk, FullDisplay As Boolean, Caption As String)
+        Using dlg As New ImagePreview(Disk, FullDisplay, Caption)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 End Class

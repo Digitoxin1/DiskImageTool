@@ -143,14 +143,20 @@ Public Class HexViewForm
         _StartingCluster = Cluster
     End Sub
 
-    Public Shared Function Display(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Optional Cluster? As UShort = Nothing) As Boolean
-        Using Form As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
-            If Cluster.HasValue Then
-                Form.SetStartingCluster(Cluster.Value)
-            End If
-            Form.ShowDialog()
+    Public Shared Function Display(HexViewSectorData As HexViewSectorData,
+                                   SectorNavigator As Boolean,
+                                   ClusterNavigator As Boolean,
+                                   SyncBlocks As Boolean,
+                                   Optional Cluster? As UShort = Nothing) As Boolean
 
-            Return Form.Modified
+        Using Dlg As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+            If Cluster.HasValue Then
+                Dlg.SetStartingCluster(Cluster.Value)
+            End If
+
+            Dlg.ShowDialog(App.CurrentFormInstance)
+
+            Return Dlg.Modified
         End Using
     End Function
 

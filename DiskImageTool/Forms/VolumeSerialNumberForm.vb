@@ -8,11 +8,11 @@
         LocalizeForm()
     End Sub
 
-    Public Shared Function Display(owner As IWin32Window) As (Result As Boolean, Value As Date)
-        Using Form As New VolumeSerialNumberForm()
-            Form.ShowDialog(owner)
+    Public Shared Function Display() As (Result As Boolean, Value As Date)
+        Using dlg As New VolumeSerialNumberForm()
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Form.DialogResult = DialogResult.OK, Form.GetValue())
+            Return (dlg.DialogResult = DialogResult.OK, dlg.GetValue())
         End Using
     End Function
 

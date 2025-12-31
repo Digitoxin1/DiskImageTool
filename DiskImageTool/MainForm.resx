@@ -276,6 +276,9 @@
   <data name="&gt;&gt;SplitContainer1.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="PanelFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="LabelDropMessage.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -292,7 +295,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>104, 257</value>
+    <value>210, 224</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -313,7 +316,7 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;LabelDropMessage.Parent" xml:space="preserve">
-    <value>SplitContainer1.Panel2</value>
+    <value>PanelFiles</value>
   </data>
   <data name="&gt;&gt;LabelDropMessage.ZOrder" xml:space="preserve">
     <value>0</value>
@@ -328,13 +331,13 @@
     <value>Microsoft Sans Serif, 8.25pt</value>
   </data>
   <data name="ListViewFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
+    <value>0, 0</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
     <value>678, 464</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.Name" xml:space="preserve">
     <value>ListViewFiles</value>
@@ -343,10 +346,196 @@
     <value>DiskImageTool.ListViewEx, DiskImageTool, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.Parent" xml:space="preserve">
-    <value>SplitContainer1.Panel2</value>
+    <value>PanelFiles</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <metadata name="PanelOverlay.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelOverlay.CellBorderStyle" type="System.Windows.Forms.TableLayoutPanelCellBorderStyle, System.Windows.Forms">
+    <value>Single</value>
+  </data>
+  <metadata name="PanelOverlayTopZone.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LabelOpenImages.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="LabelOpenImages.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LabelOpenImages.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
+  </data>
+  <data name="LabelOpenImages.Location" type="System.Drawing.Point, System.Drawing">
+    <value>270, 99</value>
+  </data>
+  <data name="LabelOpenImages.Size" type="System.Drawing.Size, System.Drawing">
+    <value>134, 16</value>
+  </data>
+  <data name="LabelOpenImages.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="LabelOpenImages.Text" xml:space="preserve">
+    <value>Open Disk Images</value>
+  </data>
+  <data name="&gt;&gt;LabelOpenImages.Name" xml:space="preserve">
+    <value>LabelOpenImages</value>
+  </data>
+  <data name="&gt;&gt;LabelOpenImages.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LabelOpenImages.Parent" xml:space="preserve">
+    <value>PanelOverlayTopZone</value>
+  </data>
+  <data name="&gt;&gt;LabelOpenImages.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="PanelOverlayTopZone.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelOverlayTopZone.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 4</value>
+  </data>
+  <data name="PanelOverlayTopZone.Size" type="System.Drawing.Size, System.Drawing">
+    <value>670, 224</value>
+  </data>
+  <data name="PanelOverlayTopZone.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayTopZone.Name" xml:space="preserve">
+    <value>PanelOverlayTopZone</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayTopZone.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayTopZone.Parent" xml:space="preserve">
+    <value>PanelOverlay</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayTopZone.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="PanelOverlayBottomZone.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LabelImportFiles.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="LabelImportFiles.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LabelImportFiles.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
+  </data>
+  <data name="LabelImportFiles.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="LabelImportFiles.Location" type="System.Drawing.Point, System.Drawing">
+    <value>293, 106</value>
+  </data>
+  <data name="LabelImportFiles.Size" type="System.Drawing.Size, System.Drawing">
+    <value>88, 16</value>
+  </data>
+  <data name="LabelImportFiles.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="LabelImportFiles.Text" xml:space="preserve">
+    <value>Import Files</value>
+  </data>
+  <data name="&gt;&gt;LabelImportFiles.Name" xml:space="preserve">
+    <value>LabelImportFiles</value>
+  </data>
+  <data name="&gt;&gt;LabelImportFiles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LabelImportFiles.Parent" xml:space="preserve">
+    <value>PanelOverlayBottomZone</value>
+  </data>
+  <data name="&gt;&gt;LabelImportFiles.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="PanelOverlayBottomZone.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelOverlayBottomZone.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 235</value>
+  </data>
+  <data name="PanelOverlayBottomZone.Size" type="System.Drawing.Size, System.Drawing">
+    <value>670, 225</value>
+  </data>
+  <data name="PanelOverlayBottomZone.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayBottomZone.Name" xml:space="preserve">
+    <value>PanelOverlayBottomZone</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayBottomZone.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayBottomZone.Parent" xml:space="preserve">
+    <value>PanelOverlay</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlayBottomZone.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelOverlay.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelOverlay.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelOverlay.RowCount" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="PanelOverlay.Size" type="System.Drawing.Size, System.Drawing">
+    <value>678, 464</value>
+  </data>
+  <data name="PanelOverlay.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="PanelOverlay.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlay.Name" xml:space="preserve">
+    <value>PanelOverlay</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlay.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlay.Parent" xml:space="preserve">
+    <value>PanelFiles</value>
+  </data>
+  <data name="&gt;&gt;PanelOverlay.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="PanelOverlay.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="PanelOverlayTopZone" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="PanelOverlayBottomZone" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Percent,50,Percent,50" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="PanelFiles.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelFiles.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 33</value>
+  </data>
+  <data name="PanelFiles.Size" type="System.Drawing.Size, System.Drawing">
+    <value>678, 464</value>
+  </data>
+  <data name="PanelFiles.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;PanelFiles.Name" xml:space="preserve">
+    <value>PanelFiles</value>
+  </data>
+  <data name="&gt;&gt;PanelFiles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelFiles.Parent" xml:space="preserve">
+    <value>SplitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;PanelFiles.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <metadata name="PanelSpacer2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -376,7 +565,7 @@
     <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;PanelSpacer2.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <metadata name="PanelCombo.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -505,7 +694,7 @@
     <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;PanelCombo.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="SplitContainer1.Panel2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 6, 12, 6</value>
@@ -733,7 +922,7 @@
     <value>False</value>
   </metadata>
   <data name="MenuHelpSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>163, 6</value>
   </data>
   <metadata name="ToolStripSeparator6.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -1170,25 +1359,25 @@
     <value>&amp;Options</value>
   </data>
   <data name="MenuHelpProjectPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>166, 22</value>
   </data>
   <data name="MenuHelpProjectPage.Text" xml:space="preserve">
     <value>&amp;Project Page</value>
   </data>
   <data name="MenuHelpDocs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>166, 22</value>
   </data>
   <data name="MenuHelpDocs.Text" xml:space="preserve">
     <value>&amp;Documentation</value>
   </data>
   <data name="MenuHelpUpdateCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>166, 22</value>
   </data>
   <data name="MenuHelpUpdateCheck.Text" xml:space="preserve">
     <value>Check for &amp;Update</value>
   </data>
   <data name="MenuHelpChangeLog.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>166, 22</value>
   </data>
   <data name="MenuHelpChangeLog.Text" xml:space="preserve">
     <value>&amp;Change Log</value>
@@ -1197,7 +1386,7 @@
     <value>F1</value>
   </data>
   <data name="MenuHelpAbout.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>166, 22</value>
   </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>{About}</value>

@@ -28,11 +28,11 @@ Public Class FloppyReadOptionsForm
         End Get
     End Property
 
-    Public Shared Function Display(DetectedFormat As FloppyDiskFormat, owner As IWin32Window) As (Result As Boolean, Format As FloppyDiskFormat)
-        Using Form As New FloppyReadOptionsForm(DetectedFormat)
-            Form.ShowDialog(owner)
+    Public Shared Function Display(DetectedFormat As FloppyDiskFormat) As (Result As Boolean, Format As FloppyDiskFormat)
+        Using dlg As New FloppyReadOptionsForm(DetectedFormat)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Form.DialogResult = DialogResult.OK, Form.DiskFormat)
+            Return (dlg.DialogResult = DialogResult.OK, dlg.DiskFormat)
         End Using
     End Function
 

@@ -34,10 +34,10 @@ Public Class SaveAllForm
     End Property
 
     Public Shared Function Display(Caption As String) As MyMsgBoxResult
-        Using Form As New SaveAllForm(Caption)
-            Form.ShowDialog()
+        Using dlg As New SaveAllForm(Caption)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return Form.Result
+            Return dlg.Result
         End Using
     End Function
 

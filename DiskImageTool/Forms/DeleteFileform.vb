@@ -38,9 +38,9 @@
 
     Public Shared Function Display(Caption As String, Title As String, CanFill As Boolean) As DeleteFileFormResult
         If CanFill Then
-            Using Form As New DeleteFileForm(Caption, Title, CanFill)
-                Form.ShowDialog()
-                Return Form.Result
+            Using dlg As New DeleteFileForm(Caption, Title, CanFill)
+                dlg.ShowDialog(App.CurrentFormInstance)
+                Return dlg.Result
             End Using
         Else
             Dim MsgBoxResult = MsgBox(Caption, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2, Title)

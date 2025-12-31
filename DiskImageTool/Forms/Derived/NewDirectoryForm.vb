@@ -32,10 +32,10 @@ Public Class NewDirectoryForm
     End Property
 
     Public Shared Function Display() As (Updated As Boolean, HasLFN As Boolean, UseNTExtensions As Boolean, NewDirectoryData As Byte(), NewFilename As String)
-        Using Form As New NewDirectoryForm()
-            Form.ShowDialog()
+        Using dlg As New NewDirectoryForm()
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Form.DialogResult = DialogResult.OK AndAlso Form.Updated, Form.HasLFN, Form.UseNTExtensions, Form.NewDirectoryData, Form.NewFilename)
+            Return (dlg.DialogResult = DialogResult.OK AndAlso dlg.Updated, dlg.HasLFN, dlg.UseNTExtensions, dlg.NewDirectoryData, dlg.NewFilename)
         End Using
     End Function
 

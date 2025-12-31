@@ -9,6 +9,7 @@ Public Class MainForm
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _FileVersion As String = ""
+    Private _ImagesLoaded As Boolean = False
     Private _LoadedFiles As LoadedFiles
     Private _NewImageSequence As Integer = 1
     Private _SummaryPanel As SummaryPanel
@@ -237,7 +238,7 @@ Public Class MainForm
 
         Dim scanner As New FilterScanner(images, CurrentImage, NewOnly, AddressOf Me.ImageFiltersScanAll)
 
-        ItemScanForm.Display(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, Me)
+        ItemScanForm.Display(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning)
 
         MenuFiltersScanNew.Visible = scanner.ItemsRemaining > 0
 
@@ -551,14 +552,14 @@ Public Class MainForm
     End Function
 
     Private Sub FluxConvertImage()
-        Dim FileName As String = Flux.OpenFluxImage(Me, True)
+        Dim FileName As String = Flux.OpenFluxImage(True)
 
         FluxConvertImage(FileName)
     End Sub
 
     Private Sub FluxConvertImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.ConvertFluxImage(Me, FileName, True, AddressOf ProcessImportedImage, False)
+            Dim Response = Flux.ConvertFluxImage(FileName, True, AddressOf ProcessImportedImage, False)
             If Response.Result = DialogResult.OK Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
@@ -577,6 +578,14 @@ Public Class MainForm
         Return ModifyImageList
     End Function
 
+    Private Sub SetDropHighlight(ActivePanel As Panel)
+        Dim HighlightColor = SystemColors.ControlLight
+        Dim NormalColor = SystemColors.Window
+
+        PanelOverlayTopZone.BackColor = If(ActivePanel Is PanelOverlayTopZone, HighlightColor, NormalColor)
+        PanelOverlayBottomZone.BackColor = If(ActivePanel Is PanelOverlayBottomZone, HighlightColor, NormalColor)
+    End Sub
+
     Private Function GetNewFileName() As String
         Dim FileName As String = "New Image" & If(_NewImageSequence > 1, " " & _NewImageSequence.ToString(), "") & ".ima"
         _NewImageSequence += 1
@@ -588,7 +597,7 @@ Public Class MainForm
     End Function
 
     Private Sub GreaseweazleReadImage()
-        Dim Response = Flux.Greaseweazle.ReadFluxImage(Me, AddressOf ProcessImportedImage)
+        Dim Response = Flux.Greaseweazle.ReadFluxImage(AddressOf ProcessImportedImage)
         If Response.Result Then
             ProcessImportedImage(Response.OutputFile, Response.NewFileName)
         End If
@@ -649,7 +658,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageNew()
-        Dim Response = ImageCreationForm.Display(Me)
+        Dim Response = ImageCreationForm.Display()
 
         If Response.Data Is Nothing Then
             Exit Sub
@@ -681,7 +690,7 @@ Public Class MainForm
 
         Dim scanner As New Win9xCleanScanner(images, FilePanel.CurrentImage, AddressOf Me.ImageWin9xCleanBatch)
 
-        ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, Me)
+        ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing)
 
         ImageFilters.UpdateAllMenuItems()
         If ImageFilters.ScanRun Then
@@ -817,6 +826,11 @@ Public Class MainForm
         PopulateLanguages()
     End Sub
 
+    Private Sub InitOverlay()
+        PanelOverlay.Visible = False
+        PanelOverlay.BringToFront()
+    End Sub
+
     Private Sub InitToolStripTop()
         _ToolStripFatCombo = FATComboAdd()
 
@@ -837,6 +851,12 @@ Public Class MainForm
             CheckForUpdatesStartup()
         End If
     End Sub
+
+    Private Function IsImportDrop(e As DragEventArgs) As Boolean
+        Dim pt = PanelOverlay.PointToClient(New Point(e.X, e.Y))
+
+        Return PanelOverlayBottomZone.Bounds.Contains(pt)
+    End Function
 
     Private Sub LaunchNewInstance(FilePath As String)
         Process.Start(Application.ExecutablePath, """" & FilePath & """")
@@ -976,8 +996,14 @@ Public Class MainForm
     Private Sub PositionControls()
         btnRetry.Left = btnRetry.Parent.Width - btnRetry.Width - 20
 
-        LabelDropMessage.Left = ListViewFiles.Left + (ListViewFiles.Width - LabelDropMessage.Width) \ 2
-        LabelDropMessage.Top = ListViewFiles.Top + (ListViewFiles.Height - LabelDropMessage.Height) \ 2
+        LabelDropMessage.Left = (PanelFiles.Width - LabelDropMessage.Width) \ 2
+        LabelDropMessage.Top = (PanelFiles.Height - LabelDropMessage.Height) \ 2
+
+        LabelOpenImages.Left = (PanelOverlayTopZone.Width - LabelOpenImages.Width) \ 2
+        LabelOpenImages.Top = (PanelOverlayTopZone.Height - LabelOpenImages.Height) \ 2
+
+        LabelImportFiles.Left = (PanelOverlayBottomZone.Width - LabelImportFiles.Width) \ 2
+        LabelImportFiles.Top = (PanelOverlayBottomZone.Height - LabelImportFiles.Height) \ 2
     End Sub
 
     Private Sub PositionForm()
@@ -1037,7 +1063,7 @@ Public Class MainForm
             End Sub
 
         If ShowDialog Then
-            ImageLoadForm.Display(scanner, Files, NewImage, NewFileName, Me)
+            ImageLoadForm.Display(scanner, Files, NewImage, NewFileName)
         Else
             scanner.Scan(Files, NewImage, NewFileName)
         End If
@@ -1399,6 +1425,7 @@ Public Class MainForm
     End Sub
 
     Private Sub SetImagesLoaded(Value As Boolean)
+        _ImagesLoaded = Value
         StatusBarImageCount.Visible = Value
         LabelDropMessage.Visible = Not Value
         MenuFiltersScan.Enabled = Value
@@ -1635,16 +1662,38 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, HashPanel1.DragDrop
-        Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
+    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, PanelFiles.DragDrop, ListViewSummary.DragDrop, HashPanel1.DragDrop
+        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+            PanelOverlay.Visible = False
+            SetDropHighlight(Nothing)
+        End If
+
+        If Not e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Exit Sub
+        End If
+
+        Dim Files As String() = TryCast(e.Data.GetData(DataFormats.FileDrop), String())
+
+        If Files Is Nothing OrElse Files.Length = 0 Then
+            Exit Sub
+        End If
+
+        Dim DoImport As Boolean = False
+        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+            DoImport = IsImportDrop(e)
+        End If
 
         Me.BeginInvoke(Sub()
                            Me.Cursor = Cursors.Default
-                           HandleDragDrop(Files)
+                           If DoImport Then
+                               FilePanelImportFileList(FilePanelMain, Files)
+                           Else
+                               HandleDragDrop(Files)
+                           End If
                        End Sub)
     End Sub
 
-    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ImageCombo.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, HashPanel1.DragEnter
+    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ImageCombo.DragEnter, PanelFiles.DragEnter, ListViewSummary.DragEnter, HashPanel1.DragEnter
         If _Suppress_File_DragEnterEvent Then
             Exit Sub
         End If
@@ -1653,6 +1702,34 @@ Public Class MainForm
 
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
+
+            If sender Is PanelFiles AndAlso _ImagesLoaded Then
+                PanelOverlay.Visible = True
+            End If
+        End If
+    End Sub
+
+    Private Sub File_DragLeave(sender As Object, e As EventArgs) Handles PanelFiles.DragLeave, ListViewSummary.DragLeave, HashPanel1.DragLeave
+        If _Suppress_File_DragEnterEvent Then
+            Exit Sub
+        End If
+
+        Debug.Print("MainForm.File_DragLeave fired")
+
+        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+            PanelOverlay.Visible = False
+            SetDropHighlight(Nothing)
+        End If
+    End Sub
+
+    Private Sub File_DragOver(sender As Object, e As DragEventArgs) Handles PanelFiles.DragOver
+        If _Suppress_File_DragEnterEvent Then
+            Exit Sub
+        End If
+
+        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+            Dim DoImport = IsImportDrop(e)
+            SetDropHighlight(If(DoImport, PanelOverlayBottomZone, PanelOverlayTopZone))
         End If
     End Sub
 
@@ -1735,10 +1812,9 @@ Public Class MainForm
         _FileVersion = GetVersionString()
 
         PositionControls()
-
         InitAllFileExtensions()
-
         PositionForm()
+        InitOverlay()
 
         AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
 
@@ -1770,25 +1846,25 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuDiskReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA)
+        Dim FileName = FloppyDiskRead(FloppyDriveEnum.FloppyDriveA)
         If FileName.Length > 0 Then
             ProcessFileDropNew(FileName, GetNewFileName())
         End If
     End Sub
 
     Private Sub MenuDiskReadFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyB.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB)
+        Dim FileName = FloppyDiskRead(FloppyDriveEnum.FloppyDriveB)
         If FileName.Length > 0 Then
             ProcessFileDropNew(FileName, GetNewFileName())
         End If
     End Sub
 
     Private Sub MenuDiskWriteFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskWriteFloppyA.Click
-        FloppyDiskWrite(Me, FilePanelMain.CurrentImage.Disk, FloppyDriveEnum.FloppyDriveA)
+        FloppyDiskWrite(FilePanelMain.CurrentImage.Disk, FloppyDriveEnum.FloppyDriveA)
     End Sub
 
     Private Sub MenuDiskWriteFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskWriteFloppyB.Click
-        FloppyDiskWrite(Me, FilePanelMain.CurrentImage.Disk, FloppyDriveEnum.FloppyDriveB)
+        FloppyDiskWrite(FilePanelMain.CurrentImage.Disk, FloppyDriveEnum.FloppyDriveB)
     End Sub
 
     Private Sub MenuEditBootSector_Click(sender As Object, e As EventArgs) Handles MenuEditBootSector.Click
@@ -1899,11 +1975,11 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleClean_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleClean.Click
-        Flux.Greaseweazle.CleanDiskForm.Display(Me)
+        Flux.Greaseweazle.CleanDiskForm.Display()
     End Sub
 
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
-        Flux.Greaseweazle.EraseDiskForm.Display(Me)
+        Flux.Greaseweazle.EraseDiskForm.Display()
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
@@ -1916,7 +1992,7 @@ Public Class MainForm
 
     Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
         If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
-            Flux.Greaseweazle.WriteDiskForm.Display(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName, Me)
+            Flux.Greaseweazle.WriteDiskForm.Display(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
         End If
     End Sub
 
@@ -2010,7 +2086,7 @@ Public Class MainForm
     Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsFlux.Click
         MainMenuOptions.DropDown.Close()
 
-        Flux.ConfigurationForm.Display(Me)
+        Flux.ConfigurationForm.Display()
 
         RefreshFluxMenu()
     End Sub

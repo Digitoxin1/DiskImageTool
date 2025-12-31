@@ -41,10 +41,10 @@ Public Class HexSearchForm
     End Function
 
     Public Shared Function Display(HexSearch As HexSearch) As (Result As Boolean, Search As HexSearch)
-        Using Form As New HexSearchForm(HexSearch)
-            Form.ShowDialog()
+        Using dlg As New HexSearchForm(HexSearch)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Form.DialogResult = DialogResult.OK, Form.Search)
+            Return (dlg.DialogResult = DialogResult.OK, dlg.Search)
         End Using
     End Function
 

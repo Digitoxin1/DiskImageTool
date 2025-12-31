@@ -29,9 +29,9 @@ Namespace Flux.Greaseweazle
             _Initialized = True
         End Sub
 
-        Public Shared Sub Display(owner As IWin32Window)
-            Using Form As New CleanDiskForm()
-                Form.ShowDialog(owner)
+        Public Shared Sub Display()
+            Using dlg As New CleanDiskForm()
+                dlg.ShowDialog(App.CurrentFormInstance)
             End Using
         End Sub
 

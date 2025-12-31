@@ -2,8 +2,8 @@
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
 
     Public Shared Sub Display()
-        Using Form As New AboutBox()
-            Form.ShowDialog()
+        Using dlg As New AboutBox()
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 

@@ -296,6 +296,17 @@ Module DiskImageLib
 
         Return Result
     End Function
+
+    Public Sub FilePanelImportFileList(FilePanel As FilePanel, FileNames() As String)
+        If FilePanel.CurrentImage Is Nothing Then
+            Exit Sub
+        End If
+
+        If ImageImportProcess(FilePanel.CurrentImage.Disk.RootDirectory, FileNames, -1) Then
+            DiskImageRefresh(FilePanel)
+        End If
+    End Sub
+
     Public Sub FilePanelProcessEvent(FilePanel As FilePanel, MenuItem As FilePanel.FilePanelMenuItem, Optional Directory As IDirectory = Nothing)
         Dim FileData = FilePanel.SelectedFileData
         Dim DoRefresh As Boolean = False
@@ -677,56 +688,13 @@ Module DiskImageLib
     End Function
 
     Private Function ImageImport(ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1) As Boolean
-        Dim FileNames() As String = New String(-1) {}
+        Dim FileNames() As String = ImageImportGetFiles(Multiselect)
 
-        If App.Globals.AppSettings.DragAndDrop Then
-            Dim FormResponse = FileDropForm.Display()
-
-            If Not FormResponse.Result Then
-                Return False
-            End If
-
-            FileNames = FormResponse.FileNames
-        Else
-            Using Dialog As New OpenFileDialog With {
-                   .Multiselect = Multiselect
-               }
-
-                If Dialog.ShowDialog <> DialogResult.OK Then
-                    Return False
-                End If
-
-                FileNames = Dialog.FileNames
-            End Using
-        End If
-
-        Dim Response = ImportFileForm.Display(ParentDirectory, FileNames)
-
-        If Not Response.Result Then
+        If FileNames.Length < 1 Then
             Return False
         End If
 
-        If Response.FileList.SelectedFiles < 1 Then
-            Return False
-        End If
-
-        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
-
-        Dim FilesAdded As UInteger = 0
-        Dim FileCount As UInteger = Response.FileList.SelectedFiles
-
-        ImageImportFolders(Response.FileList.DirectoryList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
-        ImageImportFiles(Response.FileList.FileList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
-
-        If FilesAdded < FileCount Then
-            MsgBox(String.Format(My.Resources.Dialog_InsufficientDiskSpaceWarning, Environment.NewLine, FilesAdded, FileCount), MsgBoxStyle.Exclamation)
-        End If
-
-        If UseTransaction Then
-            ParentDirectory.Disk.EndTransaction()
-        End If
-
-        Return FilesAdded > 0
+        Return ImageImportProcess(ParentDirectory, FileNames, Index)
     End Function
 
     Private Sub ImageImportFiles(FileList As List(Of ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
@@ -765,6 +733,58 @@ Module DiskImageLib
             End If
         Next
     End Sub
+
+    Private Function ImageImportGetFiles(Multiselect As Boolean) As String()
+        Dim FileNames() As String = New String(-1) {}
+
+        If App.Globals.AppSettings.DragAndDrop Then
+            Dim FormResponse = FileDropForm.Display()
+
+            If FormResponse.Result Then
+                FileNames = FormResponse.FileNames
+            End If
+        Else
+            Using Dialog As New OpenFileDialog With {
+                   .Multiselect = Multiselect
+               }
+                If Dialog.ShowDialog = DialogResult.OK Then
+                    FileNames = Dialog.FileNames
+                End If
+            End Using
+        End If
+
+        Return FileNames
+    End Function
+
+    Private Function ImageImportProcess(ParentDirectory As IDirectory, FileNames() As String, Optional Index As Integer = -1) As Boolean
+        Dim Response = ImportFileForm.Display(ParentDirectory, FileNames)
+
+        If Not Response.Result Then
+            Return False
+        End If
+
+        If Response.FileList.SelectedFiles < 1 Then
+            Return False
+        End If
+
+        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
+
+        Dim FilesAdded As UInteger = 0
+        Dim FileCount As UInteger = Response.FileList.SelectedFiles
+
+        ImageImportFolders(Response.FileList.DirectoryList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
+        ImageImportFiles(Response.FileList.FileList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
+
+        If FilesAdded < FileCount Then
+            MsgBox(String.Format(My.Resources.Dialog_InsufficientDiskSpaceWarning, Environment.NewLine, FilesAdded, FileCount), MsgBoxStyle.Exclamation)
+        End If
+
+        If UseTransaction Then
+            ParentDirectory.Disk.EndTransaction()
+        End If
+
+        Return FilesAdded > 0
+    End Function
 
     Private Function ImageReplaceFile(DirectoryEntry As DirectoryEntry) As Boolean
         Dim FileName As String

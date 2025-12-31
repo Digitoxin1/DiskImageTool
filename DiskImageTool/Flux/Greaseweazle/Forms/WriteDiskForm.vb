@@ -69,9 +69,9 @@ Namespace Flux.Greaseweazle
             _Initialized = True
         End Sub
 
-        Public Shared Sub Display(Disk As DiskImage.Disk, FileName As String, owner As IWin32Window)
-            Using Form As New WriteDiskForm(Disk, FileName)
-                Form.ShowDialog(owner)
+        Public Shared Sub Display(Disk As DiskImage.Disk, FileName As String)
+            Using dlg As New WriteDiskForm(Disk, FileName)
+                dlg.ShowDialog(App.CurrentFormInstance)
             End Using
         End Sub
 

@@ -53,12 +53,12 @@ Public Class ReplaceFileForm
                                   NewFileSize As UInteger
                                   ) As ReplaceFileFormResult
 
-        Using Form As New ReplaceFileForm(AvailableSpace, Directory)
-            With Form
+        Using dlg As New ReplaceFileForm(AvailableSpace, Directory)
+            With dlg
                 .SetOriginalFile(OriginalFilename, OriginalFileDate, OriginalFileSize)
                 .SetNewFile(NewFilename, NewFileDate, NewFileSize)
                 .RefreshText()
-                .ShowDialog()
+                .ShowDialog(App.CurrentFormInstance)
                 Return .Result
             End With
         End Using

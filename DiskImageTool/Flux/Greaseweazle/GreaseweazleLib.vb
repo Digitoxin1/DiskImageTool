@@ -140,7 +140,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt", ParentForm)
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
         End Sub
 
         Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
@@ -247,7 +247,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt", ParentForm)
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
         End Sub
 
         Public Function PopulateDrives(Combo As ComboBox, Format As FloppyDriveType, Optional LastUsedDrive As String = "") As DriveOption
@@ -343,25 +343,25 @@ Namespace Flux.Greaseweazle
             Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
         End Function
 
-        Public Function ReadFluxImage(ParentForm As Form, importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Using Form As New ReadDiskForm()
+        Public Function ReadFluxImage(importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Using dlg As New ReadDiskForm()
 
                 If importHandler IsNot Nothing Then
-                    AddHandler Form.ImportProcess, importHandler
+                    AddHandler dlg.ImportProcess, importHandler
                 End If
 
                 Dim result As DialogResult = DialogResult.Cancel
                 Try
-                    result = Form.ShowDialog(ParentForm)
+                    result = dlg.ShowDialog(App.CurrentFormInstance)
                 Finally
                     If importHandler IsNot Nothing Then
-                        RemoveHandler Form.ImportProcess, importHandler
+                        RemoveHandler dlg.ImportProcess, importHandler
                     End If
                 End Try
 
                 If result = DialogResult.OK Then
-                    If Not String.IsNullOrEmpty(Form.NewFilePath) Then
-                        Return (True, Form.NewFilePath, Form.NewFileName)
+                    If Not String.IsNullOrEmpty(dlg.NewFilePath) Then
+                        Return (True, dlg.NewFilePath, dlg.NewFileName)
                     End If
                 End If
 

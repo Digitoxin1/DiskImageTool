@@ -10,9 +10,9 @@
 
         End Sub
 
-        Public Shared Sub Display(owner As IWin32Window)
-            Using Form As New Flux.ConfigurationForm
-                Form.ShowDialog(owner)
+        Public Shared Sub Display()
+            Using dlg As New Flux.ConfigurationForm
+                dlg.ShowDialog(App.CurrentFormInstance)
             End Using
         End Sub
 

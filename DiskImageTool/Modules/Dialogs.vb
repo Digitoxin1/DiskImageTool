@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 
 Module Dialogs
-    Public Function ShowSingleExtSaveDialog(owner As IWin32Window, SourceFilePath As String, InitialDirectory As String, FilterDescription As String, Optional Title As String = "Save As") As String
+    Public Function ShowSingleExtSaveDialog(SourceFilePath As String, InitialDirectory As String, FilterDescription As String, Optional Title As String = "Save As") As String
         Dim ext As String = Path.GetExtension(SourceFilePath)
 
         If String.IsNullOrEmpty(ext) Then
@@ -23,7 +23,7 @@ Module Dialogs
                 .RestoreDirectory = True
             }
 
-            If dlg.ShowDialog(owner) = DialogResult.OK Then
+            If dlg.ShowDialog(App.CurrentFormInstance) = DialogResult.OK Then
                 Dim result As String = dlg.FileName
 
                 If Not result.EndsWith(ext, StringComparison.OrdinalIgnoreCase) Then

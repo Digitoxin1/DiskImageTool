@@ -11,16 +11,25 @@ Module HexViews
         Return DisplayHexViewForm(HexViewSectorData, False, False, SyncBlocks)
     End Function
 
-    Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean) As Boolean
+    Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData,
+                                       SectorNavigator As Boolean,
+                                       ClusterNavigator As Boolean,
+                                       SyncBlocks As Boolean) As Boolean
+
         If HexViewSectorData.SectorData.BlockCount > 0 Then
-            Return HexViewForm.Display(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+            Return HexViewForm.Display(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks, Nothing)
         Else
             MsgBox(My.Resources.Dialog_CheckImageSize, MsgBoxStyle.Exclamation)
             Return False
         End If
     End Function
 
-    Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Cluster As UShort) As Boolean
+    Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData,
+                                       SectorNavigator As Boolean,
+                                       ClusterNavigator As Boolean,
+                                       SyncBlocks As Boolean,
+                                       Cluster As UShort) As Boolean
+
         If HexViewSectorData.SectorData.BlockCount > 0 Then
             Return HexViewForm.Display(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks, Cluster)
         Else

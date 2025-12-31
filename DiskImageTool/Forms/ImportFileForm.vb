@@ -30,9 +30,9 @@ Public Class ImportFileForm
     End Sub
 
     Public Shared Function Display(Directory As IDirectory, FileNames() As String) As (Result As Boolean, FileList As ImportDirectoryRoot)
-        Using Form As New ImportFileForm(Directory, FileNames)
-            Dim Result = Form.ShowDialog()
-            Return (Result = DialogResult.OK, Form.FileList)
+        Using Dlg As New ImportFileForm(Directory, FileNames)
+            Dim Result = Dlg.ShowDialog(App.CurrentFormInstance)
+            Return (Result = DialogResult.OK, Dlg.FileList)
         End Using
     End Function
 

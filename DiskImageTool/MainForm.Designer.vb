@@ -51,8 +51,14 @@ Partial Class MainForm
         Me.btnRetry = New System.Windows.Forms.Button()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.HashPanel1 = New DiskImageTool.HashPanel()
+        Me.PanelFiles = New System.Windows.Forms.Panel()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
+        Me.PanelOverlay = New System.Windows.Forms.TableLayoutPanel()
+        Me.PanelOverlayTopZone = New System.Windows.Forms.Panel()
+        Me.LabelOpenImages = New System.Windows.Forms.Label()
+        Me.PanelOverlayBottomZone = New System.Windows.Forms.Panel()
+        Me.LabelImportFiles = New System.Windows.Forms.Label()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.MenuHexBootSector = New System.Windows.Forms.ToolStripMenuItem()
@@ -189,6 +195,10 @@ Partial Class MainForm
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
         SplitContainer1.SuspendLayout()
+        Me.PanelFiles.SuspendLayout()
+        Me.PanelOverlay.SuspendLayout()
+        Me.PanelOverlayTopZone.SuspendLayout()
+        Me.PanelOverlayBottomZone.SuspendLayout()
         PanelCombo.SuspendLayout()
         MenuStripTop.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
@@ -216,8 +226,7 @@ Partial Class MainForm
         '
         'SplitContainer1.Panel2
         '
-        SplitContainer1.Panel2.Controls.Add(Me.LabelDropMessage)
-        SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
+        SplitContainer1.Panel2.Controls.Add(Me.PanelFiles)
         SplitContainer1.Panel2.Controls.Add(PanelSpacer2)
         SplitContainer1.Panel2.Controls.Add(PanelCombo)
         resources.ApplyResources(SplitContainer1.Panel2, "SplitContainer1.Panel2")
@@ -249,20 +258,57 @@ Partial Class MainForm
         resources.ApplyResources(Me.HashPanel1, "HashPanel1")
         Me.HashPanel1.Name = "HashPanel1"
         '
+        'PanelFiles
+        '
+        Me.PanelFiles.AllowDrop = True
+        Me.PanelFiles.Controls.Add(Me.LabelDropMessage)
+        Me.PanelFiles.Controls.Add(Me.ListViewFiles)
+        Me.PanelFiles.Controls.Add(Me.PanelOverlay)
+        resources.ApplyResources(Me.PanelFiles, "PanelFiles")
+        Me.PanelFiles.Name = "PanelFiles"
+        '
         'LabelDropMessage
         '
-        Me.LabelDropMessage.AllowDrop = True
         resources.ApplyResources(Me.LabelDropMessage, "LabelDropMessage")
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Name = "LabelDropMessage"
         '
         'ListViewFiles
         '
-        Me.ListViewFiles.AllowDrop = True
         resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
+        '
+        'PanelOverlay
+        '
+        Me.PanelOverlay.BackColor = System.Drawing.SystemColors.Window
+        resources.ApplyResources(Me.PanelOverlay, "PanelOverlay")
+        Me.PanelOverlay.Controls.Add(Me.PanelOverlayTopZone, 0, 0)
+        Me.PanelOverlay.Controls.Add(Me.PanelOverlayBottomZone, 0, 1)
+        Me.PanelOverlay.Name = "PanelOverlay"
+        '
+        'PanelOverlayTopZone
+        '
+        Me.PanelOverlayTopZone.Controls.Add(Me.LabelOpenImages)
+        resources.ApplyResources(Me.PanelOverlayTopZone, "PanelOverlayTopZone")
+        Me.PanelOverlayTopZone.Name = "PanelOverlayTopZone"
+        '
+        'LabelOpenImages
+        '
+        resources.ApplyResources(Me.LabelOpenImages, "LabelOpenImages")
+        Me.LabelOpenImages.Name = "LabelOpenImages"
+        '
+        'PanelOverlayBottomZone
+        '
+        Me.PanelOverlayBottomZone.Controls.Add(Me.LabelImportFiles)
+        resources.ApplyResources(Me.PanelOverlayBottomZone, "PanelOverlayBottomZone")
+        Me.PanelOverlayBottomZone.Name = "PanelOverlayBottomZone"
+        '
+        'LabelImportFiles
+        '
+        resources.ApplyResources(Me.LabelImportFiles, "LabelImportFiles")
+        Me.LabelImportFiles.Name = "LabelImportFiles"
         '
         'PanelSpacer2
         '
@@ -1040,9 +1086,15 @@ Partial Class MainForm
         Me.Name = "MainForm"
         SplitContainer1.Panel1.ResumeLayout(False)
         SplitContainer1.Panel2.ResumeLayout(False)
-        SplitContainer1.Panel2.PerformLayout()
         CType(SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         SplitContainer1.ResumeLayout(False)
+        Me.PanelFiles.ResumeLayout(False)
+        Me.PanelFiles.PerformLayout()
+        Me.PanelOverlay.ResumeLayout(False)
+        Me.PanelOverlayTopZone.ResumeLayout(False)
+        Me.PanelOverlayTopZone.PerformLayout()
+        Me.PanelOverlayBottomZone.ResumeLayout(False)
+        Me.PanelOverlayBottomZone.PerformLayout()
         PanelCombo.ResumeLayout(False)
         PanelCombo.PerformLayout()
         MenuStripTop.ResumeLayout(False)
@@ -1169,4 +1221,10 @@ Partial Class MainForm
     Friend WithEvents MainMenuEdit As ToolStripMenuItem
     Friend WithEvents MainMenuHelp As ToolStripMenuItem
     Friend WithEvents MenuHelpDocs As ToolStripMenuItem
+    Friend WithEvents PanelFiles As Panel
+    Friend WithEvents PanelOverlay As TableLayoutPanel
+    Friend WithEvents PanelOverlayTopZone As Panel
+    Friend WithEvents PanelOverlayBottomZone As Panel
+    Friend WithEvents LabelOpenImages As Label
+    Friend WithEvents LabelImportFiles As Label
 End Class

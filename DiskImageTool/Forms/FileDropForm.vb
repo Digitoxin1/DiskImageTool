@@ -9,10 +9,10 @@
     End Property
 
     Public Shared Function Display() As (Result As Boolean, FileNames As String())
-        Using Form As New FileDropForm()
-            Dim Response = Form.ShowDialog()
+        Using dlg As New FileDropForm()
+            Dim Response = dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Response = DialogResult.OK, Form.FileNames)
+            Return (Response = DialogResult.OK, dlg.FileNames)
         End Using
     End Function
 

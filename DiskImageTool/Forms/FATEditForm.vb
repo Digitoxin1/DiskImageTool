@@ -106,10 +106,10 @@ Public Class FATEditForm
     End Property
 
     Public Shared Function Display(Disk As DiskImage.Disk, Index As UShort) As Boolean
-        Using Form As New FATEditForm(Disk, Index)
-            Form.ShowDialog()
+        Using dlg As New FATEditForm(Disk, Index)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return Form.Updated
+            Return dlg.Updated
         End Using
     End Function
 

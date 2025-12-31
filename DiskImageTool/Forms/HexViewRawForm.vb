@@ -77,8 +77,8 @@ Public Class HexViewRawForm
     End Sub
 
     Public Shared Sub Display(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
-        Using Form As New HexViewRawForm(Disk, Track, Side, AllTracks)
-            Form.ShowDialog()
+        Using dlg As New HexViewRawForm(Disk, Track, Side, AllTracks)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 

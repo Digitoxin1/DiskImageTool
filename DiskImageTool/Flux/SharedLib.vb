@@ -64,7 +64,7 @@ Namespace Flux
             Next
         End Sub
 
-        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -78,24 +78,24 @@ Namespace Flux
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog)
+            Using dlg As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog)
 
                 If importHandler IsNot Nothing Then
-                    AddHandler form.ImportProcess, importHandler
+                    AddHandler dlg.ImportProcess, importHandler
                 End If
 
                 Dim result As DialogResult = DialogResult.Cancel
                 Try
-                    result = form.ShowDialog(ParentForm)
+                    result = dlg.ShowDialog(App.CurrentFormInstance)
                 Finally
                     If importHandler IsNot Nothing Then
-                        RemoveHandler form.ImportProcess, importHandler
+                        RemoveHandler dlg.ImportProcess, importHandler
                     End If
                 End Try
 
                 If result = DialogResult.OK Or result = DialogResult.Retry Then
-                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
-                        Return (result, form.OutputFilePath, form.GetNewFileName)
+                    If Not String.IsNullOrEmpty(dlg.OutputFilePath) Then
+                        Return (result, dlg.OutputFilePath, dlg.GetNewFileName)
                     End If
                 End If
 
@@ -347,8 +347,8 @@ Namespace Flux
             Return (False, "")
         End Function
 
-        Public Function OpenFluxImage(ParentForm As Form, AllowSCP As Boolean) As String
-            Using Dialog As New OpenFileDialog With {
+        Public Function OpenFluxImage(AllowSCP As Boolean) As String
+            Using dlg As New OpenFileDialog With {
                 .Title = "Open Flux Image",
                 .FilterIndex = 1,
                 .CheckFileExists = True,
@@ -356,13 +356,13 @@ Namespace Flux
                 .Multiselect = False
             }
                 If AllowSCP Then
-                    Dialog.Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|KryoFlux RAW (*.raw)|*.raw|SuperCard Pro (*.scp)|*.scp"
+                    dlg.Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|KryoFlux RAW (*.raw)|*.raw|SuperCard Pro (*.scp)|*.scp"
                 Else
-                    Dialog.Filter = "KryoFlux RAW (*.raw)|*.raw"
+                    dlg.Filter = "KryoFlux RAW (*.raw)|*.raw"
                 End If
 
-                If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
-                    Return Dialog.FileName
+                If dlg.ShowDialog(App.CurrentFormInstance) = DialogResult.OK Then
+                    Return dlg.FileName
                 End If
             End Using
 

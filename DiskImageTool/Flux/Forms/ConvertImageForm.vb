@@ -962,7 +962,7 @@ Namespace Flux
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
-            Dim FileName As String = SharedLib.OpenFluxImage(Me, AllowSCP)
+            Dim FileName As String = SharedLib.OpenFluxImage(AllowSCP)
 
             If FileName <> "" Then
                 Return OpenFluxImage(FileName)
@@ -1112,7 +1112,7 @@ Namespace Flux
                 Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
                 Dim ImageData = New ImageData(ImageInfo.FilePath)
 
-                ImagePreview.Display(ImageData, Caption, Me)
+                ImagePreview.Display(ImageData, Caption)
             Else
                 If Not _SelectedDevice.SupportsPreview Then
                     Exit Sub
@@ -1129,7 +1129,7 @@ Namespace Flux
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
                 Else
-                    ImagePreview.Display(Response.Filename, DiskParams.Value, Caption, Me)
+                    ImagePreview.Display(Response.Filename, DiskParams.Value, Caption)
                 End If
 
                 DeleteTempFileIfExists(Response.Filename)
@@ -1254,7 +1254,7 @@ Namespace Flux
                 InitialDirectory = IO.Path.GetDirectoryName(NewFileName)
             End If
 
-            Dim FilePath = ShowSingleExtSaveDialog(Me, FileName, InitialDirectory, ImageTypeName)
+            Dim FilePath = ShowSingleExtSaveDialog(FileName, InitialDirectory, ImageTypeName)
 
             If String.IsNullOrEmpty(FilePath) Then
                 Return False

@@ -97,22 +97,22 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
-    Public Shared Function ReadDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, owner As IWin32Window) As String
-        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Read)
+    Public Shared Function ReadDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock) As String
+        Using dlg As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Read)
 
-            Form.ShowDialog(owner)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return Form.FileName
+            Return dlg.FileName
         End Using
     End Function
 
-    Public Shared Sub WriteDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, DiskBuffer As Byte(), DoFormat As Boolean, DoVerify As Boolean, owner As IWin32Window)
-        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Write) With {
+    Public Shared Sub WriteDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, DiskBuffer As Byte(), DoFormat As Boolean, DoVerify As Boolean)
+        Using dlg As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Write) With {
                 .DiskBuffer = DiskBuffer,
                 .DoFormat = DoFormat,
                 .DoVerify = DoVerify
             }
-            Form.ShowDialog(owner)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 

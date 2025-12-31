@@ -21,11 +21,11 @@ Public Class FilePropertiesFormSingle
     End Property
 
     Public Shared Function Display(DirectoryEntry As DirectoryEntry) As Boolean
-        Using Form As New FilePropertiesFormSingle(DirectoryEntry)
-            Form.ShowDialog()
+        Using dlg As New FilePropertiesFormSingle(DirectoryEntry)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            If Form.DialogResult = DialogResult.OK Then
-                Return Form.Updated
+            If dlg.DialogResult = DialogResult.OK Then
+                Return dlg.Updated
             Else
                 Return False
             End If

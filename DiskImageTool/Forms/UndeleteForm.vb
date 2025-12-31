@@ -22,10 +22,10 @@
     End Property
 
     Public Shared Function Display(Filename As String) As (Result As Boolean, FirstChar As Byte)
-        Using Form As New UndeleteForm(Filename)
-            Form.ShowDialog()
+        Using dlg As New UndeleteForm(Filename)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return (Form.DialogResult = DialogResult.OK, Form.FirstChar)
+            Return (dlg.DialogResult = DialogResult.OK, dlg.FirstChar)
         End Using
     End Function
 

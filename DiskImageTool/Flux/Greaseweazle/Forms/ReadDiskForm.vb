@@ -252,7 +252,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(Me, _OutputFilePath, True, Nothing, True)
+            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True)
 
             If Response.Result = DialogResult.OK Then
                 CloseForm(Response.OutputFile, Response.NewFileName)
@@ -783,7 +783,7 @@ Namespace Flux.Greaseweazle
             If HasOutputfile AndAlso Not IsFluxOutput Then
                 Dim ImageData = New ImageData(_OutputFilePath)
 
-                ImagePreview.Display(ImageData, Caption, Me)
+                ImagePreview.Display(ImageData, Caption)
             Else
                 Dim DiskParams = SelectedDiskParams()
                 Dim Opt As DriveOption = _SelectedOption
@@ -797,7 +797,7 @@ Namespace Flux.Greaseweazle
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
                 Else
-                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption, Me)
+                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption)
                 End If
 
                 DeleteTempFileIfExists(Response.FileName)

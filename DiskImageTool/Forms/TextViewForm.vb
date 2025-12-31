@@ -22,13 +22,9 @@
         End If
     End Sub
 
-    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional owner As IWin32Window = Nothing)
-        Using frmTextView As New TextViewForm(Caption, Content, Editable, EnableSave, SaveFileName)
-            If owner Is Nothing Then
-                frmTextView.ShowDialog()
-            Else
-                frmTextView.ShowDialog(owner)
-            End If
+    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "")
+        Using dlg As New TextViewForm(Caption, Content, Editable, EnableSave, SaveFileName)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 

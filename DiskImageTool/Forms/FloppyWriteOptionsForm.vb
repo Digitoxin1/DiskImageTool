@@ -50,11 +50,11 @@ Public Class FloppyWriteOptionsForm
         End Get
     End Property
 
-    Public Shared Function Display(Owner As IWin32Window, DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, DiskFormat As FloppyDiskFormat) As FloppyWriteOptions
-        Using Form As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, DiskFormat)
-            Form.ShowDialog(Owner)
+    Public Shared Function Display(DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, DiskFormat As FloppyDiskFormat) As FloppyWriteOptions
+        Using dlg As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, DiskFormat)
+            dlg.ShowDialog(App.CurrentFormInstance)
 
-            Return Form.WriteOptions
+            Return dlg.WriteOptions
         End Using
     End Function
 

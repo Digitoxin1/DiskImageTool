@@ -34,9 +34,9 @@ Public Class ImageLoadForm
         End Get
     End Property
 
-    Public Shared Sub Display(scanner As ImageScanner, Files() As String, NewImage As Boolean, NewFileName As String, owner As IWin32Window)
+    Public Shared Sub Display(scanner As ImageScanner, Files() As String, NewImage As Boolean, NewFileName As String)
         Using dlg As New ImageLoadForm(scanner, Files, NewImage, NewFileName)
-            dlg.ShowDialog(owner)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 

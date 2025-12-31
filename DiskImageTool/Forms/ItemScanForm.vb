@@ -24,9 +24,9 @@ Public Class ItemScanForm
         End Get
     End Property
 
-    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String, owner As IWin32Window)
+    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String)
         Using dlg As New ItemScanForm(scanner, windowTitle, progessLabel)
-            dlg.ShowDialog(owner)
+            dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
 
