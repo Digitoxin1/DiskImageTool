@@ -41,7 +41,6 @@ Partial Class ImageCreationForm
         Me.PanelFormats = New System.Windows.Forms.Panel()
         Me.GroupBoxSpecial = New System.Windows.Forms.GroupBox()
         Me.GroupBoxStandard = New System.Windows.Forms.GroupBox()
-        Me.CheckImportFiles = New System.Windows.Forms.CheckBox()
         Me.LabelBootSector = New System.Windows.Forms.Label()
         Me.ComboBootSector = New System.Windows.Forms.ComboBox()
         RadioFormat2880 = New System.Windows.Forms.RadioButton()
@@ -204,7 +203,7 @@ Partial Class ImageCreationForm
         PanelBottom.Controls.Add(Me.BtnOK)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        PanelBottom.Location = New System.Drawing.Point(0, 230)
+        PanelBottom.Location = New System.Drawing.Point(0, 210)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
         PanelBottom.Size = New System.Drawing.Size(383, 43)
@@ -241,14 +240,13 @@ Partial Class ImageCreationForm
         PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         PanelMain.BackColor = System.Drawing.SystemColors.Window
         PanelMain.Controls.Add(Me.PanelFormats)
-        PanelMain.Controls.Add(Me.CheckImportFiles)
         PanelMain.Controls.Add(Me.LabelBootSector)
         PanelMain.Controls.Add(Me.ComboBootSector)
         PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
-        PanelMain.Size = New System.Drawing.Size(383, 230)
+        PanelMain.Size = New System.Drawing.Size(383, 210)
         PanelMain.TabIndex = 0
         '
         'PanelFormats
@@ -291,17 +289,6 @@ Partial Class ImageCreationForm
         Me.GroupBoxStandard.TabStop = False
         Me.GroupBoxStandard.Text = "{Standard Formats}"
         '
-        'CheckImportFiles
-        '
-        Me.CheckImportFiles.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.CheckImportFiles.AutoSize = True
-        Me.CheckImportFiles.Location = New System.Drawing.Point(282, 204)
-        Me.CheckImportFiles.Name = "CheckImportFiles"
-        Me.CheckImportFiles.Size = New System.Drawing.Size(87, 17)
-        Me.CheckImportFiles.TabIndex = 3
-        Me.CheckImportFiles.Text = "{Import Files}"
-        Me.CheckImportFiles.UseVisualStyleBackColor = True
-        '
         'LabelBootSector
         '
         Me.LabelBootSector.AutoSize = True
@@ -325,7 +312,7 @@ Partial Class ImageCreationForm
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(383, 273)
+        Me.ClientSize = New System.Drawing.Size(383, 253)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -351,5 +338,4 @@ Partial Class ImageCreationForm
     Friend WithEvents GroupBoxSpecial As GroupBox
     Friend WithEvents LabelBootSector As Label
     Friend WithEvents ComboBootSector As ComboBox
-    Friend WithEvents CheckImportFiles As CheckBox
 End Class

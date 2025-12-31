@@ -28,7 +28,6 @@ Public Class ImageCreationForm
     Private Sub LocalizeForm()
         LabelBootSector.Text = My.Resources.Label_BootSector
         BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
-        CheckImportFiles.Text = My.Resources.Label_ImportFiles
         BtnOK.Text = WithoutHotkey(My.Resources.Menu_Ok)
         GroupBoxSpecial.Text = My.Resources.Label_SpecialFormats
         GroupBoxStandard.Text = My.Resources.Label_StandardFormats
@@ -47,16 +46,10 @@ Public Class ImageCreationForm
         End Get
     End Property
 
-    Public ReadOnly Property ImportFiles As Boolean
-        Get
-            Return CheckImportFiles.Checked
-        End Get
-    End Property
-
-    Public Shared Function Display() As (Data As Byte(), DiskFormat As FloppyDiskFormat, ImportFiles As Boolean)
+    Public Shared Function Display() As (Data As Byte(), DiskFormat As FloppyDiskFormat)
         Using dlg As New ImageCreationForm()
             dlg.ShowDialog(App.CurrentFormInstance)
-            Return (dlg.Data, dlg.DiskFormat, dlg.ImportFiles)
+            Return (dlg.Data, dlg.DiskFormat)
         End Using
     End Function
 

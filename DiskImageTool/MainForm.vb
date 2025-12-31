@@ -660,9 +660,6 @@ Public Class MainForm
         Dim FileName = FloppyDiskNewImage(Response.Data, Response.DiskFormat)
         If FileName.Length > 0 Then
             ProcessFileDropNew(FileName, GetNewFileName())
-            If Response.ImportFiles Then
-                NewImageImport(FilePanelMain, FileName)
-            End If
         End If
     End Sub
 

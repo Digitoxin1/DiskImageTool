@@ -465,17 +465,6 @@ Module DiskImageLib
 
         Return SaveAllForm.Display(Caption)
     End Function
-    Public Sub NewImageImport(FilePanel As FilePanel, FileName As String)
-        If FilePanel.CurrentImage Is Nothing Then
-            Exit Sub
-        End If
-
-        If FilePanel.CurrentImage.ImageData.SourceFile = FileName Then
-            If ImageImport(FilePanel.CurrentImage.Disk.RootDirectory, True) Then
-                DiskImageRefresh(FilePanel)
-            End If
-        End If
-    End Sub
 
     Private Function BootSectorEdit(Disk As Disk) As Boolean
         Dim Response = BootSectorForm.Display(Disk.BootSector.Data, App.Globals.BootstrapDB)
