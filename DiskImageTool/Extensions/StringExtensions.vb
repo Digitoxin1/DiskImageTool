@@ -2,46 +2,69 @@
 
 Module StringExtensions
     <Extension()>
-    Public Function WordWrap(Text As String, Width As Integer, Font As Font) As List(Of String)
-        Dim Result As New List(Of String)
-
-        If String.IsNullOrEmpty(Text) OrElse Width <= 0 Then
-            Result.Add(Text)
-            Return Result
+    Public Function WordWrap(Text As String, MaxWidth As Integer, TargetWidth As Integer, Font As Font) As List(Of String)
+        If String.IsNullOrEmpty(Text) OrElse MaxWidth <= 0 Then
+            Return New List(Of String) From {Text}
         End If
 
         ' Normalize newlines and split into logical lines
         Dim Lines = Text.Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Split(vbLf)
 
-        For Each LogicalLine In Lines
-            ' Preserve blank lines
-            If LogicalLine = "" Then
-                Result.Add("")
-                Continue For
-            End If
+        Dim DoReduceLines As Boolean = (Lines.Count = 1)
 
-            Dim Words = LogicalLine.Split(" ")
-            Dim Line As String = ""
+        Dim Result As List(Of String)
+        Dim Words() As String = {}
+        Dim TryReduceLines As Boolean
 
-            For Each Word In Words
-                Dim NewLine = If(Line = "", Word, Line & " " & Word)
-                Dim Size = TextRenderer.MeasureText(NewLine, Font)
-
-                If Size.Width <= Width Then
-                    Line = NewLine
-                Else
-                    If Line <> "" Then
-                        Result.Add(Line)
-                    End If
-                    Line = Word
+        Do
+            Result = New List(Of String)
+            For Each Line In Lines
+                ' Preserve blank lines
+                If Line = "" Then
+                    Result.Add("")
+                    Continue For
                 End If
+
+                Words = Line.Split(" ")
+
+                Result.AddRange(WrapLine(Words, TargetWidth, Font))
             Next
 
-            If Line <> "" Then
-                Result.Add(Line)
+            TryReduceLines = DoReduceLines AndAlso Result.Count > 2 AndAlso TargetWidth < MaxWidth AndAlso Words.Length > 0
+
+            If TryReduceLines Then
+                TargetWidth += 4
+                If TargetWidth > MaxWidth Then
+                    TargetWidth = MaxWidth
+                End If
+            End If
+        Loop Until Not TryReduceLines
+
+        Return Result
+    End Function
+
+    Private Function WrapLine(Words() As String, MaxWidth As Integer, Font As Font) As List(Of String)
+        Dim Lines As New List(Of String)()
+        Dim CurrentLine As String = ""
+
+        For Each Word In Words
+            Dim NewLine = If(CurrentLine = "", Word, CurrentLine & " " & Word)
+            Dim Size = TextRenderer.MeasureText(NewLine, Font)
+
+            If Size.Width <= MaxWidth Then
+                CurrentLine = NewLine
+            Else
+                If CurrentLine <> "" Then
+                    Lines.Add(CurrentLine)
+                End If
+                CurrentLine = Word
             End If
         Next
 
-        Return Result
+        If CurrentLine <> "" Then
+            Lines.Add(CurrentLine)
+        End If
+
+        Return Lines
     End Function
 End Module

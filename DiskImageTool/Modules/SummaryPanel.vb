@@ -273,18 +273,18 @@ Public Class SummaryPanel
 
         TitleRows.Clear()
 
-        TitleRows.Add("Name", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Title, True))
-        TitleRows.Add("Variation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Variant, False))
-        TitleRows.Add("Compilation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Compilation, True))
-        TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True))
-        TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
-        TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
-        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False))
-        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, True))
-        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True))
-        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, False))
-        TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
-        TitleRows.Add("TDC", New SummaryRow(ListViewSummary.Font, My.Resources.Label_TDC, True))
+        TitleRows.Add("Name", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Title, True, True))
+        TitleRows.Add("Variation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Variant, False, False))
+        TitleRows.Add("Compilation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Compilation, True, False))
+        TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True, False))
+        TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False, False))
+        TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False, False))
+        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False, False))
+        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, True, False))
+        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True, False))
+        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, True, False))
+        TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True, True))
+        TitleRows.Add("TDC", New SummaryRow(ListViewSummary.Font, My.Resources.Label_TDC, True, False))
     End Sub
 
     Private Sub PopulateError(InvalidImage As Boolean)
@@ -323,7 +323,7 @@ Public Class SummaryPanel
 
             For Each SummaryRow As SummaryRow In Rows.Values
                 If SummaryRow.Value <> "" Then
-                    If SummaryRow.WrapText Then
+                    If SummaryRow.AutoResize Then
                         .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText, MaxWidth)
                     Else
                         .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText)
@@ -892,12 +892,14 @@ Public Class SummaryPanel
     End Structure
 
     Private Class SummaryRow
-        Public Sub New(Font As Font, Text As String, WrapText As Boolean)
+        Public Sub New(Font As Font, Text As String, WrapText As Boolean, AutoResize As Boolean)
             _Text = Text
             _TextWidth = TextRenderer.MeasureText(Text, Font).Width
             _WrapText = WrapText
+            _AutoResize = AutoResize
         End Sub
 
+        Public Property AutoResize As Boolean
         Public Property ForeColor As Color = SystemColors.WindowText
         Public Property Text As String
         Public Property TextWidth As Integer

@@ -812,7 +812,7 @@ Public Class FloppyDB
         End Function
 
         Public Function GetPublisherList() As String
-            Return JoinDistinctStrings(Function(d) d.GetPublisher())
+            Return JoinDistinctStrings(Function(d) d.GetPublisher(), vbNewLine)
         End Function
 
         Public Function GetRegionList() As String

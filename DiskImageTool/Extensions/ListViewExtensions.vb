@@ -27,8 +27,8 @@ Module ListViewExtensions
     End Sub
 
     <Extension()>
-    Public Function AddItem(listViewControl As ListView, Text As String, Value As String, WrapText As Boolean) As ListViewItem
-        Return AddItem(listViewControl, Nothing, "", Text, Value, Color.Empty, WrapText, Nothing)
+    Public Function AddItem(listViewControl As ListView, Text As String, Value As String, WrapValue As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Nothing, "", Text, Value, Color.Empty, WrapValue, Nothing)
     End Function
 
     <Extension()>
@@ -42,8 +42,8 @@ Module ListViewExtensions
     End Function
 
     <Extension()>
-    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, WrapText As Boolean) As ListViewItem
-        Return AddItem(listViewControl, Group, "", Text, Value, Color.Empty, WrapText, Nothing)
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, WrapValue As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, Color.Empty, WrapValue, Nothing)
     End Function
 
     <Extension()>
@@ -52,31 +52,31 @@ Module ListViewExtensions
     End Function
 
     <Extension()>
-    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean) As ListViewItem
-        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapText, Nothing)
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapValue As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapValue, Nothing)
     End Function
 
     <Extension()>
-    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean, Width? As Integer) As ListViewItem
-        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapText, Width)
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapValue As Boolean, Width? As Integer) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapValue, Width)
     End Function
 
     <Extension()>
-    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Name As String, Text As String, Value As String, ForeColor As Color, WrapText As Boolean, Width? As Integer) As ListViewItem
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Name As String, Text As String, Value As String, ForeColor As Color, WrapValue As Boolean, Width? As Integer) As ListViewItem
         Dim Item As ListViewItem = Nothing
         Dim SubItem As ListViewItem.ListViewSubItem
         Dim StringList As List(Of String) = Nothing
         Dim AddTags As Boolean = False
 
-        If WrapText Then
-            Dim CalcWidth As Integer
-            If Width.HasValue Then
-                CalcWidth = Width.Value
-            Else
-                CalcWidth = listViewControl.Columns.Item(1).Width - 6
+        If WrapValue Then
+            Dim HasNewLine = Value.Contains(vbCrLf) OrElse Value.Contains(vbCr) OrElse Value.Contains(vbLf)
+            Dim TargetWidth As Integer = listViewControl.Columns.Item(1).Width - 6
+            Dim MaxWidth As Integer = If(Width.HasValue, Width.Value, TargetWidth)
+            If HasNewLine Then
+                TargetWidth = MaxWidth
             End If
-            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > CalcWidth OrElse Value.Contains(vbNewLine) Then
-                StringList = Value.WordWrap(CalcWidth, listViewControl.Font)
+            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > TargetWidth OrElse HasNewLine Then
+                StringList = Value.WordWrap(MaxWidth, TargetWidth, listViewControl.Font)
                 AddTags = True
             End If
         End If
@@ -109,55 +109,6 @@ Module ListViewExtensions
                 SubItem.Tag = Value
             End If
             listViewControl.Items.Add(NewItem)
-
-            If Item Is Nothing Then
-                Item = NewItem
-            End If
-        Next
-
-        Return Item
-    End Function
-
-    <Extension()>
-    Public Function InsertItem(listViewControl As ListView, Index As Integer, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean) As ListViewItem
-        Dim Item As ListViewItem = Nothing
-        Dim SubItem As ListViewItem.ListViewSubItem
-        Dim StringList As List(Of String) = Nothing
-        Dim AddTags As Boolean = False
-
-        If WrapText Then
-            Dim Width = listViewControl.Columns.Item(1).Width - 5
-            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > Width Then
-                StringList = Value.WordWrap(Width, listViewControl.Font)
-                AddTags = True
-            End If
-        End If
-
-        If StringList Is Nothing Then
-            StringList = New List(Of String) From {
-                Value
-            }
-        End If
-
-        For Counter = 0 To StringList.Count - 1
-            Dim ItemText As String
-            If Counter = 0 Then
-                ItemText = Text
-            Else
-                ItemText = ""
-            End If
-            Dim NewItem As New ListViewItem(ItemText, Group) With {
-                    .UseItemStyleForSubItems = False
-                }
-            If AddTags Then
-                NewItem.Tag = Text
-            End If
-            SubItem = NewItem.SubItems.Add(StringList(Counter))
-            SubItem.ForeColor = ForeColor
-            If AddTags Then
-                SubItem.Tag = Value
-            End If
-            listViewControl.Items.Insert(Index, NewItem)
 
             If Item Is Nothing Then
                 Item = NewItem
