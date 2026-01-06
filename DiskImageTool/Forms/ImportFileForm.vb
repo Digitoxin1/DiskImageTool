@@ -5,7 +5,7 @@ Public Class ImportFileForm
     Private Const COLUMN_CREATION_TIME As String = "CreationTime"
     Private Const COLUMN_IS_SELECTED As String = "IsSelected"
     Private Const COLUMN_LAST_ACCESS_TIME As String = "LastAccessTime"
-    Private ReadOnly _FileNames() As String
+    Private _FileNames() As String
     Private ReadOnly _SelectionByPath As New Dictionary(Of String, Boolean)
     Private _FileList As ImportDirectoryRoot
     Private _HasLFN As Boolean
@@ -13,6 +13,7 @@ Public Class ImportFileForm
     Private _IgnoreEvent As Boolean = False
     Private _LastSelectedIndex As Integer = -1
     Private _ListViewHeader As ListViewHeader
+
     Public Sub New(CurrentDirectory As IDirectory, FileNames() As String)
 
         ' This call is required by the designer.
@@ -95,46 +96,15 @@ Public Class ImportFileForm
         cbo.Width = maxWidth
     End Sub
 
-    Private Sub ChkCreated_CheckedChanged(sender As Object, e As EventArgs) Handles ChkCreated.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.Options.UseCreatedDate = ChkCreated.Checked
-        RefreshCreated()
-    End Sub
-
-    Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.Options.UseLastAccessedDate = ChkLastAccessed.Checked
-        RefreshLastAccessed()
-    End Sub
-
-    Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        ChkNTExtensions.Enabled = ChkLFN.Checked
-        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-        RefreshTotals()
-    End Sub
-
-    Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
-        If _IgnoreEvent Then Exit Sub
-
-        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-        RefreshTotals()
-    End Sub
-
-    Private Sub ComboDirectoryList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDirectoryList.SelectedIndexChanged
-        If _IgnoreEvent Then Exit Sub
-
-        If _LastSelectedIndex = ComboDirectoryList.SelectedIndex Then
-            Exit Sub
+    Private Function GetForeColor(IsFileTooLarge As Boolean, IsEnabled As Boolean) As Color
+        If IsFileTooLarge Then
+            Return Color.Gray
+        ElseIf Not IsEnabled Then
+            Return Color.Gray
+        Else
+            Return SystemColors.WindowText
         End If
-
-        _LastSelectedIndex = ComboDirectoryList.SelectedIndex
-
-        RefreshFileList()
-    End Sub
+    End Function
 
     Private Function GetPathString(Directory As IDirectory) As String
         Dim PathString As String = ""
@@ -243,38 +213,6 @@ Public Class ImportFileForm
 
         ProcessFolders(ImportDirectory, GroupPath, Folder.GetDirectories.ToList)
         ProcessFiles(ImportDirectory, Group, Folder.GetFiles.ToList)
-    End Sub
-
-    Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        ListViewFiles.DoubleBuffer
-        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
-    End Sub
-
-    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
-        e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
-        e.Cancel = True
-    End Sub
-
-    Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
-        If _IgnoreEvent Then Exit Sub
-
-        If e.NewValue = e.CurrentValue Then
-            Exit Sub
-        End If
-
-        Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
-
-        Dim FileData As ImportFile = Item.Tag
-
-        If FileData.IsFileTooLarge Then
-            If e.NewValue Then
-                e.NewValue = False
-            End If
-        Else
-            FileData.IsSelected = e.NewValue
-        End If
-
-        RefreshTotals()
     End Sub
 
     Private Sub LocalizeForm()
@@ -443,16 +381,6 @@ Public Class ImportFileForm
         _IgnoreEvent = False
     End Sub
 
-    Private Function GetForeColor(IsFileTooLarge As Boolean, IsEnabled As Boolean) As Color
-        If IsFileTooLarge Then
-            Return Color.Gray
-        ElseIf Not IsEnabled Then
-            Return Color.Gray
-        Else
-            Return SystemColors.WindowText
-        End If
-    End Function
-
     Private Sub RefreshLastAccessed()
         For Each Item As ListViewItem In ListViewFiles.Items
             Dim FileData As ImportFile = Item.Tag
@@ -511,6 +439,117 @@ Public Class ImportFileForm
             SaveSelectionsFromDirectory(subDir)
         Next
     End Sub
+
+    Private Shared Function AppendDistinct(baseArray As String(), appendArray As String()) As String()
+        Dim setSeen As New HashSet(Of String)(baseArray)
+        Dim result As New List(Of String)(baseArray)
+
+        For Each s In appendArray
+            If setSeen.Add(s) Then
+                result.Add(s)
+            End If
+        Next
+
+        Return result.ToArray()
+    End Function
+
+#Region "Events"
+    Private Sub ChkCreated_CheckedChanged(sender As Object, e As EventArgs) Handles ChkCreated.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.Options.UseCreatedDate = ChkCreated.Checked
+        RefreshCreated()
+    End Sub
+
+    Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.Options.UseLastAccessedDate = ChkLastAccessed.Checked
+        RefreshLastAccessed()
+    End Sub
+
+    Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        ChkNTExtensions.Enabled = ChkLFN.Checked
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
+
+    Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
+
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
+
+    Private Sub ComboDirectoryList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDirectoryList.SelectedIndexChanged
+        If _IgnoreEvent Then Exit Sub
+
+        If _LastSelectedIndex = ComboDirectoryList.SelectedIndex Then
+            Exit Sub
+        End If
+
+        _LastSelectedIndex = ComboDirectoryList.SelectedIndex
+
+        RefreshFileList()
+    End Sub
+
+    Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        ListViewFiles.DoubleBuffer
+        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
+    End Sub
+
+    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
+        e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
+        e.Cancel = True
+    End Sub
+
+    Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
+        If _IgnoreEvent Then Exit Sub
+
+        If e.NewValue = e.CurrentValue Then
+            Exit Sub
+        End If
+
+        Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
+
+        Dim FileData As ImportFile = Item.Tag
+
+        If FileData.IsFileTooLarge Then
+            If e.NewValue Then
+                e.NewValue = False
+            End If
+        Else
+            FileData.IsSelected = e.NewValue
+        End If
+
+        RefreshTotals()
+    End Sub
+
+    Private Sub ListViewFiles_DragEnter(sender As Object, e As DragEventArgs) Handles ListViewFiles.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Copy
+        End If
+    End Sub
+
+    Private Sub ListViewFiles_DragDrop(sender As Object, e As DragEventArgs) Handles ListViewFiles.DragDrop
+        If Not e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Exit Sub
+        End If
+
+        Dim Files As String() = TryCast(e.Data.GetData(DataFormats.FileDrop), String())
+
+        If Files Is Nothing OrElse Files.Length = 0 Then
+            Exit Sub
+        End If
+
+        _FileNames = AppendDistinct(_FileNames, Files)
+
+        RefreshFileList()
+    End Sub
+#End Region
+
     Public Class ImportDirectory
         Inherits ImportFileBase
 
