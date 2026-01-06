@@ -23,8 +23,14 @@ Public Class ImportFileForm
         _FileNames = FileNames
 
         _IgnoreEvent = True
+        ChkCreated.Checked = False
+        ChkLastAccessed.Checked = False
+        ChkLFN.Checked = True
+        ChkNTExtensions.Checked = False
+
         PopulateDirectoryList(CurrentDirectory.Disk.RootDirectory, CurrentDirectory)
         _IgnoreEvent = False
+
 
         RefreshFileList()
     End Sub
@@ -209,11 +215,11 @@ Public Class ImportFileForm
         SubItem.ForeColor = RowForeColor
 
         SubItem = Item.SubItems.Add(Format(File.CreationTime, My.Resources.IsoDateTimeFormat))
-        SubItem.ForeColor = Color.Gray
+        SubItem.ForeColor = GetForeColor(ImportFile.IsFileTooLarge, ChkCreated.Checked)
         SubItem.Name = COLUMN_CREATION_TIME
 
         SubItem = Item.SubItems.Add(Format(File.LastAccessTime, My.Resources.IsoDateFormat))
-        SubItem.ForeColor = Color.Gray
+        SubItem.ForeColor = GetForeColor(ImportFile.IsFileTooLarge, ChkLastAccessed.Checked)
         SubItem.Name = COLUMN_LAST_ACCESS_TIME
 
         SubItem = Item.SubItems.Add(If(DefaultSelected, 0, 1))
@@ -415,19 +421,10 @@ Public Class ImportFileForm
     End Sub
 
     Private Sub RefreshCreated()
-        Dim ForeColor As Color
-
         For Each Item As ListViewItem In ListViewFiles.Items
             Dim FileData As ImportFile = Item.Tag
 
-            If FileData.IsFileTooLarge Then
-                ForeColor = Color.Gray
-            ElseIf Not ChkCreated.Checked Then
-                ForeColor = Color.Gray
-            Else
-                ForeColor = SystemColors.WindowText
-            End If
-            Item.SubItems.Item(COLUMN_CREATION_TIME).ForeColor = ForeColor
+            Item.SubItems.Item(COLUMN_CREATION_TIME).ForeColor = GetForeColor(FileData.IsFileTooLarge, ChkCreated.Checked)
         Next
     End Sub
 
@@ -446,42 +443,34 @@ Public Class ImportFileForm
         _IgnoreEvent = False
     End Sub
 
-    Private Sub RefreshLastAccessed()
-        Dim ForeColor As Color
+    Private Function GetForeColor(IsFileTooLarge As Boolean, IsEnabled As Boolean) As Color
+        If IsFileTooLarge Then
+            Return Color.Gray
+        ElseIf Not IsEnabled Then
+            Return Color.Gray
+        Else
+            Return SystemColors.WindowText
+        End If
+    End Function
 
+    Private Sub RefreshLastAccessed()
         For Each Item As ListViewItem In ListViewFiles.Items
             Dim FileData As ImportFile = Item.Tag
 
-            If FileData.IsFileTooLarge Then
-                ForeColor = Color.Gray
-            ElseIf Not ChkLastAccessed.Checked Then
-                ForeColor = Color.Gray
-            Else
-                ForeColor = SystemColors.WindowText
-            End If
-            Item.SubItems.Item(COLUMN_LAST_ACCESS_TIME).ForeColor = ForeColor
+            Item.SubItems.Item(COLUMN_LAST_ACCESS_TIME).ForeColor = GetForeColor(FileData.IsFileTooLarge, ChkLastAccessed.Checked)
         Next
     End Sub
 
     Private Sub RefreshOptions()
-        If _HasLFN Then
-            ChkLFN.Enabled = True
-            ChkLFN.Checked = True
-        Else
-            ChkLFN.Enabled = True
+        ChkLFN.Enabled = True
+        If Not _HasLFN Then
             ChkLFN.Checked = False
         End If
 
-        If _HasLFN Then
-            ChkNTExtensions.Enabled = True
-            ChkNTExtensions.Checked = False
-        Else
-            ChkNTExtensions.Enabled = False
+        ChkNTExtensions.Enabled = _HasLFN AndAlso ChkLFN.Checked
+        If Not _HasLFN Then
             ChkNTExtensions.Checked = False
         End If
-
-        ChkCreated.Checked = False
-        ChkLastAccessed.Checked = False
 
         _FileList.Options.UseLFN = ChkLFN.Checked
         _FileList.Options.UseNTExtensions = ChkNTExtensions.Checked

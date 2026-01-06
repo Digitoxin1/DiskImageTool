@@ -58,7 +58,9 @@ Write-Host "ZipPath     = $zipPath"
 # Exclusions
 $excludeNames = @(
     'CompactJson.xml',
-    'CompactJSON.xml'
+    'CompactJSON.xml',
+	'UserDB.xml',
+	'BootSector.xml'
 )
 
 $excludeExts = @(
