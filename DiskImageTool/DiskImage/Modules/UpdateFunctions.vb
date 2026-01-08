@@ -123,7 +123,7 @@
             Dim Params = Disk.DiskParams
             Dim Size = Params.BPBParams.SizeInBytes
             Dim Data(Size - 1) As Byte
-            Dim BPBParamsBySize = FloppyDiskFormatGetParams(Disk.Image.Length).BPBParams
+            Dim BPBParamsBySize = FloppyDiskBPBParamsGet(Disk.Image.Length)
 
             Dim DataOffset As UInteger = 0
             For Offset As UInteger = 0 To Disk.Image.Length - 1 Step Disk.BPB.BytesPerSector
