@@ -123,7 +123,7 @@
     <oemname name="C ZDS3.3"/>
   </bootstrap>
   <bootstrap crc32="38BBABC1" jmp="EB3F90">
-    <oemname name="CACHET  "/>
+    <oemname name="CACHET  " verified="true"/>
   </bootstrap>
   <bootstrap crc32="2CD0CD53" jmp="EB3E90">
     <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1  1.2mb Version" verified="true"/>
@@ -304,7 +304,7 @@
     <oemname name="IBM  3.2" verified="true"/>
   </bootstrap>
   <bootstrap crc32="B0E49411" jmp="EB2C90" language="French">
-    <oemname name="IBM  2.0"/>
+    <oemname name="IBM  2.0" verified="true"/>
   </bootstrap>
   <bootstrap crc32="78101FF1" jmp="EB2F90">
     <oemname name="IBM  3.0" company="Compaq" verified="true"/>
