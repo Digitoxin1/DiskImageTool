@@ -99,7 +99,7 @@ Public Class SummaryPanel
         Return ForeColor
     End Function
 
-    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
+    Public Shared Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
         Dim fsi As FileSystemInfo
 
         fsi.OldestFileDate = Nothing
@@ -169,7 +169,7 @@ Public Class SummaryPanel
         Return Nothing
     End Function
 
-    Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
+    Private Shared Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
         Dim TrackList(NonStandardTracks.Count - 1) As UShort
         Dim TrackStartString As String
         Dim TrackEndString As String
@@ -885,7 +885,7 @@ Public Class SummaryPanel
     'End Sub
 #End Region
 
-    Private Structure FileSystemInfo
+    Public Structure FileSystemInfo
         Dim NewestFileDate As Date?
         Dim OldestFileDate As Date?
         Dim VolumeLabel As DirectoryEntry

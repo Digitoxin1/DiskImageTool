@@ -265,6 +265,97 @@ Public Class MainForm
         ImageFiltersAlertUser()
     End Sub
 
+    Private Sub DisplayReportXMLDumpBatch(FilePanel As FilePanel)
+        Dim OutputFile As String = Nothing
+
+        Using sfd As New SaveFileDialog()
+            sfd.Title = "Save XML Report"
+            sfd.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
+            sfd.DefaultExt = "xml"
+            sfd.AddExtension = True
+            sfd.OverwritePrompt = True
+            sfd.FileName = $"Image_Analysis_{DateTime.Now:yyyyMMdd_HHmmss}.xml"
+
+            If sfd.ShowDialog(Me) <> DialogResult.OK Then
+                Return
+            End If
+
+            OutputFile = sfd.FileName
+        End Using
+
+        Me.UseWaitCursor = True
+        Dim T = Stopwatch.StartNew
+
+        Try
+            Dim images As New List(Of ImageData)
+            For Each img As ImageData In ImageCombo.AllItems
+                images.Add(img)
+            Next
+
+            Dim settings As New Xml.XmlWriterSettings With {
+                .Indent = True,
+                .Encoding = New System.Text.UTF8Encoding(False),
+                .OmitXmlDeclaration = False
+            }
+
+            Using fs As New IO.FileStream(OutputFile, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.Read)
+                Using xw As Xml.XmlWriter = Xml.XmlWriter.Create(fs, settings)
+                    xw.WriteStartDocument()
+                    xw.WriteStartElement("images")
+
+                    Dim CurrentIsArchive As Boolean = False
+                    Dim CurrentSourceFile As String = ""
+                    Dim ArchiveIsOpen As Boolean = False
+
+                    Dim scanner As New LoadedImageScanner(images, FilePanel.CurrentImage, Sub(disk As Disk, image As ImageData)
+                                                                                              Dim IsArchive = image.FileType = ImageData.FileTypeEnum.Compressed
+                                                                                              Dim SourceFile = image.SourceFile
+
+                                                                                              If IsArchive <> CurrentIsArchive OrElse SourceFile <> CurrentSourceFile Then
+                                                                                                  If ArchiveIsOpen Then
+                                                                                                      xw.WriteEndElement()
+                                                                                                      ArchiveIsOpen = False
+                                                                                                  End If
+
+                                                                                                  CurrentIsArchive = IsArchive
+                                                                                                  CurrentSourceFile = SourceFile
+
+                                                                                                  If IsArchive Then
+                                                                                                      xw.WriteStartElement("archive")
+                                                                                                      xw.WriteAttributeString("name", IO.Path.GetFileName(SourceFile))
+                                                                                                      xw.WriteAttributeString("path", IO.Path.GetDirectoryName(SourceFile))
+                                                                                                      ArchiveIsOpen = True
+                                                                                                  End If
+                                                                                              End If
+
+                                                                                              BuildImageNode(xw, disk, image, App.BootstrapDB, App.TitleDB)
+                                                                                          End Sub)
+
+                    Dim Result = ItemScanForm.Display(scanner, My.Resources.Label_BatchImageAnalysis, My.Resources.Label_Processing)
+
+                    If ArchiveIsOpen Then
+                        xw.WriteEndElement()
+                    End If
+
+                    xw.WriteEndElement()
+                    xw.WriteEndDocument()
+
+                    If Result.Error IsNot Nothing Then
+                        Throw Result.Error
+                    End If
+                End Using
+            End Using
+
+            T.Stop()
+            Debug.Print(String.Format(My.Resources.Debug_BatchProcessTimeTaken, T.Elapsed))
+
+        Catch ex As Exception
+            MessageBox.Show(Me, ex.Message, My.Resources.Label_ErrorSavingXMLReport, MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            Me.UseWaitCursor = False
+        End Try
+    End Sub
+
     Private Sub DrawComboFAT(ByVal sender As Object, ByVal e As DrawItemEventArgs)
         e.DrawBackground()
 
@@ -662,7 +753,6 @@ Public Class MainForm
             ProcessFileDropNew(FileName, GetNewFileName())
         End If
     End Sub
-
     Private Sub ImageRemoveWindowsModificationsBatch(FilePanel As FilePanel)
         Dim Msg = String.Format(My.Resources.Dialog_Win9xCleanBatch, Environment.NewLine)
 
@@ -678,7 +768,7 @@ Public Class MainForm
             images.Add(img)
         Next
 
-        Dim scanner As New Win9xCleanScanner(images, FilePanel.CurrentImage, AddressOf Me.ImageWin9xCleanBatch)
+        Dim scanner As New LoadedImageScanner(images, FilePanel.CurrentImage, AddressOf Me.ImageWin9xCleanBatch)
 
         ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing)
 
@@ -718,6 +808,8 @@ Public Class MainForm
         End If
     End Sub
 
+
+
     Private Sub ImageWin9xCleanBatch(Disk As Disk, ImageData As ImageData)
         Dim Result = ImageRemoveWindowsModifications(Disk, True)
         ImageData.BatchUpdated = Result
@@ -753,6 +845,7 @@ Public Class MainForm
             MenuDiskWriteFloppyA.Enabled = CheckSize AndAlso _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
             MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
+            MenuReportsImageAnalysis.Enabled = CheckSize
             SetButtonStateSaveAs(True)
             MenuGreaseweazleWrite.Enabled = CheckSize AndAlso App.AppSettings.Greaseweazle.IsPathValid
         Else
@@ -767,6 +860,7 @@ Public Class MainForm
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
             MenuReportsModifications.Enabled = False
+            MenuReportsImageAnalysis.Enabled = False
             SetButtonStateSaveAs(False)
             MenuGreaseweazleWrite.Enabled = False
         End If
@@ -1441,6 +1535,7 @@ Public Class MainForm
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
         _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
+        MenuReportsBatchImageAnalysis.Enabled = Value
     End Sub
     Private Sub StatusBarFileInfoClear()
         StatusBarFileCount.Visible = False
@@ -2105,8 +2200,18 @@ Public Class MainForm
         GenerateTrackLayout(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
     End Sub
 
+    Private Sub MenuReportsBatchXMLDump_Click(sender As Object, e As EventArgs) Handles MenuReportsBatchImageAnalysis.Click
+        DisplayReportXMLDumpBatch(FilePanelMain)
+    End Sub
+
     Private Sub MenuReportsModifications_Click(sender As Object, e As EventArgs) Handles MenuReportsModifications.Click
         DisplayReportModifications(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
+    End Sub
+
+    Private Sub MenuReportsXMLDump_Click(sender As Object, e As EventArgs) Handles MenuReportsImageAnalysis.Click
+        Dim Content = BuildXMLDump(FilePanelMain.CurrentImage, App.BootstrapDB, App.TitleDB)
+
+        DisplayReportXMLDump(Content, FilePanelMain.CurrentImage.ImageData.FileName)
     End Sub
 
     Private Sub MenuToolsClearReservedBytes_Click(sender As Object, e As EventArgs) Handles MenuToolsClearReservedBytes.Click

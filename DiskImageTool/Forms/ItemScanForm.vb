@@ -5,6 +5,8 @@ Public Class ItemScanForm
     Private ReadOnly _progressLabel As String
     Private ReadOnly _scanner As IImageScanner
     Private _endScan As Boolean = False
+    Private _cancelled As Boolean = False
+    Private _error As Exception = Nothing
 
     Public Sub New(scanner As IImageScanner, windowTitle As String, progressLabel As String)
 
@@ -18,17 +20,30 @@ Public Class ItemScanForm
         AddHandler _scanner.ScanCompleted, AddressOf Scanner_ScanCompleted
     End Sub
 
+    Public ReadOnly Property Cancelled As Boolean
+        Get
+            Return _cancelled
+        End Get
+    End Property
+
+    Public ReadOnly Property [Error] As Exception
+        Get
+            Return _error
+        End Get
+    End Property
+
     Public ReadOnly Property ItemsRemaining As UInteger
         Get
             Return _scanner.ItemsRemaining
         End Get
     End Property
 
-    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String)
+    Public Shared Function Display(scanner As IImageScanner, windowTitle As String, progessLabel As String) As (Cancelled As Boolean, [Error] As Exception)
         Using dlg As New ItemScanForm(scanner, windowTitle, progessLabel)
             dlg.ShowDialog(App.CurrentFormInstance)
+            Return (dlg.Cancelled, dlg.Error)
         End Using
-    End Sub
+    End Function
 
     Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
         MyBase.OnFormClosed(e)
@@ -49,13 +64,13 @@ Public Class ItemScanForm
         Task.Run(Sub() _scanner.Scan(_ctSource.Token))
     End Sub
 
-    Private Sub Scanner_ProgressChanged(percent As Integer)
+    Private Sub Scanner_ProgressChanged(percent As Double)
         If InvokeRequired Then
-            Invoke(New Action(Of Integer)(AddressOf Scanner_ProgressChanged), percent)
+            Invoke(New Action(Of Double)(AddressOf Scanner_ProgressChanged), percent)
             Return
         End If
 
-        LblScanning.Text = $"{_progressLabel}... {percent}%"
+        LblScanning.Text = $"{_progressLabel}... {percent:0.0}%"
     End Sub
 
     Private Sub Scanner_ScanCompleted(cancelled As Boolean, [error] As Exception)
@@ -65,6 +80,8 @@ Public Class ItemScanForm
         End If
 
         _endScan = True
+        _cancelled = cancelled
+        _error = [error]
         Close()
     End Sub
 End Class

@@ -29,13 +29,13 @@ Partial Class ItemScanForm
         'LblScanning
         '
         Me.LblScanning.Anchor = System.Windows.Forms.AnchorStyles.None
-        Me.LblScanning.AutoSize = True
         Me.LblScanning.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblScanning.Location = New System.Drawing.Point(40, 25)
+        Me.LblScanning.Location = New System.Drawing.Point(12, 25)
         Me.LblScanning.Name = "LblScanning"
-        Me.LblScanning.Size = New System.Drawing.Size(63, 16)
+        Me.LblScanning.Size = New System.Drawing.Size(168, 16)
         Me.LblScanning.TabIndex = 0
         Me.LblScanning.Text = "{Caption}"
+        Me.LblScanning.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
         'BackgroundWorker1
         '
@@ -57,7 +57,6 @@ Partial Class ItemScanForm
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "{Caption}"
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 

@@ -588,7 +588,7 @@ Namespace DiskImage
 
             Dim Data = Me.Data
             Dim CheckByte = Data(1)
-            If Data(0) = CHAR_DELETED And Disk.FreeClusterBytes.Contains(CheckByte) Then
+            If Data(0) = CHAR_DELETED AndAlso Disk.FreeClusterBytes.Contains(CheckByte) Then
                 For Counter = 2 To Data.Length - 1
                     If Data(Counter) <> CheckByte Then
                         _IsBlankCache = False
@@ -614,6 +614,27 @@ Namespace DiskImage
 
         Public Function IsEmpty() As Boolean
             Return FileName(0) = CHAR_EMPTY
+        End Function
+
+        Public Function IsFileEmpty() As Boolean
+            Dim Data = Me.Data
+
+            If Data(0) = CHAR_EMPTY Then
+                Return True
+            End If
+
+            Dim CheckByte = Data(1)
+            If Data(0) = CHAR_DELETED AndAlso Disk.FreeClusterBytes.Contains(CheckByte) Then
+                For Counter = 2 To 10
+                    If Data(Counter) <> CheckByte Then
+                        Return False
+                    End If
+                Next
+
+                Return True
+            End If
+
+            Return False
         End Function
 
         Public Function IsLink() As Boolean

@@ -30,8 +30,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.36.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>2.37.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -215,6 +215,7 @@
     <Compile Include="ImageFormats\TD0\TD0TrackHeader.vb" />
     <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Modules\FileIO.vb" />
+    <Compile Include="Modules\XMLDump.vb" />
     <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
@@ -617,7 +618,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Lib\WindowsAPI.vb" />
-    <Compile Include="Scanners\Win9xCleanScanner.vb" />
+    <Compile Include="Scanners\LoadedImageScanner.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\HashPanel.resx">

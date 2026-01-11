@@ -2478,6 +2478,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Batch Image Analysis.
+        '''</summary>
+        Friend ReadOnly Property Label_BatchImageAnalysis() As String
+            Get
+                Return ResourceManager.GetString("Label_BatchImageAnalysis", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Bit Offset.
         '''</summary>
         Friend ReadOnly Property Label_BitOffset() As String
@@ -3059,6 +3068,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Error() As String
             Get
                 Return ResourceManager.GetString("Label_Error", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Error saving XML report.
+        '''</summary>
+        Friend ReadOnly Property Label_ErrorSavingXMLReport() As String
+            Get
+                Return ResourceManager.GetString("Label_ErrorSavingXMLReport", resourceCulture)
             End Get
         End Property
         

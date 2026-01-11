@@ -253,6 +253,19 @@ Module Reports
         TextViewForm.Display(Caption, Content, True, True, SaveFileName)
     End Sub
 
+    Public Sub DisplayReportXMLDump(Content As String, Optional Filename As String = "")
+        Const OUTPUT_FILENAME As String = "Image_Analysis.xml"
+
+        Dim SaveFileName = OUTPUT_FILENAME
+
+        Dim Caption = "XML Dump"
+        If Not String.IsNullOrEmpty(Filename) Then
+            Caption &= " - " & Filename
+        End If
+
+        TextViewForm.Display(Caption, Content, False, True, SaveFileName)
+    End Sub
+
     Private Function CompressIntegerList(values As List(Of Integer)) As String
         If values Is Nothing OrElse values.Count = 0 Then Return String.Empty
 

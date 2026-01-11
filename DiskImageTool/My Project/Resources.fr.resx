@@ -1912,4 +1912,10 @@ Voulez-vous écraser ?</value>
   <data name="Label_ImportIntoDirectory" xml:space="preserve">
     <value>Importer dans le dossier</value>
   </data>
+  <data name="Label_BatchImageAnalysis" xml:space="preserve">
+    <value>Analyse d’images par lot</value>
+  </data>
+  <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
+    <value>Erreur lors de l'enregistrement du rapport XML</value>
+  </data>
 </root>

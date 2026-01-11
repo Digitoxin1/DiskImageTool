@@ -1,22 +1,22 @@
 ﻿Imports System.Threading
 
-Public Class Win9xCleanScanner
+Public Class LoadedImageScanner
     Implements IImageScanner
 
     Private ReadOnly _currentImage As DiskImageContainer
     Private ReadOnly _images As IList(Of ImageData)
-    Private ReadOnly _win9xClean As Action(Of DiskImage.Disk, ImageData)
+    Private ReadOnly _callback As Action(Of DiskImage.Disk, ImageData)
 
     Private _itemsRemaining As UInteger
 
-    Public Event ProgressChanged(percent As Integer) Implements IImageScanner.ProgressChanged
+    Public Event ProgressChanged(percent As Double) Implements IImageScanner.ProgressChanged
     Public Event ScanCompleted(cancelled As Boolean, [error] As Exception) Implements IImageScanner.ScanCompleted
 
-    Public Sub New(Images As IList(Of ImageData), CurrentImage As DiskImageContainer, Win9xClean As Action(Of DiskImage.Disk, ImageData))
+    Public Sub New(Images As IList(Of ImageData), CurrentImage As DiskImageContainer, Callback As Action(Of DiskImage.Disk, ImageData))
 
         _images = Images
         _currentImage = CurrentImage
-        _win9xClean = Win9xClean
+        _callback = Callback
 
         _itemsRemaining = CUInt(_images.Count)
     End Sub
@@ -40,8 +40,8 @@ Public Class Win9xCleanScanner
                 Exit Try
             End If
 
-            Dim processed = 0
-            Dim lastPercent = -1
+            Dim processed As Integer = 0
+            Dim LastTenth As Integer = -1
 
             For Each img In _images
                 If ct.IsCancellationRequested Then
@@ -60,21 +60,22 @@ Public Class Win9xCleanScanner
                     Continue For
                 End If
 
-                _win9xClean(disk, img)
+                _callback(disk, img)
 
                 processed += 1
                 If _itemsRemaining > 0 Then
                     _itemsRemaining -= 1
                 End If
 
-                Dim percent = CInt(processed * 100 / total)
-                If percent <> lastPercent Then
-                    lastPercent = percent
-                    RaiseEvent ProgressChanged(percent)
+                Dim tenth As Integer = CInt(Math.Round((processed * 1000.0R) / total, MidpointRounding.AwayFromZero))
+
+                If tenth <> LastTenth Then
+                    LastTenth = tenth
+                    RaiseEvent ProgressChanged(tenth / 10.0R)
                 End If
             Next
 
-            If Not cancelled AndAlso lastPercent < 100 AndAlso _itemsRemaining = 0 Then
+            If Not cancelled AndAlso LastTenth < 1000 AndAlso _itemsRemaining = 0 Then
                 RaiseEvent ProgressChanged(100)
             End If
 

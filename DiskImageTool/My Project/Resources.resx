@@ -2161,4 +2161,10 @@ Do you wish to overwrite?</value>
   <data name="Label_ImportIntoDirectory" xml:space="preserve">
     <value>Import into Directory</value>
   </data>
+  <data name="Label_BatchImageAnalysis" xml:space="preserve">
+    <value>Batch Image Analysis</value>
+  </data>
+  <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
+    <value>Error saving XML report</value>
+  </data>
 </root>

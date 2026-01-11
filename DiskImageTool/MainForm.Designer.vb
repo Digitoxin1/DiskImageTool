@@ -127,6 +127,8 @@ Partial Class MainForm
         Me.MenuPcImgCnvTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuReportsModifications = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuReportsImageAnalysis = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuReportsBatchImageAnalysis = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
@@ -788,7 +790,7 @@ Partial Class MainForm
         '
         'MainMenuReports
         '
-        Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsModifications})
+        Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsModifications, Me.MenuReportsImageAnalysis, Me.MenuReportsBatchImageAnalysis})
         Me.MainMenuReports.Name = "MainMenuReports"
         resources.ApplyResources(Me.MainMenuReports, "MainMenuReports")
         '
@@ -796,6 +798,16 @@ Partial Class MainForm
         '
         Me.MenuReportsModifications.Name = "MenuReportsModifications"
         resources.ApplyResources(Me.MenuReportsModifications, "MenuReportsModifications")
+        '
+        'MenuReportsImageAnalysis
+        '
+        Me.MenuReportsImageAnalysis.Name = "MenuReportsImageAnalysis"
+        resources.ApplyResources(Me.MenuReportsImageAnalysis, "MenuReportsImageAnalysis")
+        '
+        'MenuReportsBatchImageAnalysis
+        '
+        Me.MenuReportsBatchImageAnalysis.Name = "MenuReportsBatchImageAnalysis"
+        resources.ApplyResources(Me.MenuReportsBatchImageAnalysis, "MenuReportsBatchImageAnalysis")
         '
         'MainMenuOptions
         '
@@ -1227,4 +1239,6 @@ Partial Class MainForm
     Friend WithEvents PanelOverlayBottomZone As Panel
     Friend WithEvents LabelOpenImages As Label
     Friend WithEvents LabelImportFiles As Label
+    Friend WithEvents MenuReportsImageAnalysis As ToolStripMenuItem
+    Friend WithEvents MenuReportsBatchImageAnalysis As ToolStripMenuItem
 End Class

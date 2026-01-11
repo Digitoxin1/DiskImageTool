@@ -9,7 +9,7 @@ Public Class FilterScanner
     Private ReadOnly _newOnly As Boolean
     Private _itemsRemaining As UInteger
 
-    Public Event ProgressChanged(Percent As Integer) Implements IImageScanner.ProgressChanged
+    Public Event ProgressChanged(Percent As Double) Implements IImageScanner.ProgressChanged
     Public Event ScanCompleted(Cancelled As Boolean, [Error] As Exception) Implements IImageScanner.ScanCompleted
 
     Public Sub New(Images As IList(Of ImageData), CurrentImage As DiskImageContainer, NewOnly As Boolean, FilterScan As Action(Of DiskImage.Disk, ImageData))
@@ -47,7 +47,7 @@ Public Class FilterScanner
             End If
 
             Dim Processed As Integer = 0
-            Dim LastPercent As Integer = -1
+            Dim lastTenth As Integer = -1
 
             For Each img In _images
                 If ct.IsCancellationRequested Then
@@ -78,14 +78,14 @@ Public Class FilterScanner
                     _itemsRemaining -= 1
                 End If
 
-                Dim percent = CInt(Math.Truncate(Processed * 100.0 / Total))
-                If percent <> LastPercent Then
-                    LastPercent = percent
-                    RaiseEvent ProgressChanged(percent)
+                Dim tenth As Integer = CInt(Math.Round((Processed * 1000.0R) / Total, MidpointRounding.AwayFromZero))
+                If tenth <> lastTenth Then
+                    lastTenth = tenth
+                    RaiseEvent ProgressChanged(tenth / 10.0R)
                 End If
             Next
 
-            If Not Cancelled AndAlso LastPercent < 100 AndAlso _itemsRemaining = 0 Then
+            If Not Cancelled AndAlso lastTenth < 1000 AndAlso _itemsRemaining = 0 Then
                 RaiseEvent ProgressChanged(100)
             End If
 

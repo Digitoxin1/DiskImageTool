@@ -1912,4 +1912,10 @@
   <data name="Label_ImportIntoDirectory" xml:space="preserve">
     <value>Importar en la carpeta</value>
   </data>
+  <data name="Label_BatchImageAnalysis" xml:space="preserve">
+    <value>Análisis de imágenes por lote</value>
+  </data>
+  <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
+    <value>Error al guardar el informe XML</value>
+  </data>
 </root>

@@ -264,4 +264,10 @@
   <data name="LabelImportFiles.Text" xml:space="preserve">
     <value>Importar archivos</value>
   </data>
+  <data name="MenuReportsImageAnalysis.Text" xml:space="preserve">
+    <value>Análisis de imagen (XML)</value>
+  </data>
+  <data name="MenuReportsBatchImageAnalysis.Text" xml:space="preserve">
+    <value>Análisis de imágenes por lote (XML)</value>
+  </data>
 </root>

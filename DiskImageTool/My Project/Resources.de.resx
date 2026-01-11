@@ -1912,4 +1912,10 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ImportIntoDirectory" xml:space="preserve">
     <value>In Ordner importieren</value>
   </data>
+  <data name="Label_BatchImageAnalysis" xml:space="preserve">
+    <value>Stapel-Imageanalyse</value>
+  </data>
+  <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
+    <value>Fehler beim Speichern des XML-Berichts</value>
+  </data>
 </root>
