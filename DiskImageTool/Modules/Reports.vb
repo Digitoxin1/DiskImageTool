@@ -258,12 +258,17 @@ Module Reports
 
         Dim SaveFileName = OUTPUT_FILENAME
 
-        Dim Caption = "XML Dump"
+        Dim Caption = My.Resources.Label_ImageAnalysis
         If Not String.IsNullOrEmpty(Filename) Then
             Caption &= " - " & Filename
         End If
 
-        TextViewForm.Display(Caption, Content, False, True, SaveFileName)
+        Dim XMLDoc As New Xml.XmlDocument()
+        XMLDoc.LoadXml(Content)
+
+        XMLViewForm.Display(Caption, XMLDoc, True, SaveFileName)
+
+        'TextViewForm.Display(Caption, Content, False, True, SaveFileName)
     End Sub
 
     Private Function CompressIntegerList(values As List(Of Integer)) As String

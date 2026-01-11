@@ -1918,4 +1918,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
     <value>Erreur lors de l'enregistrement du rapport XML</value>
   </data>
+  <data name="Label_ImageAnalysis" xml:space="preserve">
+    <value>Analyse d’image</value>
+  </data>
 </root>

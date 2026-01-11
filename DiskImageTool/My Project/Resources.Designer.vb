@@ -3495,6 +3495,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Image Analysis.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageAnalysis() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageAnalysis", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} Images.
         '''</summary>
         Friend ReadOnly Property Label_ImageCountPlural() As String

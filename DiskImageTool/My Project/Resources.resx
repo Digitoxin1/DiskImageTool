@@ -2167,4 +2167,7 @@ Do you wish to overwrite?</value>
   <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
     <value>Error saving XML report</value>
   </data>
+  <data name="Label_ImageAnalysis" xml:space="preserve">
+    <value>Image Analysis</value>
+  </data>
 </root>

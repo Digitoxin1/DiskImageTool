@@ -18,7 +18,6 @@
 
         If Not EnableSave Then
             PanelBottom.Visible = False
-            TextBox1.Height = Me.ClientSize.Height - TextBox1.Top * 2
         End If
     End Sub
 

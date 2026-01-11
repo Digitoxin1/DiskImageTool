@@ -1918,4 +1918,7 @@
   <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
     <value>Error al guardar el informe XML</value>
   </data>
+  <data name="Label_ImageAnalysis" xml:space="preserve">
+    <value>Análisis de imagen</value>
+  </data>
 </root>

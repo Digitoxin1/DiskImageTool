@@ -197,6 +197,12 @@
     <Compile Include="Forms\ImagePreview.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\XMLViewForm.Designer.vb">
+      <DependentUpon>XMLViewForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\XMLViewForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ImageFormats\TD0\TD0BytePattern.vb" />
     <Compile Include="ImageFormats\TD0\TD0Comment.vb" />
     <Compile Include="ImageFormats\TD0\TD0Crc16.vb" />
@@ -716,6 +722,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\XMLViewForm.resx">
+      <DependentUpon>XMLViewForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\HelpStrings.de.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.es.resx" />

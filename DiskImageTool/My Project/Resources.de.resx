@@ -1918,4 +1918,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
     <value>Fehler beim Speichern des XML-Berichts</value>
   </data>
+  <data name="Label_ImageAnalysis" xml:space="preserve">
+    <value>Imageanalyse</value>
+  </data>
 </root>
