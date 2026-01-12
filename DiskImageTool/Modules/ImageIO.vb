@@ -4,11 +4,11 @@ Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
-    Public Const BASIC_SECTOR_FILE_EXTENSIONS As String = ".ima,.img,.vfd,.flp"
+    Public Const BASIC_SECTOR_FILE_EXTENSIONS As String = ".ima,.img,.vfd,.flp,.dsk"
     Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi", ".td0"}
     Public ReadOnly AllFileExtensions As New List(Of String)
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
+    Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp", ".dsk"}
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
 
     Private ReadOnly BasicToBitstream As New Dictionary(Of FloppyImageType, Func(Of Byte(), FloppyDiskFormat, IBitstreamImage)) From {
@@ -416,7 +416,7 @@ Module ImageIO
 
         Dim imageGroup = GetImageGroup(ImageType)
 
-        AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_FloppyDiskImage, ".ima", ".img")
+        AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_FloppyDiskImage, ".ima", ".img", ".dsk")
         AppendFilterAndTrackIndex(Filter, FilterIndex, CurrentIndex, FileExt, My.Resources.FileType_VFD, ".vfd", ".flp")
 
         If ImageType = FloppyImageType.IMDImage OrElse imageGroup <> FloppyImageGroup.AdvancedSectorImage Then
