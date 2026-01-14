@@ -1764,7 +1764,9 @@ Public Class MainForm
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, PanelFiles.DragDrop, ListViewSummary.DragDrop, HashPanel1.DragDrop
-        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+
+        If sender Is PanelFiles AndAlso HasLoadedImage Then
             PanelOverlay.Visible = False
             SetDropHighlight(Nothing)
         End If
@@ -1780,7 +1782,7 @@ Public Class MainForm
         End If
 
         Dim DoImport As Boolean = False
-        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+        If sender Is PanelFiles AndAlso HasLoadedImage Then
             DoImport = IsImportDrop(e)
         End If
 
@@ -1802,9 +1804,11 @@ Public Class MainForm
         Debug.Print("MainForm.File_DragEnter fired")
 
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+
             e.Effect = DragDropEffects.Copy
 
-            If sender Is PanelFiles AndAlso _ImagesLoaded Then
+            If sender Is PanelFiles AndAlso HasLoadedImage Then
                 PanelOverlay.Visible = True
             End If
         End If
@@ -1817,7 +1821,9 @@ Public Class MainForm
 
         Debug.Print("MainForm.File_DragLeave fired")
 
-        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+
+        If sender Is PanelFiles AndAlso HasLoadedImage Then
             PanelOverlay.Visible = False
             SetDropHighlight(Nothing)
         End If
@@ -1828,7 +1834,9 @@ Public Class MainForm
             Exit Sub
         End If
 
-        If sender Is PanelFiles AndAlso _ImagesLoaded Then
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+
+        If sender Is PanelFiles AndAlso HasLoadedImage Then
             Dim DoImport = IsImportDrop(e)
             SetDropHighlight(If(DoImport, PanelOverlayBottomZone, PanelOverlayTopZone))
         End If
