@@ -2170,4 +2170,10 @@ Do you wish to overwrite?</value>
   <data name="Label_ImageAnalysis" xml:space="preserve">
     <value>Image Analysis</value>
   </data>
+  <data name="Label_Prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="Label_ToggleSequence" xml:space="preserve">
+    <value>Toggle Sequence Token</value>
+  </data>
 </root>

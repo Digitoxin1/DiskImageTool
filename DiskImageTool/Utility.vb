@@ -280,14 +280,24 @@ Module Utility
         End If
     End Sub
 
-    Public Function SanitizeFileName(input As String) As String
+    Public Function SanitizeFileName(input As String, allowPaths As Boolean) As String
         ' Get the invalid characters for Windows filenames
         Dim invalidChars() As Char = System.IO.Path.GetInvalidFileNameChars()
 
         ' Replace any invalid char with an underscore
         For Each c In invalidChars
+            ' If paths are allowed, skip slashes so we can normalize them later
+            If allowPaths AndAlso (c = "\"c OrElse c = "/"c) Then
+                Continue For
+            End If
+
             input = input.Replace(c, "_"c)
         Next
+
+        If allowPaths Then
+            ' Normalize forward slashes to backslashes
+            input = input.Replace("/"c, "\"c)
+        End If
 
         ' Trim spaces and periods from the end
         input = input.TrimEnd(" "c, "."c)

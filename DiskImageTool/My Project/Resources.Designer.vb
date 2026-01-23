@@ -4071,6 +4071,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Prefix.
+        '''</summary>
+        Friend ReadOnly Property Label_Prefix() As String
+            Get
+                Return ResourceManager.GetString("Label_Prefix", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Preview.
         '''</summary>
         Friend ReadOnly Property Label_Preview() As String
@@ -4571,6 +4580,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Time() As String
             Get
                 Return ResourceManager.GetString("Label_Time", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Toggle Sequence Token.
+        '''</summary>
+        Friend ReadOnly Property Label_ToggleSequence() As String
+            Get
+                Return ResourceManager.GetString("Label_ToggleSequence", resourceCulture)
             End Get
         End Property
         

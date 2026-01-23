@@ -45,9 +45,9 @@ Namespace Flux
             Return Response
         End Function
 
-        Public Function BrowseFolder(CurrentPath As String) As String
+        Public Function BrowseFolder(Description As String, CurrentPath As String) As String
             Using ofd As New FolderBrowserDialog()
-                ofd.Description = "Flux Set Root Folder"
+                ofd.Description = Description
                 ofd.SelectedPath = CurrentPath
                 ofd.ShowNewFolderButton = True
                 If ofd.ShowDialog() = DialogResult.OK Then
@@ -63,6 +63,10 @@ Namespace Flux
                 ctrl.TabIndex += Increment
             Next
         End Sub
+
+        Public Function CanToggleSequenceAtCaretOrSelection(tb As TextBoxBase) As Boolean
+            Return CanToggleSequenceAtSelection(tb) OrElse CanToggleSequenceAtCaretAfterToken(tb) OrElse CanToggleSequenceAtCaretAfterNumber(tb)
+        End Function
 
         Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
@@ -314,6 +318,12 @@ Namespace Flux
         End Function
 
         Public Function IsValidFileName(name As String) As Boolean
+            If name Is Nothing Then
+                name = ""
+            End If
+
+            name = name.Trim
+
             If String.IsNullOrWhiteSpace(name) Then Return False
 
             ' Check Windows filename invalid characters
@@ -322,7 +332,9 @@ Namespace Flux
             End If
 
             ' Check reserved device names
-            If RESERVED_FILE_NAMES.Contains(name.Trim().ToUpper()) Then
+            Dim baseName = IO.Path.GetFileNameWithoutExtension(name).ToUpperInvariant()
+
+            If RESERVED_FILE_NAMES.Contains(baseName) Then
                 Return False
             End If
 
@@ -415,15 +427,15 @@ Namespace Flux
             End With
         End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption, IncludeUnknown As Boolean)
+        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption, IncludeUnknown As Boolean, Doublestep As Boolean)
             If Opt.Id = "" Then
                 ClearImageFormats(Combo)
             Else
-                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat, IncludeUnknown)
+                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat, IncludeUnknown, Doublestep)
             End If
         End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?, IncludeUnknown As Boolean)
+        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?, IncludeUnknown As Boolean, Doublestep As Boolean)
             Dim list = FloppyDiskFormatGetComboList(IncludeUnknown)
 
             For i As Integer = 0 To list.Count - 1
@@ -436,6 +448,13 @@ Namespace Flux
                 Else
                     item.Detected = False
                 End If
+
+                If Doublestep AndAlso item.IsStandard AndAlso item.DriveType = FloppyDriveType.Drive525DoubleDensity Then
+                    item.Doublestep = True
+                Else
+                    item.Doublestep = False
+                End If
+
                 list(i) = item
             Next
 
@@ -572,6 +591,90 @@ Namespace Flux
             IO.File.WriteAllText(LogFilePath, LogText & vbNewLine)
         End Sub
 
+        Public Function ToggleNumberTokenAtCaretOrSelection(tb As TextBoxBase) As Boolean
+            If tb Is Nothing Then
+                Return False
+            End If
+
+            If tb.SelectionLength > 0 Then
+                Return ToggleNumberTokenAtSelection(tb)
+            End If
+
+            Dim text As String = tb.Text
+            If String.IsNullOrEmpty(text) Then
+                Return False
+            End If
+
+            Dim caret As Integer = tb.SelectionStart
+            If caret <= 0 OrElse caret > text.Length Then
+                Return False
+            End If
+
+            ' Case A: caret after token ...<123>|
+            If CanToggleSequenceAtCaretAfterToken(tb) Then
+                ' Find digit run inside the token by scanning left
+                Dim endOfDigits As Integer = caret - 1 ' index of '>'
+                Dim i As Integer = caret - 2 ' should be a digit
+
+                While i >= 0 AndAlso Char.IsDigit(text(i))
+                    i -= 1
+                End While
+                ' i is now at '<'
+                Dim absDigitStart As Integer = i + 1
+                Dim digitLen As Integer = endOfDigits - absDigitStart
+                Dim absDigitEnd As Integer = absDigitStart + digitLen
+
+                tb.SuspendLayout()
+                Try
+                    ' remove '>' then '<'
+                    tb.Select(absDigitEnd, 1) : tb.SelectedText = ""
+                    tb.Select(absDigitStart - 1, 1) : tb.SelectedText = ""
+
+                    ' Put caret after digits
+                    tb.Select(absDigitStart + digitLen - 1, 0)
+                Finally
+                    tb.ResumeLayout()
+                End Try
+
+                Return True
+            End If
+
+            ' Case B: caret after digits ...123|
+            If CanToggleSequenceAtCaretAfterNumber(tb) Then
+                ' Find digit run before caret
+                Dim endIdx As Integer = caret ' one past last digit
+                Dim startIdx As Integer = caret - 1
+                While startIdx >= 0 AndAlso Char.IsDigit(text(startIdx))
+                    startIdx -= 1
+                End While
+                startIdx += 1
+
+                Dim absDigitStart As Integer = startIdx
+                Dim digitLen As Integer = endIdx - startIdx
+                If digitLen <= 0 Then
+                    Return False
+                End If
+
+                Dim absDigitEnd As Integer = absDigitStart + digitLen
+
+                tb.SuspendLayout()
+                Try
+                    ' add '>' then '<'
+                    tb.Select(absDigitEnd, 0) : tb.SelectedText = ">"
+                    tb.Select(absDigitStart, 0) : tb.SelectedText = "<"
+
+                    ' Put caret after '>'
+                    tb.Select(absDigitStart + digitLen + 2, 0)
+                Finally
+                    tb.ResumeLayout()
+                End Try
+
+                Return True
+            End If
+
+            Return False
+        End Function
+
         Public Function UShortListToRanges(values As List(Of UShort)) As String
             If values Is Nothing OrElse values.Count = 0 Then Return ""
 
@@ -610,6 +713,218 @@ Namespace Flux
             End If
 
             Return String.Join(", ", ranges)
+        End Function
+
+        Public Function ValidateFileName(name As String) As String
+            name = name.Trim
+
+            If name.EndsWith(".") Then
+                Return "File name cannot end with a period."
+            End If
+
+            ' Check Windows filename invalid characters
+            For Each c In IO.Path.GetInvalidFileNameChars()
+                If name.Contains(c) Then
+                    Return $"File name contains an invalid character: {c}"
+                End If
+            Next
+
+            ' Check reserved device names
+            Dim baseName = IO.Path.GetFileNameWithoutExtension(name).ToUpperInvariant()
+
+            If RESERVED_FILE_NAMES.Contains(baseName) Then
+                Return "File name is a reserved system name."
+            End If
+
+            Return ""
+        End Function
+
+        Public Function ValidatePathName(name As String, Optional allowRelative As Boolean = True) As String
+            If name Is Nothing Then
+                name = ""
+            End If
+
+            Dim p = name.Trim()
+
+            ' Quick invalid char check for *path* (note: differs from filename)
+            For Each c In IO.Path.GetInvalidPathChars()
+                If p.IndexOf(c) >= 0 Then
+                    Return $"Path contains an invalid character: {c}"
+                End If
+            Next
+
+            ' Reject wildcard characters commonly not allowed in paths.
+            ' (These are not always included in GetInvalidPathChars.)
+            Dim extraInvalid() As Char = {"*"c, "?"c, """"c, "<"c, ">"c, "|"c}
+
+            For Each c In extraInvalid
+                If p.Contains(c) Then
+                    Return $"Path contains an invalid character: {c}"
+                End If
+            Next
+
+            ' Disallow trailing spaces/dots in any segment (Windows rules)
+            Dim segments = p.Split(New Char() {"\"c}, StringSplitOptions.None)
+            For Each seg In segments
+                If seg.Length = 0 Then Continue For ' allows leading \\ and repeated slashes like C:\\ (we'll catch some later)
+                If seg.EndsWith(" ") OrElse seg.EndsWith(".") Then
+                    Return "A path folder/file segment cannot end with a space or period."
+                End If
+            Next
+
+            ' Basic rooted/relative rules
+            Dim isUnc = p.StartsWith("\\")
+            Dim isDriveRooted = (p.Length >= 3 AndAlso Char.IsLetter(p(0)) AndAlso p(1) = ":"c AndAlso (p(2) = "\"c OrElse p(2) = "/"c))
+            Dim isDriveRelative = (p.Length >= 2 AndAlso Char.IsLetter(p(0)) AndAlso p(1) = ":"c AndAlso (p.Length = 2 OrElse (p(2) <> "\"c AndAlso p(2) <> "/"c)))
+
+            If isDriveRelative Then
+                Return "Drive-relative paths like 'C:folder' are ambiguous. Use 'C:\folder' instead."
+            End If
+
+            If Not allowRelative AndAlso Not isUnc AndAlso Not isDriveRooted AndAlso Not IO.Path.IsPathRooted(p) Then
+                Return "Path must be absolute (e.g., C:\Folder or \\Server\Share)."
+            End If
+
+            ' UNC needs at least \\server\share
+            If isUnc Then
+                Dim uncParts = p.TrimStart("\"c).Split("\"c)
+                If uncParts.Length < 2 OrElse String.IsNullOrWhiteSpace(uncParts(0)) OrElse String.IsNullOrWhiteSpace(uncParts(1)) Then
+                    Return "UNC paths must look like \\Server\Share\Optional\Path."
+                End If
+            End If
+
+            ' Validate each segment as a *file name* segment (no reserved device names, etc.)
+            ' Skip the drive ("C:") and UNC server/share header parts
+            For i = 0 To segments.Length - 1
+                Dim seg = segments(i)
+                If seg.Length = 0 Then
+                    Continue For
+                End If
+
+                ' Skip server/share segments for UNC header validation already done
+                If isUnc AndAlso i < 2 Then
+                    Continue For
+                End If
+
+                ' Skip drive segment like "C:"
+                If i = 0 AndAlso seg.EndsWith(":") Then
+                    Continue For
+                End If
+
+                Dim baseName = IO.Path.GetFileNameWithoutExtension(seg).ToUpperInvariant()
+                If RESERVED_FILE_NAMES.Contains(baseName) Then
+                    Return $"Path contains a reserved name segment: {seg}"
+                End If
+            Next
+
+            ' Finally: attempt to normalize; this catches some malformed cases.
+            Try
+                ' If rooted, GetFullPath should work even if it doesn't exist.
+                If IO.Path.IsPathRooted(p) OrElse isUnc OrElse isDriveRooted Then
+                    IO.Path.GetFullPath(p.Replace("/"c, "\"c))
+                ElseIf allowRelative Then
+                    ' For relative, still try to normalize by anchoring to current dir
+                    IO.Path.GetFullPath(IO.Path.Combine(Environment.CurrentDirectory, p.Replace("/"c, "\"c)))
+                End If
+            Catch ex As Exception
+                Return "Path is not valid: " & ex.Message
+            End Try
+
+            Return ""
+        End Function
+
+        Private Function CanToggleSequenceAtCaretAfterNumber(tb As TextBoxBase) As Boolean
+            If tb Is Nothing Then
+                Return False
+            End If
+
+            Dim text As String = tb.Text
+
+            If String.IsNullOrEmpty(text) Then
+                Return False
+            End If
+
+            Dim caret As Integer = tb.SelectionStart
+            If caret <= 0 OrElse caret > text.Length Then
+                Return False
+            End If
+
+            If Not Char.IsDigit(text(caret - 1)) Then
+                Return False
+            End If
+
+            Dim i As Integer = caret - 1
+            While i >= 0 AndAlso Char.IsDigit(text(i))
+                i -= 1
+            End While
+
+            Dim len As Integer = (caret - 1) - i
+
+            Return (len > 0 AndAlso len <= 4)
+        End Function
+
+        Private Function CanToggleSequenceAtCaretAfterToken(tb As TextBoxBase) As Boolean
+            If tb Is Nothing Then
+                Return False
+            End If
+
+            Dim text As String = tb.Text
+
+            If String.IsNullOrEmpty(text) Then
+                Return False
+            End If
+
+            Dim caret As Integer = tb.SelectionStart
+
+            If caret <= 0 OrElse caret > text.Length Then
+                Return False
+            End If
+
+            If text(caret - 1) <> ">"c Then
+                Return False
+            End If
+
+            ' Walk left over digits and ensure a '<' is immediately before them
+            Dim i As Integer = caret - 2
+            If i < 0 OrElse Not Char.IsDigit(text(i)) Then
+                Return False
+            End If
+
+            While i >= 0 AndAlso Char.IsDigit(text(i))
+                i -= 1
+            End While
+
+            If i < 0 OrElse text(i) <> "<"c Then
+                Return False
+            End If
+
+            Dim len As Integer = (caret - 1) - (i + 1)
+            Return (len > 0 AndAlso len <= 4)
+        End Function
+
+        Private Function CanToggleSequenceAtSelection(tb As TextBoxBase) As Boolean
+            If tb Is Nothing OrElse tb.SelectionLength <= 0 Then
+                Return False
+            End If
+
+            Dim selText As String = tb.SelectedText
+            If String.IsNullOrEmpty(selText) Then
+                Return False
+            End If
+
+            For i As Integer = 0 To selText.Length - 1
+                If Char.IsDigit(selText(i)) Then
+                    Dim j As Integer = i
+                    While j < selText.Length AndAlso Char.IsDigit(selText(j))
+                        j += 1
+                    End While
+
+                    Dim len = j - i
+                    Return (len > 0 AndAlso len <= 4)
+                End If
+            Next
+
+            Return False
         End Function
 
         Private Sub ClearImageFormats(Combo As ComboBox)
@@ -658,6 +973,69 @@ Namespace Flux
             Next
         End Sub
 
+        Private Function ToggleNumberTokenAtSelection(tb As TextBoxBase) As Boolean
+            If tb Is Nothing OrElse tb.SelectionLength <= 0 Then
+                Return False
+            End If
+
+            Dim selStart As Integer = tb.SelectionStart
+            Dim selText As String = tb.SelectedText
+
+            If String.IsNullOrEmpty(selText) Then
+                Return False
+            End If
+
+            ' Find first run of digits in selection
+            Dim digitStartInSel As Integer = -1
+            Dim digitLen As Integer = 0
+
+            For i As Integer = 0 To selText.Length - 1
+                If Char.IsDigit(selText(i)) Then
+                    digitStartInSel = i
+                    Dim j As Integer = i
+                    While j < selText.Length AndAlso Char.IsDigit(selText(j))
+                        j += 1
+                    End While
+                    digitLen = j - i
+                    Exit For
+                End If
+            Next
+
+            If digitStartInSel < 0 OrElse digitLen <= 0 Then
+                Return False
+            End If
+
+            Dim absDigitStart As Integer = selStart + digitStartInSel
+            Dim absDigitEnd As Integer = absDigitStart + digitLen
+
+            ' Detect existing token in full text
+            Dim hasLeft As Boolean = (absDigitStart > 0 AndAlso tb.Text(absDigitStart - 1) = "<"c)
+            Dim hasRight As Boolean = (absDigitEnd < tb.TextLength AndAlso tb.Text(absDigitEnd) = ">"c)
+            Dim alreadyTokenized As Boolean = hasLeft AndAlso hasRight
+
+            tb.SuspendLayout()
+            Try
+                If alreadyTokenized Then
+                    ' remove '>' then '<'
+                    tb.Select(absDigitEnd, 1) : tb.SelectedText = ""
+                    tb.Select(absDigitStart - 1, 1) : tb.SelectedText = ""
+
+                    ' Select digits
+                    tb.Select(absDigitStart - 1, digitLen)
+                Else
+                    ' add '>' then '<'
+                    tb.Select(absDigitEnd, 0) : tb.SelectedText = ">"
+                    tb.Select(absDigitStart, 0) : tb.SelectedText = "<"
+
+                    ' Select <digits>
+                    tb.Select(absDigitStart, digitLen + 2)
+                End If
+            Finally
+                tb.ResumeLayout()
+            End Try
+
+            Return True
+        End Function
         Public Structure FileExtensionItem
             Public Sub New(ext As String, fmt As FloppyDiskFormat?)
                 Extension = ext

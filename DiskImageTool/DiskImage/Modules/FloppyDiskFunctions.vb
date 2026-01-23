@@ -674,6 +674,7 @@
                 Me.FileExtension = FileExtension
                 Me.DriveType = DriveType
                 Me.Detected = False
+                Me.Doublestep = False
             End Sub
 
             Public ReadOnly Property BitRateKbps As UShort
@@ -770,6 +771,10 @@
                         D &= $" ({Sides}, {Density})"
                     End If
 
+                    If Me.Doublestep Then
+                        D &= "  (Double-step)"
+                    End If
+
                     If Me.Detected Then
                         D &= " *"
                     End If
@@ -779,6 +784,7 @@
             End Property
 
             Public Property Detected As Boolean
+            Public Property Doublestep As Boolean
             Public ReadOnly Property FileExtension As String
             Public ReadOnly Property Format As FloppyDiskFormat
             Public ReadOnly Property Gaps As FloppyDiskGaps

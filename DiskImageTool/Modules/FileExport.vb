@@ -33,12 +33,17 @@
     End Sub
 
     Private Sub ImageFileExportSelected(SelectedItems As ListView.SelectedListViewItemCollection)
-        Dim Dialog As New FolderBrowserDialog
+        Dim Path = BrowseFolderVista()
 
-        If Dialog.ShowDialog <> DialogResult.OK Then
+        If Path = "" Then
             Exit Sub
         End If
-        Dim Path = Dialog.SelectedPath
+        'Dim Dialog As New FolderBrowserDialog
+
+        'If Dialog.ShowDialog <> DialogResult.OK Then
+        '    Exit Sub
+        'End If
+        'Dim Path = Dialog.SelectedPath
 
         Dim ShowDialog As Boolean = True
         Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes

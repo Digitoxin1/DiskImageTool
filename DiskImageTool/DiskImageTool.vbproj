@@ -30,8 +30,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>2.37.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>2.38.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -219,6 +219,7 @@
     <Compile Include="ImageFormats\TD0\TD0SectorHeader.vb" />
     <Compile Include="ImageFormats\TD0\TD0Track.vb" />
     <Compile Include="ImageFormats\TD0\TD0TrackHeader.vb" />
+    <Compile Include="Lib\VistaFolderPicker.vb" />
     <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Modules\FileIO.vb" />
     <Compile Include="Modules\XMLDump.vb" />
@@ -855,6 +856,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Flux\Kryoflux\Forms\" />
+    <Folder Include="ImageFormats\DMK\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

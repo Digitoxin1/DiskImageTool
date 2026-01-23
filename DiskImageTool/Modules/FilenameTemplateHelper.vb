@@ -19,20 +19,20 @@ Module FilenameTemplateHelper
         Return PlaceholderPattern.Replace(template, AddressOf IncrementMatchEvaluator)
     End Function
 
-    Public Function SanitizeFileNamePreservePlaceholders(input As String) As String
+    Public Function SanitizeFileNamePreservePlaceholders(input As String, allowPaths As Boolean) As String
         If String.IsNullOrWhiteSpace(input) Then
             Return ""
         End If
 
 
         Dim placeholders As New List(Of String)
-        Dim tokenized As String = placeholderPattern.Replace(input,
+        Dim tokenized As String = PlaceholderPattern.Replace(input,
         Function(m)
             placeholders.Add(m.Value)
             Return $"__PLACEHOLDER_{placeholders.Count - 1}__"
         End Function)
 
-        tokenized = SanitizeFileName(tokenized)
+        tokenized = SanitizeFileName(tokenized, allowPaths)
 
         For i As Integer = 0 To placeholders.Count - 1
             tokenized = tokenized.Replace($"__PLACEHOLDER_{i}__", placeholders(i))
@@ -47,6 +47,18 @@ Module FilenameTemplateHelper
         End If
 
         Return PlaceholderPattern.Replace(template, AddressOf StripMatchEvaluator)
+    End Function
+
+    Public Function ValidateFileNameWithPlaceholders(FileName As String) As String
+        FileName = StripAngleBrackets(FileName)
+
+        Return Flux.ValidateFileName(FileName)
+    End Function
+
+    Public Function ValidatePathNameWithPlaceholders(FileName As String) As String
+        FileName = StripAngleBrackets(FileName)
+
+        Return Flux.ValidatePathName(FileName)
     End Function
     Private Function IncrementMatchEvaluator(m As Match) As String
         Dim digits As String = m.Groups(1).Value

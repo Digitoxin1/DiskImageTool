@@ -917,7 +917,7 @@ Namespace Flux
                 ClearStatusBar()
             End If
             Dim ImageFormat = ReadImageFormat()
-            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, False)
+            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, False, False)
             PopulateOutputTypes()
             PopulateFileExtensions()
             RefreshButtonState()
@@ -1545,7 +1545,7 @@ Namespace Flux
 
         Private Sub TextBoxFileName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFileName.Validating
             Dim tb As TextBox = DirectCast(sender, TextBox)
-            tb.Text = SanitizeFileName(tb.Text)
+            tb.Text = SanitizeFileName(tb.Text, False)
             RefreshImportButtonState()
         End Sub
 
