@@ -1921,4 +1921,10 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ImageAnalysis" xml:space="preserve">
     <value>Imageanalyse</value>
   </data>
+  <data name="Label_Prefix" xml:space="preserve">
+    <value>Präfix</value>
+  </data>
+  <data name="Label_ToggleSequence" xml:space="preserve">
+    <value>Sequenz-Token umschalten</value>
+  </data>
 </root>

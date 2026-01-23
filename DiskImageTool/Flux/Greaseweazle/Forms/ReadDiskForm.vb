@@ -458,7 +458,7 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True
             }
-            _ToolTip.SetToolTip(ButtonToggleSequence, "Toggle Sequence Token (Alt+S)")
+            _ToolTip.SetToolTip(ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
 
             LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
