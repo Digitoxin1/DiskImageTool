@@ -249,8 +249,7 @@ Configuration Greaseweazle du menu Options.</value>
     <value>Type d’image de sortie</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>Le nom du fichier importé, ou le nom du dossier parent
-si le type de sortie est défini sur Ensemble d’images Flux.
+    <value>Le nom du fichier importé.
 
 Vous pouvez créer un modèle de nom de fichier en entourant
 un nombre par des chevrons (&lt; &gt;). Par exemple : Disque &lt;1&gt; sur 3.

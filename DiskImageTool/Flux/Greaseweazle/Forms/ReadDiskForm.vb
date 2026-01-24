@@ -709,8 +709,8 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(ComboOutputType, 3, Row)
                 .SetColumnSpan(ComboOutputType, 5)
 
-                .Controls.Add(CheckBoxSelect, 8, Row)
-                .SetColumnSpan(CheckBoxSelect, 2)
+                .Controls.Add(CheckBoxSaveLog, 8, Row)
+                .SetColumnSpan(CheckBoxSaveLog, 2)
 
                 Row = 1
                 .Controls.Add(LabelImageFormat, 0, Row)
@@ -754,8 +754,8 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(ButtonFolderBrowse, 6, Row)
                 .SetColumnSpan(ButtonFolderBrowse, 2)
 
-                .Controls.Add(CheckBoxSaveLog, 8, Row)
-                .SetColumnSpan(CheckBoxSaveLog, 2)
+                .Controls.Add(CheckBoxSelect, 8, Row)
+                .SetColumnSpan(CheckBoxSelect, 2)
 
                 Row = 5
                 .Controls.Add(TableSide0, 0, Row)
@@ -1063,8 +1063,6 @@ Namespace Flux.Greaseweazle
 
             ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
 
-
-
             RefreshProcessButtonState()
             RefreshImportButtonState()
             ToggleRootFolderControls()
@@ -1366,6 +1364,7 @@ Namespace Flux.Greaseweazle
             ButtonFolderBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
             CheckBoxSaveLog.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            CheckBoxSaveLog.Visible = IsFluxOutput
         End Sub
 
         Private Sub UpdateSequenceButtonState()

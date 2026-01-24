@@ -249,8 +249,7 @@ Greaseweazle Configuration in the Options menu.</value>
     <value>Output Image Type</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>The imported file’s name, or the parent folder’s name 
-if the Output Type is set to Flux Image Set.
+    <value>The imported file’s name.
 
 You can create a filename template by enclosing any
 number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.

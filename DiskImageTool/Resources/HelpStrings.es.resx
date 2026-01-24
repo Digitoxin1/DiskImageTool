@@ -249,8 +249,7 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>Tipo de imagen de salida</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>El nombre del archivo importado, o el nombre de la carpeta principal
-si el tipo de salida está configurado como Conjunto de imágenes de flujo.
+    <value>El nombre del archivo importado.
 
 Puede crear una plantilla de nombre de archivo encerrando un número
 entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.

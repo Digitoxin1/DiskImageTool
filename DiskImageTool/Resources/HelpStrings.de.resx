@@ -249,8 +249,7 @@ Greaseweazle-Konfiguration im Optionsmenü angepasst werden.</value>
     <value>Ausgabe-Image-Typ</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>Der Name der importierten Datei oder der Name des übergeordneten Ordners,
-wenn der Ausgabetyp auf Flux-Image-Set eingestellt ist.
+    <value>Der Name der importierten Datei.
 
 Sie können eine Dateinamen-Vorlage erstellen, indem Sie eine Zahl
 in spitze Klammern (&lt; &gt;) einschließen. Zum Beispiel: Disk &lt;1&gt; von 3.

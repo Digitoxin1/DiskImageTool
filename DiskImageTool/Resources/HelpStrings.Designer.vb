@@ -487,8 +487,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The imported file’s name, or the parent folder’s name 
-        '''if the Output Type is set to Flux Image Set.
+        '''  Looks up a localized string similar to The imported file’s name.
         '''
         '''You can create a filename template by enclosing any
         '''number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
