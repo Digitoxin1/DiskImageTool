@@ -375,7 +375,8 @@ Public Class FloppyDB
             .Region = GetAttr(Node, "region"),
             .Language = GetAttr(Node, "language"),
             .CopyProtection = GetAttr(Node, "cp"),
-            .OperatingSystem = GetAttr(Node, "os")
+            .OperatingSystem = GetAttr(Node, "os"),
+            .MobyGamesId = GetAttr(Node, "mobyGamesId")
         }
 
         If Node.HasAttribute("media") Then
@@ -499,7 +500,17 @@ Public Class FloppyDB
         Dim Count As Integer = 0
         Dim FloppyData = GetTitleData(Elem, ParentData)
 
-        If Elem.Name = "disk" Then
+        If Elem.Name = "media" Then
+            Dim mediaDiskCount As Integer = 0
+            For Each ChildNode As Xml.XmlNode In Elem.ChildNodes
+                Dim childElem = TryCast(ChildNode, Xml.XmlElement)
+                If childElem IsNot Nothing AndAlso childElem.Name = "disk" Then
+                    mediaDiskCount += 1
+                End If
+            Next
+            FloppyData.DiskCount = mediaDiskCount
+
+        ElseIf Elem.Name = "disk" Then
             Dim md5 = Elem.GetAttribute("md5")
             If md5 <> "" Then
                 AddMd5Mapping(md5, FloppyData)
@@ -670,11 +681,13 @@ Public Class FloppyDB
         Public Property Compilation As String = Nothing
         Public Property CopyProtection As String = Nothing
         Public Property Disk As String = Nothing
+        Public Property DiskCount As Integer? = Nothing
         Public Property Fixed As Boolean? = Nothing
         Public Property Int As String = Nothing
         Public Property IsTDC As Boolean? = Nothing
         Public Property Language As String = Nothing
         Public Property Media As FloppyDiskFormat? = Nothing
+        Public Property MobyGamesId As String = Nothing
         Public Property Name As String = Nothing
         Public Property OperatingSystem As String = Nothing
         Public Property Parent As FloppyData = Nothing
@@ -698,6 +711,10 @@ Public Class FloppyDB
             Return ResolveString(Me, Function(d) d.Disk)
         End Function
 
+        Public Function GetDiskCount() As Integer
+            Return ResolveNullable(Of Integer)(Me, Function(d) d.DiskCount, 0)
+        End Function
+
         Public Function GetFixed() As Boolean
             Return ResolveBoolean(Me, Function(d) d.Fixed)
         End Function
@@ -716,6 +733,10 @@ Public Class FloppyDB
 
         Public Function GetMedia() As FloppyDiskFormat
             Return ResolveNullable(Of FloppyDiskFormat)(Me, Function(d) d.Media, FloppyDiskFormat.FloppyUnknown)
+        End Function
+
+        Public Function GetMobyGamesId() As String
+            Return ResolveString(Me, Function(d) d.MobyGamesId)
         End Function
 
         Public Function GetName() As String

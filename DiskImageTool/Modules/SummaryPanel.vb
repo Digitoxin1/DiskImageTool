@@ -27,7 +27,13 @@ Public Class SummaryPanel
         ContextMenuCopy = New ContextMenuStrip With {
             .Name = CONTEXT_MENU_SUMMARY_KEY
         }
-        ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
+        Dim Item = ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
+        Item.Name = "CopyValue"
+
+        Item = ContextMenuCopy.Items.Add("")
+        Item.Name = "MobyGames"
+        Item.Image = My.Resources.MobyGames
+
         Me.ListViewSummary.ContextMenuStrip = ContextMenuCopy
     End Sub
 
@@ -132,41 +138,15 @@ Public Class SummaryPanel
         Return fsi
     End Function
 
-    Private Function GetFocusedItemName() As String
-        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
-            Dim Item = ListViewSummary.FocusedItem
-
-            If Item.SubItems.Count > 1 Then
-                Dim Text As String
-
-                If Item.Tag Is Nothing Then
-                    Text = Item.Text
-                Else
-                    Text = Item.Tag
-                End If
-
-                Return String.Format(My.Resources.Menu_CopyValueByName, Text)
-            End If
+    Private Function GetFocusedItemMetadata() As SummaryMetadata
+        If ListViewSummary Is Nothing OrElse ListViewSummary.FocusedItem Is Nothing Then
+            Return Nothing
         End If
 
-        Return Nothing
-    End Function
+        Dim Item = ListViewSummary.FocusedItem
+        Dim Metadata = TryCast(Item.Tag, SummaryMetadata)
 
-    Private Function GetFocusedItemValue() As String
-        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
-            Dim Item = ListViewSummary.FocusedItem.SubItems.Item(1)
-            Dim Value As String
-
-            If Item.Tag Is Nothing Then
-                Value = Item.Text
-            Else
-                Value = Item.Tag
-            End If
-
-            Return Value
-        End If
-
-        Return Nothing
+        Return Metadata
     End Function
 
     Private Shared Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
@@ -323,10 +303,17 @@ Public Class SummaryPanel
 
             For Each SummaryRow As SummaryRow In Rows.Values
                 If SummaryRow.Value <> "" Then
+                    Dim Item As ListViewItem
                     If SummaryRow.AutoResize Then
-                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText, MaxWidth)
+                        Item = .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText, MaxWidth)
                     Else
-                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText)
+                        Item = .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText)
+                    End If
+                    If SummaryRow.MobyGamesId <> "" Then
+                        Dim Metadata = TryCast(Item.Tag, SummaryMetadata)
+                        If Metadata IsNot Nothing Then
+                            Metadata.MobyGamesId = SummaryRow.MobyGamesId
+                        End If
                     End If
                 End If
             Next
@@ -741,6 +728,17 @@ Public Class SummaryPanel
 
         Dim Row = Function(key As String) DirectCast(TitleRows(key), SummaryRow)
 
+        Dim DiskCount = TitleData.GetDiskCount
+        Dim DiskName = TitleData.GetDisk
+
+        If DiskName.Length > 0 AndAlso DiskCount > 0 Then
+            If IsNumeric(DiskName) Then
+                DiskName &= " of " & DiskCount
+            ElseIf DiskCount > 1 Then
+                DiskName &= "  (Set of " & DiskCount & ")"
+            End If
+        End If
+
         Dim Status = TitleData.GetStatus
         Dim ForeColor As Color
         If Status = FloppyDB.FloppyDBStatus.Verified Then
@@ -756,6 +754,7 @@ Public Class SummaryPanel
         With Row("Name")
             .Value = Result.GetNameList
             .ForeColor = ForeColor
+            .MobyGamesId = TitleData.GetMobyGamesId
         End With
         Row("Variation").Value = TitleData.GetVariation
         Row("Compilation").Value = TitleData.GetCompilation
@@ -765,7 +764,7 @@ Public Class SummaryPanel
         Row("Region").Value = Result.GetRegionList
         Row("Language").Value = Result.GetLanguageList
         Row("Version").Value = Result.GetVersionDisplay
-        Row("Disk").Value = TitleData.GetDisk
+        Row("Disk").Value = DiskName
         Row("CopyProtection").Value = TitleData.GetCopyProtection
 
         If App.AppSettings.Debug Then
@@ -828,19 +827,30 @@ Public Class SummaryPanel
 #Region "Events"
 
     Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy.ItemClicked
-        Dim Value = GetFocusedItemValue()
+        Dim Metadata = GetFocusedItemMetadata()
 
-        If Value IsNot Nothing Then
-            Clipboard.SetText(Value)
+        If Metadata IsNot Nothing Then
+            If e.ClickedItem.Name = "CopyValue" Then
+                Clipboard.SetText(Metadata.Value)
+            ElseIf e.ClickedItem.Name = "MobyGames" Then
+                Dim URL = CombineUri(My.Settings.MobyGamesURL, "game", Uri.EscapeDataString(Metadata.MobyGamesId))
+                Process.Start(New ProcessStartInfo With {.FileName = URL.ToString, .UseShellExecute = True})
+            End If
         End If
     End Sub
 
     Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy.Opening
-        Dim Name = GetFocusedItemName()
+        Dim Metadata = GetFocusedItemMetadata()
 
-        If Name IsNot Nothing Then
+        If Metadata IsNot Nothing Then
             Dim CM As ContextMenuStrip = sender
-            CM.Items(0).Text = Name
+            CM.Items("CopyValue").Text = String.Format(My.Resources.Menu_CopyValueByName, Metadata.Text)
+            CM.Items("MobyGames").Visible = Metadata.MobyGamesId <> ""
+            If Metadata.MobyGamesId <> "" Then
+                CM.Items("MobyGames").Text = My.Resources.Label_ViewMobyGames
+            Else
+                CM.Items("MobyGames").Text = ""
+            End If
         Else
             e.Cancel = True
         End If
@@ -905,5 +915,12 @@ Public Class SummaryPanel
         Public Property TextWidth As Integer
         Public Property Value As String = ""
         Public Property WrapText As Boolean
+        Public Property MobyGamesId As String = ""
+    End Class
+
+    Public Class SummaryMetadata
+        Public Property Text As String
+        Public Property Value As String
+        Public Property MobyGamesId As String = ""
     End Class
 End Class

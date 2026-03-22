@@ -345,6 +345,9 @@
   <data name="Menu_DeleteSelected" xml:space="preserve">
     <value>&amp;Ausgewählte Dateien löschen</value>
   </data>
+  <data name="Label_Directory" xml:space="preserve">
+    <value>Verzeichnis</value>
+  </data>
   <data name="Menu_Directory2" xml:space="preserve">
     <value>&amp;Verzeichnis</value>
   </data>
@@ -443,6 +446,9 @@
   </data>
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>'{0}' konnte nicht gefunden werden</value>
+  </data>
+  <data name="Label_FAT" xml:space="preserve">
+    <value>Dateizuordnungstabelle</value>
   </data>
   <data name="Caption_HexEditor" xml:space="preserve">
     <value>Hex-Editor</value>
@@ -570,6 +576,9 @@
   <data name="DataInspector_Label_DOSTime" xml:space="preserve">
     <value>DOS-Zeit</value>
   </data>
+  <data name="Label_WeakBits" xml:space="preserve">
+    <value>Schwache Bits</value>
+  </data>
   <data name="Dialog_CheckImageSize" xml:space="preserve">
     <value>An dieser Stelle sind keine Daten verfügbar. Überprüfen Sie die Abbildgröße.</value>
   </data>
@@ -587,6 +596,9 @@
   </data>
   <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
     <value>LFN-Prüfsumme</value>
+  </data>
+  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
+    <value>LFN-Name {0}</value>
   </data>
   <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
     <value>LFN-Reihenfolge</value>
@@ -741,6 +753,9 @@
   <data name="HexView_DeletedFile" xml:space="preserve">
     <value>Gelöschte Datei</value>
   </data>
+  <data name="Label_LostClusters" xml:space="preserve">
+    <value>Verlorene Cluster</value>
+  </data>
   <data name="Label_Bytes" xml:space="preserve">
     <value>Bytes</value>
   </data>
@@ -822,6 +837,9 @@
   <data name="Label_Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
+  <data name="Label_MediaDescriptor" xml:space="preserve">
+    <value>Medienkennung</value>
+  </data>
   <data name="SummaryPanel_NewestDate" xml:space="preserve">
     <value>Neuestes Datum</value>
   </data>
@@ -845,6 +863,9 @@
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Herausgeber</value>
+  </data>
+  <data name="Label_Region" xml:space="preserve">
+    <value>Bereich</value>
   </data>
   <data name="SummaryPanel_ReservedClusters" xml:space="preserve">
     <value>Reservierte Cluster</value>
@@ -1038,6 +1059,9 @@
   <data name="Menu_SelectTrack" xml:space="preserve">
     <value>Spu&amp;r auswählen</value>
   </data>
+  <data name="Label_Disk" xml:space="preserve">
+    <value>Diskette</value>
+  </data>
   <data name="Dialog_FloppyError_Formatting" xml:space="preserve">
     <value>Fehler beim Formatieren der Spur {0}, Seite {1}.</value>
   </data>
@@ -1088,6 +1112,9 @@
   </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Nächste</value>
+  </data>
+  <data name="Label_Reserved" xml:space="preserve">
+    <value>Reserviert</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Datei</value>
@@ -1182,6 +1209,9 @@
   <data name="DataInspector_Label_Area" xml:space="preserve">
     <value>Bereich</value>
   </data>
+  <data name="Label_DataArea" xml:space="preserve">
+    <value>Datenbereich</value>
+  </data>
   <data name="Label_DiskFormat" xml:space="preserve">
     <value>Diskettenformat</value>
   </data>
@@ -1212,11 +1242,11 @@
   <data name="Label_LastWritten" xml:space="preserve">
     <value>Zuletzt geschrieben</value>
   </data>
-  <data name="Label_Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
   <data name="FilePanel_LFN" xml:space="preserve">
     <value>Langer Dateiname</value>
+  </data>
+  <data name="Label_Name" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>Datei&amp;eigenschaften bearbeiten</value>
@@ -1248,38 +1278,38 @@
   <data name="Label_DriveType" xml:space="preserve">
     <value>Laufwerk {0} Typ</value>
   </data>
-  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
-    <value>Die Datei scheint kein gültiges SuperCard Pro-.scp-Image zu sein.</value>
-  </data>
-  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
-    <value>Die Datei scheint nicht zu einem gültigen KryoFlux-Rohdaten-Satz zu gehören.</value>
-  </data>
-  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
-    <value>Wählen Sie eine Greaseweazle-ausführbare Datei aus</value>
+  <data name="Dialog_InvalidSelection" xml:space="preserve">
+    <value>Ungültige Auswahl</value>
   </data>
   <data name="Dialog_PleaseSelect" xml:space="preserve">
     <value>Bitte wählen Sie eine {0}-Datei aus.</value>
   </data>
-  <data name="Dialog_InvalidSelection" xml:space="preserve">
-    <value>Ungültige Auswahl</value>
+  <data name="Dialog_TempPathError" xml:space="preserve">
+    <value>Beim Initialisieren des temporären Pfads ist ein Fehler aufgetreten.</value>
+  </data>
+  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
+    <value>Wählen Sie eine Greaseweazle-ausführbare Datei aus</value>
   </data>
   <data name="Label_Process" xml:space="preserve">
     <value>Verarbeiten</value>
   </data>
-  <data name="Label_Info" xml:space="preserve">
-    <value>Info</value>
-  </data>
-  <data name="Dialog_TempPathError" xml:space="preserve">
-    <value>Beim Initialisieren des temporären Pfads ist ein Fehler aufgetreten.</value>
-  </data>
   <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
     <value>Der Anwendungspfad ist ungültig.</value>
+  </data>
+  <data name="Dialog_InvalidFileType" xml:space="preserve">
+    <value>Ungültiger Dateityp</value>
+  </data>
+  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
+    <value>Die Datei scheint nicht zu einem gültigen KryoFlux-Rohdaten-Satz zu gehören.</value>
+  </data>
+  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
+    <value>Die Datei scheint kein gültiges SuperCard Pro-.scp-Image zu sein.</value>
   </data>
   <data name="Label_Bandwidth" xml:space="preserve">
     <value>Bandbreite</value>
   </data>
-  <data name="Dialog_InvalidFileType" xml:space="preserve">
-    <value>Ungültiger Dateityp</value>
+  <data name="Label_Info" xml:space="preserve">
+    <value>Info</value>
   </data>
   <data name="Label_Failed" xml:space="preserve">
     <value>Fehlgeschlagen</value>
@@ -1293,14 +1323,50 @@
   <data name="Label_DoubleStep" xml:space="preserve">
     <value>Doppelschritt</value>
   </data>
-  <data name="Label_OutputType" xml:space="preserve">
-    <value>Ausgabetyp</value>
-  </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>Imageformat</value>
   </data>
   <data name="Label_Import" xml:space="preserve">
     <value>&amp;Importieren</value>
+  </data>
+  <data name="Label_OutputType" xml:space="preserve">
+    <value>Ausgabetyp</value>
+  </data>
+  <data name="Label_ContinueAfterFailure" xml:space="preserve">
+    <value>Nach Fehler fortsetzen</value>
+  </data>
+  <data name="Label_Drive" xml:space="preserve">
+    <value>Laufwerk</value>
+  </data>
+  <data name="Label_EraseEmpty" xml:space="preserve">
+    <value>Leere löschen</value>
+  </data>
+  <data name="Label_Erasing" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Label_NoVerify" xml:space="preserve">
+    <value>Keine Überprüfung</value>
+  </data>
+  <data name="Label_PleaseSelect" xml:space="preserve">
+    <value>Bitte auswählen</value>
+  </data>
+  <data name="Label_PreErase" xml:space="preserve">
+    <value>Vorlöschung</value>
+  </data>
+  <data name="Label_Retries" xml:space="preserve">
+    <value>Wdh.</value>
+  </data>
+  <data name="Label_Retrying" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Label_Write" xml:space="preserve">
+    <value>Schreiben</value>
+  </data>
+  <data name="Label_WriteDisk" xml:space="preserve">
+    <value>Diskette schreiben</value>
+  </data>
+  <data name="Dialog_ConfirmWrite" xml:space="preserve">
+    <value>Dieser Vorgang überschreibt alle Daten auf der Diskette im Laufwerk {1}.{0}{0}Alle vorhandenen Inhalte gehen dauerhaft verloren.{0}{0}Möchten Sie fortfahren?</value>
   </data>
   <data name="Dialog_ImageFormatWarning" xml:space="preserve">
     <value>Warnung: Das Abbildformat ist mit dem derzeit ausgewählten Laufwerk nicht kompatibel.{0}{0}Möchten Sie trotzdem fortfahren?</value>
@@ -1308,56 +1374,17 @@
   <data name="Message_ImageFormatWarning" xml:space="preserve">
     <value>Warnung: Inkompatibles Abbildformat</value>
   </data>
-  <data name="Label_WriteDisk" xml:space="preserve">
-    <value>Diskette schreiben</value>
-  </data>
-  <data name="Label_PleaseSelect" xml:space="preserve">
-    <value>Bitte auswählen</value>
-  </data>
-  <data name="Label_Write" xml:space="preserve">
-    <value>Schreiben</value>
-  </data>
-  <data name="Label_Drive" xml:space="preserve">
-    <value>Laufwerk</value>
-  </data>
-  <data name="Label_ContinueAfterFailure" xml:space="preserve">
-    <value>Nach Fehler fortsetzen</value>
-  </data>
-  <data name="Label_NoVerify" xml:space="preserve">
-    <value>Keine Überprüfung</value>
-  </data>
-  <data name="Label_EraseEmpty" xml:space="preserve">
-    <value>Leere löschen</value>
-  </data>
-  <data name="Label_Retries" xml:space="preserve">
-    <value>Wdh.</value>
-  </data>
-  <data name="Label_PreErase" xml:space="preserve">
-    <value>Vorlöschung</value>
-  </data>
-  <data name="Label_Erasing" xml:space="preserve">
-    <value>Löschen</value>
-  </data>
-  <data name="Label_Retrying" xml:space="preserve">
-    <value>Wiederholen</value>
-  </data>
-  <data name="Dialog_ConfirmWrite" xml:space="preserve">
-    <value>Dieser Vorgang überschreibt alle Daten auf der Diskette im Laufwerk {1}.{0}{0}Alle vorhandenen Inhalte gehen dauerhaft verloren.{0}{0}Möchten Sie fortfahren?</value>
-  </data>
   <data name="FileType_SectorImage" xml:space="preserve">
     <value>Sektorabbild</value>
   </data>
   <data name="Label_Format" xml:space="preserve">
     <value>Format</value>
   </data>
-  <data name="Dialog_GreaseweazleReset" xml:space="preserve">
-    <value>Reset-Befehl an das Greaseweazle-Gerät gesendet.</value>
-  </data>
   <data name="Label_Reset" xml:space="preserve">
     <value>Gerätereset</value>
   </data>
-  <data name="Label_Erase" xml:space="preserve">
-    <value>Löschen</value>
+  <data name="Dialog_GreaseweazleReset" xml:space="preserve">
+    <value>Reset-Befehl an das Greaseweazle-Gerät gesendet.</value>
   </data>
   <data name="Label_EraseDisk" xml:space="preserve">
     <value>Diskette löschen</value>
@@ -1371,17 +1398,11 @@
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>Spuren auswählen</value>
   </data>
+  <data name="Label_Erase" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>Diskette reinigen</value>
-  </data>
-  <data name="Dialog_ConfirmCancel" xml:space="preserve">
-    <value>Ein Vorgang ist derzeit im Gange. Möchten Sie ihn abbrechen?</value>
-  </data>
-  <data name="Label_Linger" xml:space="preserve">
-    <value>Verweildauer</value>
-  </data>
-  <data name="Label_Passes" xml:space="preserve">
-    <value>Durchläufe</value>
   </data>
   <data name="Label_Clean" xml:space="preserve">
     <value>Reinigen</value>
@@ -1389,26 +1410,47 @@
   <data name="Label_Cylinders" xml:space="preserve">
     <value>Zylinder</value>
   </data>
+  <data name="Label_Linger" xml:space="preserve">
+    <value>Verweildauer</value>
+  </data>
+  <data name="Label_Passes" xml:space="preserve">
+    <value>Durchläufe</value>
+  </data>
+  <data name="Dialog_ConfirmCancel" xml:space="preserve">
+    <value>Ein Vorgang ist derzeit im Gange. Möchten Sie ihn abbrechen?</value>
+  </data>
+  <data name="Label_Read" xml:space="preserve">
+    <value>Lesen</value>
+  </data>
+  <data name="Label_ReadDisk" xml:space="preserve">
+    <value>Diskette lesen</value>
+  </data>
   <data name="Label_Detect" xml:space="preserve">
     <value>Erkennen</value>
   </data>
   <data name="Label_NoDrivesFound" xml:space="preserve">
     <value>Keine Laufwerke gefunden</value>
   </data>
-  <data name="Label_ReadDisk" xml:space="preserve">
-    <value>Diskette lesen</value>
-  </data>
-  <data name="Label_Read" xml:space="preserve">
-    <value>Lesen</value>
-  </data>
   <data name="Label_SeekRetries" xml:space="preserve">
     <value>Such-Wdh.</value>
+  </data>
+  <data name="Label_InvalidFilename" xml:space="preserve">
+    <value>Ungültiger Dateiname</value>
   </data>
   <data name="Dialog_InvalidFilename" xml:space="preserve">
     <value>Bitte geben Sie einen gültigen Dateinamen ein (kein Pfad, keine ungültigen Zeichen).</value>
   </data>
-  <data name="Label_InvalidFilename" xml:space="preserve">
-    <value>Ungültiger Dateiname</value>
+  <data name="Label_Modified" xml:space="preserve">
+    <value>Geändert</value>
+  </data>
+  <data name="Label_Staus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Label_Sectors" xml:space="preserve">
+    <value>Sektoren</value>
+  </data>
+  <data name="Label_Flags" xml:space="preserve">
+    <value>Flags</value>
   </data>
   <data name="Kryoflux_Flag_B" xml:space="preserve">
     <value>Sektor außerhalb des Bereichs</value>
@@ -1446,18 +1488,6 @@
   <data name="Kryoflux_Flag_Z" xml:space="preserve">
     <value>Ungültiger Sektor-Offset</value>
   </data>
-  <data name="Label_Flags" xml:space="preserve">
-    <value>Flags</value>
-  </data>
-  <data name="Label_Modified" xml:space="preserve">
-    <value>Geändert</value>
-  </data>
-  <data name="Label_Sectors" xml:space="preserve">
-    <value>Sektoren</value>
-  </data>
-  <data name="Label_Staus" xml:space="preserve">
-    <value>Status</value>
-  </data>
   <data name="Menu_Cancel" xml:space="preserve">
     <value>&amp;Abbrechen</value>
   </data>
@@ -1470,20 +1500,20 @@
   <data name="Label_Browse" xml:space="preserve">
     <value>Durchsuchen</value>
   </data>
-  <data name="Label_Discard" xml:space="preserve">
-    <value>Verwerfen</value>
-  </data>
-  <data name="Dialog_ParentFolderCreationError" xml:space="preserve">
-    <value>Fehler: Übergeordneten Ordner kann nicht erstellt werden.</value>
+  <data name="Label_RootFolder" xml:space="preserve">
+    <value>Stammordner</value>
   </data>
   <data name="Label_FolderName" xml:space="preserve">
     <value>Ordnername</value>
   </data>
-  <data name="Label_RootFolder" xml:space="preserve">
-    <value>Stammordner</value>
+  <data name="Label_Discard" xml:space="preserve">
+    <value>Verwerfen</value>
   </data>
   <data name="Label_SaveLog" xml:space="preserve">
     <value>Log speichern</value>
+  </data>
+  <data name="Dialog_ParentFolderCreationError" xml:space="preserve">
+    <value>Fehler: Übergeordneten Ordner kann nicht erstellt werden.</value>
   </data>
   <data name="Dialog_ImageSetExists" xml:space="preserve">
     <value>Ein Flux-Image-Satz existiert bereits in:
@@ -1504,6 +1534,12 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Convert" xml:space="preserve">
     <value>Konvertieren</value>
   </data>
+  <data name="Menu_Save" xml:space="preserve">
+    <value>&amp;Speichern</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>Sichern &amp; Schließen</value>
+  </data>
   <data name="Dialog_EnterFileName" xml:space="preserve">
     <value>Bitte geben Sie einen Dateinamen ein.</value>
   </data>
@@ -1513,53 +1549,17 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Dialog_SelectRootFolder" xml:space="preserve">
     <value>Bitte wählen Sie einen Stammordner aus.</value>
   </data>
-  <data name="Menu_Save" xml:space="preserve">
-    <value>&amp;Speichern</value>
-  </data>
-  <data name="Label_SaveAndClose" xml:space="preserve">
-    <value>Sichern &amp; Schließen</value>
-  </data>
   <data name="Label_AutoSaveLog" xml:space="preserve">
     <value>Auto-Protokoll</value>
   </data>
   <data name="Label_ReProcess" xml:space="preserve">
     <value>Neu verarbeiten</value>
   </data>
-  <data name="Label_Remaster" xml:space="preserve">
-    <value>Remastern</value>
-  </data>
   <data name="Label_ExtendedLogOutput" xml:space="preserve">
     <value>Erweiterte Protokollausgabe</value>
   </data>
-  <data name="Label_Region" xml:space="preserve">
-    <value>Bereich</value>
-  </data>
-  <data name="Label_MediaDescriptor" xml:space="preserve">
-    <value>Medienkennung</value>
-  </data>
-  <data name="Label_DataArea" xml:space="preserve">
-    <value>Datenbereich</value>
-  </data>
-  <data name="Label_Directory" xml:space="preserve">
-    <value>Verzeichnis</value>
-  </data>
-  <data name="Label_Disk" xml:space="preserve">
-    <value>Diskette</value>
-  </data>
-  <data name="Label_FAT" xml:space="preserve">
-    <value>Dateizuordnungstabelle</value>
-  </data>
-  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
-    <value>LFN-Name {0}</value>
-  </data>
-  <data name="Label_LostClusters" xml:space="preserve">
-    <value>Verlorene Cluster</value>
-  </data>
-  <data name="Label_Reserved" xml:space="preserve">
-    <value>Reserviert</value>
-  </data>
-  <data name="Label_WeakBits" xml:space="preserve">
-    <value>Schwache Bits</value>
+  <data name="Label_Remaster" xml:space="preserve">
+    <value>Remastern</value>
   </data>
   <data name="Menu_BootSector" xml:space="preserve">
     <value>&amp;Bootsektor</value>
@@ -1678,14 +1678,14 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ExtendedParameterBlock" xml:space="preserve">
     <value>Erweiterter Parameterblock</value>
   </data>
+  <data name="Label_ExtendedParameterBlockMsg" xml:space="preserve">
+    <value>Es scheint Daten im erweiterten Parameterblock dieses Bootsektors zu geben. Dies bedeutet normalerweise, dass der erweiterte Parameterblock für diese Diskette nicht definiert ist.</value>
+  </data>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Sprungbefehl</value>
   </data>
   <data name="Label_RootDirectoryEntries" xml:space="preserve">
     <value>Einträge im Stammverzeichnis</value>
-  </data>
-  <data name="Label_ExtendedParameterBlockMsg" xml:space="preserve">
-    <value>Es scheint Daten im erweiterten Parameterblock dieses Bootsektors zu geben. Dies bedeutet normalerweise, dass der erweiterte Parameterblock für diese Diskette nicht definiert ist.</value>
   </data>
   <data name="Label_ChooseDiskType" xml:space="preserve">
     <value>Diskettentyp auswählen</value>
@@ -1693,14 +1693,14 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_FloppyDiskType" xml:space="preserve">
     <value>Floppy-Disk-Typ</value>
   </data>
+  <data name="Label_DiskWriteOptions" xml:space="preserve">
+    <value>Schreiboptionen für Diskette</value>
+  </data>
   <data name="Label_FormatDisk" xml:space="preserve">
     <value>Diskette formatieren</value>
   </data>
   <data name="Label_VerifyWrites" xml:space="preserve">
     <value>Schreibvorgänge verifizieren</value>
-  </data>
-  <data name="Label_DiskWriteOptions" xml:space="preserve">
-    <value>Schreiboptionen für Diskette</value>
   </data>
   <data name="Menu_NoToAll" xml:space="preserve">
     <value>N&amp;ein zu allen</value>
@@ -1714,14 +1714,14 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_UndeleteFile" xml:space="preserve">
     <value>Datei wiederherstellen</value>
   </data>
+  <data name="Label_NewDiskImage" xml:space="preserve">
+    <value>Neues Diskettenabbild</value>
+  </data>
   <data name="Label_SpecialFormats" xml:space="preserve">
     <value>Spezialformate</value>
   </data>
   <data name="Label_StandardFormats" xml:space="preserve">
     <value>Standardformate</value>
-  </data>
-  <data name="Label_NewDiskImage" xml:space="preserve">
-    <value>Neues Diskettenabbild</value>
   </data>
   <data name="Menu_PasteOver" xml:space="preserve">
     <value>&amp;Überschreiben einfügen</value>
@@ -1738,17 +1738,17 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_FillSelection" xml:space="preserve">
     <value>Auswahl füllen</value>
   </data>
-  <data name="Menu_AdjustBitOffset" xml:space="preserve">
-    <value>Bit-&amp;Offset anpassen</value>
-  </data>
   <data name="Label_Checksum" xml:space="preserve">
     <value>Prüfsumme</value>
   </data>
-  <data name="Menu_CopyEncoded" xml:space="preserve">
-    <value>Kodiert kopieren</value>
-  </data>
   <data name="Label_Data" xml:space="preserve">
     <value>Daten</value>
+  </data>
+  <data name="Menu_AdjustBitOffset" xml:space="preserve">
+    <value>Bit-&amp;Offset anpassen</value>
+  </data>
+  <data name="Menu_CopyEncoded" xml:space="preserve">
+    <value>Kodiert kopieren</value>
   </data>
   <data name="Label_Archive" xml:space="preserve">
     <value>Archiv</value>
@@ -1804,11 +1804,11 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_SizeOnDisk" xml:space="preserve">
     <value>Größe auf Datenträger</value>
   </data>
-  <data name="Label_Date" xml:space="preserve">
-    <value>Datum</value>
-  </data>
   <data name="Caption_GenerateVolumeSerialNumber" xml:space="preserve">
     <value>Volumeseriennummer generieren</value>
+  </data>
+  <data name="Label_Date" xml:space="preserve">
+    <value>Datum</value>
   </data>
   <data name="Label_Milliseconds" xml:space="preserve">
     <value>Millisekunden</value>
@@ -1861,29 +1861,29 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Details" xml:space="preserve">
     <value>Details</value>
   </data>
-  <data name="Modifications_BootSector" xml:space="preserve">
-    <value>Bootsektor geändert</value>
-  </data>
-  <data name="Modifications_OEMName" xml:space="preserve">
-    <value>OEM-Name geändert</value>
-  </data>
-  <data name="Modifications_FAT" xml:space="preserve">
-    <value>FAT {0} geändert</value>
-  </data>
-  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
-    <value>Erstellungsdatum zu Verzeichniseinträgen hinzugefügt</value>
-  </data>
   <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
     <value>Letztes Zugriffsdatum zu Verzeichniseinträgen hinzugefügt</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>Bootsektor geändert</value>
   </data>
   <data name="Modifications_BootSectorCopy" xml:space="preserve">
     <value>Eine Kopie des Bootsektors befindet sich am Ende des Root-Verzeichnisses.</value>
   </data>
-  <data name="Label_ImagePreview" xml:space="preserve">
-    <value>Image-Vorschau</value>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>Erstellungsdatum zu Verzeichniseinträgen hinzugefügt</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} geändert</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>OEM-Name geändert</value>
   </data>
   <data name="Label_Preview" xml:space="preserve">
     <value>Vorschau</value>
+  </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>Image-Vorschau</value>
   </data>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
     <value>Fehler: Vorschau der Image-Datei nicht möglich.</value>
@@ -1926,5 +1926,8 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_ToggleSequence" xml:space="preserve">
     <value>Sequenz-Token umschalten</value>
+  </data>
+  <data name="Label_ViewMobyGames" xml:space="preserve">
+    <value>Auf MobyGames anzeigen</value>
   </data>
 </root>

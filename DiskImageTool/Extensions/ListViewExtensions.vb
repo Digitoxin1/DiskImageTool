@@ -66,7 +66,6 @@ Module ListViewExtensions
         Dim Item As ListViewItem = Nothing
         Dim SubItem As ListViewItem.ListViewSubItem
         Dim StringList As List(Of String) = Nothing
-        Dim AddTags As Boolean = False
 
         If WrapValue Then
             Dim HasNewLine = Value.Contains(vbCrLf) OrElse Value.Contains(vbCr) OrElse Value.Contains(vbLf)
@@ -77,7 +76,6 @@ Module ListViewExtensions
             End If
             If TextRenderer.MeasureText(Value, listViewControl.Font).Width > TargetWidth OrElse HasNewLine Then
                 StringList = Value.WordWrap(MaxWidth, TargetWidth, listViewControl.Font)
-                AddTags = True
             End If
         End If
 
@@ -86,6 +84,12 @@ Module ListViewExtensions
                 Value
             }
         End If
+
+        Dim Metadata As New SummaryPanel.SummaryMetadata With {
+            .Text = Text,
+            .Value = Value
+        }
+
 
         For Counter = 0 To StringList.Count - 1
             Dim ItemText As String
@@ -100,14 +104,11 @@ Module ListViewExtensions
             If Name.Length > 0 Then
                 NewItem.Name = Name
             End If
-            If AddTags Then
-                NewItem.Tag = Text
-            End If
+            NewItem.Tag = Metadata
+
             SubItem = NewItem.SubItems.Add(StringList(Counter))
             SubItem.ForeColor = ForeColor
-            If AddTags Then
-                SubItem.Tag = Value
-            End If
+
             listViewControl.Items.Add(NewItem)
 
             If Item Is Nothing Then

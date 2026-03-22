@@ -42,6 +42,19 @@ Module Utility
         Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
+    Public Function CombineUri(baseUri As String, ParamArray segments() As String) As Uri
+        If String.IsNullOrWhiteSpace(baseUri) Then
+            Throw New ArgumentException("Base URI cannot be null or empty.", NameOf(baseUri))
+        End If
+
+        Dim baseObj As New Uri(baseUri, UriKind.Absolute)
+
+        Dim baseText = baseObj.ToString().TrimEnd("/"c)
+        Dim extraPath = String.Join("/", segments.Where(Function(s) Not String.IsNullOrWhiteSpace(s)).Select(Function(s) s.Trim("/"c)))
+
+        Return New Uri(baseText & "/" & extraPath)
+    End Function
+
     Public Sub DebugException(ex As Exception)
         Debug.Write("Caught Exception: ")
         Debug.Write("0x" & ex.HResult.ToString("X8"))

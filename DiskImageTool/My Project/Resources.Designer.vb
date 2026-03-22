@@ -22,7 +22,7 @@ Namespace My.Resources
     '''<summary>
     '''  A strongly-typed resource class, for looking up localized strings, etc.
     '''</summary>
-    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0"),  _
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
      Global.Microsoft.VisualBasic.HideModuleNameAttribute()>  _
@@ -4746,6 +4746,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to View on MobyGames.
+        '''</summary>
+        Friend ReadOnly Property Label_ViewMobyGames() As String
+            Get
+                Return ResourceManager.GetString("Label_ViewMobyGames", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Volume Label.
         '''</summary>
         Friend ReadOnly Property Label_VolumeLabel() As String
@@ -5543,6 +5552,16 @@ Namespace My.Resources
         Friend ReadOnly Property Message_ImageFormatWarning() As String
             Get
                 Return ResourceManager.GetString("Message_ImageFormatWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property MobyGames() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("MobyGames", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
         
