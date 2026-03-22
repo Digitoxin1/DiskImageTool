@@ -40,6 +40,7 @@ Namespace Flux.Greaseweazle
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _FileOverwriteMode As Boolean = False
+        Private _FileRefineMode As Boolean = False
         Private _LastSequenceTextBox As TextBoxBase
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
@@ -251,7 +252,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If Delete AndAlso Not _FileOverwriteMode Then
+            If Delete AndAlso Not _FileOverwriteMode AndAlso Not _FileRefineMode Then
                 If CheckIsFluxOutput() Then
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
                     DeleteFilesAndFolderIfEmpty(PathName, "*.raw", Settings.LogFileName)
@@ -263,6 +264,7 @@ Namespace Flux.Greaseweazle
             _OutputFilePath = ""
             _OutputDoubleStep = False
             _FileOverwriteMode = False
+            _FileRefineMode = False
 
             HideSelection(False)
         End Sub
@@ -340,10 +342,51 @@ Namespace Flux.Greaseweazle
             RefreshTitleBarText()
         End Sub
 
+        Private Function ProcessExistingFluxSet(FilePath As String) As Boolean
+            If Not IO.Directory.Exists(FilePath) Then
+                Return True
+            End If
+
+            Dim FileName = GetFirstRawFile(FilePath)
+            If FileName = "" Then
+                Return True
+            End If
+
+            Dim Msg As String = "An existing Flux Image Set exists in:" &
+                vbNewLine & vbNewLine & "'" & FilePath & "'." &
+                vbNewLine & vbNewLine & "Do you wish to refine this set?"
+
+            If MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+                Return False
+            End If
+
+            Dim FluxFilePath = IO.Path.Combine(FilePath, FileName)
+
+            Dim Response = GetFluxSetInfoRaw(FluxFilePath)
+
+            If Not Response.Result Then
+                MsgBox("Unable to process the existing Flux Image Set.", MsgBoxStyle.Exclamation)
+                Return False
+            End If
+
+            Dim OutputFile = IO.Path.Combine(FilePath, GetOutputFileName(Response.Prefix))
+
+            CheckBoxSelect.Checked = True
+            TextBoxPrefixName.Text = Response.Prefix
+            _OutputFilePath = OutputFile
+            _FileRefineMode = True
+
+            RefreshFormState()
+
+            Return True
+        End Function
+
         Private Sub FluxFolderBrowse()
             Dim FolderName = BrowseFolderVista(TextBoxRootFolder.Text, Me.Handle)
             If FolderName <> "" Then
-                TextBoxFolderName.Text = NormalizeFluxFolder(FolderName, TextBoxRootFolder.Text)
+                If ProcessExistingFluxSet(FolderName) Then
+                    TextBoxFolderName.Text = NormalizeFluxFolder(FolderName, TextBoxRootFolder.Text)
+                End If
             End If
         End Sub
 
@@ -372,6 +415,18 @@ Namespace Flux.Greaseweazle
             Return NewFileName
         End Function
 
+        Private Function GetOutputFileName(Prefix As String) As String
+            Return Prefix & "00.0.raw"
+        End Function
+
+        Private Function GetOutputFolderName(FolderName As String) As String
+            If ContainsPlaceholder(FolderName) Then
+                FolderName = StripAngleBrackets(FolderName)
+            End If
+
+            Return FolderName
+        End Function
+
         Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Response.LogFilePath = ""
@@ -380,12 +435,9 @@ Namespace Flux.Greaseweazle
             Dim IsFluxOutput = (OutputType = ReadDiskOutputTypes.RAW)
 
             If IsFluxOutput Then
-                Dim FileName = TextBoxFolderName.Text.Trim
-                If ContainsPlaceholder(FileName) Then
-                    FileName = StripAngleBrackets(FileName)
-                End If
+                Dim FileName = GetOutputFolderName(TextBoxFolderName.Text.Trim)
                 Dim Pathname = IO.Path.Combine(TextBoxRootFolder.Text, FileName)
-                Dim FilePath = IO.Path.Combine(Pathname, TextBoxPrefixName.Text.Trim & "00.0.raw")
+                Dim FilePath = IO.Path.Combine(Pathname, GetOutputFileName(TextBoxPrefixName.Text.Trim))
                 Try
                     IO.Directory.CreateDirectory(Pathname)
                     Response.FilePath = FilePath
@@ -959,7 +1011,7 @@ Namespace Flux.Greaseweazle
             If Response.FilePath = "" Then
                 Exit Sub
             ElseIf Response.IsFlux Then
-                If Not _FileOverwriteMode Then
+                If Not _FileOverwriteMode And Not _FileRefineMode Then
                     Dim CheckResponse = CheckRawFolderExists(Response.FilePath)
                     If Not CheckResponse.Result Then
                         Exit Sub
@@ -1039,7 +1091,7 @@ Namespace Flux.Greaseweazle
             Dim DriveSelected As Boolean = Not String.IsNullOrEmpty(Opt.Id)
             Dim SelectMode As Boolean = CanConvert AndAlso CheckBoxSelect.Checked
 
-            ComboImageFormat.Enabled = CanChangeSettings AndAlso DriveSelected
+            ComboImageFormat.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
             ComboDrives.Enabled = CanChangeSettings OrElse SelectMode
             ComboOutputType.Enabled = CanChangeSettings AndAlso ComboOutputType.Items.Count > 1
 
@@ -1057,7 +1109,7 @@ Namespace Flux.Greaseweazle
 
             CheckBoxSelect.Enabled = CanConvert
 
-            ButtonDetect.Enabled = CanChangeSettings AndAlso DriveSelected
+            ButtonDetect.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
 
             ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
@@ -1665,6 +1717,13 @@ Namespace Flux.Greaseweazle
             tb.Text = tb.Text.Trim().Replace("/"c, "\"c)
 
             FileNameChangePostProcess()
+
+            Dim FolderName = IO.Path.Combine(TextBoxRootFolder.Text, GetOutputFolderName(tb.Text))
+
+            If Not ProcessExistingFluxSet(FolderName) Then
+                e.Cancel = True
+                Return
+            End If
         End Sub
 
         Private Sub TextBoxRootFolder_Click(sender As Object, e As EventArgs) Handles TextBoxRootFolder.Click

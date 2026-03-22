@@ -13,7 +13,7 @@ Namespace Flux
         Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean, Optional ReadHeaders As Boolean = False) As FluxSetInfo
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
 
-            Dim Response = New FluxSetInfo(False, 0, 0)
+            Dim Response = New FluxSetInfo(False, 0, 0, "")
 
             If FileExt = ".raw" Then
                 Response = GetFluxSetInfoRaw(FilePath, ReadHeaders)
@@ -191,7 +191,7 @@ Namespace Flux
         End Function
 
         Public Function GetFluxSetInfoRaw(FilePath As String, Optional ReadHeaders As Boolean = False) As FluxSetInfo
-            Dim Response As New FluxSetInfo(False, 0, 0)
+            Dim Response As New FluxSetInfo(False, 0, 0, "")
 
             If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
                 Return Response
@@ -212,15 +212,15 @@ Namespace Flux
                 Return Response
             End If
 
-            Dim Prefix As String = PrefixMatch.Groups("diskId").Value
+            Response.Prefix= PrefixMatch.Groups("diskId").Value
             Dim rx As New Regex(REGEX_RAW_FILE, RegexOptions.IgnoreCase)
 
-            For Each file In IO.Directory.EnumerateFiles(ParentDir, Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
+            For Each file In IO.Directory.EnumerateFiles(ParentDir, Response.Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
                 Dim name = IO.Path.GetFileName(file)
                 Dim m = rx.Match(name)
                 If m.Success Then
                     Dim diskId As String = m.Groups("diskId").Value
-                    If String.Equals(diskId, Prefix, StringComparison.OrdinalIgnoreCase) Then
+                    If String.Equals(diskId, Response.Prefix, StringComparison.OrdinalIgnoreCase) Then
                         Dim trk As Integer = Integer.Parse(m.Groups("track").Value)
                         Dim side As Integer = Integer.Parse(m.Groups("side").Value)
 
@@ -246,7 +246,7 @@ Namespace Flux
         End Function
 
         Public Function GetFluxSetInfoSCP(FilePath As String) As FluxSetInfo
-            Dim Response As New FluxSetInfo(False, 0, 0)
+            Dim Response As New FluxSetInfo(False, 0, 0, "")
 
             If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
                 Return Response
@@ -1051,13 +1051,15 @@ Namespace Flux
 
         Public Structure FluxSetInfo
             Public ReadOnly Headers As Dictionary(Of TrackSide, Dictionary(Of String, String))
-            Public Sub New(Result As Boolean, TrackCount As Integer, SideCount As Integer)
+            Public Sub New(Result As Boolean, TrackCount As Integer, SideCount As Integer, Prefix As String)
                 Me.Result = Result
                 Me.TrackCount = TrackCount
                 Me.SideCount = SideCount
+                Me.Prefix = Prefix
                 Me.Headers = New Dictionary(Of TrackSide, Dictionary(Of String, String))
             End Sub
 
+            Public Property Prefix As String
             Public Property Result As Boolean
             Public Property SideCount As Integer
             Public Property TrackCount As Integer

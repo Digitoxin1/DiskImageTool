@@ -266,6 +266,7 @@ Namespace DiskImage
 
         Public Function IsValid() As Boolean
             Return _FloppyImage.Length >= BPB_SIZE _
+                AndAlso HasValidBytesPerSector() _
                 AndAlso HasValidSectorsPerCluster(False) _
                 AndAlso HasValidReservedSectorCount() _
                 AndAlso HasValidNumberOfFATs() _
