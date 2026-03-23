@@ -426,6 +426,7 @@ Namespace Flux.Greaseweazle
         Private Function VerifyAllowed() As Boolean
             Return Not _IsBitstreamImage
         End Function
+
         Private Sub WriteDisk(FilePath As String)
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As TrackHeads = TrackHeads.both
@@ -447,6 +448,8 @@ Namespace Flux.Greaseweazle
                 If TrackRanges.Count = 0 Then
                     Exit Sub
                 End If
+
+                GridSetBusy(True)
             End If
 
             WriteDisk(FilePath, TrackRanges, Heads)
@@ -605,6 +608,8 @@ Namespace Flux.Greaseweazle
                 If _CurrentFilePath <> "" Then
                     DeleteTempFileIfExists(_CurrentFilePath)
                 End If
+
+                GridSetBusy(False)
                 ResetCheckBoxSelect()
             End If
 

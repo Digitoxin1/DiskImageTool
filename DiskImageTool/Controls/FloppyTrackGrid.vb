@@ -27,6 +27,7 @@ Public Class FloppyTrackGrid
     Private _FooterHasFocus As Boolean = False
     Private _FooterTextRect As Rectangle
     Private _HideSelection As Boolean = False
+    Private _IsBusy As Boolean = False
     Private _IsChecked As Boolean
     Private _Label As String
     Private _LastSelected As (Track As Integer, Selected As Boolean) = (-1, False)
@@ -113,6 +114,15 @@ Public Class FloppyTrackGrid
                 _HideSelection = value
                 Invalidate()
             End If
+        End Set
+    End Property
+
+    Public Property IsBusy As Boolean
+        Get
+            Return _IsBusy
+        End Get
+        Set(value As Boolean)
+            _IsBusy = value
         End Set
     End Property
 
@@ -446,7 +456,7 @@ Public Class FloppyTrackGrid
 
         _FooterHasFocus = False
 
-        If Not _SelectEnabled Or _Disabled Then
+        If Not _SelectEnabled OrElse _Disabled OrElse _IsBusy Then
             Return
         End If
 
@@ -470,7 +480,7 @@ Public Class FloppyTrackGrid
     Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
         MyBase.OnKeyDown(e)
 
-        If _Disabled OrElse Not _SelectEnabled OrElse _TrackCount = 0 Then
+        If _Disabled OrElse _IsBusy OrElse Not _SelectEnabled OrElse _TrackCount = 0 Then
             Exit Sub
         End If
 
@@ -628,7 +638,7 @@ Public Class FloppyTrackGrid
     Protected Overrides Sub OnMouseDown(e As MouseEventArgs)
         MyBase.OnMouseDown(e)
 
-        If _Disabled Then
+        If _Disabled OrElse _IsBusy Then
             Exit Sub
         End If
 

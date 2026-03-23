@@ -149,6 +149,16 @@
             End If
         End Sub
 
+        Public Sub GridSetBusy(Busy As Boolean)
+            If TS0 IsNot Nothing Then
+                TS0.IsBusy = Busy
+            End If
+
+            If TS1 IsNot Nothing Then
+                TS1.IsBusy = Busy
+            End If
+        End Sub
+
         Public Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             Dim FileName As String = _LogFileName
             Dim Extension = IO.Path.GetExtension(FileName).ToLower

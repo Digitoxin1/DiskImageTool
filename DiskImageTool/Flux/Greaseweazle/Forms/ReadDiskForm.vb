@@ -471,7 +471,10 @@ Namespace Flux.Greaseweazle
 
         Private Sub HideSelection(Value As Boolean)
             TableSide0.HideSelection = Value
+            TableSide0.IsBusy = Value
+
             TableSide1.HideSelection = Value
+            TableSide1.IsBusy = Value
         End Sub
 
         Private Sub InitializeControls()
@@ -959,13 +962,15 @@ Namespace Flux.Greaseweazle
             Dim Caption As String
 
             If IsFluxOutput Then
-                If String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
+                Dim FileName = GetOutputFolderName(TextBoxFolderName.Text.Trim)
+
+                If String.IsNullOrEmpty(FileName) Then
                     Caption = ""
                 Else
-                    Caption = IO.Path.GetFileName(TextBoxFolderName.Text.Trim)
+                    Caption = IO.Path.GetFileName(FileName)
                 End If
             Else
-                Caption = TextBoxFileName.Text.Trim
+                Caption = GetOutputFolderName(TextBoxFileName.Text.Trim)
             End If
 
             If HasOutputfile AndAlso Not IsFluxOutput Then
