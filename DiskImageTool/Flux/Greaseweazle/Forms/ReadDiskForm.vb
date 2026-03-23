@@ -31,7 +31,7 @@ Namespace Flux.Greaseweazle
         Private Const FLUX_WILDCARD As String = "*.raw"
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
-        Private Shared _CachedPrefixNameTemplate As String = ""
+        Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _ToolTip As New ToolTip()
@@ -238,7 +238,7 @@ Namespace Flux.Greaseweazle
                 If ContainsPlaceholder(PrefixName) Then
                     _CachedPrefixNameTemplate = IncrementPlaceholders(PrefixName)
                 Else
-                    _CachedPrefixNameTemplate = ""
+                    _CachedPrefixNameTemplate = DEFAULT_RAW_FILE_NAME
                 End If
 
                 _CachedFileNameTemplate = ""
@@ -1147,7 +1147,7 @@ Namespace Flux.Greaseweazle
             Dim OutputFile = IO.Path.Combine(FilePath, FluxGetFirstTrackFileName(Response.Prefix))
 
             CheckBoxSelect.Checked = True
-            TextBoxPrefixName.Text = If(Response.Prefix = DEFAULT_RAW_FILE_NAME, "", Response.Prefix)
+            TextBoxPrefixName.Text = Response.Prefix
             _OutputFilePath = OutputFile
             _FileRefineMode = True
 
@@ -1481,7 +1481,7 @@ Namespace Flux.Greaseweazle
                 TextBoxFolderName.Text = _CachedFolderNameTemplate
             Else
                 TextBoxFileName.Text = ""
-                TextBoxPrefixName.Text = ""
+                TextBoxPrefixName.Text = DEFAULT_RAW_FILE_NAME
                 TextBoxFolderName.Text = ""
             End If
         End Sub
