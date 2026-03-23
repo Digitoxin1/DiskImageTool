@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Net
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
@@ -24,12 +25,13 @@ Namespace Flux.Greaseweazle
         Private WithEvents NumericRevs As NumericUpDown
         Private WithEvents TextBoxFileName As TextBox
         Private WithEvents TextBoxFolderName As TextBox
-        Private WithEvents TextBoxPrefixName As TextBox
+        Private WithEvents TextBoxPrefixName As PlaceholderTextBox
         Private WithEvents TextBoxRootFolder As TextBox
         Private Const DEFAULT_RAW_FILE_NAME As String = "track"
+        Private Const FLUX_WILDCARD As String = "*.raw"
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
-        Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
+        Private Shared _CachedPrefixNameTemplate As String = ""
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _ToolTip As New ToolTip()
@@ -39,8 +41,8 @@ Namespace Flux.Greaseweazle
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
-        Private _FileReprocessMode As Boolean = False
         Private _FileRefineMode As Boolean = False
+        Private _FileReprocessMode As Boolean = False
         Private _LastSequenceTextBox As TextBoxBase
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
@@ -110,6 +112,77 @@ Namespace Flux.Greaseweazle
             End Get
         End Property
 
+        Public Function FinalizeFluxTempFolder(tempFolderPath As String, destinationFolderPath As String, Optional prefix As String = "") As Boolean
+            If String.IsNullOrWhiteSpace(tempFolderPath) OrElse String.IsNullOrWhiteSpace(destinationFolderPath) Then
+                Return False
+            End If
+
+            Dim tempFull = IO.Path.GetFullPath(tempFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
+            Dim destFull = IO.Path.GetFullPath(destinationFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
+
+            If Not IO.Directory.Exists(tempFull) Then
+                Return False
+            End If
+
+            ' No-op if same folder
+            If String.Equals(tempFull, destFull, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+            Try
+                ' Fast path: destination does not exist -> rename temp folder to destination
+                If Not IO.Directory.Exists(destFull) Then
+                    IO.Directory.Move(tempFull, destFull)
+                    Return True
+                End If
+
+                ' If prefix was not provided, try to infer it from temp set
+                If String.IsNullOrWhiteSpace(prefix) Then
+                    Dim tempRaw = GetFirstRawInFolder(tempFull)
+                    If Not String.IsNullOrWhiteSpace(tempRaw) Then
+                        Dim info = GetFluxSetInfoRaw(tempRaw)
+                        If info.Result Then
+                            prefix = info.Prefix
+                        End If
+                    End If
+                End If
+
+                ' Destination exists -> delete existing raw files with same prefix
+                If Not String.IsNullOrWhiteSpace(prefix) Then
+                    For Each dstRaw In IO.Directory.GetFiles(destFull, prefix & FLUX_WILDCARD, IO.SearchOption.TopDirectoryOnly)
+                        IO.File.Delete(dstRaw)
+                    Next
+                End If
+
+                ' Move all files from temp to destination (overwrite)
+                For Each srcFile In IO.Directory.GetFiles(tempFull, "*", IO.SearchOption.TopDirectoryOnly)
+                    Dim dstFile = IO.Path.Combine(destFull, IO.Path.GetFileName(srcFile))
+
+                    Dim created = IO.File.GetCreationTime(srcFile)
+                    Dim modified = IO.File.GetLastWriteTime(srcFile)
+
+                    If IO.File.Exists(dstFile) Then
+                        IO.File.Delete(dstFile)
+                    End If
+
+                    IO.File.Move(srcFile, dstFile)
+
+                    IO.File.SetCreationTime(dstFile, created)
+                    IO.File.SetLastWriteTime(dstFile, modified)
+                Next
+
+                ' Delete temp folder after move
+                If IO.Directory.Exists(tempFull) Then
+                    IO.Directory.Delete(tempFull, True)
+                End If
+
+                Return True
+            Catch ex As Exception
+                Debug.WriteLine($"FinalizeFluxTempFolder failed: {ex.Message}")
+                Return False
+            End Try
+        End Function
+
         Public Overrides Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             If String.IsNullOrEmpty(InitialDirectory) Then
                 If Not String.IsNullOrEmpty(_OutputFilePath) AndAlso CheckIsFluxOutput() Then
@@ -165,7 +238,7 @@ Namespace Flux.Greaseweazle
                 If ContainsPlaceholder(PrefixName) Then
                     _CachedPrefixNameTemplate = IncrementPlaceholders(PrefixName)
                 Else
-                    _CachedPrefixNameTemplate = DEFAULT_RAW_FILE_NAME
+                    _CachedPrefixNameTemplate = ""
                 End If
 
                 _CachedFileNameTemplate = ""
@@ -179,7 +252,7 @@ Namespace Flux.Greaseweazle
                 End If
 
                 _CachedFolderNameTemplate = ""
-                _CachedPrefixNameTemplate = DEFAULT_RAW_FILE_NAME
+                _CachedPrefixNameTemplate = ""
             End If
         End Sub
 
@@ -263,7 +336,7 @@ Namespace Flux.Greaseweazle
             If Delete AndAlso Not _FileRefineMode Then
                 If CheckIsFluxOutput() Then
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
-                    DeleteFilesAndFolderIfEmpty(PathName, "*.raw", Settings.LogFileName)
+                    DeleteFilesAndFolderIfEmpty(PathName, FLUX_WILDCARD, Settings.LogFileName)
                 Else
                     DeleteTempFileIfExists(_OutputFilePath)
                 End If
@@ -314,18 +387,13 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function ConfirmFluxDestinationOverwrite() As Boolean
-            Dim destinationFolder = GetFluxFolderPath()
-            Dim prefix = TextBoxPrefixName.Text.Trim()
+            Dim destinationFolder = FluxGetFolderPath()
 
             If Not IO.Directory.Exists(destinationFolder) Then
                 Return True
             End If
 
-            If String.IsNullOrWhiteSpace(prefix) Then
-                Return True
-            End If
-
-            Dim existing = IO.Directory.EnumerateFiles(destinationFolder, prefix & "*.raw", IO.SearchOption.TopDirectoryOnly).Any()
+            Dim existing = IO.Directory.EnumerateFiles(destinationFolder, FluxGetWildcardFileName(), IO.SearchOption.TopDirectoryOnly).Any()
 
             If Not existing Then
                 Return True
@@ -337,10 +405,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub ConvertImage()
-            Dim Prefix = TextBoxPrefixName.Text.Trim()
-            Dim DisplayPath = IO.Path.Combine(GetFluxFolderPath(), GetOutputFileName(Prefix))
-
-            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True, DisplayPath)
+            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True, FluxGetOutputFilePath())
 
             If Response.Result = DialogResult.OK Then
                 If Not FinalizeFluxOutput() Then
@@ -383,133 +448,23 @@ Namespace Flux.Greaseweazle
             RefreshTitleBarText()
         End Sub
 
-        Private Function ProcessExistingFluxSet(FilePath As String) As Boolean
-            If Not IO.Directory.Exists(FilePath) Then
-                Return True
-            End If
-
-            Dim FileName = GetFirstRawFile(FilePath)
-            If FileName = "" Then
-                Return True
-            End If
-
-            Dim Msg As String = "An existing Flux Image Set exists in:" &
-                vbNewLine & vbNewLine & "'" & FilePath & "'." &
-                vbNewLine & vbNewLine & "Do you wish to refine this set?"
-
-            If MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
-                Return False
-            End If
-
-            Dim FluxFilePath = IO.Path.Combine(FilePath, FileName)
-
-            Dim Response = GetFluxSetInfoRaw(FluxFilePath)
-
-            If Not Response.Result Then
-                MsgBox("Unable to process the existing Flux Image Set.", MsgBoxStyle.Exclamation)
-                Return False
-            End If
-
-            Dim OutputFile = IO.Path.Combine(FilePath, GetOutputFileName(Response.Prefix))
-
-            CheckBoxSelect.Checked = True
-            TextBoxPrefixName.Text = Response.Prefix
-            _OutputFilePath = OutputFile
-            _FileRefineMode = True
-
-            RefreshFormState()
-
-            Return True
-        End Function
-
         Private Function FinalizeFluxOutput() As Boolean
             If String.IsNullOrEmpty(_OutputFilePath) Then
                 Return False
             End If
 
             Dim tempFolder = IO.Path.GetDirectoryName(_OutputFilePath)
-            Dim destFolder = GetFluxFolderPath()
-            Dim prefix = TextBoxPrefixName.Text.Trim()
+            Dim destFolder = FluxGetFolderPath()
+            Dim prefix = FluxGetPrefix()
 
             If Not FinalizeFluxTempFolder(tempFolder, destFolder, prefix) Then
                 MsgBox("Unable to save Flux set.", MsgBoxStyle.Exclamation)
                 Return False
             End If
 
-            _OutputFilePath = IO.Path.Combine(destFolder, GetOutputFileName(prefix))
+            _OutputFilePath = FluxGetOutputFilePath()
 
             Return True
-        End Function
-
-        Public Function FinalizeFluxTempFolder(tempFolderPath As String, destinationFolderPath As String, Optional prefix As String = "") As Boolean
-            If String.IsNullOrWhiteSpace(tempFolderPath) OrElse String.IsNullOrWhiteSpace(destinationFolderPath) Then
-                Return False
-            End If
-
-            Dim tempFull = IO.Path.GetFullPath(tempFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
-            Dim destFull = IO.Path.GetFullPath(destinationFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
-
-            If Not IO.Directory.Exists(tempFull) Then
-                Return False
-            End If
-
-            ' No-op if same folder
-            If String.Equals(tempFull, destFull, StringComparison.OrdinalIgnoreCase) Then
-                Return True
-            End If
-
-            Try
-                ' Fast path: destination does not exist -> rename temp folder to destination
-                If Not IO.Directory.Exists(destFull) Then
-                    IO.Directory.Move(tempFull, destFull)
-                    Return True
-                End If
-
-                ' If prefix was not provided, try to infer it from temp set
-                If String.IsNullOrWhiteSpace(prefix) Then
-                    Dim tempRaw = GetFirstRawInFolder(tempFull)
-                    If Not String.IsNullOrWhiteSpace(tempRaw) Then
-                        Dim info = GetFluxSetInfoRaw(tempRaw)
-                        If info.Result Then
-                            prefix = info.Prefix
-                        End If
-                    End If
-                End If
-
-                ' Destination exists -> delete existing raw files with same prefix
-                If Not String.IsNullOrWhiteSpace(prefix) Then
-                    For Each dstRaw In IO.Directory.GetFiles(destFull, prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
-                        IO.File.Delete(dstRaw)
-                    Next
-                End If
-
-                ' Move all files from temp to destination (overwrite)
-                For Each srcFile In IO.Directory.GetFiles(tempFull, "*", IO.SearchOption.TopDirectoryOnly)
-                    Dim dstFile = IO.Path.Combine(destFull, IO.Path.GetFileName(srcFile))
-
-                    Dim created = IO.File.GetCreationTime(srcFile)
-                    Dim modified = IO.File.GetLastWriteTime(srcFile)
-
-                    If IO.File.Exists(dstFile) Then
-                        IO.File.Delete(dstFile)
-                    End If
-
-                    IO.File.Move(srcFile, dstFile)
-
-                    IO.File.SetCreationTime(dstFile, created)
-                    IO.File.SetLastWriteTime(dstFile, modified)
-                Next
-
-                ' Delete temp folder after move
-                If IO.Directory.Exists(tempFull) Then
-                    IO.Directory.Delete(tempFull, True)
-                End If
-
-                Return True
-            Catch ex As Exception
-                Debug.WriteLine($"FinalizeFluxTempFolder failed: {ex.Message}")
-                Return False
-            End Try
         End Function
 
         Private Sub FluxFolderBrowse()
@@ -521,11 +476,40 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Function GetFluxFolderPath() As String
+        Private Function FluxGetFirstTrackFileName(Prefix As String) As String
+            Return FluxGetTrackFileName(Prefix, 0, 0)
+        End Function
+
+        Private Function FluxGetFirstTrackFileName() As String
+            Return FluxGetFirstTrackFileName(FluxGetPrefix())
+        End Function
+
+        Private Function FluxGetFolderPath() As String
             Dim Root = TextBoxRootFolder.Text.Trim()
             Dim Folder = GetOutputFolderName(TextBoxFolderName.Text.Trim())
 
             Return IO.Path.Combine(Root, Folder)
+        End Function
+
+        Private Function FluxGetOutputFilePath() As String
+            Return IO.Path.Combine(FluxGetFolderPath(), FluxGetFirstTrackFileName())
+        End Function
+        Private Function FluxGetPrefix() As String
+            Dim Prefix = TextBoxPrefixName.Text.Trim()
+
+            If String.IsNullOrEmpty(Prefix) Then
+                Prefix = DEFAULT_RAW_FILE_NAME
+            End If
+
+            Return Prefix
+        End Function
+
+        Private Function FluxGetTrackFileName(Prefix As String, Track As Integer, Side As Integer) As String
+            Return Prefix & Track.ToString("00") & "." & Side.ToString() & ".raw"
+        End Function
+
+        Private Function FluxGetWildcardFileName() As String
+            Return FluxGetPrefix() & FLUX_WILDCARD
         End Function
 
         Private Function GetNewFileName(FilePath As String) As String
@@ -553,18 +537,6 @@ Namespace Flux.Greaseweazle
             Return NewFileName
         End Function
 
-        Private Function GetOutputFileName(Prefix As String) As String
-            Return Prefix & "00.0.raw"
-        End Function
-
-        Private Function GetOutputFolderName(FolderName As String) As String
-            If ContainsPlaceholder(FolderName) Then
-                FolderName = StripAngleBrackets(FolderName)
-            End If
-
-            Return FolderName
-        End Function
-
         Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Response.LogFilePath = ""
@@ -575,7 +547,7 @@ Namespace Flux.Greaseweazle
             If IsFluxOutput Then
                 Dim FileName = "~gwread_" & Guid.NewGuid().ToString("N")
                 Dim Pathname = IO.Path.Combine(TextBoxRootFolder.Text, FileName)
-                Dim FilePath = IO.Path.Combine(Pathname, GetOutputFileName(TextBoxPrefixName.Text.Trim))
+                Dim FilePath = IO.Path.Combine(Pathname, FluxGetFirstTrackFileName())
                 Try
                     IO.Directory.CreateDirectory(Pathname)
                     Response.FilePath = FilePath
@@ -601,6 +573,14 @@ Namespace Flux.Greaseweazle
             End If
 
             Return Response
+        End Function
+
+        Private Function GetOutputFolderName(FolderName As String) As String
+            If ContainsPlaceholder(FolderName) Then
+                FolderName = StripAngleBrackets(FolderName)
+            End If
+
+            Return FolderName
         End Function
 
         Private Function GetSelectedDeviceState() As Settings.UserStateFluxReadDevice
@@ -688,10 +668,12 @@ Namespace Flux.Greaseweazle
             }
             ColWidth = Math.Max(ColWidth, SetControlWidth(labelPrefixName))
 
-            TextBoxPrefixName = New TextBox With {
+            TextBoxPrefixName = New PlaceholderTextBox With {
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .MaxLength = 255,
-                .Visible = False
+                .Visible = False,
+                .PlaceholderText = DEFAULT_RAW_FILE_NAME,
+                .ShowCueWhenFocused = True
             }
 
             LabelFolderName = New Label With {
@@ -1135,6 +1117,44 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
+        Private Function ProcessExistingFluxSet(FilePath As String) As Boolean
+            If Not IO.Directory.Exists(FilePath) Then
+                Return True
+            End If
+
+            Dim FileName = GetFirstRawFile(FilePath)
+            If FileName = "" Then
+                Return True
+            End If
+
+            Dim Msg As String = "An existing Flux Image Set exists in:" &
+                vbNewLine & vbNewLine & "'" & FilePath & "'." &
+                vbNewLine & vbNewLine & "Do you wish to refine this set?"
+
+            If MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+                Return False
+            End If
+
+            Dim FluxFilePath = IO.Path.Combine(FilePath, FileName)
+
+            Dim Response = GetFluxSetInfoRaw(FluxFilePath)
+
+            If Not Response.Result Then
+                MsgBox("Unable to process the existing Flux Image Set.", MsgBoxStyle.Exclamation)
+                Return False
+            End If
+
+            Dim OutputFile = IO.Path.Combine(FilePath, FluxGetFirstTrackFileName(Response.Prefix))
+
+            CheckBoxSelect.Checked = True
+            TextBoxPrefixName.Text = If(Response.Prefix = DEFAULT_RAW_FILE_NAME, "", Response.Prefix)
+            _OutputFilePath = OutputFile
+            _FileRefineMode = True
+
+            RefreshFormState()
+
+            Return True
+        End Function
         Private Sub ProcessImage()
             Dim DiskParams = SelectedDiskParams()
 
@@ -1461,7 +1481,7 @@ Namespace Flux.Greaseweazle
                 TextBoxFolderName.Text = _CachedFolderNameTemplate
             Else
                 TextBoxFileName.Text = ""
-                TextBoxPrefixName.Text = DEFAULT_RAW_FILE_NAME
+                TextBoxPrefixName.Text = ""
                 TextBoxFolderName.Text = ""
             End If
         End Sub
@@ -1487,8 +1507,6 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub SetTiltebarText()
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
             Dim Text = My.Resources.Label_ReadDisk
 
             If String.IsNullOrEmpty(_OutputFilePath) Then
@@ -1496,7 +1514,12 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
+            Dim IsFluxOutput = CheckIsFluxOutput()
+
             If Not IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFileName.Text.Trim) Then
+                Me.Text = Text
+                Exit Sub
+            ElseIf IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
                 Me.Text = Text
                 Exit Sub
             End If
@@ -1504,8 +1527,8 @@ Namespace Flux.Greaseweazle
             Dim DisplayFileName As String
 
             If IsFluxOutput Then
-                Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_OutputFilePath).FullName)
-                DisplayFileName = IO.Path.Combine(ParentFolder, "*.raw")
+                Dim ParentFolder As String = GetOutputFolderName(TextBoxFolderName.Text.Trim())
+                DisplayFileName = IO.Path.Combine(ParentFolder, FLUX_WILDCARD)
             Else
                 DisplayFileName = GetNewFileName(_OutputFilePath)
             End If
