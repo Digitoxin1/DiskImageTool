@@ -37,6 +37,7 @@ Namespace Flux
         Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _ImportButtonNoEvent As Boolean = False
         Private _InputFilePath As String = ""
+        Private _DisplayInputFilePath As String = ""
         Private _OutputFilePath As String = ""
         Private _SelectedDevice As IDevice = Nothing
         Private _SelectedSource As IDevice = Nothing
@@ -49,7 +50,7 @@ Namespace Flux
         Private LabelOutputType As Label
 
         Public Event ImportProcess(File As String, NewFilename As String)
-        Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean)
+        Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "")
             MyBase.New("")
 
             Me.AllowDrop = True
@@ -61,6 +62,7 @@ Namespace Flux
             _UserState = App.UserState.Flux
             _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
+            _DisplayInputFilePath = If(String.IsNullOrWhiteSpace(DisplayFilePath), FilePath, DisplayFilePath)
             _OutputImages = New OutputImages(TempPath)
             _TrackCount = FluxSetinfo.TrackCount
             _SideCount = FluxSetinfo.SideCount
@@ -731,7 +733,8 @@ Namespace Flux
                 .Text = My.Resources.Label_Discard,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = Not _LaunchedFromDialog
             }
 
             ButtonImport = New SplitButton With {
@@ -1491,14 +1494,15 @@ Namespace Flux
 
             Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams)
         End Function
+
         Private Sub SetNewFileName()
-            Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
+            Dim FileExt = IO.Path.GetExtension(_DisplayInputFilePath).ToLower
 
             If FileExt = ".raw" Then
-                Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_InputFilePath).FullName)
+                Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_DisplayInputFilePath).FullName)
                 TextBoxFileName.Text = ParentFolder
             Else
-                TextBoxFileName.Text = IO.Path.GetFileNameWithoutExtension(_InputFilePath)
+                TextBoxFileName.Text = IO.Path.GetFileNameWithoutExtension(_DisplayInputFilePath)
             End If
         End Sub
 
@@ -1515,16 +1519,16 @@ Namespace Flux
         Private Sub SetTiltebarText()
             Dim Text = My.Resources.Caption_ConvertFluxImage
 
-            If String.IsNullOrEmpty(_InputFilePath) Then
+            If String.IsNullOrEmpty(_DisplayInputFilePath) Then
                 Me.Text = Text
                 Exit Sub
             End If
 
-            Dim DisplayFileName = IO.Path.GetFileName(_InputFilePath)
+            Dim DisplayFileName = IO.Path.GetFileName(_DisplayInputFilePath)
             Dim FileExt = IO.Path.GetExtension(DisplayFileName).ToLower
 
             If FileExt = ".raw" Then
-                Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_InputFilePath).FullName)
+                Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_DisplayInputFilePath).FullName)
                 DisplayFileName = IO.Path.Combine(ParentFolder, "*.raw")
             End If
 

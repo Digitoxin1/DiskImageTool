@@ -8,7 +8,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonConvert As Button
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonDiscard As Button
-        Private WithEvents ButtonFolderBrowse As Button
+        'Private WithEvents ButtonFolderBrowse As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
@@ -39,7 +39,7 @@ Namespace Flux.Greaseweazle
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
-        Private _FileOverwriteMode As Boolean = False
+        Private _FileReprocessMode As Boolean = False
         Private _FileRefineMode As Boolean = False
         Private _LastSequenceTextBox As TextBoxBase
         Private _NewFileName As String = ""
@@ -132,6 +132,7 @@ Namespace Flux.Greaseweazle
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             If Me.DialogResult = DialogResult.Cancel OrElse Me.DialogResult = DialogResult.None Then
                 ClearOutputFile(True)
+                HideSelection(False)
                 _NewFilePath = ""
                 _NewFileName = ""
             End If
@@ -203,22 +204,29 @@ Namespace Flux.Greaseweazle
         Private Function CheckFileNameEntered() As Boolean
             Dim IsFluxOutput = CheckIsFluxOutput()
 
-            If IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxRootFolder.Text.Trim) Then
-                MsgBox(My.Resources.Dialog_SelectRootFolder, MsgBoxStyle.Exclamation)
-                ButtonRootBrowse.Focus()
-                Return False
-            End If
+            If IsFluxOutput Then
+                If String.IsNullOrEmpty(TextBoxRootFolder.Text.Trim) Then
+                    MsgBox(My.Resources.Dialog_SelectRootFolder, MsgBoxStyle.Exclamation)
+                    ButtonRootBrowse.Focus()
+                    Return False
+                End If
 
-            If IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
-                MsgBox(My.Resources.Dialog_EnterFolderName, MsgBoxStyle.Exclamation)
-                TextBoxFolderName.Focus()
-                Return False
-            End If
+                If String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
+                    MsgBox(My.Resources.Dialog_EnterFolderName, MsgBoxStyle.Exclamation)
+                    TextBoxFolderName.Focus()
+                    Return False
+                End If
 
-            If Not IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFileName.Text.Trim) Then
-                MsgBox(My.Resources.Dialog_EnterFileName, MsgBoxStyle.Exclamation)
-                TextBoxFileName.Focus()
-                Return False
+                If Not ConfirmFluxDestinationOverwrite() Then
+                    TextBoxFolderName.Focus()
+                    Return False
+                End If
+            Else
+                If String.IsNullOrEmpty(TextBoxFileName.Text.Trim) Then
+                    MsgBox(My.Resources.Dialog_EnterFileName, MsgBoxStyle.Exclamation)
+                    TextBoxFileName.Focus()
+                    Return False
+                End If
             End If
 
             Return True
@@ -252,7 +260,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If Delete AndAlso Not _FileOverwriteMode AndAlso Not _FileRefineMode Then
+            If Delete AndAlso Not _FileRefineMode Then
                 If CheckIsFluxOutput() Then
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
                     DeleteFilesAndFolderIfEmpty(PathName, "*.raw", Settings.LogFileName)
@@ -263,17 +271,16 @@ Namespace Flux.Greaseweazle
 
             _OutputFilePath = ""
             _OutputDoubleStep = False
-            _FileOverwriteMode = False
             _FileRefineMode = False
-
-            HideSelection(False)
+            _FileReprocessMode = False
         End Sub
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean, RefreshState As Boolean)
-            _FileOverwriteMode = False
+            _FileReprocessMode = False
 
             TextBoxConsole.Clear()
             ClearOutputFile(DeleteOutputFile)
+            HideSelection(False)
             ClearStatusBar()
             ResetTrackGrid()
             TrackStatus.Clear()
@@ -306,13 +313,47 @@ Namespace Flux.Greaseweazle
             Me.Close()
         End Sub
 
+        Private Function ConfirmFluxDestinationOverwrite() As Boolean
+            Dim destinationFolder = GetFluxFolderPath()
+            Dim prefix = TextBoxPrefixName.Text.Trim()
+
+            If Not IO.Directory.Exists(destinationFolder) Then
+                Return True
+            End If
+
+            If String.IsNullOrWhiteSpace(prefix) Then
+                Return True
+            End If
+
+            Dim existing = IO.Directory.EnumerateFiles(destinationFolder, prefix & "*.raw", IO.SearchOption.TopDirectoryOnly).Any()
+
+            If Not existing Then
+                Return True
+            End If
+
+            Dim msg = String.Format(My.Resources.Dialog_ImageSetExists, destinationFolder)
+
+            Return MsgBox(msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or vbDefaultButton2) = MsgBoxResult.Ok
+        End Function
+
         Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True)
+            Dim Prefix = TextBoxPrefixName.Text.Trim()
+            Dim DisplayPath = IO.Path.Combine(GetFluxFolderPath(), GetOutputFileName(Prefix))
+
+            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True, DisplayPath)
 
             If Response.Result = DialogResult.OK Then
+                If Not FinalizeFluxOutput() Then
+                    Exit Sub
+                End If
+
                 CloseForm(Response.OutputFile, Response.NewFileName)
 
             ElseIf Response.Result = DialogResult.Retry Then
+                If Not FinalizeFluxOutput() Then
+                    Exit Sub
+                End If
+
                 ProcessImport(Response.OutputFile, Response.NewFileName)
             End If
         End Sub
@@ -381,6 +422,96 @@ Namespace Flux.Greaseweazle
             Return True
         End Function
 
+        Private Function FinalizeFluxOutput() As Boolean
+            If String.IsNullOrEmpty(_OutputFilePath) Then
+                Return False
+            End If
+
+            Dim tempFolder = IO.Path.GetDirectoryName(_OutputFilePath)
+            Dim destFolder = GetFluxFolderPath()
+            Dim prefix = TextBoxPrefixName.Text.Trim()
+
+            If Not FinalizeFluxTempFolder(tempFolder, destFolder, prefix) Then
+                MsgBox("Unable to save Flux set.", MsgBoxStyle.Exclamation)
+                Return False
+            End If
+
+            _OutputFilePath = IO.Path.Combine(destFolder, GetOutputFileName(prefix))
+
+            Return True
+        End Function
+
+        Public Function FinalizeFluxTempFolder(tempFolderPath As String, destinationFolderPath As String, Optional prefix As String = "") As Boolean
+            If String.IsNullOrWhiteSpace(tempFolderPath) OrElse String.IsNullOrWhiteSpace(destinationFolderPath) Then
+                Return False
+            End If
+
+            Dim tempFull = IO.Path.GetFullPath(tempFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
+            Dim destFull = IO.Path.GetFullPath(destinationFolderPath.TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar))
+
+            If Not IO.Directory.Exists(tempFull) Then
+                Return False
+            End If
+
+            ' No-op if same folder
+            If String.Equals(tempFull, destFull, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+            Try
+                ' Fast path: destination does not exist -> rename temp folder to destination
+                If Not IO.Directory.Exists(destFull) Then
+                    IO.Directory.Move(tempFull, destFull)
+                    Return True
+                End If
+
+                ' If prefix was not provided, try to infer it from temp set
+                If String.IsNullOrWhiteSpace(prefix) Then
+                    Dim tempRaw = GetFirstRawInFolder(tempFull)
+                    If Not String.IsNullOrWhiteSpace(tempRaw) Then
+                        Dim info = GetFluxSetInfoRaw(tempRaw)
+                        If info.Result Then
+                            prefix = info.Prefix
+                        End If
+                    End If
+                End If
+
+                ' Destination exists -> delete existing raw files with same prefix
+                If Not String.IsNullOrWhiteSpace(prefix) Then
+                    For Each dstRaw In IO.Directory.GetFiles(destFull, prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
+                        IO.File.Delete(dstRaw)
+                    Next
+                End If
+
+                ' Move all files from temp to destination (overwrite)
+                For Each srcFile In IO.Directory.GetFiles(tempFull, "*", IO.SearchOption.TopDirectoryOnly)
+                    Dim dstFile = IO.Path.Combine(destFull, IO.Path.GetFileName(srcFile))
+
+                    Dim created = IO.File.GetCreationTime(srcFile)
+                    Dim modified = IO.File.GetLastWriteTime(srcFile)
+
+                    If IO.File.Exists(dstFile) Then
+                        IO.File.Delete(dstFile)
+                    End If
+
+                    IO.File.Move(srcFile, dstFile)
+
+                    IO.File.SetCreationTime(dstFile, created)
+                    IO.File.SetLastWriteTime(dstFile, modified)
+                Next
+
+                ' Delete temp folder after move
+                If IO.Directory.Exists(tempFull) Then
+                    IO.Directory.Delete(tempFull, True)
+                End If
+
+                Return True
+            Catch ex As Exception
+                Debug.WriteLine($"FinalizeFluxTempFolder failed: {ex.Message}")
+                Return False
+            End Try
+        End Function
+
         Private Sub FluxFolderBrowse()
             Dim FolderName = BrowseFolderVista(TextBoxRootFolder.Text, Me.Handle)
             If FolderName <> "" Then
@@ -389,6 +520,13 @@ Namespace Flux.Greaseweazle
                 End If
             End If
         End Sub
+
+        Private Function GetFluxFolderPath() As String
+            Dim Root = TextBoxRootFolder.Text.Trim()
+            Dim Folder = GetOutputFolderName(TextBoxFolderName.Text.Trim())
+
+            Return IO.Path.Combine(Root, Folder)
+        End Function
 
         Private Function GetNewFileName(FilePath As String) As String
             If String.IsNullOrEmpty(FilePath) Then
@@ -435,7 +573,7 @@ Namespace Flux.Greaseweazle
             Dim IsFluxOutput = (OutputType = ReadDiskOutputTypes.RAW)
 
             If IsFluxOutput Then
-                Dim FileName = GetOutputFolderName(TextBoxFolderName.Text.Trim)
+                Dim FileName = "~gwread_" & Guid.NewGuid().ToString("N")
                 Dim Pathname = IO.Path.Combine(TextBoxRootFolder.Text, FileName)
                 Dim FilePath = IO.Path.Combine(Pathname, GetOutputFileName(TextBoxPrefixName.Text.Trim))
                 Try
@@ -501,11 +639,11 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True
             }
 
-            ButtonFolderBrowse = New Button With {
-                .Text = My.Resources.Label_Browse,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
+            'ButtonFolderBrowse = New Button With {
+            '    .Text = My.Resources.Label_Browse,
+            '    .Anchor = AnchorStyles.Left,
+            '    .AutoSize = True
+            '}
 
             ButtonToggleSequence = New Button With {
                 .Margin = New Padding(15, 0, 0, 0),
@@ -805,9 +943,9 @@ Namespace Flux.Greaseweazle
                 Row = 4
                 .Controls.Add(LabelFolderName, 0, Row)
                 .Controls.Add(TextBoxFolderName, 1, Row)
-                .SetColumnSpan(TextBoxFolderName, 5)
-                .Controls.Add(ButtonFolderBrowse, 6, Row)
-                .SetColumnSpan(ButtonFolderBrowse, 2)
+                .SetColumnSpan(TextBoxFolderName, 7)
+                '.Controls.Add(ButtonFolderBrowse, 6, Row)
+                '.SetColumnSpan(ButtonFolderBrowse, 2)
 
                 .Controls.Add(CheckBoxSelect, 8, Row)
                 .SetColumnSpan(CheckBoxSelect, 2)
@@ -1010,19 +1148,9 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim OverwriteMode As Boolean = False
-
             Dim Response = GetOutputFilePaths()
             If Response.FilePath = "" Then
                 Exit Sub
-            ElseIf Response.IsFlux Then
-                If Not _FileOverwriteMode And Not _FileRefineMode Then
-                    Dim CheckResponse = CheckRawFolderExists(Response.FilePath)
-                    If Not CheckResponse.Result Then
-                        Exit Sub
-                    End If
-                    OverwriteMode = CheckResponse.Overwritemode
-                End If
             End If
 
             ClearProcessedImage(True, False)
@@ -1031,7 +1159,6 @@ Namespace Flux.Greaseweazle
 
             _OutputFilePath = Response.FilePath
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
-            _FileOverwriteMode = OverwriteMode
 
             Dim Arguments = GenerateCommandLineRead(Response.FilePath,
                                                     Opt,
@@ -1226,7 +1353,7 @@ Namespace Flux.Greaseweazle
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
             TrackStatus.Clear()
-            _FileOverwriteMode = True
+            _FileReprocessMode = True
 
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As TrackHeads? = Nothing
@@ -1413,12 +1540,12 @@ Namespace Flux.Greaseweazle
             SetRowVisible(TableLayoutPanelMain, 4, IsFluxOutput)
             TableLayoutPanelMain.ResumeLayout(True)
 
-            TextBoxFolderName.Enabled = Not IsRunning AndAlso Not HasOutputFile
+            'TextBoxFolderName.Enabled = Not IsRunning AndAlso Not HasOutputFile
             TextBoxRootFolder.Enabled = Not IsRunning AndAlso Not HasOutputFile
             TextBoxPrefixName.Enabled = Not IsRunning AndAlso Not HasOutputFile
 
             ButtonRootBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
-            ButtonFolderBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            'ButtonFolderBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
             CheckBoxSaveLog.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
             CheckBoxSaveLog.Visible = IsFluxOutput
@@ -1434,6 +1561,10 @@ Namespace Flux.Greaseweazle
         End Function
 #Region "Events"
         Private Sub ButtonConvert_Click(sender As Object, e As EventArgs) Handles ButtonConvert.Click
+            If Not CheckFileNameEntered() Then
+                Exit Sub
+            End If
+
             ConvertImage()
         End Sub
 
@@ -1445,9 +1576,9 @@ Namespace Flux.Greaseweazle
             ClearProcessedImage(True, True)
         End Sub
 
-        Private Sub ButtonFolderBrowse_Click(sender As Object, e As EventArgs) Handles ButtonFolderBrowse.Click
-            FluxFolderBrowse()
-        End Sub
+        'Private Sub ButtonFolderBrowse_Click(sender As Object, e As EventArgs) Handles ButtonFolderBrowse.Click
+        '    FluxFolderBrowse()
+        'End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
             If Not CheckFileNameEntered() Then
@@ -1455,6 +1586,9 @@ Namespace Flux.Greaseweazle
             End If
 
             If CheckIsFluxOutput() Then
+                If Not FinalizeFluxOutput() Then
+                    Exit Sub
+                End If
                 ClearProcessedImage(False, True)
             Else
                 If String.IsNullOrEmpty(_OutputFilePath) Then
@@ -1471,6 +1605,9 @@ Namespace Flux.Greaseweazle
             End If
 
             If CheckIsFluxOutput() Then
+                If Not FinalizeFluxOutput() Then
+                    Exit Sub
+                End If
                 CloseForm("", "")
             Else
                 CloseForm(_OutputFilePath, GetNewFileName(_OutputFilePath))
@@ -1488,9 +1625,9 @@ Namespace Flux.Greaseweazle
 
             Dim IsFluxOutput = CheckIsFluxOutput()
 
-            If IsFluxOutput AndAlso Not CheckFileNameEntered() Then
-                Exit Sub
-            End If
+            'If IsFluxOutput AndAlso Not CheckFileNameEntered() Then
+            'Exit Sub
+            'End If
 
             Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
@@ -1630,27 +1767,39 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            Dim Finished As Boolean = False
+            Dim Completed As Boolean = False
+
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    ClearOutputFile(True)
+                    Finished = True
                     If Not TrackStatus.Failed Then
                         TrackStatus.UpdateTrackStatusAborted()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    Finished = True
                     If TrackStatus.TrackFound Then
+                        Completed = True
                         TrackStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
-                        SetTiltebarText()
-                        HideSelection(False)
                     Else
-                        ClearOutputFile(True)
                         TrackStatus.UpdateTrackStatusError()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    ClearOutputFile(True)
+                    Finished = True
                     TrackStatus.UpdateTrackStatusError()
             End Select
+
+            If Finished Then
+                If Completed Then
+                    SetTiltebarText()
+                ElseIf Not _FileReprocessMode Then
+                    ClearOutputFile(True)
+                End If
+                HideSelection(False)
+                _FileReprocessMode = False
+            End If
 
             RefreshFormState()
         End Sub
@@ -1722,13 +1871,6 @@ Namespace Flux.Greaseweazle
             tb.Text = tb.Text.Trim().Replace("/"c, "\"c)
 
             FileNameChangePostProcess()
-
-            Dim FolderName = IO.Path.Combine(TextBoxRootFolder.Text, GetOutputFolderName(tb.Text))
-
-            If Not ProcessExistingFluxSet(FolderName) Then
-                e.Cancel = True
-                Return
-            End If
         End Sub
 
         Private Sub TextBoxRootFolder_Click(sender As Object, e As EventArgs) Handles TextBoxRootFolder.Click

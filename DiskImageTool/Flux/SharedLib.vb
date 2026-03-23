@@ -68,7 +68,7 @@ Namespace Flux
             Return CanToggleSequenceAtSelection(tb) OrElse CanToggleSequenceAtCaretAfterToken(tb) OrElse CanToggleSequenceAtCaretAfterNumber(tb)
         End Function
 
-        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "") As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -82,7 +82,7 @@ Namespace Flux
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Using dlg As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog)
+            Using dlg As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog, DisplayFilePath)
 
                 If importHandler IsNot Nothing Then
                     AddHandler dlg.ImportProcess, importHandler
