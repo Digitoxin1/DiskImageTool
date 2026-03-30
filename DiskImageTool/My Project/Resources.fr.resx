@@ -1930,4 +1930,10 @@ Voulez-vous écraser ?</value>
   <data name="Label_ViewMobyGames" xml:space="preserve">
     <value>Voir sur MobyGames</value>
   </data>
+  <data name="Message_SaveFluxSetError" xml:space="preserve">
+    <value>Impossible d’enregistrer l’ensemble de flux.</value>
+  </data>
+  <data name="Label_Refine" xml:space="preserve">
+    <value>Affiner</value>
+  </data>
 </root>

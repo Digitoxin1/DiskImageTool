@@ -4143,6 +4143,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Refine.
+        '''</summary>
+        Friend ReadOnly Property Label_Refine() As String
+            Get
+                Return ResourceManager.GetString("Label_Refine", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Region.
         '''</summary>
         Friend ReadOnly Property Label_Region() As String
@@ -5552,6 +5561,15 @@ Namespace My.Resources
         Friend ReadOnly Property Message_ImageFormatWarning() As String
             Get
                 Return ResourceManager.GetString("Message_ImageFormatWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unable to save Flux set..
+        '''</summary>
+        Friend ReadOnly Property Message_SaveFluxSetError() As String
+            Get
+                Return ResourceManager.GetString("Message_SaveFluxSetError", resourceCulture)
             End Get
         End Property
         

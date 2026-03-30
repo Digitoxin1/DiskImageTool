@@ -656,6 +656,8 @@ Namespace DiskImage
         End Sub
 
         Public Sub SetCreationDate(Value As Date)
+            Value = ClampToFatRange(Value)
+
             CreationDate = DateToFATDate(Value)
             CreationTime = DateToFATTime(Value)
             CreationMillisecond = DateToFATMilliseconds(Value)
@@ -742,10 +744,14 @@ Namespace DiskImage
         End Sub
 
         Public Sub SetLastAccessDate(Value As Date)
+            Value = ClampToFatRange(Value)
+
             LastAccessDate = DateToFATDate(Value)
         End Sub
 
         Public Sub SetLastWriteDate(Value As Date)
+            Value = ClampToFatRange(Value)
+
             LastWriteDate = DateToFATDate(Value)
             LastWriteTime = DateToFATTime(Value)
         End Sub
@@ -782,6 +788,21 @@ Namespace DiskImage
             Next
 
             Return Result
+        End Function
+
+        Private Shared Function ClampToFatRange(value As Date) As Date
+            Dim fatMin As New Date(1980, 1, 1, 0, 0, 0)
+            Dim fatMax As New Date(2107, 12, 31, 23, 59, 59)
+
+            If value < fatMin Then
+                Return fatMin
+            End If
+
+            If value > fatMax Then
+                Return fatMax
+            End If
+
+            Return value
         End Function
 
         Private Sub ClearCache()

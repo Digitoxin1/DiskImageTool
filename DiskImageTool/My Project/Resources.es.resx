@@ -1930,4 +1930,10 @@
   <data name="Label_ViewMobyGames" xml:space="preserve">
     <value>Ver en MobyGames</value>
   </data>
+  <data name="Message_SaveFluxSetError" xml:space="preserve">
+    <value>No se pudo guardar el conjunto de flujo.</value>
+  </data>
+  <data name="Label_Refine" xml:space="preserve">
+    <value>Refinar</value>
+  </data>
 </root>

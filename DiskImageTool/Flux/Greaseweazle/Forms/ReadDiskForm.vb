@@ -9,7 +9,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonConvert As Button
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonDiscard As Button
-        'Private WithEvents ButtonFolderBrowse As Button
+        Private WithEvents ButtonRefine As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
@@ -458,7 +458,7 @@ Namespace Flux.Greaseweazle
             Dim prefix = FluxGetPrefix()
 
             If Not FinalizeFluxTempFolder(tempFolder, destFolder, prefix) Then
-                MsgBox("Unable to save Flux set.", MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Message_SaveFluxSetError, MsgBoxStyle.Exclamation)
                 Return False
             End If
 
@@ -619,12 +619,6 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True
             }
 
-            'ButtonFolderBrowse = New Button With {
-            '    .Text = My.Resources.Label_Browse,
-            '    .Anchor = AnchorStyles.Left,
-            '    .AutoSize = True
-            '}
-
             ButtonToggleSequence = New Button With {
                 .Margin = New Padding(15, 0, 0, 0),
                 .Text = "< >",
@@ -780,8 +774,16 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(12, 24, 3, 3)
             }
 
-            ButtonPreview = New Button With {
+            ButtonRefine = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
+                .Text = My.Resources.Label_Refine,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+
+            ButtonPreview = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_Preview,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
@@ -841,6 +843,7 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_Detect
             }
 
+            ButtonContainer.Controls.Add(ButtonRefine)
             ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonConvert)
@@ -926,8 +929,6 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(LabelFolderName, 0, Row)
                 .Controls.Add(TextBoxFolderName, 1, Row)
                 .SetColumnSpan(TextBoxFolderName, 7)
-                '.Controls.Add(ButtonFolderBrowse, 6, Row)
-                '.SetColumnSpan(ButtonFolderBrowse, 2)
 
                 .Controls.Add(CheckBoxSelect, 8, Row)
                 .SetColumnSpan(CheckBoxSelect, 2)
@@ -1267,6 +1268,8 @@ Namespace Flux.Greaseweazle
 
             ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
 
+            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputfile
+
             RefreshProcessButtonState()
             RefreshImportButtonState()
             ToggleRootFolderControls()
@@ -1563,12 +1566,10 @@ Namespace Flux.Greaseweazle
             SetRowVisible(TableLayoutPanelMain, 4, IsFluxOutput)
             TableLayoutPanelMain.ResumeLayout(True)
 
-            'TextBoxFolderName.Enabled = Not IsRunning AndAlso Not HasOutputFile
             TextBoxRootFolder.Enabled = Not IsRunning AndAlso Not HasOutputFile
             TextBoxPrefixName.Enabled = Not IsRunning AndAlso Not HasOutputFile
 
             ButtonRootBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
-            'ButtonFolderBrowse.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
             CheckBoxSaveLog.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
             CheckBoxSaveLog.Visible = IsFluxOutput
@@ -1647,10 +1648,6 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim IsFluxOutput = CheckIsFluxOutput()
-
-            'If IsFluxOutput AndAlso Not CheckFileNameEntered() Then
-            'Exit Sub
-            'End If
 
             Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
@@ -1868,7 +1865,7 @@ Namespace Flux.Greaseweazle
             Dim errorMessage As String = ValidateFileNameWithPlaceholders(tb.Text)
 
             If errorMessage <> "" Then
-                MessageBox.Show(errorMessage, "Invalid file name", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(errorMessage, My.Resources.Label_InvalidFilename, MessageBoxButtons.OK, MessageBoxIcon.Error)
                 e.Cancel = True
                 tb.SelectAll()
                 Return
@@ -1885,7 +1882,7 @@ Namespace Flux.Greaseweazle
             Dim errorMessage As String = ValidatePathNameWithPlaceholders(tb.Text)
 
             If errorMessage <> "" Then
-                MessageBox.Show(errorMessage, "Invalid file name", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(errorMessage, My.Resources.Label_InvalidFilename, MessageBoxButtons.OK, MessageBoxIcon.Error)
                 e.Cancel = True
                 tb.SelectAll()
                 Return

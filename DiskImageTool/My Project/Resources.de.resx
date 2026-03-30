@@ -1930,4 +1930,10 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ViewMobyGames" xml:space="preserve">
     <value>Auf MobyGames anzeigen</value>
   </data>
+  <data name="Message_SaveFluxSetError" xml:space="preserve">
+    <value>Flux-Satz konnte nicht gespeichert werden.</value>
+  </data>
+  <data name="Label_Refine" xml:space="preserve">
+    <value>Verfeinern</value>
+  </data>
 </root>

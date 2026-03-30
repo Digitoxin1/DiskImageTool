@@ -1764,7 +1764,7 @@ Public Class MainForm
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, PanelFiles.DragDrop, ListViewSummary.DragDrop, HashPanel1.DragDrop
-        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk.IsValidImage
 
         If sender Is PanelFiles AndAlso HasLoadedImage Then
             PanelOverlay.Visible = False
@@ -1804,7 +1804,7 @@ Public Class MainForm
         Debug.Print("MainForm.File_DragEnter fired")
 
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+            Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk.IsValidImage
 
             e.Effect = DragDropEffects.Copy
 
@@ -1821,7 +1821,7 @@ Public Class MainForm
 
         Debug.Print("MainForm.File_DragLeave fired")
 
-        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk.IsValidImage
 
         If sender Is PanelFiles AndAlso HasLoadedImage Then
             PanelOverlay.Visible = False
@@ -1834,7 +1834,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing
+        Dim HasLoadedImage = FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk.IsValidImage
 
         If sender Is PanelFiles AndAlso HasLoadedImage Then
             Dim DoImport = IsImportDrop(e)
