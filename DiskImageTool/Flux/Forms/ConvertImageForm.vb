@@ -244,6 +244,7 @@ Namespace Flux
         Private Sub ClearLoadedImage()
             TextBoxFileName.Text = ""
             _InputFilePath = ""
+            _DisplayInputFilePath = ""
             _FluxHeaders = Nothing
             ComboImageFormat.SelectedIndex = 0
             CheckBoxRemaster.Checked = False
@@ -948,6 +949,7 @@ Namespace Flux
                 _SideCount = Response.SideCount
                 _FluxHeaders = Response.Headers
                 _InputFilePath = Filename
+                _DisplayInputFilePath = Filename
 
                 RefreshRemasterState()
 
