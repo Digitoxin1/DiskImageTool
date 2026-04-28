@@ -74,24 +74,5 @@ Namespace Flux.Kryoflux
 
             Return info
         End Function
-
-        Public Class DTCTrack
-            Public Details As DTCTrackDetails
-            Public DetailString As String
-            Public Side As Integer
-            Public Track As Integer
-        End Class
-
-        Public Class DTCTrackDetails
-            Public BadSectorCount As Integer
-            Public Encoding As String
-            Public Flags As String
-            Public MFMTrack As Integer
-            Public MissingSectorCount As Integer
-            Public ModifiedSectorCount As Integer
-            Public PhysicalTrack As Integer
-            Public SectorCount As Integer
-            Public Status As String
-        End Class
     End Class
 End Namespace
