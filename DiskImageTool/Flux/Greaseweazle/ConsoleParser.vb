@@ -46,7 +46,7 @@ Namespace Flux.Greaseweazle
             Return (message, details)
         End Function
 
-        Public Function ParseDiskRange(line As String) As TrackRange?
+        Public Function ParseDiskRange(line As String) As TrackRange
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -107,7 +107,7 @@ Namespace Flux.Greaseweazle
             Return (side, sector, tracks)
         End Function
 
-        Public Function ParseTrackConverting(line As String) As ConvertingRange?
+        Public Function ParseTrackConverting(line As String) As ConvertingRange
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -129,79 +129,28 @@ Namespace Flux.Greaseweazle
             }
         End Function
 
-        Public Function ParseTrackReadDetails(line As String) As TrackReadDetails?
-            If String.IsNullOrWhiteSpace(line) Then
-                Return Nothing
+        Public Function ParseTrackRead(line As String) As TrackRead
+            Dim StopParsing As Boolean
+
+            Dim Track = ParseTrackReadHeader(line)
+
+            If Track IsNot Nothing Then
+                Track.Details = ParseTrackReadDetails(Track.DetailString)
+
+                If Track.Details Is Nothing Then
+                    Track.FailedSectors = ParseTrackReadFailed(Track.DetailString)
+                    StopParsing = Track.FailedSectors.HasValue
+
+                    If Not StopParsing Then
+                        Track.OutOfRange = ParseTrackReadOutOfRange(Track.DetailString)
+                    End If
+                End If
             End If
 
-            Dim Match = RegExTrackReadDetails.Match(line)
-            If Not Match.Success Then
-                Return Nothing
-            End If
-
-            Return New TrackReadDetails With {
-                .System = Match.Groups("syatem").Value.Trim(),
-                .Encoding = Match.Groups("encoding").Value.Trim(),
-                .SectorsFound = GetInt(Match, "sectorsFound"),
-                .SectorsTotal = GetInt(Match, "sectorsTotal"),
-                .SrcFormat = Match.Groups("srcFormat").Value.Trim(),
-                .FluxCount = GetInt(Match, "fluxCount"),
-                .FluxTimeMs = GetDouble(Match, "fluxTimeMS"),
-                .Seek = GetInt(Match, "seek"),
-                .Retry = GetInt(Match, "retry")
-            }
+            Return Track
         End Function
 
-        Public Function ParseTrackReadFailed(line As String) As Integer?
-            If String.IsNullOrWhiteSpace(line) Then
-                Return Nothing
-            End If
-
-            Dim Match = RegExTrackReadFailed.Match(line)
-            If Not Match.Success Then
-                Return Nothing
-            End If
-
-            Return GetInt(Match, "sectors")
-        End Function
-
-        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange?
-            If String.IsNullOrWhiteSpace(line) Then
-                Return Nothing
-            End If
-
-            Dim Match = RegExTrackReadOutOfRange.Match(line)
-            If Not Match.Success Then
-                Return Nothing
-            End If
-
-            Return New TrackReadOutOfRange With {
-                .Format = Match.Groups("format").Value,
-                .FluxCount = GetInt(Match, "fluxCount"),
-                .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
-            }
-        End Function
-
-        Public Function ParseTrackReadSummary(line As String) As TrackReadSummary?
-            If String.IsNullOrWhiteSpace(line) Then
-                Return Nothing
-            End If
-
-            Dim Match = RegExTrackReadSummary.Match(line)
-            If Not Match.Success Then
-                Return Nothing
-            End If
-
-            Return New TrackReadSummary With {
-                .DestTrack = GetInt(Match, "destTrack"),
-                .DestSide = GetInt(Match, "destSide"),
-                .SrcType = Match.Groups("srcType").Value.Trim(),
-                .SrcTrack = GetIntOrDefault(Match, "srcTrack", .DestTrack),
-                .SrcSide = GetIntOrDefault(Match, "srcSide", .DestSide),
-                .Details = Match.Groups("details").Value.Trim()
-            }
-        End Function
-        Public Function ParseTrackUnexpected(line As String) As UnexpectedSector?
+        Public Function ParseTrackUnexpected(line As String) As UnexpectedSector
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -221,7 +170,7 @@ Namespace Flux.Greaseweazle
             }
         End Function
 
-        Public Function ParseTrackWrite(line As String) As TrackWrite?
+        Public Function ParseTrackWrite(line As String) As TrackWrite
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -277,87 +226,77 @@ Namespace Flux.Greaseweazle
             Return GetInt(m, name)
         End Function
 
-        Public Structure ConvertingRange
-            Public DstCylEnd As Integer
-            Public DstCylStart As Integer
-            Public DstHeadEnd As Integer
-            Public DstHeadStart As Integer
-            Public SrcCylEnd As Integer
-            Public SrcCylStart As Integer
-            Public SrcHeadEnd As Integer
-            Public SrcHeadStart As Integer
-        End Structure
+        Private Function ParseTrackReadDetails(line As String) As TrackReadDetails
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
 
-        Public Structure TrackRange
-            Public Action As String
-            Public HeadEnd As Integer
-            Public HeadStart As Integer
-            Public TrackEnd As Integer
-            Public TrackStart As Integer
-        End Structure
+            Dim Match = RegExTrackReadDetails.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
 
-        Public Structure TrackReadDetails
-            Public ReadOnly Property BadSectors As Integer
-                Get
-                    Return SectorsTotal - SectorsFound
-                End Get
-            End Property
+            Return New TrackReadDetails With {
+                .System = Match.Groups("syatem").Value.Trim(),
+                .Encoding = Match.Groups("encoding").Value.Trim(),
+                .SectorsFound = GetInt(Match, "sectorsFound"),
+                .SectorsTotal = GetInt(Match, "sectorsTotal"),
+                .SrcFormat = Match.Groups("srcFormat").Value.Trim(),
+                .FluxCount = GetInt(Match, "fluxCount"),
+                .FluxTimeMs = GetDouble(Match, "fluxTimeMS"),
+                .Seek = GetInt(Match, "seek"),
+                .Retry = GetInt(Match, "retry")
+            }
+        End Function
 
-            Public Encoding As String
-            Public FluxCount As Integer
-            Public FluxTimeMs As Double
-            Public Retry As Integer
-            Public SectorsFound As Integer
-            Public SectorsTotal As Integer
-            Public Seek As Integer
-            Public SrcFormat As String
-            Public System As String
-        End Structure
+        Private Function ParseTrackReadFailed(line As String) As Integer?
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
 
-        Public Structure TrackReadOutOfRange
-            Public FluxCount As Integer
-            Public FluxTimeMs As Double
-            Public Format As String
-        End Structure
+            Dim Match = RegExTrackReadFailed.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
 
-        Public Structure TrackReadSummary
-            Public DestSide As Integer
-            Public DestTrack As Integer
-            Public Details As String
-            Public SrcSide As Integer
-            Public SrcTrack As Integer
-            Public SrcType As String
+            Return GetInt(Match, "sectors")
+        End Function
 
-            Public ReadOnly Property IsRemapped As Boolean
-                Get
-                    Return SrcTrack <> DestTrack OrElse SrcSide <> DestSide
-                End Get
-            End Property
-        End Structure
+        Private Function ParseTrackReadHeader(line As String) As TrackRead
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
 
-        Public Structure TrackWrite
-            Public Action As String
-            Public DestSide As Integer
-            Public DestTrack As Integer
-            Public Failed As Boolean
-            Public Retry As Integer
-            Public SrcSide As Integer
-            Public SrcTrack As Integer
-        End Structure
+            Dim Match = RegExTrackReadSummary.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
 
-        Public Structure UnexpectedSector
-            Public Cylinder As Integer
-            Public Head As Integer
-            Public SectorId As Integer
-            Public Side As Integer
-            Public SizeId As Integer
-            Public Track As Integer
+            Return New TrackRead With {
+                .DestTrack = GetInt(Match, "destTrack"),
+                .DestSide = GetInt(Match, "destSide"),
+                .SrcType = Match.Groups("srcType").Value.Trim(),
+                .SrcTrack = GetIntOrDefault(Match, "srcTrack", .DestTrack),
+                .SrcSide = GetIntOrDefault(Match, "srcSide", .DestSide),
+                .DetailString = Match.Groups("details").Value.Trim()
+            }
+        End Function
 
-            Public ReadOnly Property Key As String
-                Get
-                    Return String.Format("{0},{1},{2},{3}", Cylinder, Head, SectorId, SizeId)
-                End Get
-            End Property
-        End Structure
+        Private Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExTrackReadOutOfRange.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Return New TrackReadOutOfRange With {
+                .Format = Match.Groups("format").Value,
+                .FluxCount = GetInt(Match, "fluxCount"),
+                .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
+            }
+        End Function
     End Class
 End Namespace

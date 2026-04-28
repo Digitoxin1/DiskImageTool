@@ -7,7 +7,7 @@
         Private ReadOnly _TrackFound As Boolean = True
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
         Private _Failed As Boolean = False
-        Private _Range As TrackRange? = Nothing
+        Private _Range As TrackRange = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
 
@@ -51,7 +51,7 @@
                 Return False
             End If
 
-            If Not _Range.HasValue Then
+            If _Range Is Nothing Then
                 Return False
             End If
 
@@ -59,7 +59,7 @@
                 Return False
             End If
 
-            If Not (_CurrentStatusInfo.Track < _Range.Value.TrackEnd Or _CurrentStatusInfo.Side < _Range.value.HeadEnd) Then
+            If Not (_CurrentStatusInfo.Track < _Range.TrackEnd Or _CurrentStatusInfo.Side < _Range.HeadEnd) Then
                 Return False
             End If
 
@@ -98,11 +98,11 @@
 
             Response.Ranges = New List(Of (StartTrack As UShort, EndTrack As UShort))
 
-            If Not _Range.HasValue Then
+            If _Range Is Nothing Then
                 Response.Continue = False
                 Response.Heads = TrackHeads.both
 
-            ElseIf _CurrentStatusInfo.Side < _Range.Value.HeadEnd Then
+            ElseIf _CurrentStatusInfo.Side < _Range.HeadEnd Then
                 Response.Continue = True
                 Response.Heads = GetTrackHeads(_CurrentStatusInfo.Side + 1)
                 Response.Ranges.Add((_CurrentStatusInfo.Track, _CurrentStatusInfo.Track))
@@ -110,7 +110,7 @@
             Else
                 Response.Continue = False
                 Response.Heads = TrackHeads.both
-                Response.Ranges.Add((_CurrentStatusInfo.Track + 1, _Range.Value.TrackEnd))
+                Response.Ranges.Add((_CurrentStatusInfo.Track + 1, _Range.TrackEnd))
             End If
 
             Return Response
@@ -124,32 +124,27 @@
                 Return
             End If
 
-            If Not _Range.HasValue Then
+            If _Range Is Nothing Then
                 _Range = ParseDiskRange(line)
             End If
 
-            Dim Summary = ParseTrackReadSummary(line)
+            Dim Track = ParseTrackRead(line)
 
-            If Summary.HasValue Then
-                Dim Details = ParseTrackReadDetails(Summary.Value.Details)
-
-                If Details.HasValue Then
+            If Track IsNot Nothing Then
+                If Track.Details IsNot Nothing Then
                     Dim ProcessBadSectors = (InfoAction = ActionTypeEnum.Import)
-                    UpdateStatusTrackRead(Summary.Value, Details.Value, ProcessBadSectors, InfoAction, ActionTypeEnum.Read, DoubleStep)
+                    UpdateStatusTrackRead(Track, ProcessBadSectors, InfoAction, ActionTypeEnum.Read, DoubleStep)
                     Return
                 End If
 
                 If InfoAction = ActionTypeEnum.Read Then
-                    Dim FailedSectors = ParseTrackReadFailed(Summary.Value.Details)
-                    If FailedSectors.HasValue Then
-                        UpdateStatusFailedSectors(Summary.Value, FailedSectors.Value, InfoAction, ActionTypeEnum.Read, DoubleStep)
+                    If Track.FailedSectors.HasValue Then
+                        UpdateStatusFailedSectors(Track, InfoAction, ActionTypeEnum.Read, DoubleStep)
                         Return
                     End If
 
-                    Dim OutOfRange = ParseTrackReadOutOfRange(Summary.Value.Details)
-
-                    If OutOfRange.HasValue Then
-                        UpdateStatusOutOfRange(Summary.Value, OutOfRange.Value, InfoAction, ActionTypeEnum.Read, DoubleStep)
+                    If Track.OutOfRange IsNot Nothing Then
+                        UpdateStatusOutOfRange(Track, InfoAction, ActionTypeEnum.Read, DoubleStep)
                         Return
                     End If
                 End If
@@ -157,8 +152,8 @@
 
             Dim TrackInfoUnexpected = ParseTrackUnexpected(line)
 
-            If TrackInfoUnexpected.HasValue Then
-                UpdateStatusUnexpectedSector(TrackInfoUnexpected.Value, InfoAction, ActionTypeEnum.Read, DoubleStep)
+            If TrackInfoUnexpected IsNot Nothing Then
+                UpdateStatusUnexpectedSector(TrackInfoUnexpected, InfoAction, ActionTypeEnum.Read, DoubleStep)
                 Return
             End If
 
@@ -183,23 +178,23 @@
                 Return
             End If
 
-            If Not _Range.HasValue Then
+            If _Range Is Nothing Then
                 _Range = ParseDiskRange(line)
             End If
 
             Dim TrackInfo = ParseTrackWrite(line)
 
-            If TrackInfo.HasValue Then
+            If TrackInfo IsNot Nothing Then
                 Dim Action As ActionTypeEnum
-                If TrackInfo.Value.Action = "Erasing" Then
+                If TrackInfo.Action = "Erasing" Then
                     Action = ActionTypeEnum.Erase
-                ElseIf TrackInfo.Value.Action = "Writing" Then
+                ElseIf TrackInfo.Action = "Writing" Then
                     Action = ActionTypeEnum.Write
                 Else
                     Action = ActionTypeEnum.Unknown
                 End If
 
-                UpdateStatusTrackWrite(TrackInfo.Value, InfoAction, Action, DoubleStep)
+                UpdateStatusTrackWrite(TrackInfo, InfoAction, Action, DoubleStep)
                 Return
             End If
         End Sub
@@ -387,25 +382,33 @@
             End If
         End Sub
 
-        Private Sub UpdateStatusFailedSectors(Summary As TrackReadSummary, FailedSectors As Integer, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+        Private Sub UpdateStatusFailedSectors(Track As TrackRead, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
+            If Not Track.FailedSectors.HasValue Then
+                Exit Sub
+            End If
+
+            Dim StatusInfo = GetStatusInfo(Track.DestTrack, Track.DestSide)
 
             StatusInfo.Action = InfoAction
 
             StatusInfo.Failed = True
-            StatusInfo.BadSectors = FailedSectors
-            _TotalBadSectors += FailedSectors
+            StatusInfo.BadSectors = Track.FailedSectors.Value
+            _TotalBadSectors += Track.FailedSectors.Value
 
             UpdateTrackStatus(StatusInfo, Action, DoubleStep)
         End Sub
 
-        Private Sub UpdateStatusOutOfRange(Summary As TrackReadSummary, OutOfRage As TrackReadOutOfRange, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+        Private Sub UpdateStatusOutOfRange(Track As TrackRead, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
+            If Track.OutOfRange Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim StatusInfo = GetStatusInfo(Track.DestTrack, Track.DestSide)
 
             StatusInfo.Action = InfoAction
 
             StatusInfo.OutOfRange = True
-            StatusInfo.OutOfRangeFormat = OutOfRage.Format
+            StatusInfo.OutOfRangeFormat = Track.OutOfRange.Format
 
             UpdateTrackStatus(StatusInfo, Action, DoubleStep)
         End Sub
@@ -432,19 +435,19 @@
             Next
         End Sub
 
-        Private Sub UpdateStatusTrackRead(Summary As TrackReadSummary, Details As TrackReadDetails, ProcessBadSectors As Boolean, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+        Private Sub UpdateStatusTrackRead(Track As TrackRead, ProcessBadSectors As Boolean, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(Track.DestTrack, Track.DestSide)
 
             StatusInfo.Action = InfoAction
 
-            If Details.Seek > 0 And Details.Retry > 0 Then
+            If Track.Details.Seek > 0 And Track.Details.Retry > 0 Then
                 StatusInfo.Retries += 1
             End If
 
             If ProcessBadSectors Then
-                StatusInfo.BadSectors += Details.BadSectors
-                _TotalBadSectors += Details.BadSectors
-                If Details.BadSectors > 0 Then
+                StatusInfo.BadSectors += Track.Details.BadSectors
+                _TotalBadSectors += Track.Details.BadSectors
+                If Track.Details.BadSectors > 0 Then
                     StatusInfo.Failed = True
                 End If
             End If
@@ -493,7 +496,7 @@
 
         Private Class TrackStatusInfo
             Public Sub New()
-                _UnexpectedSectors = New Dictionary(Of String, ConsoleParser.UnexpectedSector)
+                _UnexpectedSectors = New Dictionary(Of String, UnexpectedSector)
                 _BadSectorList = New List(Of UShort)
             End Sub
 
@@ -506,7 +509,7 @@
             Public Property Retries As UShort = 0
             Public Property Side As Integer
             Public Property Track As Integer
-            Public Property UnexpectedSectors As Dictionary(Of String, ConsoleParser.UnexpectedSector)
+            Public Property UnexpectedSectors As Dictionary(Of String, UnexpectedSector)
         End Class
     End Class
 End Namespace
