@@ -89,6 +89,35 @@ Namespace Flux.Kryoflux
             Return (Builder.Arguments, SingleSide)
         End Function
 
+        Public Function ReadTrack(FilePath As String, Track As Short, Side As Byte) As DTCTrack
+            Dim Builder As New CommandLineBuilder() With {
+                .InFile = FilePath,
+                .DeviceMode = DeviceModeEnum.ImageFile,
+                .InImageType = ImageTypeEnum.KryoFlux_Stream,
+                .TrackStart = Track,
+                .TrackEnd = Track,
+                .SingleSidedMode = If(Side = 1, SingleSidedModeEnum.side1, SingleSidedModeEnum.side0),
+                .OutImageType = ImageTypeEnum.MFM_SectorImage,
+                .LogLevel = LogMask.Format
+            }
+
+            Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
+
+            Dim Parser As New ConsoleParser
+
+            Dim DTCTrack As DTCTrack = Nothing
+
+            For Each line In result.StdOut.Split({vbCrLf, vbLf}, StringSplitOptions.None)
+                DTCTrack = Parser.ParseTrack(line)
+
+                If DTCTrack IsNot Nothing Then
+                    Exit For
+                End If
+            Next
+
+            Return DTCTrack
+        End Function
+
         Public Function GetSide0FileName(Filename As String) As String
             Dim PathName = IO.Path.GetDirectoryName(Filename)
             Dim BaseName = IO.Path.GetFileNameWithoutExtension(Filename)

@@ -142,7 +142,10 @@
                 args.Add("-oe" & OutputTrackEnd)
             End If
 
-            args.Add("-f" & Quoted(_OutFile))
+            If Not String.IsNullOrEmpty(_OutFile) Then
+                args.Add("-f" & Quoted(_OutFile))
+            End If
+
             args.Add("-i" & GetImageTypeString(OutImageType))
 
             If LogLevel <> DEFAULT_LOG_LEVEL Then
