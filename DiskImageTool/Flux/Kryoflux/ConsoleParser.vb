@@ -3,14 +3,35 @@ Imports System.Text.RegularExpressions
 
 Namespace Flux.Kryoflux
     Public Class ConsoleParser
-        Public Const REGEX_TRACK As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
-        Public Const REGEX_TRACK_SUMMARY As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<details>.+)"
-        Public Const REGEX_TRACK_DETAILS As String = "^(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
         Public Const REGEX_STREAM_FILE As String = "^Stream file:\s?(?<filePath>.+)$"
-
+        Public Const REGEX_TRACK As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
+        Public Const REGEX_TRACK_DETAILS As String = "^(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
+        Public Const REGEX_TRACK_SUMMARY As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<details>.+)"
         Private ReadOnly RegExTrackDetails As New Regex(REGEX_TRACK_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackSummary As New Regex(REGEX_TRACK_SUMMARY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
-        Public Function ParseTrackInfo(line As String) As TrackInfo
+
+        Public Function ParseTrack(line As String) As DTCTrack
+            Dim TrackSummary = ParseTrackSummary(line)
+
+            If TrackSummary IsNot Nothing Then
+                TrackSummary.Details = ParseTrackDetails(TrackSummary.DetailString)
+            End If
+
+            Return TrackSummary
+        End Function
+
+        Private Shared Function GetInt(m As Match, name As String) As Integer
+            Dim v As Integer = 0
+            Integer.TryParse(m.Groups(name).Value, NumberStyles.None, CultureInfo.InvariantCulture, v)
+            Return v
+        End Function
+
+        Private Shared Function GetIntOrDefault(m As Match, name As String, def As Integer) As Integer
+            If Not m.Groups(name).Success Then Return def
+            Return GetInt(m, name)
+        End Function
+
+        Private Function ParseTrackDetails(line As String) As DTCTrackDetails
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -20,7 +41,7 @@ Namespace Flux.Kryoflux
                 Return Nothing
             End If
 
-            Dim info As New TrackInfo With {
+            Dim info As New DTCTrackDetails With {
                 .Encoding = Match.Groups("encoding").Value.Trim(),
                 .Status = Match.Groups("status").Value.Trim(),
                 .MFMTrack = GetIntOrDefault(Match, "MFMTrack", -1),
@@ -35,7 +56,7 @@ Namespace Flux.Kryoflux
             Return info
         End Function
 
-        Public Function ParseTrackSummary(line As String) As TrackSummary
+        Private Function ParseTrackSummary(line As String) As DTCTrack
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -45,47 +66,32 @@ Namespace Flux.Kryoflux
                 Return Nothing
             End If
 
-            Dim info As New TrackSummary With {
+            Dim info As New DTCTrack With {
                 .Track = GetInt(Match, "track"),
                 .Side = GetInt(Match, "side"),
-                .Details = Match.Groups("details").Value.Trim()
+                .DetailString = Match.Groups("details").Value.Trim()
             }
 
             Return info
         End Function
-        Private Shared Function GetDouble(m As Match, name As String) As Double
-            Dim v As Double = 0
-            Double.TryParse(m.Groups(name).Value, NumberStyles.Float, CultureInfo.InvariantCulture, v)
-            Return v
-        End Function
 
-        Private Shared Function GetInt(m As Match, name As String) As Integer
-            Dim v As Integer = 0
-            Integer.TryParse(m.Groups(name).Value, NumberStyles.None, CultureInfo.InvariantCulture, v)
-            Return v
-        End Function
+        Public Class DTCTrack
+            Public Details As DTCTrackDetails
+            Public DetailString As String
+            Public Side As Integer
+            Public Track As Integer
+        End Class
 
-        Private Shared Function GetIntOrDefault(m As Match, name As String, def As Integer) As Integer
-            If Not m.Groups(name).Success Then Return def
-            Return GetInt(m, name)
-        End Function
-
-        Public Class TrackInfo
+        Public Class DTCTrackDetails
             Public BadSectorCount As Integer
             Public Encoding As String
             Public Flags As String
+            Public MFMTrack As Integer
             Public MissingSectorCount As Integer
             Public ModifiedSectorCount As Integer
+            Public PhysicalTrack As Integer
             Public SectorCount As Integer
             Public Status As String
-            Public MFMTrack As Integer
-            Public PhysicalTrack As Integer
-        End Class
-
-        Public Class TrackSummary
-            Public Details As String
-            Public Side As Integer
-            Public Track As Integer
         End Class
     End Class
 End Namespace

@@ -4,8 +4,7 @@
         Implements ITrackStatus
 
         Private ReadOnly _Failed As Boolean = False
-        Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
-        Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _CurrentTrack As DTCTrack = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
         Private _TrackFound As Boolean = False
@@ -27,8 +26,6 @@
 
         Public Sub New()
             MyBase.New
-
-            _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
 
         Public ReadOnly Property Failed As Boolean Implements ITrackStatus.Failed
@@ -48,8 +45,7 @@
         End Function
 
         Public Sub Clear() Implements ITrackStatus.Clear
-            _StatusCollection.Clear()
-            _CurrentStatusInfo = Nothing
+            _CurrentTrack = Nothing
             _TotalBadSectors = 0
             _TotalUnexpectedSectors = 0
             _TrackFound = False
@@ -61,6 +57,7 @@
 
         Public Sub UpdateTrackStatusComplete(DoubleStep As Boolean, Optional KeepProcessing As Boolean = False) Implements ITrackStatus.UpdateTrackStatusComplete
             SetCurrentTrackStatusComplete()
+
             UpdateTrackStatusType(TrackStatusEnum.Success)
         End Sub
 
@@ -79,20 +76,18 @@
         End Function
 
         Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
-            Dim TrackSummary = ParseTrackSummary(line)
+            Dim DTCTrack = ParseTrack(line)
 
-            If TrackSummary IsNot Nothing Then
+            If DTCTrack IsNot Nothing Then
                 _TrackFound = True
-                Dim TrackInfo = ParseTrackInfo(TrackSummary.Details)
-                If TrackInfo IsNot Nothing Then
-                    Dim StatusInfo = UpdateStatusInfo(TrackInfo, TrackSummary.Track, TrackSummary.Side, InfoAction)
-                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
-                Else
-                    Dim StatusInfo = UpdateStatusInfo(TrackSummary, ActionTypeEnum.Import)
-                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
+
+                If DTCTrack.Details IsNot Nothing Then
+                    _TotalBadSectors += DTCTrack.Details.BadSectorCount
+                    UpdateTrackStatus(DTCTrack, ActionTypeEnum.Read)
                 End If
             End If
         End Sub
+
         Friend Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineWrite
             Exit Sub
         End Sub
@@ -118,39 +113,39 @@
             End Select
         End Function
 
-        Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
+        Private Function BuildTooltip(Track As DTCTrack) As String
             Dim Tooltip As New List(Of String)
 
-            If StatusInfo.TrackInfo Is Nothing Then
+            If Track.Details Is Nothing Then
                 Return String.Join(vbNewLine, Tooltip)
             End If
 
-            If StatusInfo.TrackInfo.Status <> "" Then
-                Tooltip.Add(My.Resources.Label_Staus & ":  " & UppercaseFirst(StatusInfo.TrackInfo.Status))
+            If Track.Details.Status <> "" Then
+                Tooltip.Add(My.Resources.Label_Staus & ":  " & UppercaseFirst(Track.Details.Status))
             End If
 
             Dim Sectors As New List(Of String)
 
-            If StatusInfo.TrackInfo.BadSectorCount > 0 Then
-                Sectors.Add(StatusInfo.TrackInfo.BadSectorCount & " " & My.Resources.Label_Bad)
+            If Track.Details.BadSectorCount > 0 Then
+                Sectors.Add(Track.Details.BadSectorCount & " " & My.Resources.Label_Bad)
             End If
 
-            If StatusInfo.TrackInfo.MissingSectorCount > 0 Then
-                Sectors.Add(StatusInfo.TrackInfo.MissingSectorCount & " " & My.Resources.Label_Missing)
+            If Track.Details.MissingSectorCount > 0 Then
+                Sectors.Add(Track.Details.MissingSectorCount & " " & My.Resources.Label_Missing)
             End If
 
-            If StatusInfo.TrackInfo.ModifiedSectorCount > 0 Then
-                Sectors.Add(StatusInfo.TrackInfo.ModifiedSectorCount & " " & My.Resources.Label_Modified)
+            If Track.Details.ModifiedSectorCount > 0 Then
+                Sectors.Add(Track.Details.ModifiedSectorCount & " " & My.Resources.Label_Modified)
             End If
 
             If Sectors.Count > 0 Then
                 Tooltip.Add(My.Resources.Label_Sectors & ":  " & String.Join(", ", Sectors))
             End If
 
-            If StatusInfo.TrackInfo.Flags.Length > 0 Then
+            If Track.Details.Flags.Length > 0 Then
                 Tooltip.Add(My.Resources.Label_Flags & ":")
-                For Each Flag As Char In StatusInfo.TrackInfo.Flags
-                    Dim Description = GetFlagDescription(Flag, StatusInfo.TrackInfo)
+                For Each Flag As Char In Track.Details.Flags
+                    Dim Description = GetFlagDescription(Flag, Track.Details)
                     If Description <> "" Then
                         Tooltip.Add(Description)
                     End If
@@ -183,15 +178,15 @@
             Dim StatusText As String = ""
             Dim BackColor As Color = Color.Empty
             Dim CellText As String = ""
-            Dim Tooltip As String = BuildTooltip(_CurrentStatusInfo)
+            Dim Tooltip As String = BuildTooltip(_CurrentTrack)
             Dim BadSectorCount = 0
             Dim Flags = ""
             Dim Status = ""
 
-            If _CurrentStatusInfo.TrackInfo IsNot Nothing Then
-                BadSectorCount = _CurrentStatusInfo.TrackInfo.BadSectorCount + _CurrentStatusInfo.TrackInfo.MissingSectorCount
-                Flags = _CurrentStatusInfo.TrackInfo.Flags
-                Status = _CurrentStatusInfo.TrackInfo.Status
+            If _CurrentTrack.Details IsNot Nothing Then
+                BadSectorCount = _CurrentTrack.Details.BadSectorCount + _CurrentTrack.Details.MissingSectorCount
+                Flags = _CurrentTrack.Details.Flags
+                Status = _CurrentTrack.Details.Status
             End If
 
 
@@ -199,17 +194,21 @@
                 StatusText = GetTrackStatusText(TrackStatusEnum.Reading)
                 CellText = "R"
                 BackColor = Color.LightBlue
+
             ElseIf Action = ActionTypeEnum.Complete Then
                 StatusText = GetTrackStatusText(TrackStatusEnum.Success)
                 BackColor = GetBackgroundColor(Status, Flags)
+
                 If BadSectorCount > 0 Then
                     CellText = BadSectorCount.ToString
+
                 ElseIf Status <> "" Then
                     If Flags.Length > 1 Then
                         CellText = "+" & Flags.Length
                     Else
                         CellText = Flags
                     End If
+
                 Else
                     CellText = ""
                 End If
@@ -218,8 +217,8 @@
             Dim StatusData As BaseFluxForm.TrackStatusData
             With StatusData
                 .CellText = CellText
-                .Track = _CurrentStatusInfo.Track
-                .Side = _CurrentStatusInfo.Side
+                .Track = _CurrentTrack.Track
+                .Side = _CurrentTrack.Side
                 .SideVisible = True
                 .TotalBadSectors = _TotalBadSectors
                 .TotalUnexpectedSectors = _TotalUnexpectedSectors
@@ -232,7 +231,7 @@
             Return StatusData
         End Function
 
-        Private Function GetFlagDescription(Flag As String, TrackInfo As TrackInfo) As String
+        Private Function GetFlagDescription(Flag As String, TrackInfo As DTCTrackDetails) As String
             Dim Details As String
             Select Case Flag
                 Case "B"
@@ -267,57 +266,18 @@
             Return Flag & If(Details.Length > 0, ":  " & Details, "")
         End Function
 
-        Private Function GetStatusInfo(Track As Integer, Side As Integer) As TrackStatusInfo
-            Dim Key = Track & "." & Side
-            Dim StatusInfo As TrackStatusInfo
-
-            If _StatusCollection.ContainsKey(Key) Then
-                StatusInfo = _StatusCollection.Item(Key)
-            Else
-                StatusInfo = New TrackStatusInfo With {
-                    .Track = Track,
-                    .Side = Side
-                }
-                _StatusCollection.Add(Key, StatusInfo)
-            End If
-
-            Return StatusInfo
-        End Function
         Private Sub SetCurrentTrackStatusComplete()
-            If _CurrentStatusInfo IsNot Nothing Then
+            If _CurrentTrack IsNot Nothing Then
                 Dim StatusData = GetCurrentTrackStatusData(ActionTypeEnum.Complete)
 
                 RaiseEvent UpdateGridTrack(StatusData)
             End If
         End Sub
 
-        Private Function UpdateStatusInfo(TrackInfo As TrackInfo, Track As Integer, Side As Integer, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(Track, Side)
-
-            StatusInfo.Action = Action
-            StatusInfo.Track = Track
-            StatusInfo.Side = Side
-            StatusInfo.TrackInfo = TrackInfo
-            _TotalBadSectors += TrackInfo.BadSectorCount
-
-            Return StatusInfo
-        End Function
-
-        Private Function UpdateStatusInfo(TrackInfo As TrackSummary, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
-
-            StatusInfo.Action = Action
-            StatusInfo.Track = TrackInfo.Track
-            StatusInfo.Side = TrackInfo.Side
-            StatusInfo.ErrorMessage = TrackInfo.Details
-
-            Return StatusInfo
-        End Function
-
-        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum)
+        Private Sub UpdateTrackStatus(Track As DTCTrack, Action As ActionTypeEnum)
             SetCurrentTrackStatusComplete()
 
-            _CurrentStatusInfo = Statusinfo
+            _CurrentTrack = Track
 
             Dim StatusData = GetCurrentTrackStatusData(Action)
 
@@ -334,19 +294,5 @@
 
             Return Char.ToUpper(value(0)) & value.Substring(1)
         End Function
-
-        Private Class TrackStatusInfo
-            Public Property Action As ActionTypeEnum
-            Public Property ErrorMessage As String
-            Public ReadOnly Property Failed
-                Get
-                    Return TrackInfo.BadSectorCount > 0 Or TrackInfo.MissingSectorCount > 0
-                End Get
-            End Property
-
-            Public Property Side As Integer
-            Public Property Track As Integer
-            Public Property TrackInfo As TrackInfo
-        End Class
     End Class
 End Namespace
