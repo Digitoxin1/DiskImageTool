@@ -1,11 +1,17 @@
 ﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+Imports Greaseweazle.Actions
+Imports Greaseweazle.Tools
 
 Namespace Flux.Greaseweazle
     Public Class CleanDiskForm
         Inherits BaseFluxForm
+
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
+        Private WithEvents CleanCmd As CleanCommand
         Private WithEvents ComboImageDrives As ComboBox
+        Private WithEvents Runner As GreaseweazleRunner
+        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private ReadOnly _Initialized As Boolean = False
         Private NumericCyls As NumericUpDown
         Private NumericLinger As NumericUpDown
@@ -15,11 +21,14 @@ Namespace Flux.Greaseweazle
             MyBase.New(Settings.LogFileName, False)
             InitializeControls()
 
+            Runner = New GreaseweazleRunner()
+            CleanCmd = _Engine.Clean
+
             Me.Text = My.Resources.Label_CleanDisk
 
-            NumericCyls.Value = CommandLineBuilder.DEFAULT_CYLS
-            NumericLinger.Value = CommandLineBuilder.DEFAULT_LINGER
-            NumericPasses.Value = CommandLineBuilder.DEFAULT_PASSES
+            NumericCyls.Value = DEFAULT_CYLS
+            NumericLinger.Value = DEFAULT_LINGER
+            NumericPasses.Value = DEFAULT_PASSES
 
             PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown)
             ResetState()
@@ -35,26 +44,66 @@ Namespace Flux.Greaseweazle
             End Using
         End Sub
 
+        Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+            CleanCmd = Nothing
+
+            MyBase.OnFormClosed(e)
+        End Sub
+
+        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+            If Runner.IsRunning Then
+                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
+                    If Not ConfirmCancelRun() Then
+                        e.Cancel = True
+                        Return
+                    End If
+                End If
+                Runner.Cancel()
+            End If
+
+            MyBase.OnFormClosing(e)
+        End Sub
+
         Private Sub CleanDisk()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If Opt.Id = "" Then
+            If Opt Is Nothing OrElse Opt.Id = "" Then
                 Exit Sub
             End If
 
             ResetState()
 
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.clean) With {
-                   .Device = Settings.ComPort,
-                   .Drive = Opt.Id,
-                   .Cyls = NumericCyls.Value,
-                   .Linger = NumericLinger.Value,
-                   .Passes = NumericPasses.Value
-               }
+            Dim Drive As DriveSpec
+            Try
+                Drive = MakeDriveSpec(Opt.Id)
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                Return
+            End Try
 
-            Dim Arguments = Builder.Arguments
+            Dim Cyls = CInt(NumericCyls.Value)
+            Dim Passes = CInt(NumericPasses.Value)
 
-            Process.StartAsyncRaw(Settings.AppPath, Arguments)
+            Dim Opts As New CleanOptions With {
+                .Cyls = Cyls,
+                .Sequences = Clean.BuildPassSequences(Cyls, Passes),
+                .LingerMs = CInt(NumericLinger.Value),
+                .Live = True,
+                .Device = ConfiguredDevice(),
+                .Drive = Drive
+            }
+
+            Runner.RunAsync(Sub(Token) CleanCmd.Run(Opts, Token))
+        End Sub
+
+        Private Function ConfirmCancelRun() As Boolean
+            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
+        End Function
+
+        Private Sub HandleRunFailure(message As String)
+            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
+
+            AppendLogLine("Command Failed: " & Msg)
         End Sub
 
         Private Sub InitializeControls()
@@ -79,8 +128,8 @@ Namespace Flux.Greaseweazle
             NumericCyls = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = CommandLineBuilder.MIN_CYLS,
-                .Maximum = CommandLineBuilder.MAX_CYLS
+                .Minimum = MIN_CYLS,
+                .Maximum = MAX_CYLS
             }
 
             Dim PassesLabel As New Label With {
@@ -93,8 +142,8 @@ Namespace Flux.Greaseweazle
             NumericPasses = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = CommandLineBuilder.MIN_PASSES,
-                .Maximum = CommandLineBuilder.MAX_PASSES
+                .Minimum = MIN_PASSES,
+                .Maximum = MAX_PASSES
             }
 
             Dim LingerLabel As New Label With {
@@ -107,8 +156,8 @@ Namespace Flux.Greaseweazle
             NumericLinger = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 60,
-                .Minimum = CommandLineBuilder.MIN_LINGER,
-                .Maximum = CommandLineBuilder.MAX_LINGER
+                .Minimum = MIN_LINGER,
+                .Maximum = MAX_LINGER
             }
 
             Dim ButtonContainer As New FlowLayoutPanel With {
@@ -188,7 +237,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsRunning As Boolean = Runner.IsRunning
             Dim IsIdle As Boolean = Not IsRunning
 
             ComboImageDrives.Enabled = IsIdle
@@ -222,7 +271,10 @@ Namespace Flux.Greaseweazle
 
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If CancelProcessIfRunning() Then
+            If Runner.IsRunning Then
+                If ConfirmCancelRun() Then
+                    Runner.Cancel()
+                End If
                 Exit Sub
             End If
 
@@ -236,7 +288,18 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            Reset(TextBoxConsole)
+            TextBoxConsole.Clear()
+
+            Try
+                _Engine.Reset.Run(New ResetOptions With {
+                    .Live = True,
+                    .Device = ConfiguredDevice()
+                })
+            Catch ex As Exception
+                AppendLogLine("Command Failed: " & ex.Message)
+            End Try
+
+            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
@@ -248,11 +311,26 @@ Namespace Flux.Greaseweazle
             RefreshCylinderCount()
         End Sub
 
-        Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
-            TextBoxConsole.AppendText(data)
+        Private Sub OnCleanCylinderSeeked(sender As Object, e As CleanCylinderEventArgs) Handles CleanCmd.CylinderSeeked
+            Runner.EmitOutputText(FormatCleanCylinderSeekedFragment(e))
         End Sub
 
-        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+        Private Sub OnCleanPassStarted(sender As Object, e As CleanPassStartedEventArgs) Handles CleanCmd.PassStarted
+            Runner.EmitOutputText(FormatCleanPassStartedFragment(e))
+        End Sub
+        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
+            AppendLogLine(line)
+        End Sub
+
+        Private Sub Runner_OutputTextReceived(text As String) Handles Runner.OutputTextReceived
+            TextBoxConsole.AppendText(text)
+        End Sub
+
+        Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
+            AppendLogLine("Command Failed: " & ex.Message)
+        End Sub
+
+        Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged
             RefreshButtonState()
         End Sub
 #End Region

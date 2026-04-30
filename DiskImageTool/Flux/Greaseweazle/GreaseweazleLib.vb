@@ -1,141 +1,44 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.Text
+Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+Imports Greaseweazle.Actions
+Imports Greaseweazle.Infrastructure
+Imports Greaseweazle.Shared
+Imports Greaseweazle.Tools
 
 Namespace Flux.Greaseweazle
     Module GreaseweazleLib
-
-        Public Function Settings() As GreaseweazleSettings
-            Return App.Globals.AppSettings.Greaseweazle
-        End Function
-
-        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, OutputType As ImageImportOutputTypes, DoubleStep As Boolean) As String
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-                .InFile = InputFilePath,
-                .OutFile = OutputFilePath
-            }
-
-            If Not DiskParams.IsStandard Then
-                OutputType = ImageImportOutputTypes.HFE
-            End If
-
-            If OutputType <> ImageImportOutputTypes.HFE Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
-                Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
-            Else
-                Builder.BitRate = DiskParams.BitRateKbps
-                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
-            End If
-
-            If DoubleStep Then
-                Builder.HeadStep = 2
-            End If
-
-            Return Builder.Arguments
-        End Function
-
-        Public Function GenerateCommandLineRead(FilePath As String,
-                                                Opt As DriveOption,
-                                                DiskParams As FloppyDiskParams,
-                                                OutputType As ReadDiskOutputTypes,
-                                                Doublestep As Boolean,
-                                                Retries As UInteger,
-                                                SeekRetries As UInteger,
-                                                Revs As UInteger,
-                                                Optional TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing,
-                                                Optional Heads As TrackHeads? = Nothing) As String
-
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
-                .Drive = Opt.Id,
-                .File = FilePath,
-                .Retries = Retries,
-                .SeekRetries = SeekRetries,
-                .Revs = Revs
-            }
-
-            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
-
-            If OutputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None Then
-                Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
-            End If
-
-            If OutputType = ReadDiskOutputTypes.HFE Then
-                Builder.BitRate = DiskParams.BitRateKbps
-                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
-                Builder.Raw = True
-
-            ElseIf OutputType = ReadDiskOutputTypes.RAW Then
-                If DiskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
-                    Builder.AdjustSpeed = DiskParams.RPM & "rpm"
-                End If
-                Builder.Raw = True
-
-                If TrackRanges Is Nothing Then
-                    Dim TrackCount = Opt.Tracks
-                    If Doublestep Then
-                        TrackCount \= 2
-                    End If
-                    Builder.AddCylinder(0, TrackCount - 1)
-                Else
-                    For Each Range In TrackRanges
-                        Dim StartTrack = Range.StartTrack
-                        Dim EndTrack = Range.EndTrack
-                        If Doublestep Then
-                            StartTrack \= 2
-                            EndTrack \= 2
-                        End If
-                        Builder.AddCylinder(StartTrack, EndTrack)
-                    Next
-                End If
-
-                If Heads.HasValue Then
-                    Builder.Heads = Heads.Value
-                ElseIf DiskParams.Format = FloppyDiskFormat.FloppyUnknown Then
-                    Builder.Heads = TrackHeads.both
-                Else
-                    Builder.Heads = If(DiskParams.BPBParams.NumberOfHeads > 1, TrackHeads.both, TrackHeads.head0)
-                End If
-            End If
-
-            If Doublestep Then
-                Builder.HeadStep = 2
-            End If
-
-            Return Builder.Arguments
-        End Function
-
-        Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As TrackHeads
-            If EndHead = -1 Then
-                EndHead = StartHead
-            End If
-
-            If StartHead = 0 And EndHead = 0 Then
-                Return TrackHeads.head0
-            ElseIf StartHead = 1 And EndHead = 1 Then
-                Return TrackHeads.head1
-            Else
-                Return TrackHeads.both
-            End If
-        End Function
+        Public Const DEFAULT_CYLS As UInteger = 80
+        Public Const DEFAULT_LINGER As UInteger = 100
+        Public Const DEFAULT_PASSES As UInteger = 3
+        Public Const DEFAULT_RETRIES As UInteger = 3
+        Public Const DEFAULT_REVS As UInteger = 1
+        Public Const DEFAULT_SEEK_RETRIES As UInteger = 0
+        Public Const MAX_CYLS As UInteger = 80
+        Public Const MAX_LINGER As UInteger = 1000
+        Public Const MAX_PASSES As UInteger = 9
+        Public Const MAX_RETRIES As UInteger = 99
+        Public Const MAX_REVS As Byte = 20
+        Public Const MIN_CYLS As UInteger = 1
+        Public Const MIN_LINGER As UInteger = 1
+        Public Const MIN_PASSES As UInteger = 1
+        Public Const MIN_RETRIES As UInteger = 0
+        Public Const MIN_REVS As Byte = 1
 
         Public Sub BandwidthDisplay(ParentForm As Form)
-            If Not Settings.IsPathValid Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
-            End If
-
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
-            .Device = Settings.ComPort
-        }
-
-            Dim Arguments = Builder.Arguments
-
             Dim Content As String = ""
             Try
-                Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
-                Content = Result.CombinedOutput
+                Dim LocalEngine As New GreaseweazleEngine()
+                Dim Result = LocalEngine.Bandwidth.Run(New BandwidthOptions With {
+                    .Live = True,
+                    .Device = ConfiguredDevice()
+                })
+                Content = GreaseweazleFormatters.FormatBandwidth(Result)
+            Catch ex As Exception
+                Content = "Command Failed: " & ex.Message
             Finally
                 ParentForm.Cursor = Cursors.Default
             End Try
@@ -177,6 +80,52 @@ Namespace Flux.Greaseweazle
             Return result
         End Function
 
+        Public Function BuildUserSpec(ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), heads As TrackHeads, Optional doubleStep As Boolean = False, Optional divide As Boolean = False) As TrackSetSpec
+            Dim spec As New TrackSetSpec()
+
+            If ranges IsNot Nothing Then
+                Dim seen As New HashSet(Of Integer)()
+                For Each R In ranges
+                    Dim StartTrack = R.StartTrack
+                    Dim EndTrack = R.EndTrack
+                    If doubleStep And divide Then
+                        StartTrack \= 2
+                        EndTrack \= 2
+                    End If
+                    For c As Integer = StartTrack To EndTrack
+                        If seen.Add(c) Then
+                            spec.Cyls.Add(c)
+                        End If
+                    Next
+                Next
+                spec.Cyls.Sort()
+            End If
+
+            Select Case heads
+                Case TrackHeads.head0
+                    spec.Heads.Add(0)
+                Case TrackHeads.head1
+                    spec.Heads.Add(1)
+                Case Else
+                    spec.Heads.Add(0)
+                    spec.Heads.Add(1)
+            End Select
+
+            If doubleStep Then
+                spec.Step = 2
+            End If
+
+            Return spec
+        End Function
+
+        ' Resolves the configured COM port for DLL options, mapping an empty user
+        ' setting to Nothing so the engine performs auto-discovery (matches the CLI
+        ' behaviour where an empty --device is omitted entirely).
+        Public Function ConfiguredDevice() As String
+            Dim Port = Settings.ComPort
+            Return If(String.IsNullOrEmpty(Port), Nothing, Port)
+        End Function
+
         Public Function ConvertFirstTrack(FilePath As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
@@ -193,22 +142,29 @@ Namespace Flux.Greaseweazle
                 Format = GreaseweazleImageFormatCommandLine(ImageFormat)
             End If
 
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-                .InFile = FilePath,
-                .OutFile = FileName,
-                .Format = Format,
-                .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
-            }
-            Builder.AddCylinder(0)
+            Dim spec As New TrackSetSpec
+            spec.Cyls.Add(0)
+            spec.Heads.Add(0)
+            If BothSides Then
+                spec.Heads.Add(1)
+            End If
 
-            ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
+            Dim Opts As New ConvertOptions With {
+                .InputFile = FilePath,
+                .OutputFile = FileName,
+                .Format = Format,
+                .TrackSet = spec,
+                .OutTrackSet = spec
+            }
+
+            Try
+                Dim LocalEngine As New GreaseweazleEngine()
+                LocalEngine.Convert.Run(Opts)
+            Catch ex As Exception
+            End Try
 
             Return (IO.File.Exists(FileName), FileName)
         End Function
-
-        Public Sub DisplayInvalidApplicationPathMsg()
-            MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Sub
 
         Public Function GetFirstRawFile(FilePath As String) As String
             Dim RawFileName As String = ""
@@ -225,30 +181,71 @@ Namespace Flux.Greaseweazle
             Return RawFileName
         End Function
 
-        Public Sub InfoDisplay(ParentForm As Form)
-            If Not Settings.IsPathValid Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
+        Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As TrackHeads
+            If EndHead = -1 Then
+                EndHead = StartHead
             End If
 
+            If StartHead = 0 And EndHead = 0 Then
+                Return TrackHeads.head0
+            ElseIf StartHead = 1 And EndHead = 1 Then
+                Return TrackHeads.head1
+            Else
+                Return TrackHeads.both
+            End If
+        End Function
+
+        Public Function GetInfo() As String
+            Dim Content As String
+
+            Try
+                Dim LocalEngine As New GreaseweazleEngine()
+                Dim Result = LocalEngine.Info.Run(New InfoOptions With {
+                    .Live = True,
+                    .Device = ConfiguredDevice()
+                })
+                Content = FormatInfo(Result)
+            Catch ex As Exception
+                Content = "Command Failed: " & ex.Message
+            End Try
+
+            Return Content
+        End Function
+
+        Public Sub InfoDisplay(ParentForm As Form)
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
-            .Device = Settings.ComPort
-        }
-            Dim Arguments = Builder.Arguments
+            Dim Content = GetInfo()
 
-            Dim Content As String = ""
-            Try
-                Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
-                Content = Result.CombinedOutput
-            Finally
-                ParentForm.Cursor = Cursors.Default
-            End Try
+            ParentForm.Cursor = Cursors.Default
 
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
         End Sub
+
+        ' Maps a UI-side drive id ("A"/"B"/"0".."3") to a Greaseweazle DriveSpec.
+        ' Mirrors the CLI token table from the API reference: A/B -> IBMPC, 0..3 -> Shugart.
+        Public Function MakeDriveSpec(id As String) As DriveSpec
+            Select Case id
+                Case "A"
+                    Return New DriveSpec With {
+                        .Bus = UsbProtocol.BusType.IBMPC,
+                        .UnitId = 0
+                    }
+                Case "B"
+                    Return New DriveSpec With {
+                        .Bus = UsbProtocol.BusType.IBMPC,
+                        .UnitId = 1
+                    }
+                Case "0", "1", "2", "3"
+                    Return New DriveSpec With {
+                        .Bus = UsbProtocol.BusType.Shugart,
+                        .UnitId = Integer.Parse(id)
+                    }
+                Case Else
+                    Throw New ArgumentException("Unrecognised drive id: " & id)
+            End Select
+        End Function
 
         Public Function PopulateDrives(Combo As ComboBox, Format As FloppyDriveType, Optional LastUsedDrive As String = "") As DriveOption
             Dim DriveList As New List(Of DriveOption)
@@ -323,24 +320,79 @@ Namespace Flux.Greaseweazle
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
             Dim Format As String = "ibm.scan"
-
             If ImageParams.HasValue Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
                 Format = GreaseweazleImageFormatCommandLine(ImageFormat)
             End If
 
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
-                .Device = Settings.ComPort,
-                .Drive = DriveId,
-                .File = FileName,
-                .Format = Format,
-                .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
-            }
-            Builder.AddCylinder(0)
+            Dim Sb As New StringBuilder()
 
-            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
+            Dim Drive As DriveSpec
+            Try
+                Drive = MakeDriveSpec(DriveId)
+            Catch ex As Exception
+                Sb.AppendLine("Command Failed: " & ex.Message)
+                Return (False, FileName, Sb.ToString())
+            End Try
 
-            Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
+            Dim LocalEngine As New GreaseweazleEngine()
+            Dim Cmd = LocalEngine.Read
+
+            Dim StartedHandler As EventHandler(Of ReadStartedEventArgs) =
+                Sub(snd, args)
+                    For Each Line In GreaseweazleFormatters.FormatReadStartedLines(args)
+                        Sb.AppendLine(Line)
+                    Next
+                End Sub
+            Dim HardSectorsHandler As EventHandler(Of ReadHardSectorsEventArgs) =
+                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadHardSectorsLine(args))
+            Dim TrackHandler As EventHandler(Of ReadTrackProcessedEventArgs) =
+                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadTrackProcessedLine(args))
+            Dim GaveUpHandler As EventHandler(Of ReadTrackGaveUpEventArgs) =
+                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadTrackGaveUpLine(args))
+            Dim SummaryHandler As EventHandler(Of ReadSummaryReadyEventArgs) =
+                Sub(snd, args)
+                    For Each Line In GreaseweazleFormatters.FormatSectorSummaryLines(args.Grid)
+                        Sb.AppendLine(Line)
+                    Next
+                End Sub
+
+            AddHandler Cmd.Started, StartedHandler
+            AddHandler Cmd.HardSectorsDetected, HardSectorsHandler
+            AddHandler Cmd.TrackProcessed, TrackHandler
+            AddHandler Cmd.TrackGaveUp, GaveUpHandler
+            AddHandler Cmd.SummaryReady, SummaryHandler
+
+            Dim spec As New TrackSetSpec
+            spec.Cyls.Add(0)
+            spec.Heads.Add(0)
+            If BothSides Then
+                spec.Heads.Add(1)
+            End If
+
+            Try
+                Dim Opts As New ReadOptions With {
+                    .FileName = FileName,
+                    .Format = Format,
+                    .TrackSet = spec,
+                    .Revs = 3,
+                    .Live = True,
+                    .Device = ConfiguredDevice(),
+                    .Drive = Drive
+                }
+
+                Cmd.Run(Opts)
+            Catch ex As Exception
+                Sb.AppendLine("Command Failed: " & ex.Message)
+            Finally
+                RemoveHandler Cmd.Started, StartedHandler
+                RemoveHandler Cmd.HardSectorsDetected, HardSectorsHandler
+                RemoveHandler Cmd.TrackProcessed, TrackHandler
+                RemoveHandler Cmd.TrackGaveUp, GaveUpHandler
+                RemoveHandler Cmd.SummaryReady, SummaryHandler
+            End Try
+
+            Return (IO.File.Exists(FileName), FileName, Sb.ToString())
         End Function
 
         Public Function ReadFluxImage(importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
@@ -369,16 +421,8 @@ Namespace Flux.Greaseweazle
             End Using
         End Function
 
-        Public Sub Reset(TextBox As TextBox)
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
-            .Device = Settings.ComPort
-        }
-
-            Dim Arguments = Builder.Arguments
-            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
-            TextBox.Text = Result.CombinedOutput
-
-            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
-        End Sub
+        Public Function Settings() As GreaseweazleSettings
+            Return App.Globals.AppSettings.Greaseweazle
+        End Function
     End Module
 End Namespace

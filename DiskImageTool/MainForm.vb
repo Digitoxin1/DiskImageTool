@@ -689,7 +689,7 @@ Public Class MainForm
 
     Private Sub HandleDragDrop(Files() As String)
         If Files.Length = 1 Then
-            Dim CanProcessFlux = Flux.Greaseweazle.Settings.IsPathValid Or Flux.Kryoflux.Settings.IsPathValid
+            Dim CanProcessFlux = True
             If CanProcessFlux Then
                 Dim Result = ProcessFileDropFlux(Files(0))
                 If Result Then
@@ -847,7 +847,7 @@ Public Class MainForm
             MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
             MenuReportsImageAnalysis.Enabled = CheckSize
             SetButtonStateSaveAs(True)
-            MenuGreaseweazleWrite.Enabled = CheckSize AndAlso App.AppSettings.Greaseweazle.IsPathValid
+            MenuGreaseweazleWrite.Enabled = CheckSize
         Else
             MenuHexBootSector.Enabled = False
             MenuHexDisk.Enabled = False
@@ -1176,9 +1176,7 @@ Public Class MainForm
 
         If IO.File.Exists(FilePath) Then
             If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
-                If App.AppSettings.Greaseweazle.IsPathValid Then
-                    IsFluxIamge = True
-                End If
+                IsFluxIamge = True
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
                 Dim Response = Flux.GetFluxSetInfoRaw(FilePath)
                 If Response.Result Then
@@ -1289,7 +1287,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshFluxMenu()
-        Dim GreaseweazleEnabled As Boolean = Flux.Greaseweazle.Settings.IsPathValid
+        Dim GreaseweazleEnabled As Boolean = True
         Dim PcImgCnvEnabled As Boolean = Flux.PcImgCnv.Settings.IsPathValid()
         Dim KryofluxEnabled As Boolean = Flux.Kryoflux.Settings.IsPathValid()
         Dim Visible As Boolean = GreaseweazleEnabled Or KryofluxEnabled

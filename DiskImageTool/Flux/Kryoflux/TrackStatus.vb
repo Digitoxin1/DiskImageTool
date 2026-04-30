@@ -88,10 +88,6 @@
             End If
         End Sub
 
-        Friend Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineWrite
-            Exit Sub
-        End Sub
-
         Private Shared Function GetTrackStatusText(Status As TrackStatusEnum) As String
             Select Case Status
                 Case TrackStatusEnum.Reading

@@ -77,6 +77,13 @@
             End Set
         End Property
 
+        Public Sub AppendLogLine(line As String)
+            If TextBoxConsole.Text.Length > 0 Then
+                TextBoxConsole.AppendText(Environment.NewLine)
+            End If
+            TextBoxConsole.AppendText(line)
+        End Sub
+
         Public Function CancelProcessIfRunning() As Boolean
             If Process.IsRunning Then
                 If Not ConfirmCancel() Then

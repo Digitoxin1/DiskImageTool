@@ -15,9 +15,6 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub LocalizeForm()
-            LabelApplicationPath.Text = My.Resources.Label_ApplicationPath
-            ButtonBrowse.Text = My.Resources.Label_Browse
-            ButtonClear.Text = My.Resources.Menu_Clear
             LabelTracks0.Text = My.Resources.Label_Tracks
             LabelTracks1.Text = My.Resources.Label_Tracks
             LabelTracks2.Text = My.Resources.Label_Tracks
@@ -42,10 +39,6 @@ Namespace Flux.Greaseweazle
         Public Sub UpdateSettings()
             If Not _Initialized Then
                 Exit Sub
-            End If
-
-            If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
-                Settings.AppPath = TextBoxPath.Text
             End If
 
             Settings.Interface = ComboInterface.SelectedValue
@@ -100,8 +93,6 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeFields()
-            SetExePath(Settings.AppPath)
-
             InitializeInterfaceName(ComboInterface, Settings.Interface)
             InitializePorts(Settings.ComPort)
             For i = 0 To 2
@@ -109,8 +100,8 @@ Namespace Flux.Greaseweazle
                 InitializeTracks(i)
             Next
 
-            NumericDefaultRevs.Minimum = CommandLineBuilder.MIN_REVS
-            NumericDefaultRevs.Maximum = CommandLineBuilder.MAX_REVS
+            NumericDefaultRevs.Minimum = MIN_REVS
+            NumericDefaultRevs.Maximum = MAX_REVS
             NumericDefaultRevs.Value = Settings.DefaultRevs
 
             TextBoxLogFile.Text = Settings.LogFileName
@@ -202,13 +193,6 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub RefreshInfo()
-            Dim Enabled As Boolean = IsPathValid(TextBoxPath.Text)
-
-            ButtonInfo.Enabled = Enabled
-            TextBoxInfo.Enabled = Enabled
-        End Sub
-
         Private Sub RefreshInput(index As Byte)
             Dim CurrentType As FloppyDriveType = GetComboDriveType(index).SelectedValue
 
@@ -222,71 +206,17 @@ Namespace Flux.Greaseweazle
 
             GetNumericTracks(index).Enabled = (CurrentType <> FloppyDriveType.DriveUnknown)
         End Sub
-
-        Private Sub RunAppAndCaptureOutput(appPath As String, arguments As String)
-            If String.IsNullOrWhiteSpace(appPath) OrElse Not IO.File.Exists(appPath) Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
-            End If
-
+#Region "Events"
+        Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
             Me.Cursor = Cursors.WaitCursor
+
             Application.DoEvents()
 
-            Dim Content As String = ""
-            Try
-                Dim Result = ConsoleProcessRunner.RunProcess(appPath, arguments)
-                Content = Result.CombinedOutput
-            Finally
-                Me.Cursor = Cursors.Default
-            End Try
+            Dim Content = GetInfo()
+
+            Me.Cursor = Cursors.Default
 
             TextBoxInfo.Text = Content
-        End Sub
-
-        Private Sub SetExePath(path As String)
-            TextBoxPath.Text = path
-            ToolTip1.SetToolTip(TextBoxPath, path)
-            RefreshInfo()
-        End Sub
-#Region "Events"
-
-        Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
-            Using ofd As New OpenFileDialog()
-                ofd.Title = My.Resources.Greaseweazle_SelectExecutable
-                ofd.Filter = "Executable files (*.exe)|*.exe"
-                ofd.CheckFileExists = True
-                ofd.Multiselect = False
-                ' If you already have a path, start there; otherwise use Program Files
-                If IO.File.Exists(TextBoxPath.Text) Then
-                    ofd.InitialDirectory = IO.Path.GetDirectoryName(TextBoxPath.Text)
-                    ofd.FileName = IO.Path.GetFileName(TextBoxPath.Text)
-                Else
-                    ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
-                End If
-
-                If ofd.ShowDialog(Me) = DialogResult.OK Then
-                    If IsPathValid(ofd.FileName) Then
-                        SetExePath(ofd.FileName)
-                    Else
-                        Dim Msg = String.Format(My.Resources.Dialog_PleaseSelect, ".exe")
-                        MessageBox.Show(Msg, My.Resources.Dialog_InvalidSelection, MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    End If
-                End If
-            End Using
-        End Sub
-
-
-        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
-            SetExePath("")
-        End Sub
-
-        Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
-            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
-                .Device = ComboPorts.SelectedValue
-            }
-
-            Dim Arguments = Builder.Arguments
-            RunAppAndCaptureOutput(TextBoxPath.Text, Arguments)
         End Sub
 
         Private Sub ComboDriveType0_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDriveType0.SelectedIndexChanged
@@ -319,34 +249,6 @@ Namespace Flux.Greaseweazle
                 ' Optionally select all text so user can fix it immediately:
                 TextBoxLogFile.SelectAll()
             End If
-        End Sub
-
-        Private Sub TextBoxPath_DragDrop(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragDrop
-            Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-            ' Prefer the first valid .exe (resolve .lnk if needed)
-            For Each f In files
-                Dim candidate As String = f
-                If IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
-                    candidate = ResolveShortcutTarget(f) ' may return original if resolution fails
-                End If
-                If IsPathValid(candidate) Then
-                    SetExePath(candidate)
-                    Exit For
-                End If
-            Next
-        End Sub
-
-        Private Sub TextBoxPath_DragEnter(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragEnter
-            If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-                Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-                ' Accept only if there is at least one .exe (or a .lnk that points to an .exe)
-                If files.Any(Function(f) IsPathValid(f) OrElse (IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) AndAlso
-                                                            IsPathValid(ResolveShortcutTarget(f)))) Then
-                    e.Effect = DragDropEffects.Copy
-                    Return
-                End If
-            End If
-            e.Effect = DragDropEffects.None
         End Sub
 #End Region
     End Class

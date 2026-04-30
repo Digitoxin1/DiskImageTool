@@ -150,7 +150,6 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-
         Public Function ReadDisktOutputTypeFileExt(Value As ReadDiskOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE

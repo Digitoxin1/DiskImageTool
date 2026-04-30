@@ -14,7 +14,6 @@ Namespace Flux.Greaseweazle
         Private Const DEFAULT_LOG_FILE_NAME As String = "log.txt"
         Private Const MaxDrives As Integer = 3
 
-        Private _appPath As String = ""
         Private _comPort As String = ""
         Private _defaultRevs As Integer = 3
         Private _Drives As New List(Of DriveSettings) From {
@@ -44,15 +43,12 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
-        Public Property AppPath As String Implements Flux.ISettings.AppPath
+        Public Property AppPath As String Implements ISettings.AppPath
             Get
-                Return _appPath
+                Throw New NotImplementedException()
             End Get
             Set(value As String)
-                If _appPath <> value Then
-                    _appPath = value
-                    MarkDirty()
-                End If
+                Throw New NotImplementedException()
             End Set
         End Property
 
@@ -82,19 +78,19 @@ Namespace Flux.Greaseweazle
         Public Property DefaultRevs As Integer
             Get
                 Dim value As UShort = _defaultRevs
-                If value < CommandLineBuilder.MIN_REVS Then
-                    value = CommandLineBuilder.MIN_REVS
-                ElseIf value > CommandLineBuilder.MAX_REVS Then
-                    value = CommandLineBuilder.MAX_REVS
+                If value < MIN_REVS Then
+                    value = MIN_REVS
+                ElseIf value > MAX_REVS Then
+                    value = MAX_REVS
                 End If
 
                 Return value
             End Get
             Set(value As Integer)
-                If value < CommandLineBuilder.MIN_REVS Then
-                    value = CommandLineBuilder.MIN_REVS
-                ElseIf value > CommandLineBuilder.MAX_REVS Then
-                    value = CommandLineBuilder.MAX_REVS
+                If value < MIN_REVS Then
+                    value = MIN_REVS
+                ElseIf value > MAX_REVS Then
+                    value = MAX_REVS
                 End If
 
                 If _defaultRevs <> value Then
@@ -162,8 +158,8 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
-        Public Function IsPathValid() As Boolean Implements Flux.ISettings.IsPathValid
-            Return Flux.IsPathValid(_appPath)
+        Public Function IsPathValid() As Boolean Implements ISettings.IsPathValid
+            Return True
         End Function
 
         Public Sub LoadFromDictionary(dict As Dictionary(Of String, JsonValue))
@@ -172,7 +168,6 @@ Namespace Flux.Greaseweazle
                 Return
             End If
 
-            _appPath = ReadValue(dict, "appPath", _appPath)
             _interface = GetInterfaceFromName(ReadValue(dict, "interface", GetInterfaceName(_interface)))
             _comPort = ReadValue(dict, "comPort", _comPort)
             _defaultRevs = ReadValue(dict, "defaultRevs", _defaultRevs)
@@ -202,7 +197,6 @@ Namespace Flux.Greaseweazle
             End If
 
             Return New Dictionary(Of String, Object) From {
-                {"appPath", _appPath},
                 {"interface", GetInterfaceName(_interface)},
                 {"drives", driveArray},
                 {"comPort", _comPort},

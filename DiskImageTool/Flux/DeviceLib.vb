@@ -64,7 +64,7 @@
         Private Function FluxDeviceIsAvailable(Device As IDevice.FluxDevice) As Boolean
             Select Case Device
                 Case IDevice.FluxDevice.Greaseweazle
-                    Return App.AppSettings.Greaseweazle.IsPathValid
+                    Return True
                 Case IDevice.FluxDevice.Kryoflux
                     Return App.AppSettings.Kryoflux.IsPathValid
                 Case IDevice.FluxDevice.PcImgCnv

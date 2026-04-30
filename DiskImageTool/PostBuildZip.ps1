@@ -65,7 +65,8 @@ $excludeNames = @(
 
 $excludeExts = @(
     '.zip',
-	'.log'
+	'.log',
+    '.pdb'
 )
 
 # Collect files to include (publish folder + all subfolders)

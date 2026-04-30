@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
-Imports System.Net
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+Imports Greaseweazle.Actions
+Imports Greaseweazle.Tools
 
 Namespace Flux.Greaseweazle
     Public Class ReadDiskForm
@@ -9,10 +10,10 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonConvert As Button
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonDiscard As Button
-        Private WithEvents ButtonRefine As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
+        Private WithEvents ButtonRefine As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ButtonRootBrowse As Button
         Private WithEvents ButtonToggleSequence As Button
@@ -23,6 +24,8 @@ Namespace Flux.Greaseweazle
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents NumericRevs As NumericUpDown
+        Private WithEvents ReadCmd As ReadCommand
+        Private WithEvents Runner As GreaseweazleRunner
         Private WithEvents TextBoxFileName As TextBox
         Private WithEvents TextBoxFolderName As TextBox
         Private WithEvents TextBoxPrefixName As PlaceholderTextBox
@@ -32,8 +35,10 @@ Namespace Flux.Greaseweazle
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
         Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
+        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
+        Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
         Private ReadOnly _UserState As Settings.UserStateFlux
         Private _CachedRevs As Byte = 0
@@ -44,6 +49,7 @@ Namespace Flux.Greaseweazle
         Private _FileRefineMode As Boolean = False
         Private _FileReprocessMode As Boolean = False
         Private _LastSequenceTextBox As TextBoxBase
+        Private _LogFilePath As String = ""
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
         Private _NumericRetries As NumericUpDown
@@ -68,9 +74,13 @@ Namespace Flux.Greaseweazle
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
+            Runner = New GreaseweazleRunner()
+            ReadCmd = _Engine.Read
+
             _UserState = App.UserState.Flux
             _HelpProvider1 = New HelpProvider
-            TrackStatus = New TrackStatus()
+            _Status = New TrackStatus()
+            TrackStatus = _Status
 
             ButtonOk.DialogResult = DialogResult.None
             Me.HelpButton = True
@@ -90,8 +100,8 @@ Namespace Flux.Greaseweazle
 
             RefreshRevs()
 
-            _NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
-            _NumericSeekRetries.Value = CommandLineBuilder.DEFAULT_SEEK_RETRIES
+            _NumericRetries.Value = DEFAULT_RETRIES
+            _NumericSeekRetries.Value = DEFAULT_SEEK_RETRIES
 
             CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
 
@@ -211,6 +221,25 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
+        Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+            ReadCmd = Nothing
+
+            MyBase.OnFormClosed(e)
+        End Sub
+
+        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+            If Runner.IsRunning Then
+                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
+                    If Not ConfirmCancelRun() Then
+                        e.Cancel = True
+                        Return
+                    End If
+                End If
+                Runner.Cancel()
+            End If
+
+            MyBase.OnFormClosing(e)
+        End Sub
         Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
             If keyData = (Keys.Alt Or Keys.S) Then
                 If ButtonToggleSequence.Enabled Then
@@ -220,6 +249,128 @@ Namespace Flux.Greaseweazle
             End If
 
             Return MyBase.ProcessCmdKey(msg, keyData)
+        End Function
+
+        Private Overloads Sub AppendLogLine(line As String)
+            MyBase.AppendLogLine(line)
+
+            If Not String.IsNullOrEmpty(_LogFilePath) Then
+                Try
+                    IO.File.AppendAllText(_LogFilePath, line & Environment.NewLine)
+                Catch ex As Exception
+                    Debug.WriteLine($"AppendLogLine failed: {ex.Message}")
+                End Try
+            End If
+        End Sub
+
+        Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum)
+            Dim Finished As Boolean = False
+            Dim Completed As Boolean = False
+
+            Select Case state
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    Finished = True
+                    If Not _Status.Failed Then
+                        _Status.UpdateTrackStatusAborted()
+                    End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    Finished = True
+                    If _Status.TrackFound Then
+                        Completed = True
+                        _Status.UpdateTrackStatusComplete(_OutputDoubleStep)
+                    Else
+                        _Status.UpdateTrackStatusError()
+                    End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    Finished = True
+                    _Status.UpdateTrackStatusError()
+            End Select
+
+            If Finished Then
+                If Completed Then
+                    SetTiltebarText()
+                ElseIf Not _FileReprocessMode Then
+                    ClearOutputFile(True)
+                End If
+                HideSelection(False)
+                _FileReprocessMode = False
+            End If
+
+            RefreshFormState()
+        End Sub
+
+        Private Function BuildReadOptions(filePath As String,
+                                          opt As DriveOption,
+                                          diskParams As FloppyDiskParams,
+                                          outputType As ReadDiskOutputTypes,
+                                          doubleStep As Boolean,
+                                          trackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)),
+                                          heads As TrackHeads?,
+                                          retries As Integer,
+                                          seekRetries As Integer,
+                                          revs As Integer) As ReadOptions
+
+            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
+            Dim Format As String = Nothing
+            Dim Raw As Boolean = False
+            Dim AdjustSpeed As Double? = Nothing
+            Dim BitRateKbps As Integer? = Nothing
+
+            If outputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None Then
+                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            End If
+
+            If outputType = ReadDiskOutputTypes.HFE Then
+                BitRateKbps = CInt(diskParams.BitRateKbps)
+                AdjustSpeed = 60.0 / diskParams.RPM
+                Raw = True
+
+            ElseIf outputType = ReadDiskOutputTypes.RAW Then
+                If diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
+                    AdjustSpeed = 60.0 / diskParams.RPM
+                End If
+                Raw = True
+            End If
+
+            Dim FileNameWithOpts As String = filePath
+
+            If BitRateKbps.HasValue Then
+                FileNameWithOpts &= "::bitrate=" & BitRateKbps.Value
+            End If
+
+            If trackRanges Is Nothing Then
+                trackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
+                    (0, CUShort(Math.Max(0, opt.Tracks - 1)))
+                }
+            End If
+
+            If Not heads.HasValue Then
+                If diskParams.Format = FloppyDiskFormat.FloppyUnknown Then
+                    heads = TrackHeads.both
+                Else
+                    heads = If(diskParams.BPBParams.NumberOfHeads > 1, TrackHeads.both, TrackHeads.head0)
+                End If
+            End If
+
+            Dim TrackSet = BuildUserSpec(trackRanges, heads, doubleStep, True)
+
+            Dim Drive = MakeDriveSpec(opt.Id)
+
+            Return New ReadOptions With {
+                .FileName = FileNameWithOpts,
+                .Format = Format,
+                .TrackSet = TrackSet,
+                .Revs = revs,
+                .Raw = Raw,
+                .AdjustSpeed = AdjustSpeed,
+                .Retries = retries,
+                .SeekRetries = seekRetries,
+                .Live = True,
+                .Device = ConfiguredDevice(),
+                .Drive = Drive
+            }
         End Function
 
         Private Sub CacheFilenameTemplate()
@@ -386,6 +537,9 @@ Namespace Flux.Greaseweazle
             Me.Close()
         End Sub
 
+        Private Function ConfirmCancelRun() As Boolean
+            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
+        End Function
         Private Function ConfirmFluxDestinationOverwrite() As Boolean
             Dim destinationFolder = FluxGetFolderPath()
 
@@ -587,6 +741,15 @@ Namespace Flux.Greaseweazle
             Return _UserState.Read.Device(IDevice.FluxDevice.Greaseweazle)
         End Function
 
+        Private Sub HandleRunFailure(message As String)
+            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
+
+            AppendLogLine("Command Failed: " & Msg)
+            _Status.OnReadFailed()
+
+            ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
+        End Sub
+
         Private Sub HideSelection(Value As Boolean)
             TableSide0.HideSelection = Value
             TableSide0.IsBusy = Value
@@ -735,8 +898,8 @@ Namespace Flux.Greaseweazle
             }
 
             _NumericSeekRetries = New NumericUpDown With {
-                .Minimum = CommandLineBuilder.MIN_RETRIES,
-                .Maximum = CommandLineBuilder.MAX_RETRIES,
+                .Minimum = MIN_RETRIES,
+                .Maximum = MAX_RETRIES,
                 .Width = 45,
                 .Anchor = AnchorStyles.Left
             }
@@ -748,8 +911,8 @@ Namespace Flux.Greaseweazle
             }
 
             _NumericRetries = New NumericUpDown With {
-                .Minimum = CommandLineBuilder.MIN_RETRIES,
-                .Maximum = CommandLineBuilder.MAX_RETRIES,
+                .Minimum = MIN_RETRIES,
+                .Maximum = MAX_RETRIES,
                 .Width = 45,
                 .Anchor = AnchorStyles.Left
             }
@@ -762,8 +925,8 @@ Namespace Flux.Greaseweazle
             }
 
             NumericRevs = New NumericUpDown With {
-                .Minimum = CommandLineBuilder.MIN_REVS,
-                .Maximum = CommandLineBuilder.MAX_REVS,
+                .Minimum = MIN_REVS,
+                .Maximum = MAX_REVS,
                 .Width = 40,
                 .Anchor = AnchorStyles.Left
             }
@@ -843,7 +1006,7 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_Detect
             }
 
-            ButtonContainer.Controls.Add(ButtonRefine)
+            'ButtonContainer.Controls.Add(ButtonRefine)
             ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonConvert)
@@ -1156,6 +1319,7 @@ Namespace Flux.Greaseweazle
 
             Return True
         End Function
+
         Private Sub ProcessImage()
             Dim DiskParams = SelectedDiskParams()
 
@@ -1165,7 +1329,7 @@ Namespace Flux.Greaseweazle
 
             Dim Opt As DriveOption = _SelectedOption
 
-            If Opt.Id = "" Then
+            If Opt Is Nothing OrElse Opt.Id = "" Then
                 Exit Sub
             End If
 
@@ -1180,21 +1344,13 @@ Namespace Flux.Greaseweazle
 
             _OutputFilePath = Response.FilePath
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
+            _LogFilePath = If(Response.LogFilePath, "")
 
-            Dim Arguments = GenerateCommandLineRead(Response.FilePath,
-                                                    Opt,
-                                                    DiskParams.Value,
-                                                    OutputType,
-                                                    _OutputDoubleStep,
-                                                    _NumericRetries.Value,
-                                                    _NumericSeekRetries.Value,
-                                                    NumericRevs.Value)
-
-            If Not String.IsNullOrEmpty(Response.LogFilePath) Then
-                DeleteFileIfExists(Response.LogFilePath)
+            If Not String.IsNullOrEmpty(_LogFilePath) Then
+                DeleteFileIfExists(_LogFilePath)
             End If
 
-            Process.StartAsync(Settings.AppPath, Arguments, logFile:=Response.LogFilePath)
+            StartReadRun(Response.FilePath, Opt, DiskParams.Value, OutputType, _OutputDoubleStep, Nothing, Nothing)
         End Sub
 
         Private Sub ProcessImport(OutputFile As String, NewFileName As String)
@@ -1203,19 +1359,6 @@ Namespace Flux.Greaseweazle
             End If
 
             ClearProcessedImage(False, True)
-        End Sub
-
-        Private Sub ProcessOutputLine(line As String)
-            If TextBoxConsole.Text.Length > 0 Then
-                TextBoxConsole.AppendText(Environment.NewLine)
-            End If
-            TextBoxConsole.AppendText(line)
-
-            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Read, _OutputDoubleStep)
-
-            If TrackStatus.Failed Then
-                Process.Cancel()
-            End If
         End Sub
 
         Private Function ReadImageFormat(DriveId As String) As DiskImage.FloppyDiskFormat?
@@ -1236,7 +1379,7 @@ Namespace Flux.Greaseweazle
             Dim Opt As DriveOption = _SelectedOption
 
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsRunning As Boolean = Runner.IsRunning
             Dim IsIdle As Boolean = Not IsRunning
 
             Dim CanChangeSettings As Boolean = IsIdle AndAlso Not HasOutputfile
@@ -1278,7 +1421,7 @@ Namespace Flux.Greaseweazle
         Private Sub RefreshImportButtonState()
             Dim IsFluxOutput = CheckIsFluxOutput()
 
-            Dim EnableImport As Boolean = Not Process.IsRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim EnableImport As Boolean = Not Runner.IsRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath)
 
             ButtonOk.Enabled = EnableImport
             ButtonOk.Text = If(IsFluxOutput, My.Resources.Label_SaveAndClose, My.Resources.Label_ImportClose)
@@ -1310,7 +1453,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshProcessButtonState()
-            If Process.IsRunning Then
+            If Runner.IsRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
                 ButtonProcess.Enabled = True
             Else
@@ -1334,7 +1477,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshTitleBarText()
-            If Not Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+            If Not Runner.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
                 Exit Sub
             End If
 
@@ -1369,7 +1512,7 @@ Namespace Flux.Greaseweazle
 
             Dim Opt As DriveOption = _SelectedOption
 
-            If Opt.Id = "" Then
+            If Opt Is Nothing OrElse Opt.Id = "" Then
                 Exit Sub
             End If
 
@@ -1402,20 +1545,11 @@ Namespace Flux.Greaseweazle
 
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
 
-            Dim Arguments = GenerateCommandLineRead(_OutputFilePath,
-                                                    Opt,
-                                                    DiskParams.Value,
-                                                    OutputType,
-                                                    _OutputDoubleStep,
-                                                    _NumericRetries.Value,
-                                                    _NumericSeekRetries.Value,
-                                                    NumericRevs.Value,
-                                                    TrackRanges,
-                                                    Heads)
+            _LogFilePath = IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName)
 
-            Dim LogFilePath = IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName)
+            DeleteFileIfExists(_LogFilePath)
 
-            Process.StartAsync(Settings.AppPath, Arguments, logFile:=LogFilePath)
+            StartReadRun(_OutputFilePath, Opt, DiskParams.Value, OutputType, _OutputDoubleStep, TrackRanges, Heads)
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
@@ -1539,10 +1673,38 @@ Namespace Flux.Greaseweazle
             Me.Text = Text & " - " & DisplayFileName
         End Sub
 
+        Private Sub StartReadRun(filePath As String,
+                                 opt As DriveOption,
+                                 diskParams As FloppyDiskParams,
+                                 outputType As ReadDiskOutputTypes,
+                                 doubleStep As Boolean,
+                                 trackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)),
+                                 heads As TrackHeads?)
+
+            Dim Opts As ReadOptions
+            Try
+                Opts = BuildReadOptions(filePath,
+                                        opt,
+                                        diskParams,
+                                        outputType,
+                                        doubleStep,
+                                        trackRanges,
+                                        heads,
+                                        CInt(_NumericRetries.Value),
+                                        CInt(_NumericSeekRetries.Value),
+                                        CInt(NumericRevs.Value))
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                Return
+            End Try
+
+            Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
+        End Sub
+
         Private Sub ToggleRootFolderControls()
             Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim IsFluxOutput = CheckIsFluxOutput()
-            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsRunning As Boolean = Runner.IsRunning
 
             TableLayoutPanelMain.SuspendLayout()
             If IsFluxOutput Then
@@ -1578,11 +1740,13 @@ Namespace Flux.Greaseweazle
         Private Sub UpdateSequenceButtonState()
             ButtonToggleSequence.Enabled = (_LastSequenceTextBox IsNot Nothing AndAlso CanToggleSequenceAtCaretOrSelection(_LastSequenceTextBox))
         End Sub
+
         Private Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean
             Dim ImageParams As FloppyDiskParams = FloppyDiskFormatGetParams(Format)
 
             Return ImageParams.IsStandard AndAlso ImageParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DriveType = FloppyDriveType.Drive525HighDensity
         End Function
+
 #Region "Events"
         Private Sub ButtonConvert_Click(sender As Object, e As EventArgs) Handles ButtonConvert.Click
             If Not CheckFileNameEntered() Then
@@ -1643,7 +1807,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If CancelProcessIfRunning() Then
+            If Runner.IsRunning Then
+                If ConfirmCancelRun() Then
+                    Runner.Cancel()
+                End If
                 Exit Sub
             End If
 
@@ -1659,12 +1826,24 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            Reset(TextBoxConsole)
+            TextBoxConsole.Clear()
+
+            Try
+                _Engine.Reset.Run(New ResetOptions With {
+                    .Live = True,
+                    .Device = ConfiguredDevice()
+                })
+            Catch ex As Exception
+                AppendLogLine("Command Failed: " & ex.Message)
+            End Try
+
+            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
         End Sub
 
         Private Sub ButtonRootBrowse_Click(sender As Object, e As EventArgs) Handles ButtonRootBrowse.Click
             RootFolderBrowse()
         End Sub
+
         Private Sub ButtonToggleSequence_Click(sender As Object, e As EventArgs) Handles ButtonToggleSequence.Click
             If _LastSequenceTextBox Is Nothing Then
                 Exit Sub
@@ -1782,46 +1961,39 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
-            ProcessOutputLine(data)
+        Private Sub OnReadHardSectorsDetected(sender As Object, e As ReadHardSectorsEventArgs) Handles ReadCmd.HardSectorsDetected
+            Runner.EmitOutputLine(FormatReadHardSectorsLine(e))
         End Sub
 
-        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
-            Dim Finished As Boolean = False
-            Dim Completed As Boolean = False
+        Private Sub OnReadStarted(sender As Object, e As ReadStartedEventArgs) Handles ReadCmd.Started
+            For Each Line In FormatReadStartedLines(e)
+                Runner.EmitOutputLine(Line)
+            Next
+        End Sub
+        Private Sub OnReadSummaryReady(sender As Object, e As ReadSummaryReadyEventArgs) Handles ReadCmd.SummaryReady
+            For Each Line In FormatSectorSummaryLines(e.Grid)
+                Runner.EmitOutputLine(Line)
+            Next
 
-            Select Case State
-                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    Finished = True
-                    If Not TrackStatus.Failed Then
-                        TrackStatus.UpdateTrackStatusAborted()
-                    End If
+            Runner.PostToUi(Sub() _Status.OnReadSummary(e.Grid))
+        End Sub
 
-                Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    Finished = True
-                    If TrackStatus.TrackFound Then
-                        Completed = True
-                        TrackStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
-                    Else
-                        TrackStatus.UpdateTrackStatusError()
-                    End If
+        Private Sub OnReadTrackGaveUp(sender As Object, e As ReadTrackGaveUpEventArgs) Handles ReadCmd.TrackGaveUp
+            Runner.EmitOutputLine(FormatReadTrackGaveUpLine(e))
 
-                Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    Finished = True
-                    TrackStatus.UpdateTrackStatusError()
-            End Select
+            Runner.PostToUi(Sub() _Status.OnReadTrackGaveUp(e.Track.Cyl, e.Track.Head, e.MissingSectors, _OutputDoubleStep))
+        End Sub
 
-            If Finished Then
-                If Completed Then
-                    SetTiltebarText()
-                ElseIf Not _FileReprocessMode Then
-                    ClearOutputFile(True)
-                End If
-                HideSelection(False)
-                _FileReprocessMode = False
-            End If
+        Private Sub OnReadTrackProcessed(sender As Object, e As ReadTrackProcessedEventArgs) Handles ReadCmd.TrackProcessed
+            Runner.EmitOutputLine(FormatReadTrackProcessedLine(e))
 
-            RefreshFormState()
+            Runner.PostToUi(Sub() _Status.OnReadTrackProcessed(e.Track.Cyl, e.Track.Head, e.SeekRetry, e.Retry, _OutputDoubleStep))
+        End Sub
+
+        Private Sub OnReadUnexpectedSectorIgnored(sender As Object, e As ReadUnexpectedSectorEventArgs) Handles ReadCmd.UnexpectedSectorIgnored
+            Runner.EmitOutputLine(FormatReadUnexpectedSectorLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnReadUnexpectedSector(e.Track.Cyl, e.Track.Head, e.C, e.H, e.R, e.N, _OutputDoubleStep))
         End Sub
 
         Private Sub ReadDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged
@@ -1832,8 +2004,23 @@ Namespace Flux.Greaseweazle
             RefreshFormState()
         End Sub
 
+        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
+            AppendLogLine(line)
+        End Sub
+
+        Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
+            AppendLogLine("Command Failed: " & ex.Message)
+
+            _Status.OnReadFailed()
+        End Sub
+
+        Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged
+            ApplyProcessState(state)
+        End Sub
+
         Private Sub TextBox_Enter(sender As Object, e As EventArgs) Handles TextBoxFileName.Enter, TextBoxPrefixName.Enter, TextBoxFolderName.Enter
             _LastSequenceTextBox = DirectCast(sender, TextBoxBase)
+
             UpdateSequenceButtonState()
         End Sub
 
@@ -1847,6 +2034,7 @@ Namespace Flux.Greaseweazle
             End If
 
             _LastSequenceTextBox = Nothing
+
             UpdateSequenceButtonState()
         End Sub
 
