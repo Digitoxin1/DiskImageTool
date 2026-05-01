@@ -14,7 +14,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonPreview As Button
-        Private WithEvents ButtonProcess As Button
+        Private WithEvents ButtonRead As Button
         Private WithEvents ButtonRefine As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ButtonRootBrowse As Button
@@ -924,7 +924,7 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
-            ButtonProcess = New Button With {
+            ButtonRead = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_Read,
                 .MinimumSize = New Size(75, 0),
@@ -979,7 +979,7 @@ Namespace Flux.Greaseweazle
 
             ButtonContainer.Controls.Add(ButtonRefine)
             ButtonContainer.Controls.Add(ButtonPreview)
-            ButtonContainer.Controls.Add(ButtonProcess)
+            ButtonContainer.Controls.Add(ButtonRead)
             ButtonContainer.Controls.Add(ButtonConvert)
             ButtonContainer.Controls.Add(ButtonDiscard)
 
@@ -1096,7 +1096,7 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt, ComboExtensions)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_SaveLog, CheckBoxSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
-            SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonProcess)
+            SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonRead)
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
             SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
@@ -1476,15 +1476,16 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshProcessButtonState()
             If IsRunning Then
-                ButtonProcess.Text = My.Resources.Label_Abort
-                ButtonProcess.Enabled = True
+                ButtonRead.Text = My.Resources.Label_Abort
+                ButtonRead.Enabled = True
             Else
+                Dim Opt As DriveOption = _SelectedOption
                 Dim DiskParams = SelectedDiskParams()
                 Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
                 Dim TracksSelected As Boolean = CheckBoxSelect.Checked AndAlso (TableSide0.SelectedTracks.Count + TableSide1.SelectedTracks.Count > 0)
 
-                ButtonProcess.Text = My.Resources.Label_Read
-                ButtonProcess.Enabled = DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
+                ButtonRead.Text = My.Resources.Label_Read
+                ButtonRead.Enabled = Not String.IsNullOrEmpty(Opt?.Id) AndAlso DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
@@ -1844,7 +1845,7 @@ Namespace Flux.Greaseweazle
             PreviewImage()
         End Sub
 
-        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+        Private Sub ButtonRead_Click(sender As Object, e As EventArgs) Handles ButtonRead.Click
             If CancelIfRunning() Then
                 Exit Sub
             End If
@@ -1944,6 +1945,7 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim Opt As DriveOption = _SelectedOption
+            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
             If Not String.IsNullOrEmpty(Opt?.Id) Then
                 Opt.SelectedFormat = SelectedDiskFormat()
@@ -1951,7 +1953,13 @@ Namespace Flux.Greaseweazle
 
             PopulateOutputTypes(GetSelectedDeviceState.OutputType)
             PopulateFileExtensions()
-            ResetTrackGrid()
+
+            If Not HasOutputfile Then
+                ResetTrackGrid()
+            Else
+                RefreshTrackState(Opt, Opt)
+            End If
+
             RefreshFormState()
             RefreshWarningLabel()
         End Sub
