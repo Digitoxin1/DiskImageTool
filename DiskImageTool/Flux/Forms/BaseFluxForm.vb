@@ -269,10 +269,10 @@ Namespace Flux
             AppendLogLine("Command Failed: " & Msg)
         End Sub
 
-        Protected Sub InitLogFilePath(FilePath As String)
+        Protected Sub InitLogFilePath(FilePath As String, Optional Append As Boolean = False)
             _LogFilePath = FilePath
 
-            If Not String.IsNullOrEmpty(_LogFilePath) Then
+            If Not Append AndAlso Not String.IsNullOrEmpty(_LogFilePath) Then
                 DeleteFileIfExists(_LogFilePath)
             End If
         End Sub

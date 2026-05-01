@@ -1565,7 +1565,7 @@ Namespace Flux.Greaseweazle
 
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
 
-            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName))
+            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName), Append:=CheckBoxSelect.Checked)
 
             StartReadRun(_OutputFilePath, Opt, DiskParams.Value, OutputType, _OutputDoubleStep, TrackRanges, Heads)
         End Sub
