@@ -11,6 +11,7 @@ Namespace Flux
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
         Private ReadOnly _Engine As New GreaseweazleEngine()
+        Private ReadOnly _HelpProvider As New HelpProvider()
         Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _LogFileName As String = ""
         Private _LogFilePath As String = ""
@@ -329,6 +330,13 @@ Namespace Flux
                     SaveLogFile(Dialog.FileName, TextBoxConsole.Text, RemovePath)
                 End If
             End Using
+        End Sub
+
+        Protected Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
+            For Each Control In ControlArray
+                _HelpProvider.SetHelpString(Control, HelpString.Replace("\t", vbTab))
+                _HelpProvider.SetShowHelp(Control, True)
+            Next
         End Sub
 
         Protected Sub SetState(State As FluxFormState, Optional Doublestep As Boolean = False)

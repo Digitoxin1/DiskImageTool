@@ -12,6 +12,8 @@ Namespace Flux.Greaseweazle
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private _CheckBoxHFreq As CheckBox
+        Private _LabelDrive As Label
+        Private _LabelRevs As Label
         Private _NumericRevs As NumericUpDown
 #End Region
         Private WithEvents EraseCmd As EraseCommand
@@ -21,11 +23,13 @@ Namespace Flux.Greaseweazle
         Public Sub New()
             MyBase.New(Settings.LogFileName)
             InitializeControls()
+            InitializeHelp()
 
             EraseCmd = Engine.Erase
             _Status = New TrackStatus()
             TrackStatus = _Status
 
+            Me.HelpButton = True
             Me.Text = My.Resources.Label_EraseDisk
 
             _NumericRevs.Value = DEFAULT_REVS
@@ -115,7 +119,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControls()
-            Dim DriveLabel As New Label With {
+            _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -126,7 +130,7 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
-            Dim RevsLabel As New Label With {
+            _LabelRevs = New Label With {
                 .Text = My.Resources.Label_Revs,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -212,10 +216,10 @@ Namespace Flux.Greaseweazle
                 .ColumnStyles(0).Width = 100
 
                 Row = 0
-                .Controls.Add(DriveLabel, 0, Row)
+                .Controls.Add(_LabelDrive, 0, Row)
                 .Controls.Add(ComboImageDrives, 1, Row)
 
-                .Controls.Add(RevsLabel, 2, Row)
+                .Controls.Add(_LabelRevs, 2, Row)
                 .Controls.Add(_NumericRevs, 3, Row)
 
                 .Controls.Add(_CheckBoxHFreq, 4, Row)
@@ -234,6 +238,16 @@ Namespace Flux.Greaseweazle
                 .ResumeLayout()
                 '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
+        End Sub
+
+        Private Sub InitializeHelp()
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _LabelRevs, _NumericRevs)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Hfreq, _CheckBoxHFreq)
+            SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)
+            SetHelpString(My.Resources.HelpStrings.Flux_Erase, ButtonProcess)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
+            SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
         End Sub
 
         Private Sub RefreshButtonState()

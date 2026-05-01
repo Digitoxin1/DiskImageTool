@@ -10,6 +10,10 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
+        Private _LabelCyls As Label
+        Private _LabelDrive As Label
+        Private _LabelLinger As Label
+        Private _LabelPasses As Label
         Private _NumericCyls As NumericUpDown
         Private _NumericLinger As NumericUpDown
         Private _NumericPasses As NumericUpDown
@@ -20,9 +24,11 @@ Namespace Flux.Greaseweazle
         Public Sub New()
             MyBase.New(Settings.LogFileName, False)
             InitializeControls()
+            InitializeHelp()
 
             CleanCmd = Engine.Clean
 
+            Me.HelpButton = True
             Me.Text = My.Resources.Label_CleanDisk
 
             _NumericCyls.Value = DEFAULT_CYLS
@@ -79,7 +85,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControls()
-            Dim DriveLabel As New Label With {
+            _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -90,7 +96,7 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
-            Dim CylsLabel As New Label With {
+            _LabelCyls = New Label With {
                 .Text = My.Resources.Label_Cylinders,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -104,7 +110,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = MAX_CYLS
             }
 
-            Dim PassesLabel As New Label With {
+            _LabelPasses = New Label With {
                 .Text = My.Resources.Label_Passes,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -118,7 +124,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = MAX_PASSES
             }
 
-            Dim LingerLabel As New Label With {
+            _LabelLinger = New Label With {
                 .Text = My.Resources.Label_Linger,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -187,16 +193,16 @@ Namespace Flux.Greaseweazle
                 .ColumnStyles(2).Width = 100
 
                 Row = 0
-                .Controls.Add(DriveLabel, 0, Row)
+                .Controls.Add(_LabelDrive, 0, Row)
                 .Controls.Add(ComboImageDrives, 1, Row)
 
-                .Controls.Add(CylsLabel, 3, Row)
+                .Controls.Add(_LabelCyls, 3, Row)
                 .Controls.Add(_NumericCyls, 4, Row)
 
-                .Controls.Add(PassesLabel, 5, Row)
+                .Controls.Add(_LabelPasses, 5, Row)
                 .Controls.Add(_NumericPasses, 6, Row)
 
-                .Controls.Add(LingerLabel, 7, Row)
+                .Controls.Add(_LabelLinger, 7, Row)
                 .Controls.Add(_NumericLinger, 8, Row)
 
                 Row = 1
@@ -205,6 +211,16 @@ Namespace Flux.Greaseweazle
 
                 .ResumeLayout()
             End With
+        End Sub
+
+        Private Sub InitializeHelp()
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanCyls, _LabelCyls, _NumericCyls)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanPasses, _LabelPasses, _NumericPasses)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanLinger, _LabelLinger, _NumericLinger)
+            SetHelpString(My.Resources.HelpStrings.Flux_Clean, ButtonProcess)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
+            SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
         End Sub
 
         Private Sub RefreshButtonState()

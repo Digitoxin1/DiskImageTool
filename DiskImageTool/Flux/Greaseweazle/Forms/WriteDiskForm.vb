@@ -16,7 +16,10 @@ Namespace Flux.Greaseweazle
         Private _CheckBoxContinue As CheckBox
         Private _CheckBoxEraseEmpty As CheckBox
         Private _CheckBoxPreErase As CheckBox
+        Private _LabelDrive As Label
         Private _LabelImageFormat As Label
+        Private _LabelImageFormatCaption As Label
+        Private _LabelRetries As Label
         Private _LabelWarning As Label
         Private _NumericRetries As NumericUpDown
 #End Region
@@ -35,6 +38,7 @@ Namespace Flux.Greaseweazle
         Public Sub New(Disk As DiskImage.Disk, FileName As String)
             MyBase.New(Settings.LogFileName)
             InitializeControls()
+            InitializeHelp()
 
             WriteCmd = Engine.Write
             _Status = New TrackStatus()
@@ -43,6 +47,7 @@ Namespace Flux.Greaseweazle
             _Disk = Disk
             _DiskParams = Disk.DiskParams
 
+            Me.HelpButton = True
             Me.Text = My.Resources.Label_WriteDisk & " - " & FileName
 
             If Disk.Image.IsBitstreamImage Then
@@ -167,7 +172,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub InitializeControls()
-            Dim DriveLabel As New Label With {
+            _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -178,7 +183,7 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
-            Dim RetriesLabel As New Label With {
+            _LabelRetries = New Label With {
                 .Text = My.Resources.Label_Retries,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True
@@ -261,7 +266,7 @@ Namespace Flux.Greaseweazle
                 .Visible = False
             }
 
-            Dim ImageFormatCaption As New Label With {
+            _LabelImageFormatCaption = New Label With {
                 .Text = My.Resources.Label_Format,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -304,18 +309,18 @@ Namespace Flux.Greaseweazle
                 .ColumnStyles(0).Width = 100
 
                 Row = 0
-                .Controls.Add(DriveLabel, 0, Row)
+                .Controls.Add(_LabelDrive, 0, Row)
                 .Controls.Add(ComboImageDrives, 1, Row)
 
                 .Controls.Add(_CheckBoxPreErase, 4, Row)
 
                 .Controls.Add(_CheckBoxEraseEmpty, 5, Row)
 
-                .Controls.Add(RetriesLabel, 6, Row)
+                .Controls.Add(_LabelRetries, 6, Row)
                 .Controls.Add(_NumericRetries, 7, Row)
 
                 Row = 1
-                .Controls.Add(ImageFormatCaption, 0, Row)
+                .Controls.Add(_LabelImageFormatCaption, 0, Row)
                 .Controls.Add(_LabelImageFormat, 1, Row)
 
                 .Controls.Add(CheckboxNoVerify, 4, Row)
@@ -344,6 +349,20 @@ Namespace Flux.Greaseweazle
                 .ResumeLayout()
                 '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
+        End Sub
+
+        Private Sub InitializeHelp()
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Retries, _LabelRetries, _NumericRetries)
+            SetHelpString(My.Resources.HelpStrings.Flux_Format, _LabelImageFormatCaption, _LabelImageFormat)
+            SetHelpString(My.Resources.HelpStrings.Flux_PreErase, _CheckBoxPreErase)
+            SetHelpString(My.Resources.HelpStrings.Flux_EraseEmpty, _CheckBoxEraseEmpty)
+            SetHelpString(My.Resources.HelpStrings.Flux_NoVerify, CheckboxNoVerify)
+            SetHelpString(My.Resources.HelpStrings.Flux_ContinueAfterFailure, _CheckBoxContinue)
+            SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)
+            SetHelpString(My.Resources.HelpStrings.Flux_Write, ButtonProcess)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
+            SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
         End Sub
 
         Private Sub KeepProcessing()

@@ -357,6 +357,104 @@ number in angle brackets (&lt; &gt;). For example: side&lt;1&gt;.
 The number inside the brackets will automatically
 increment for each subsequent read.</value>
   </data>
+  <data name="Flux_Clean" xml:space="preserve">
+    <value>Clean the heads of the floppy drive in the selected
+drive bay using a cleaning disk.</value>
+  </data>
+  <data name="Flux_Erase" xml:space="preserve">
+    <value>Erase the floppy disk in the selected drive.
+
+When Select Tracks is enabled, only the tracks selected
+in the grid are erased.</value>
+  </data>
+  <data name="Flux_Write" xml:space="preserve">
+    <value>Write the loaded image to the floppy disk in the
+selected drive.
+
+When Select Tracks is enabled, only the tracks selected
+in the grid are written.</value>
+  </data>
+  <data name="Flux_Process" xml:space="preserve">
+    <value>Run the conversion against the currently loaded flux
+image set.
+
+When Select Tracks is enabled, only the tracks selected
+in the grid are reconverted.</value>
+  </data>
+  <data name="Greaseweazle_CleanCyls" xml:space="preserve">
+    <value>Number of cylinders to clean.
+
+Most drives use 40 (5.25" double density) or 80
+(everything else).</value>
+  </data>
+  <data name="Greaseweazle_CleanPasses" xml:space="preserve">
+    <value>Number of cleaning passes to make.</value>
+  </data>
+  <data name="Greaseweazle_CleanLinger" xml:space="preserve">
+    <value>Time in milliseconds the head will linger on each
+cylinder during a pass.</value>
+  </data>
+  <data name="Greaseweazle_Hfreq" xml:space="preserve">
+    <value>Erase using a high-frequency signal instead of the
+default DC erase. Use this for media that does not
+respond to a normal erase.</value>
+  </data>
+  <data name="Flux_PreErase" xml:space="preserve">
+    <value>Erase each track before writing it.
+
+Slower but more reliable on worn or previously formatted media.</value>
+  </data>
+  <data name="Flux_EraseEmpty" xml:space="preserve">
+    <value>Write erase patterns to tracks that contain no data
+instead of leaving them as-is.</value>
+  </data>
+  <data name="Flux_NoVerify" xml:space="preserve">
+    <value>Skip post-write verification.
+
+Faster but does not detect write errors.</value>
+  </data>
+  <data name="Flux_ContinueAfterFailure" xml:space="preserve">
+    <value>Continue writing the remaining tracks if a track fails
+verification, instead of aborting the run.</value>
+  </data>
+  <data name="Flux_Device" xml:space="preserve">
+    <value>The flux processing tool used to decode the loaded
+flux image set (Greaseweazle, Kryoflux, or PCImgCnv).</value>
+  </data>
+  <data name="Flux_AutoSaveLog" xml:space="preserve">
+    <value>Automatically save the conversion log alongside the
+flux image set when the conversion succeeds.</value>
+  </data>
+  <data name="Flux_86FSurfaceData" xml:space="preserve">
+    <value>Include raw flux surface data in the .86F output.
+
+Only available with PCImgCnv when the output type is .86F.</value>
+  </data>
+  <data name="Flux_Remaster" xml:space="preserve">
+    <value>Apply the saved track layout while reconverting with PCImgCnv.
+
+Only available when a track layout has been generated.</value>
+  </data>
+  <data name="Flux_ExtendedLogOutput" xml:space="preserve">
+    <value>Capture verbose Kryoflux output (read and cell-decode
+events) in the conversion log.</value>
+  </data>
+  <data name="Flux_OpenFile" xml:space="preserve">
+    <value>Open a different flux image set or sector image to convert.</value>
+  </data>
+  <data name="Flux_PreviewConvert" xml:space="preserve">
+    <value>Preview the contents of the currently converted image.</value>
+  </data>
+  <data name="Flux_TrackLayout" xml:space="preserve">
+    <value>View the per-track layout PCImgCnv produced during conversion.</value>
+  </data>
+  <data name="Flux_Modifications" xml:space="preserve">
+    <value>View the per-sector modifications PCImgCnv applied during conversion.</value>
+  </data>
+  <data name="Flux_OutputSource" xml:space="preserve">
+    <value>When the same flux set has been processed by more than
+one tool, pick which tool's output is used for import.</value>
+  </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Allowed Values: {0}</value>
   </data>

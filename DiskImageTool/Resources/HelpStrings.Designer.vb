@@ -349,6 +349,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Include raw flux surface data in the .86F output.
+        '''
+        '''Only available with PCImgCnv when the output type is .86F..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_86FSurfaceData() As String
+            Get
+                Return ResourceManager.GetString("Flux_86FSurfaceData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Automatically save the conversion log alongside the
+        '''flux image set when the conversion succeeds..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_AutoSaveLog() As String
+            Get
+                Return ResourceManager.GetString("Flux_AutoSaveLog", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Clean the heads of the floppy drive in the selected
+        '''drive bay using a cleaning disk..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Clean() As String
+            Get
+                Return ResourceManager.GetString("Flux_Clean", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Continue writing the remaining tracks if a track fails
+        '''verification, instead of aborting the run..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ContinueAfterFailure() As String
+            Get
+                Return ResourceManager.GetString("Flux_ContinueAfterFailure", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Convert the currently loaded flux image set into the
         '''selected image type without re-reading the drive..
         '''</summary>
@@ -368,6 +409,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to The flux processing tool used to decode the loaded
+        '''flux image set (Greaseweazle, Kryoflux, or PCImgCnv)..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Device() As String
+            Get
+                Return ResourceManager.GetString("Flux_Device", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Discard the currently loaded image or image set..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Discard() As String
@@ -382,6 +433,38 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Flux_DoubleStep() As String
             Get
                 Return ResourceManager.GetString("Flux_DoubleStep", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erase the floppy disk in the selected drive.
+        '''
+        '''When Select Tracks is enabled, only the tracks selected
+        '''in the grid are erased..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Erase() As String
+            Get
+                Return ResourceManager.GetString("Flux_Erase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Write erase patterns to tracks that contain no data
+        '''instead of leaving them as-is..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_EraseEmpty() As String
+            Get
+                Return ResourceManager.GetString("Flux_EraseEmpty", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Capture verbose Kryoflux output (read and cell-decode
+        '''events) in the conversion log..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ExtendedLogOutput() As String
+            Get
+                Return ResourceManager.GetString("Flux_ExtendedLogOutput", resourceCulture)
             End Get
         End Property
         
@@ -442,6 +525,45 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to View the per-sector modifications PCImgCnv applied during conversion..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Modifications() As String
+            Get
+                Return ResourceManager.GetString("Flux_Modifications", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Skip post-write verification.
+        '''
+        '''Faster but does not detect write errors..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_NoVerify() As String
+            Get
+                Return ResourceManager.GetString("Flux_NoVerify", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Open a different flux image set or sector image to convert..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_OpenFile() As String
+            Get
+                Return ResourceManager.GetString("Flux_OpenFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to When the same flux set has been processed by more than
+        '''one tool, pick which tool&apos;s output is used for import..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_OutputSource() As String
+            Get
+                Return ResourceManager.GetString("Flux_OutputSource", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Filename prefix for the .raw track files in the flux
         '''image set (for example, &quot;track&quot; produces track00.0.raw,
         '''track00.1.raw, ...).
@@ -459,6 +581,17 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Erase each track before writing it.
+        '''
+        '''Slower but more reliable on worn or previously formatted media..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_PreErase() As String
+            Get
+                Return ResourceManager.GetString("Flux_PreErase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Preview the contents of the disk in the selected drive
         '''without saving an image, or preview the currently
         '''loaded image.
@@ -469,6 +602,28 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Flux_Preview() As String
             Get
                 Return ResourceManager.GetString("Flux_Preview", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Preview the contents of the currently converted image..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_PreviewConvert() As String
+            Get
+                Return ResourceManager.GetString("Flux_PreviewConvert", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Run the conversion against the currently loaded flux
+        '''image set.
+        '''
+        '''When Select Tracks is enabled, only the tracks selected
+        '''in the grid are reconverted..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Process() As String
+            Get
+                Return ResourceManager.GetString("Flux_Process", resourceCulture)
             End Get
         End Property
         
@@ -495,6 +650,17 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Flux_Refine() As String
             Get
                 Return ResourceManager.GetString("Flux_Refine", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Apply the saved track layout while reconverting with PCImgCnv.
+        '''
+        '''Only available when a track layout has been generated..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Remaster() As String
+            Get
+                Return ResourceManager.GetString("Flux_Remaster", resourceCulture)
             End Get
         End Property
         
@@ -559,6 +725,59 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to View the per-track layout PCImgCnv produced during conversion..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_TrackLayout() As String
+            Get
+                Return ResourceManager.GetString("Flux_TrackLayout", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Write the loaded image to the floppy disk in the
+        '''selected drive.
+        '''
+        '''When Select Tracks is enabled, only the tracks selected
+        '''in the grid are written..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Write() As String
+            Get
+                Return ResourceManager.GetString("Flux_Write", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Number of cylinders to clean.
+        '''
+        '''Most drives use 40 (5.25&quot; double density) or 80
+        '''(everything else)..
+        '''</summary>
+        Friend Shared ReadOnly Property Greaseweazle_CleanCyls() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_CleanCyls", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Time in milliseconds the head will linger on each
+        '''cylinder during a pass..
+        '''</summary>
+        Friend Shared ReadOnly Property Greaseweazle_CleanLinger() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_CleanLinger", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Number of cleaning passes to make..
+        '''</summary>
+        Friend Shared ReadOnly Property Greaseweazle_CleanPasses() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_CleanPasses", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Reset the Greaseweazle device to power-on default state..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_DeviceReset() As String
@@ -585,6 +804,17 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Greaseweazle_FileExt() As String
             Get
                 Return ResourceManager.GetString("Greaseweazle_FileExt", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erase using a high-frequency signal instead of the
+        '''default DC erase. Use this for media that does not
+        '''respond to a normal erase..
+        '''</summary>
+        Friend Shared ReadOnly Property Greaseweazle_Hfreq() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_Hfreq", resourceCulture)
             End Get
         End Property
         

@@ -50,7 +50,6 @@ Namespace Flux.Greaseweazle
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
         Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
-        Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
@@ -80,7 +79,6 @@ Namespace Flux.Greaseweazle
             ReadCmd = Engine.Read
 
             _UserState = App.UserState.Flux
-            _HelpProvider1 = New HelpProvider
             _Status = New TrackStatus()
             TrackStatus = _Status
 
@@ -1682,13 +1680,6 @@ Namespace Flux.Greaseweazle
                 TextBoxPrefixName.Text = DEFAULT_RAW_FILE_NAME
                 TextBoxFolderName.Text = ""
             End If
-        End Sub
-
-        Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
-            For Each Control In ControlArray
-                _HelpProvider1.SetHelpString(Control, HelpString.Replace("\t", vbTab))
-                _HelpProvider1.SetShowHelp(Control, True)
-            Next
         End Sub
 
         Private Sub SetRootFolder(Path As String)

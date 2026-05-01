@@ -30,6 +30,9 @@ Namespace Flux
         Private WithEvents TextBoxFileName As TextBox
         Private _CheckBox86FSurfaceData As CheckBox
         Private _CheckBoxRemaster As CheckBox
+        Private _LabelDevice As Label
+        Private _LabelFileName As Label
+        Private _LabelImageFormat As Label
         Private _LabelOutputSource As Label
         Private _LabelOutputType As Label
 #End Region
@@ -79,6 +82,9 @@ Namespace Flux
             _FluxHeaders = FluxSetinfo.Headers
 
             InitializeControls()
+            InitializeHelp()
+
+            Me.HelpButton = True
 
             RefreshRemasterState()
             InitializeDevice(True)
@@ -445,7 +451,7 @@ Namespace Flux
         End Sub
 
         Private Sub InitializeControls()
-            Dim LabelDevice As New Label With {
+            _LabelDevice = New Label With {
                 .Text = My.Resources.Label_Device,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -487,7 +493,7 @@ Namespace Flux
                 .Visible = False
             }
 
-            Dim LabelFileName As New Label With {
+            _LabelFileName = New Label With {
                 .Text = My.Resources.Label_FileName,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -504,7 +510,7 @@ Namespace Flux
                 .DropDownStyle = ComboBoxStyle.DropDownList
             }
 
-            Dim LabelImageFormat As New Label With {
+            _LabelImageFormat = New Label With {
                 .Text = My.Resources.Label_ImageFormat,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -674,7 +680,7 @@ Namespace Flux
                 .ColumnStyles(0).Width = 100
 
                 Row = 0
-                .Controls.Add(LabelDevice, 0, Row)
+                .Controls.Add(_LabelDevice, 0, Row)
                 .Controls.Add(ComboDevices, 1, Row)
 
                 .Controls.Add(CheckBoxExtendedLogging, 2, Row)
@@ -689,14 +695,14 @@ Namespace Flux
                 .SetColumnSpan(CheckBoxSaveLog, 2)
 
                 Row = 1
-                .Controls.Add(LabelFileName, 0, Row)
+                .Controls.Add(_LabelFileName, 0, Row)
                 .Controls.Add(TextBoxFileName, 1, Row)
                 .SetColumnSpan(TextBoxFileName, 4)
                 .Controls.Add(ComboExtensions, 4, Row)
                 .Controls.Add(ButtonOpen, 6, Row)
 
                 Row = 2
-                .Controls.Add(LabelImageFormat, 0, Row)
+                .Controls.Add(_LabelImageFormat, 0, Row)
                 .Controls.Add(ComboImageFormat, 1, Row)
                 .SetColumnSpan(ComboImageFormat, 2)
 
@@ -717,6 +723,40 @@ Namespace Flux
 
                 .ResumeLayout()
             End With
+        End Sub
+
+        Private Sub InitializeHelp()
+            SetHelpString(My.Resources.HelpStrings.Flux_Device, _LabelDevice, ComboDevices)
+            SetHelpString(My.Resources.HelpStrings.Flux_AutoSaveLog, CheckBoxSaveLog)
+            SetHelpString(My.Resources.HelpStrings.Flux_86FSurfaceData, _CheckBox86FSurfaceData)
+            SetHelpString(My.Resources.HelpStrings.Flux_Remaster, _CheckBoxRemaster)
+            SetHelpString(My.Resources.HelpStrings.Flux_ExtendedLogOutput, CheckBoxExtendedLogging)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_ReadFilename, _LabelFileName, TextBoxFileName)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt, ComboExtensions)
+            SetHelpString(My.Resources.HelpStrings.Flux_Format, _LabelImageFormat, ComboImageFormat)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageType, _LabelOutputType, ComboOutputType)
+            SetHelpString(My.Resources.HelpStrings.Flux_DoubleStep, CheckBoxDoublestep)
+            SetHelpString(My.Resources.HelpStrings.Flux_OpenFile, ButtonOpen)
+            SetHelpString(My.Resources.HelpStrings.Flux_PreviewConvert, ButtonPreview)
+            SetHelpString(My.Resources.HelpStrings.Flux_Process, ButtonProcess)
+            SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
+            SetHelpString(My.Resources.HelpStrings.Flux_TrackLayout, ButtonTrackLayout)
+            SetHelpString(My.Resources.HelpStrings.Flux_Modifications, ButtonModifications)
+            SetHelpString(My.Resources.HelpStrings.Flux_OutputSource, _LabelOutputSource, ComboOutputSource)
+
+            RefreshImportButtonsHelp()
+        End Sub
+
+        Private Sub RefreshImportButtonsHelp()
+            Dim Mode As ConversionMode = If(ButtonImport.SelectedValue Is Nothing, ConversionMode.Import, CType(ButtonImport.SelectedValue, ConversionMode))
+
+            If Mode = ConversionMode.Save Then
+                SetHelpString(My.Resources.HelpStrings.Flux_Save, ButtonImport)
+                SetHelpString(My.Resources.HelpStrings.Flux_SaveClose, ButtonImportAndClose)
+            Else
+                SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
+                SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
+            End If
         End Sub
 
         Private Sub InitializeDevice(Repopulate As Boolean)
@@ -1382,6 +1422,8 @@ Namespace Flux
             App.UserState.Flux.Convert.ConversionMode = Mode
 
             _ImportButtonNoEvent = False
+
+            RefreshImportButtonsHelp()
         End Sub
 
         Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonImportAndClose.Click

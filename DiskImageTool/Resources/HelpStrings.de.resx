@@ -360,6 +360,115 @@ in spitze Klammern (&lt; &gt;) einschließen. Zum Beispiel: seite&lt;1&gt;.
 Die Zahl in den Klammern wird für jeden weiteren Lesevorgang
 automatisch erhöht.</value>
   </data>
+  <data name="Flux_Clean" xml:space="preserve">
+    <value>Reinigt die Köpfe des Diskettenlaufwerks im
+ausgewählten Laufwerksschacht mit einer Reinigungsdiskette.</value>
+  </data>
+  <data name="Flux_Erase" xml:space="preserve">
+    <value>Löscht die Diskette im ausgewählten Laufwerk.
+
+Wenn Spuren auswählen aktiviert ist, werden nur die im
+Raster ausgewählten Spuren gelöscht.</value>
+  </data>
+  <data name="Flux_Write" xml:space="preserve">
+    <value>Schreibt das geladene Image auf die Diskette im
+ausgewählten Laufwerk.
+
+Wenn Spuren auswählen aktiviert ist, werden nur die im
+Raster ausgewählten Spuren geschrieben.</value>
+  </data>
+  <data name="Flux_Process" xml:space="preserve">
+    <value>Führt die Konvertierung für das aktuell geladene
+Flux-Image-Set aus.
+
+Wenn Spuren auswählen aktiviert ist, werden nur die im
+Raster ausgewählten Spuren neu konvertiert.</value>
+  </data>
+  <data name="Greaseweazle_CleanCyls" xml:space="preserve">
+    <value>Anzahl der zu reinigenden Zylinder.
+
+Die meisten Laufwerke verwenden 40 (5,25" doppelte Dichte)
+oder 80 (alle anderen).</value>
+  </data>
+  <data name="Greaseweazle_CleanPasses" xml:space="preserve">
+    <value>Anzahl der durchzuführenden Reinigungsdurchgänge.</value>
+  </data>
+  <data name="Greaseweazle_CleanLinger" xml:space="preserve">
+    <value>Zeit in Millisekunden, die der Kopf während eines
+Durchgangs auf jedem Zylinder verweilt.</value>
+  </data>
+  <data name="Greaseweazle_Hfreq" xml:space="preserve">
+    <value>Löschen mit einem Hochfrequenzsignal anstelle des
+standardmäßigen DC-Löschens. Verwenden Sie dies für
+Medien, die nicht auf eine normale Löschung reagieren.</value>
+  </data>
+  <data name="Flux_PreErase" xml:space="preserve">
+    <value>Jede Spur vor dem Schreiben löschen.
+
+Langsamer, aber zuverlässiger bei abgenutzten oder
+zuvor formatierten Medien.</value>
+  </data>
+  <data name="Flux_EraseEmpty" xml:space="preserve">
+    <value>Löschmuster auf Spuren schreiben, die keine Daten
+enthalten, anstatt sie unverändert zu lassen.</value>
+  </data>
+  <data name="Flux_NoVerify" xml:space="preserve">
+    <value>Überprüfung nach dem Schreiben überspringen.
+
+Schneller, erkennt aber keine Schreibfehler.</value>
+  </data>
+  <data name="Flux_ContinueAfterFailure" xml:space="preserve">
+    <value>Mit dem Schreiben der verbleibenden Spuren fortfahren,
+wenn eine Spur die Überprüfung nicht besteht, anstatt
+den Vorgang abzubrechen.</value>
+  </data>
+  <data name="Flux_Device" xml:space="preserve">
+    <value>Das Flux-Verarbeitungstool, das zum Dekodieren des
+geladenen Flux-Image-Sets verwendet wird (Greaseweazle,
+Kryoflux oder PCImgCnv).</value>
+  </data>
+  <data name="Flux_AutoSaveLog" xml:space="preserve">
+    <value>Speichert das Konvertierungsprotokoll automatisch
+neben dem Flux-Image-Set, wenn die Konvertierung
+erfolgreich ist.</value>
+  </data>
+  <data name="Flux_86FSurfaceData" xml:space="preserve">
+    <value>Rohe Flux-Oberflächendaten in die .86F-Ausgabe
+einbeziehen.
+
+Nur mit PCImgCnv verfügbar, wenn der Ausgabetyp
+.86F ist.</value>
+  </data>
+  <data name="Flux_Remaster" xml:space="preserve">
+    <value>Wendet das gespeicherte Spurenlayout bei der
+Neukonvertierung mit PCImgCnv an.
+
+Nur verfügbar, wenn ein Spurenlayout generiert wurde.</value>
+  </data>
+  <data name="Flux_ExtendedLogOutput" xml:space="preserve">
+    <value>Erfasst die ausführliche Kryoflux-Ausgabe (Lese- und
+Zellendekodierungsereignisse) im Konvertierungsprotokoll.</value>
+  </data>
+  <data name="Flux_OpenFile" xml:space="preserve">
+    <value>Öffnet ein anderes Flux-Image-Set oder Sektor-Image
+zur Konvertierung.</value>
+  </data>
+  <data name="Flux_PreviewConvert" xml:space="preserve">
+    <value>Vorschau des Inhalts des aktuell konvertierten Images.</value>
+  </data>
+  <data name="Flux_TrackLayout" xml:space="preserve">
+    <value>Zeigt das spurweise Layout an, das PCImgCnv während
+der Konvertierung erzeugt hat.</value>
+  </data>
+  <data name="Flux_Modifications" xml:space="preserve">
+    <value>Zeigt die sektorweisen Änderungen an, die PCImgCnv
+während der Konvertierung angewendet hat.</value>
+  </data>
+  <data name="Flux_OutputSource" xml:space="preserve">
+    <value>Wenn das gleiche Flux-Set von mehr als einem Tool
+verarbeitet wurde, wählen Sie aus, welche Tool-Ausgabe
+für den Import verwendet wird.</value>
+  </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Zulässige Werte: {0}</value>
   </data>
