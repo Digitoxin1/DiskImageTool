@@ -67,7 +67,6 @@ Namespace Flux.Greaseweazle
         Private _NumericRevsNoEvent As Boolean = False
         Private _OutputDoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
-        Private _RefineThrowawayPath As String = ""
         Private _SelectedOption As DriveOption
 
         Public Event ImportProcess(File As String, NewFilename As String)
@@ -206,11 +205,6 @@ Namespace Flux.Greaseweazle
                 End If
                 HideSelection(False)
                 _FileReprocessMode = False
-
-                If Not String.IsNullOrEmpty(_RefineThrowawayPath) Then
-                    DeleteTempFileIfExists(_RefineThrowawayPath)
-                    _RefineThrowawayPath = ""
-                End If
             End If
 
             RefreshFormState()
@@ -288,7 +282,7 @@ Namespace Flux.Greaseweazle
             }
         End Function
 
-        Private Function BuildRefineConvertOptions(inputFilePath As String, outputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
+        Private Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
             Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
             Dim Format = GreaseweazleImageFormatCommandLine(ImageFormat)
 
@@ -298,7 +292,7 @@ Namespace Flux.Greaseweazle
                 TrackSet.Step = 2
             End If
 
-            Return New ConvertOptions With {.InputFile = inputFilePath, .OutputFile = outputFilePath, .Format = Format, .TrackSet = TrackSet}
+            Return New ConvertOptions With {.InputFile = inputFilePath, .Format = Format, .TrackSet = TrackSet}
         End Function
 
         Private Sub CacheFilenameTemplate()
@@ -1384,8 +1378,6 @@ Namespace Flux.Greaseweazle
             _OutputFilePath = IO.Path.Combine(TempFolder, FluxGetFirstTrackFileName(Info.Prefix))
             _OutputDoubleStep = _SelectedOption IsNot Nothing AndAlso UseDoubleStep(_SelectedOption.Type, DetectedFormat)
 
-            _RefineThrowawayPath = IO.Path.Combine(TempRoot, Guid.NewGuid.ToString("N") & ".ima")
-
             CheckBoxSelect.Checked = True
 
             TrackStatus.Clear()
@@ -1393,7 +1385,7 @@ Namespace Flux.Greaseweazle
 
             Dim Opts As ConvertOptions
             Try
-                Opts = BuildRefineConvertOptions(_OutputFilePath, _RefineThrowawayPath, DiskParams.Value, _OutputDoubleStep)
+                Opts = BuildRefineConvertOptions(_OutputFilePath, DiskParams.Value, _OutputDoubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
