@@ -67,7 +67,7 @@
             Return Response
         End Function
 
-        Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
+        Friend Sub ProcessOutputLineRead(line As String, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
             Dim DTCTrack = ParseTrack(line)
 
             If DTCTrack IsNot Nothing Then

@@ -1634,7 +1634,7 @@ Namespace Flux
 
         Private Sub Process_DataReceived(Data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
             _ConsoleQueue.Enqueue(Data)
-            TrackStatus.ProcessOutputLineRead(Data, ActionTypeEnum.Import, _DoubleStep)
+            TrackStatus.ProcessOutputLineRead(Data, _DoubleStep)
 
             If Not ConsoleTimer.Enabled Then
                 ConsoleTimer.Start()

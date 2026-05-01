@@ -8,7 +8,7 @@
         Function CanKeepProcessing() As Boolean
         Sub Clear()
         Function GetNextTrackRange() As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads, [Continue] As Boolean)
-        Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+        Sub ProcessOutputLineRead(line As String, DoubleStep As Boolean)
         Sub UpdateTrackStatusAborted()
         Sub UpdateTrackStatusComplete(DoubleStep As Boolean, Optional KeepProcessing As Boolean = False)
         Sub UpdateTrackStatusError()

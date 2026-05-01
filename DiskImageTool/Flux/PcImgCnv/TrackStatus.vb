@@ -69,7 +69,7 @@
             Return Response
         End Function
 
-        Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
+        Friend Sub ProcessOutputLineRead(line As String, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
             Dim RawSector = ParseRawSector(line)
 
             If RawSector.HasValue Then

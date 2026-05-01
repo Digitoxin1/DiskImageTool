@@ -87,7 +87,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Public Sub OnConvertUnexpectedSector(args As UnexpectedSectorEventArgs, doubleStep As Boolean)
-            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Import, ActionTypeEnum.Read, doubleStep)
+            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Read, doubleStep)
         End Sub
 
         Public Sub OnEraseTrack(args As EraseTrackEventArgs)
@@ -120,7 +120,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Public Sub OnReadUnexpectedSector(args As UnexpectedSectorEventArgs, doubleStep As Boolean)
-            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Read, ActionTypeEnum.Read, doubleStep)
+            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Read, doubleStep)
         End Sub
 
         Public Sub OnSummary(grid As SectorSummaryGrid)
@@ -264,7 +264,7 @@ Namespace Flux.Greaseweazle
             }
         End Sub
 
-        Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
+        Friend Sub ProcessOutputLineRead(line As String, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
             'Unused
         End Sub
 
@@ -307,7 +307,7 @@ Namespace Flux.Greaseweazle
 
             If Statusinfo.Failed Then
                 Status = TrackStatusEnum.Failed
-                If Statusinfo.Action = ActionTypeEnum.Read OrElse Statusinfo.Action = ActionTypeEnum.Import Then
+                If Statusinfo.IsReadStatus Then
                     Label = Statusinfo.BadSectors
                 Else
                     Label = Statusinfo.Retries
@@ -450,7 +450,7 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub UpdateStatusUnexpectedSector(args As UnexpectedSectorEventArgs, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
+        Private Sub UpdateStatusUnexpectedSector(args As UnexpectedSectorEventArgs, Action As ActionTypeEnum, DoubleStep As Boolean)
             Dim StatusInfo = GetStatusInfo(args.Track)
 
             Dim Key = GetUnexpectedSectorKey(args)
@@ -460,17 +460,13 @@ Namespace Flux.Greaseweazle
                 _TotalUnexpectedSectors += 1
             End If
 
-            UpdateTrackStatus(StatusInfo, InfoAction, Action, DoubleStep)
+            UpdateTrackStatus(StatusInfo, Action, DoubleStep)
         End Sub
 
         Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum, DoubleStep As Boolean)
-            UpdateTrackStatus(Statusinfo, Action, Action, DoubleStep)
-        End Sub
-
-        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
             SetCurrentTrackStatusComplete(DoubleStep)
 
-            Statusinfo.Action = InfoAction
+            Statusinfo.IsReadStatus = (Action = ActionTypeEnum.Read)
 
             _CurrentStatusInfo = Statusinfo
 
@@ -484,12 +480,12 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Class TrackStatusInfo
-            Public Property Action As ActionTypeEnum
             Public Property BadSectorList As New List(Of UShort)
             Public Property BadSectors As UShort = 0
             Public Property Failed As Boolean
             Public Property OutOfRange As Boolean = False
             Public Property OutOfRangeFormat As String = ""
+            Public Property IsReadStatus As Boolean
             Public Property Retries As UShort = 0
             Public Property Side As Integer
             Public Property Track As Integer

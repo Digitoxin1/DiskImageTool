@@ -1,11 +1,9 @@
 ﻿Namespace Flux
     Module Enums
         Enum ActionTypeEnum
-            Unknown
             Read
             Write
             [Erase]
-            Import
             Complete
         End Enum
 
