@@ -246,10 +246,14 @@ Greaseweazle Configuration in the Options menu.</value>
     <value>The format of the floppy disk in the selected drive.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>Output Image Type</value>
+    <value>The output type for the read.
+
+Flux Image Set saves the raw flux as a .raw set that
+can be re-converted later. The other types (.ima, .img,
+.hfe, ...) decode the disk directly into a sector image.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>The imported file’s name.
+    <value>The output file’s name.
 
 You can create a filename template by enclosing any
 number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
@@ -258,19 +262,23 @@ The number inside the brackets will automatically
 increment for each subsequent read.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
-    <value>The imported file's extension.</value>
+    <value>The output file's extension.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Save a log file in the parent folder alongside the image set.
+    <value>Save a log file alongside the flux image set,
+capturing the Greaseweazle console output for the run.
 
-The log file name can be configured under 
+The log file name can be configured under
 Greaseweazle Configuration in the Options menu.</value>
   </data>
   <data name="Flux_Discard" xml:space="preserve">
     <value>Discard the currently loaded image or image set.</value>
   </data>
   <data name="Flux_Read" xml:space="preserve">
-    <value>Read a floppy disk from the selected drive to the selected output type.</value>
+    <value>Read a floppy disk from the selected drive to the selected output type.
+
+When Select Tracks is enabled, only the tracks
+selected in the grid below are re-read.</value>
   </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>The root folder for your flux image sets.
@@ -294,7 +302,60 @@ Greaseweazle Configuration in the Options menu.</value>
     <value>Save the currently loaded image set and close this dialog.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
-    <value>Convert the currently loaded image set.</value>
+    <value>Convert the currently loaded flux image set into the
+selected image type without re-reading the drive.</value>
+  </data>
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>Preview the contents of the disk in the selected drive
+without saving an image, or preview the currently
+loaded image.
+
+For an unread disk, the first track is read and the
+directory listing is displayed.</value>
+  </data>
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>Open an existing flux image set (.raw) and load its
+current state into the track grid.
+
+The form is then placed in select-tracks mode so
+individual tracks can be re-read against the original
+flux set.</value>
+  </data>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>Browse for the root folder where flux image sets are saved.</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>Wrap or unwrap the current number with angle brackets
+(&lt; &gt;) in the focused filename, folder, or prefix field.
+
+A bracketed number is auto-incremented after each read.</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>Enable per-track selection in the grid below.
+
+When checked, only the tracks selected in the grid
+are re-read on the next Read.</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>The subfolder under the Root Folder where the flux
+image set is saved.
+
+You can create a folder name template by enclosing any
+number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
+
+The number inside the brackets will automatically
+increment for each subsequent read.</value>
+  </data>
+  <data name="Flux_PrefixName" xml:space="preserve">
+    <value>Filename prefix for the .raw track files in the flux
+image set (for example, "track" produces track00.0.raw,
+track00.1.raw, ...).
+
+You can create a prefix template by enclosing any
+number in angle brackets (&lt; &gt;). For example: side&lt;1&gt;.
+
+The number inside the brackets will automatically
+increment for each subsequent read.</value>
   </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Allowed Values: {0}</value>

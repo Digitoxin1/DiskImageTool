@@ -22,7 +22,7 @@ Namespace My.Resources
     '''<summary>
     '''  A strongly-typed resource class, for looking up localized strings, etc.
     '''</summary>
-    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0"),  _
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
     Friend Class HelpStrings
@@ -349,7 +349,8 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Convert the currently loaded image set..
+        '''  Looks up a localized string similar to Convert the currently loaded flux image set into the
+        '''selected image type without re-reading the drive..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Convert() As String
             Get
@@ -385,6 +386,22 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to The subfolder under the Root Folder where the flux
+        '''image set is saved.
+        '''
+        '''You can create a folder name template by enclosing any
+        '''number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
+        '''
+        '''The number inside the brackets will automatically
+        '''increment for each subsequent read..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_FolderName() As String
+            Get
+                Return ResourceManager.GetString("Flux_FolderName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to The format of the floppy disk in the selected drive..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Format() As String
@@ -394,7 +411,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Output Image Type.
+        '''  Looks up a localized string similar to The output type for the read.
+        '''
+        '''Flux Image Set saves the raw flux as a .raw set that
+        '''can be re-converted later. The other types (.ima, .img,
+        '''.hfe, ...) decode the disk directly into a sector image..
         '''</summary>
         Friend Shared ReadOnly Property Flux_ImageType() As String
             Get
@@ -421,11 +442,68 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Read a floppy disk from the selected drive to the selected output type..
+        '''  Looks up a localized string similar to Filename prefix for the .raw track files in the flux
+        '''image set (for example, &quot;track&quot; produces track00.0.raw,
+        '''track00.1.raw, ...).
+        '''
+        '''You can create a prefix template by enclosing any
+        '''number in angle brackets (&lt; &gt;). For example: side&lt;1&gt;.
+        '''
+        '''The number inside the brackets will automatically
+        '''increment for each subsequent read..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_PrefixName() As String
+            Get
+                Return ResourceManager.GetString("Flux_PrefixName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Preview the contents of the disk in the selected drive
+        '''without saving an image, or preview the currently
+        '''loaded image.
+        '''
+        '''For an unread disk, the first track is read and the
+        '''directory listing is displayed..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Preview() As String
+            Get
+                Return ResourceManager.GetString("Flux_Preview", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Read a floppy disk from the selected drive to the selected output type.
+        '''
+        '''When Select Tracks is enabled, only the tracks
+        '''selected in the grid below are re-read..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Read() As String
             Get
                 Return ResourceManager.GetString("Flux_Read", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Open an existing flux image set (.raw) and load its
+        '''current state into the track grid.
+        '''
+        '''The form is then placed in select-tracks mode so
+        '''individual tracks can be re-read against the original
+        '''flux set..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Refine() As String
+            Get
+                Return ResourceManager.GetString("Flux_Refine", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Browse for the root folder where flux image sets are saved..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_RootBrowse() As String
+            Get
+                Return ResourceManager.GetString("Flux_RootBrowse", resourceCulture)
             End Get
         End Property
         
@@ -457,6 +535,30 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Enable per-track selection in the grid below.
+        '''
+        '''When checked, only the tracks selected in the grid
+        '''are re-read on the next Read..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_SelectTracks() As String
+            Get
+                Return ResourceManager.GetString("Flux_SelectTracks", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Wrap or unwrap the current number with angle brackets
+        '''(&lt; &gt;) in the focused filename, folder, or prefix field.
+        '''
+        '''A bracketed number is auto-incremented after each read..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ToggleSequence() As String
+            Get
+                Return ResourceManager.GetString("Flux_ToggleSequence", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Reset the Greaseweazle device to power-on default state..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_DeviceReset() As String
@@ -478,7 +580,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The imported file&apos;s extension..
+        '''  Looks up a localized string similar to The output file&apos;s extension..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_FileExt() As String
             Get
@@ -487,7 +589,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The imported file’s name.
+        '''  Looks up a localized string similar to The output file’s name.
         '''
         '''You can create a filename template by enclosing any
         '''number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
@@ -532,9 +634,10 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Save a log file in the parent folder alongside the image set.
+        '''  Looks up a localized string similar to Save a log file alongside the flux image set,
+        '''capturing the Greaseweazle console output for the run.
         '''
-        '''The log file name can be configured under 
+        '''The log file name can be configured under
         '''Greaseweazle Configuration in the Options menu..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_SaveLog() As String

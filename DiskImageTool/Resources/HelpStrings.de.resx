@@ -246,10 +246,15 @@ Greaseweazle-Konfiguration im Optionsmenü angepasst werden.</value>
     <value>Das Format der Diskette im ausgewählten Laufwerk.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>Ausgabe-Image-Typ</value>
+    <value>Der Ausgabetyp für den Lesevorgang.
+
+Flux-Image-Set speichert den rohen Flux als .raw-Set,
+das später erneut konvertiert werden kann. Die anderen
+Typen (.ima, .img, .hfe, ...) dekodieren die Diskette
+direkt in ein Sektor-Image.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>Der Name der importierten Datei.
+    <value>Der Name der Ausgabedatei.
 
 Sie können eine Dateinamen-Vorlage erstellen, indem Sie eine Zahl
 in spitze Klammern (&lt; &gt;) einschließen. Zum Beispiel: Disk &lt;1&gt; von 3.
@@ -258,10 +263,11 @@ Die Zahl in den Klammern wird für jeden weiteren Lesevorgang
 automatisch erhöht.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
-    <value>Die Erweiterung der importierten Datei.</value>
+    <value>Die Erweiterung der Ausgabedatei.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Eine Protokolldatei im übergeordneten Ordner neben dem Image-Set speichern.
+    <value>Eine Protokolldatei neben dem Flux-Image-Set speichern,
+die die Greaseweazle-Konsolenausgabe des Vorgangs erfasst.
 
 Der Name der Protokolldatei kann unter
 Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
@@ -270,7 +276,10 @@ Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
     <value>Das geladene Image oder Image-Set verwerfen.</value>
   </data>
   <data name="Flux_Read" xml:space="preserve">
-    <value>Eine Diskette vom ausgewählten Laufwerk in den gewählten Ausgabetyp einlesen.</value>
+    <value>Eine Diskette vom ausgewählten Laufwerk in den gewählten Ausgabetyp einlesen.
+
+Wenn Spuren auswählen aktiviert ist, werden nur die im
+unteren Raster ausgewählten Spuren erneut gelesen.</value>
   </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>Der Stammordner für Ihre Flux-Image-Sets.
@@ -294,7 +303,62 @@ Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
     <value>Das geladene Image-Set speichern und diesen Dialog schließen.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
-    <value>Das geladene Image-Set konvertieren.</value>
+    <value>Das geladene Flux-Image-Set in den ausgewählten
+Image-Typ konvertieren, ohne das Laufwerk erneut zu lesen.</value>
+  </data>
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>Den Inhalt der Diskette im ausgewählten Laufwerk in der
+Vorschau anzeigen, ohne ein Image zu speichern, oder das
+aktuell geladene Image in der Vorschau anzeigen.
+
+Bei einer noch nicht gelesenen Diskette wird die erste Spur
+gelesen und das Verzeichnis-Listing angezeigt.</value>
+  </data>
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>Ein vorhandenes Flux-Image-Set (.raw) öffnen und seinen
+aktuellen Zustand in das Spuren-Raster laden.
+
+Das Formular wird anschließend in den Spurenauswahl-Modus
+versetzt, sodass einzelne Spuren erneut gegen das ursprüngliche
+Flux-Set gelesen werden können.</value>
+  </data>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>Nach dem Stammordner suchen, in dem Flux-Image-Sets gespeichert werden.</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>Die spitzen Klammern (&lt; &gt;) um die aktuelle Zahl im
+fokussierten Dateinamen-, Ordner- oder Präfixfeld setzen
+oder entfernen.
+
+Eine in Klammern eingeschlossene Zahl wird nach jedem
+Lesevorgang automatisch erhöht.</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>Spurweise Auswahl im unteren Raster aktivieren.
+
+Wenn aktiviert, werden beim nächsten Lesevorgang nur die
+im Raster ausgewählten Spuren erneut gelesen.</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>Der Unterordner unter dem Stammordner, in dem das
+Flux-Image-Set gespeichert wird.
+
+Sie können eine Ordnername-Vorlage erstellen, indem Sie eine Zahl
+in spitze Klammern (&lt; &gt;) einschließen. Zum Beispiel: Disk &lt;1&gt; von 3.
+
+Die Zahl in den Klammern wird für jeden weiteren Lesevorgang
+automatisch erhöht.</value>
+  </data>
+  <data name="Flux_PrefixName" xml:space="preserve">
+    <value>Dateinamen-Präfix für die .raw-Spurdateien im
+Flux-Image-Set (z. B. ergibt "track" track00.0.raw,
+track00.1.raw, ...).
+
+Sie können eine Präfix-Vorlage erstellen, indem Sie eine Zahl
+in spitze Klammern (&lt; &gt;) einschließen. Zum Beispiel: seite&lt;1&gt;.
+
+Die Zahl in den Klammern wird für jeden weiteren Lesevorgang
+automatisch erhöht.</value>
   </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Zulässige Werte: {0}</value>

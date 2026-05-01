@@ -246,10 +246,15 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>El formato del disquete en la unidad seleccionada.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>Tipo de imagen de salida</value>
+    <value>El tipo de salida para la lectura.
+
+Conjunto de Imágenes Flux guarda el flujo en bruto como
+un conjunto .raw que se puede reconvertir más tarde. Los
+demás tipos (.ima, .img, .hfe, ...) decodifican el disco
+directamente en una imagen de sectores.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>El nombre del archivo importado.
+    <value>El nombre del archivo de salida.
 
 Puede crear una plantilla de nombre de archivo encerrando un número
 entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
@@ -258,10 +263,11 @@ El número dentro de los corchetes se incrementará automáticamente
 en cada lectura posterior.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
-    <value>La extensión del archivo importado.</value>
+    <value>La extensión del archivo de salida.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Guardar un archivo de registro en la carpeta principal, junto al conjunto de imágenes.
+    <value>Guardar un archivo de registro junto al conjunto de imágenes
+de flujo, capturando la salida de consola de Greaseweazle de la ejecución.
 
 El nombre del archivo de registro se puede configurar en
 Configuración de Greaseweazle en el menú Opciones.</value>
@@ -270,7 +276,10 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>Descartar la imagen o el conjunto de imágenes cargado.</value>
   </data>
   <data name="Flux_Read" xml:space="preserve">
-    <value>Leer un disquete desde la unidad seleccionada al tipo de salida seleccionado.</value>
+    <value>Leer un disquete desde la unidad seleccionada al tipo de salida seleccionado.
+
+Cuando Seleccionar Pistas está habilitado, solo se vuelven
+a leer las pistas seleccionadas en la cuadrícula inferior.</value>
   </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>La carpeta raíz para sus conjuntos de imágenes de flujo.
@@ -294,7 +303,62 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>Guardar el conjunto de imágenes cargado y cerrar este diálogo.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir el conjunto de imágenes cargado.</value>
+    <value>Convertir el conjunto de imágenes de flujo cargado al
+tipo de imagen seleccionado sin volver a leer la unidad.</value>
+  </data>
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>Previsualizar el contenido del disco en la unidad seleccionada
+sin guardar una imagen, o previsualizar la imagen
+actualmente cargada.
+
+Para un disco no leído, se lee la primera pista y se
+muestra la lista del directorio.</value>
+  </data>
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>Abrir un conjunto de imágenes de flujo (.raw) existente y cargar
+su estado actual en la cuadrícula de pistas.
+
+A continuación, el formulario se coloca en modo de selección
+de pistas para que se puedan volver a leer pistas individuales
+contra el conjunto de flujo original.</value>
+  </data>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>Buscar la carpeta raíz donde se guardan los conjuntos de imágenes de flujo.</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>Encerrar o quitar los corchetes angulares (&lt; &gt;) del número
+actual en el campo de nombre de archivo, carpeta o
+prefijo enfocado.
+
+Un número entre corchetes se incrementa automáticamente
+después de cada lectura.</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>Habilitar la selección por pista en la cuadrícula inferior.
+
+Cuando está marcado, solo se vuelven a leer las pistas
+seleccionadas en la cuadrícula en la próxima Lectura.</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>La subcarpeta dentro de la Carpeta Raíz donde se guarda
+el conjunto de imágenes de flujo.
+
+Puede crear una plantilla de nombre de carpeta encerrando un número
+entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
+
+El número dentro de los corchetes se incrementará automáticamente
+en cada lectura posterior.</value>
+  </data>
+  <data name="Flux_PrefixName" xml:space="preserve">
+    <value>Prefijo del nombre de archivo para los archivos .raw de pista
+en el conjunto de imágenes de flujo (por ejemplo, "track" produce
+track00.0.raw, track00.1.raw, ...).
+
+Puede crear una plantilla de prefijo encerrando un número
+entre corchetes angulares (&lt; &gt;). Por ejemplo: cara&lt;1&gt;.
+
+El número dentro de los corchetes se incrementará automáticamente
+en cada lectura posterior.</value>
   </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Valores permitidos: {0}</value>

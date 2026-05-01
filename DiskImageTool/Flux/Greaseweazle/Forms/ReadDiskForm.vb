@@ -1103,7 +1103,14 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
             SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonProcess)
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
+            SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
+            SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
+            SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _LabelRootFolder, TextBoxRootFolder)
+            SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, ButtonRootBrowse)
+            SetHelpString(My.Resources.HelpStrings.Flux_FolderName, _LabelFolderName, TextBoxFolderName)
+            SetHelpString(My.Resources.HelpStrings.Flux_PrefixName, _LabelPrefixName, TextBoxPrefixName)
+            SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence)
 
             InitializeHelpImportButtons(False)
         End Sub

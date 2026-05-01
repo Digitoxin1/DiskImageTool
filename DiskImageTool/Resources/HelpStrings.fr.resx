@@ -246,10 +246,15 @@ Configuration Greaseweazle du menu Options.</value>
     <value>Le format de la disquette dans le lecteur sélectionné.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>Type d’image de sortie</value>
+    <value>Le type de sortie pour la lecture.
+
+Ensemble d’Images Flux enregistre le flux brut sous forme
+d’ensemble .raw qui peut être reconverti plus tard. Les autres
+types (.ima, .img, .hfe, ...) décodent la disquette directement
+en une image de secteurs.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>Le nom du fichier importé.
+    <value>Le nom du fichier de sortie.
 
 Vous pouvez créer un modèle de nom de fichier en entourant
 un nombre par des chevrons (&lt; &gt;). Par exemple : Disque &lt;1&gt; sur 3.
@@ -258,10 +263,11 @@ Le nombre entre crochets sera automatiquement incrémenté
 pour chaque lecture suivante.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
-    <value>L’extension du fichier importé.</value>
+    <value>L’extension du fichier de sortie.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Enregistrer un fichier journal dans le dossier parent, à côté de l’ensemble d’images.
+    <value>Enregistrer un fichier journal à côté de l’ensemble d’images flux,
+capturant la sortie console de Greaseweazle pour l’exécution.
 
 Le nom du fichier journal peut être configuré dans
 Configuration Greaseweazle du menu Options.</value>
@@ -270,7 +276,10 @@ Configuration Greaseweazle du menu Options.</value>
     <value>Ignorer l’image ou l’ensemble d’images chargé.</value>
   </data>
   <data name="Flux_Read" xml:space="preserve">
-    <value>Lire une disquette depuis le lecteur sélectionné vers le type de sortie choisi.</value>
+    <value>Lire une disquette depuis le lecteur sélectionné vers le type de sortie choisi.
+
+Lorsque Sélectionner les pistes est activé, seules les pistes
+sélectionnées dans la grille ci-dessous sont relues.</value>
   </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>Le dossier racine pour vos ensembles d’images flux.
@@ -294,7 +303,61 @@ Configuration Greaseweazle du menu Options.</value>
     <value>Enregistrer l’ensemble d’images chargé et fermer cette boîte de dialogue.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir l’ensemble d’images chargé.</value>
+    <value>Convertir l’ensemble d’images flux chargé vers le type
+d’image sélectionné sans relire le lecteur.</value>
+  </data>
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>Prévisualiser le contenu de la disquette dans le lecteur
+sélectionné sans enregistrer d’image, ou prévisualiser
+l’image actuellement chargée.
+
+Pour une disquette non lue, la première piste est lue et
+la liste du répertoire est affichée.</value>
+  </data>
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>Ouvrir un ensemble d’images flux (.raw) existant et charger
+son état actuel dans la grille des pistes.
+
+Le formulaire est ensuite placé en mode sélection de pistes
+afin que des pistes individuelles puissent être relues
+contre l’ensemble flux d’origine.</value>
+  </data>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>Parcourir pour le dossier racine où sont enregistrés les ensembles d’images flux.</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>Entourer ou supprimer les chevrons (&lt; &gt;) du nombre actuel
+dans le champ de nom de fichier, dossier ou préfixe ayant le focus.
+
+Un nombre entre chevrons est automatiquement incrémenté
+après chaque lecture.</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>Activer la sélection piste par piste dans la grille ci-dessous.
+
+Lorsque coché, seules les pistes sélectionnées dans la grille
+sont relues lors de la prochaine Lecture.</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>Le sous-dossier sous le Dossier Racine où l’ensemble
+d’images flux est enregistré.
+
+Vous pouvez créer un modèle de nom de dossier en entourant
+un nombre par des chevrons (&lt; &gt;). Par exemple : Disque &lt;1&gt; sur 3.
+
+Le nombre entre crochets sera automatiquement incrémenté
+pour chaque lecture suivante.</value>
+  </data>
+  <data name="Flux_PrefixName" xml:space="preserve">
+    <value>Préfixe de nom de fichier pour les fichiers .raw de piste
+dans l’ensemble d’images flux (par exemple, "track" produit
+track00.0.raw, track00.1.raw, ...).
+
+Vous pouvez créer un modèle de préfixe en entourant un nombre
+par des chevrons (&lt; &gt;). Par exemple : face&lt;1&gt;.
+
+Le nombre entre crochets sera automatiquement incrémenté
+pour chaque lecture suivante.</value>
   </data>
   <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
     <value>Valeurs autorisées: {0}</value>
