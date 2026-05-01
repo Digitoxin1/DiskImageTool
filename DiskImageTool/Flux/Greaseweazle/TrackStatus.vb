@@ -4,8 +4,7 @@ Namespace Flux.Greaseweazle
     Public Class TrackStatus
         Implements ITrackStatus
 
-        Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
-        Private ReadOnly _TrackFound As Boolean = True
+        Private ReadOnly _StatusCollection As New Dictionary(Of String, TrackStatusInfo)
 
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
         Private _Failed As Boolean = False
@@ -30,21 +29,9 @@ Namespace Flux.Greaseweazle
         Friend Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
 
-        Public Sub New()
-            MyBase.New
-
-            _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
-        End Sub
-
-        Public ReadOnly Property Failed As Boolean Implements ITrackStatus.Failed
-            Get
-                Return _Failed
-            End Get
-        End Property
-
         Public ReadOnly Property TrackFound As Boolean Implements ITrackStatus.TrackFound
             Get
-                Return _TrackFound
+                Return True
             End Get
         End Property
 
@@ -61,7 +48,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
-            If Not (_CurrentStatusInfo.Track < _Range.TrackEnd Or _CurrentStatusInfo.Side < _Range.HeadEnd) Then
+            If Not (_CurrentStatusInfo.Track < _Range.TrackEnd OrElse _CurrentStatusInfo.Side < _Range.HeadEnd) Then
                 Return False
             End If
 
@@ -77,73 +64,66 @@ Namespace Flux.Greaseweazle
             _Failed = False
         End Sub
 
-        Public Sub OnConvertSummary(grid As SectorSummaryGrid)
-            OnReadSummary(grid)
-        End Sub
+        Public Sub OnConvertTrackProcessed(args As TrackProcessedEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track.Cyl, args.Track.Head)
 
-        Public Sub OnConvertTrackProcessed(cyl As Integer, head As Integer,
-                                           outcome As ConvertTrackOutcome,
-                                           decodedSectorsFound As Integer,
-                                           decodedSectorsTotal As Integer,
-                                           formatName As String,
-                                           doubleStep As Boolean)
-
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-
-            Select Case outcome
-                Case ConvertTrackOutcome.OutOfRange
-                    StatusInfo.Action = ActionTypeEnum.Read
+            Select Case args.Outcome
+                Case TrackDecodeOutcome.OutOfRange
                     StatusInfo.OutOfRange = True
-                    StatusInfo.OutOfRangeFormat = If(formatName, "")
+                    StatusInfo.OutOfRangeFormat = If(args.FormatName, "")
 
-                Case ConvertTrackOutcome.Decoded
-                    StatusInfo.Action = ActionTypeEnum.Read
-                    If decodedSectorsTotal > 0 Then
-                        Dim Bad As UShort = CUShort(Math.Max(0, decodedSectorsTotal - decodedSectorsFound))
+                Case TrackDecodeOutcome.Decoded
+                    If args.DecodedSectorsTotal > 0 Then
+                        Dim Bad As UShort = CUShort(Math.Max(0, args.DecodedSectorsTotal - args.DecodedSectorsFound))
                         StatusInfo.BadSectors += Bad
                         _TotalBadSectors += CUInt(Bad)
                         If Bad > 0 Then
                             StatusInfo.Failed = True
                         End If
                     End If
-
-                Case Else
-                    StatusInfo.Action = ActionTypeEnum.Read
             End Select
 
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, doubleStep)
         End Sub
 
-        Public Sub OnConvertUnexpectedSector(cyl As Integer, head As Integer, c As Integer, h As Integer, r As Integer, n As Integer, doubleStep As Boolean)
-            Dim Info = New UnexpectedSector With {
-                .Track = cyl,
-                .Side = head,
-                .Cylinder = c,
-                .Head = h,
-                .SectorId = r,
-                .SizeId = n
-            }
-
-            UpdateStatusUnexpectedSector(Info, ActionTypeEnum.Import, ActionTypeEnum.Read, doubleStep)
-        End Sub
-        Public Sub OnEraseFailed()
-            _Failed = True
-            UpdateTrackStatusError()
+        Public Sub OnConvertUnexpectedSector(args As UnexpectedSectorEventArgs, doubleStep As Boolean)
+            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Import, ActionTypeEnum.Read, doubleStep)
         End Sub
 
-        Public Sub OnEraseTrack(cyl As Integer, head As Integer)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-            StatusInfo.Action = ActionTypeEnum.Erase
+        Public Sub OnEraseTrack(args As EraseTrackEventArgs)
+            Dim StatusInfo = GetStatusInfo(args.Cyl, args.Head)
+
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Erase, DoubleStep:=False)
         End Sub
 
-        Public Sub OnReadFailed()
-            _Failed = True
+        Public Sub OnReadTrackGaveUp(args As ReadTrackGaveUpEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
 
-            UpdateTrackStatusError()
+            StatusInfo.Failed = True
+
+            Dim Bad As UShort = CUShort(Math.Max(0, args.MissingSectors))
+            StatusInfo.BadSectors += Bad
+
+            _TotalBadSectors += CUInt(Bad)
+
+            UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, doubleStep)
         End Sub
 
-        Public Sub OnReadSummary(grid As SectorSummaryGrid)
+        Public Sub OnReadTrackProcessed(args As TrackProcessedEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
+
+            If args.SeekRetry > 0 AndAlso args.Retry > 0 Then
+                StatusInfo.Retries += 1
+            End If
+
+            UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, doubleStep)
+        End Sub
+
+        Public Sub OnReadUnexpectedSector(args As UnexpectedSectorEventArgs, doubleStep As Boolean)
+            UpdateStatusUnexpectedSector(args, ActionTypeEnum.Read, ActionTypeEnum.Read, doubleStep)
+        End Sub
+
+        Public Sub OnSummary(grid As SectorSummaryGrid)
             If grid Is Nothing OrElse grid.Rows Is Nothing OrElse grid.Cyls Is Nothing Then
                 Exit Sub
             End If
@@ -160,12 +140,9 @@ Namespace Flux.Greaseweazle
                     Dim Cyl = grid.Cyls(i)
                     Dim Key = Cyl & "." & Side
 
-                    If _StatusCollection.ContainsKey(Key) Then
-                        Dim StatusInfo = _StatusCollection.Item(Key)
-
-                        If Row.Cells(i) = SectorSummaryCell.Bad Then
-                            StatusInfo.BadSectorList.Add(CUShort(Sector + 1))
-                        End If
+                    Dim StatusInfo As TrackStatusInfo = Nothing
+                    If _StatusCollection.TryGetValue(Key, StatusInfo) AndAlso Row.Cells(i) = SectorSummaryCell.Bad Then
+                        StatusInfo.BadSectorList.Add(CUShort(Sector + 1))
                     End If
                 Next
             Next
@@ -179,77 +156,26 @@ Namespace Flux.Greaseweazle
             Next
         End Sub
 
-        Public Sub OnReadTrackGaveUp(cyl As Integer, head As Integer, missingSectors As Integer, doubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-
-            StatusInfo.Action = ActionTypeEnum.Read
-
-            StatusInfo.Failed = True
-
-            Dim Bad As UShort = CUShort(Math.Max(0, missingSectors))
-            StatusInfo.BadSectors += Bad
-
-            _TotalBadSectors += CUInt(Bad)
-
-            UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, doubleStep)
-        End Sub
-
-        Public Sub OnReadTrackProcessed(cyl As Integer, head As Integer, seekRetry As Integer, retry As Integer, doubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-
-            StatusInfo.Action = ActionTypeEnum.Read
-
-            If seekRetry > 0 And retry > 0 Then
-                StatusInfo.Retries += CUShort(1)
-            End If
-
-            UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, doubleStep)
-        End Sub
-
-        Public Sub OnReadUnexpectedSector(cyl As Integer, head As Integer, c As Integer, h As Integer, r As Integer, n As Integer, doubleStep As Boolean)
-            Dim Info = New UnexpectedSector With {
-                .Track = cyl,
-                .Side = head,
-                .Cylinder = c,
-                .Head = h,
-                .SectorId = r,
-                .SizeId = n
-            }
-
-            UpdateStatusUnexpectedSector(Info, ActionTypeEnum.Read, ActionTypeEnum.Read, doubleStep)
-        End Sub
-
-        Public Sub OnWriteFailed()
-            _Failed = True
-            UpdateTrackStatusError()
-        End Sub
-
-        Public Sub OnWriteTrackErasing(cyl As Integer, head As Integer, doubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-
-            StatusInfo.Action = ActionTypeEnum.Erase
+        Public Sub OnWriteTrackErasing(args As WriteTrackErasingEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
 
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Erase, doubleStep)
         End Sub
 
-        Public Sub OnWriteTrackOutOfRange(cyl As Integer, head As Integer, formatName As String, doubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
-
-            StatusInfo.Action = ActionTypeEnum.Write
+        Public Sub OnWriteTrackOutOfRange(args As WriteTrackOutOfRangeEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
 
             StatusInfo.OutOfRange = True
-            StatusInfo.OutOfRangeFormat = If(formatName, "")
+            StatusInfo.OutOfRangeFormat = If(args.FormatName, "")
 
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Write, doubleStep)
         End Sub
 
-        Public Sub OnWriteTrackWriting(cyl As Integer, head As Integer, retryNumber As Integer, doubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(cyl, head)
+        Public Sub OnWriteTrackWriting(args As WriteTrackWritingEventArgs, doubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
 
-            StatusInfo.Action = ActionTypeEnum.Write
-
-            If retryNumber > 0 Then
-                StatusInfo.Retries = CUShort(Math.Max(CInt(StatusInfo.Retries), retryNumber))
+            If args.RetryNumber > 0 Then
+                StatusInfo.Retries = CUShort(Math.Max(CInt(StatusInfo.Retries), args.RetryNumber))
             End If
 
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Write, doubleStep)
@@ -258,12 +184,16 @@ Namespace Flux.Greaseweazle
         Public Sub OnWriteVerifyFailed(cyl As Integer, head As Integer, doubleStep As Boolean)
             Dim StatusInfo = GetStatusInfo(cyl, head)
 
-            StatusInfo.Action = ActionTypeEnum.Write
             StatusInfo.Failed = True
 
             UpdateTrackStatus(StatusInfo, ActionTypeEnum.Write, doubleStep)
         End Sub
+
         Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
+            If _Failed Then
+                Exit Sub
+            End If
+
             UpdateTrackStatusType(TrackStatusEnum.Aborted)
         End Sub
 
@@ -278,6 +208,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Public Sub UpdateTrackStatusError() Implements ITrackStatus.UpdateTrackStatusError
+            _Failed = True
             UpdateTrackStatusType(TrackStatusEnum.Error)
         End Sub
 
@@ -337,6 +268,38 @@ Namespace Flux.Greaseweazle
             'Unused
         End Sub
 
+        Private Shared Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
+            Dim Tooltip As New List(Of String)
+
+            If StatusInfo.Retries > 0 Then
+                Tooltip.Add(My.Resources.Label_Retries & ":  " & StatusInfo.Retries)
+            End If
+
+            Dim Sectors As New List(Of String)
+
+            If StatusInfo.BadSectors > 0 Then
+                Sectors.Add(StatusInfo.BadSectors & " " & My.Resources.Label_Bad)
+            End If
+
+            If Sectors.Count > 0 Then
+                Tooltip.Add(My.Resources.Label_Sectors & ":  " & String.Join(", ", Sectors))
+            End If
+
+            If StatusInfo.BadSectorList.Count > 0 Then
+                Dim RangeList = UShortListToRanges(StatusInfo.BadSectorList)
+                Tooltip.Add(My.Resources.Label_BadSectorIds & ":  " & RangeList)
+            End If
+
+            If StatusInfo.UnexpectedSectors.Count > 0 Then
+                Tooltip.Add(My.Resources.Label_UnexpectedSectors & ":")
+                For Each Value In StatusInfo.UnexpectedSectors.Values.OrderBy(Function(v) v.R).ToList()
+                    Tooltip.Add(String.Format("C:{0} H:{1} R:{2} N:{3} ({4})", Value.C, Value.H, Value.R, Value.N, 128 * 2 ^ Value.N))
+                Next
+            End If
+
+            Return String.Join(vbNewLine, Tooltip)
+        End Function
+
         Private Shared Function GetTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum) As (Status As TrackStatusEnum, Label As String, StatusColor As (ForeColor As Color, BackColor As Color))
             Dim Status As TrackStatusEnum
             Dim Label As String = ""
@@ -344,7 +307,7 @@ Namespace Flux.Greaseweazle
 
             If Statusinfo.Failed Then
                 Status = TrackStatusEnum.Failed
-                If Statusinfo.Action = ActionTypeEnum.Read Or Statusinfo.Action = ActionTypeEnum.Import Then
+                If Statusinfo.Action = ActionTypeEnum.Read OrElse Statusinfo.Action = ActionTypeEnum.Import Then
                     Label = Statusinfo.BadSectors
                 Else
                     Label = Statusinfo.Retries
@@ -435,44 +398,12 @@ Namespace Flux.Greaseweazle
                     Return ""
             End Select
         End Function
-
-        Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
-            Dim Tooltip As New List(Of String)
-
-            If StatusInfo.Retries > 0 Then
-                Tooltip.Add(My.Resources.Label_Retries & ":  " & StatusInfo.Retries)
-            End If
-
-            Dim Sectors As New List(Of String)
-
-            If StatusInfo.BadSectors > 0 Then
-                Sectors.Add(StatusInfo.BadSectors & " " & My.Resources.Label_Bad)
-            End If
-
-            If Sectors.Count > 0 Then
-                Tooltip.Add(My.Resources.Label_Sectors & ":  " & String.Join(", ", Sectors))
-            End If
-
-            If StatusInfo.BadSectorList.Count > 0 Then
-                Dim RangeList = UShortListToRanges(StatusInfo.BadSectorList)
-                Tooltip.Add(My.Resources.Label_BadSectorIds & ":  " & RangeList)
-            End If
-
-            If StatusInfo.UnexpectedSectors.Count > 0 Then
-                Tooltip.Add(My.Resources.Label_UnexpectedSectors & ":")
-                For Each Value In StatusInfo.UnexpectedSectors.Values.OrderBy(Function(v) v.SectorId).ToList()
-                    Tooltip.Add(String.Format("C:{0} H:{1} R:{2} N:{3} ({4})", Value.Cylinder, Value.Head, Value.SectorId, Value.SizeId, 128 * 2 ^ Value.SizeId))
-                Next
-            End If
-
-            Return String.Join(vbNewLine, Tooltip)
+        Private Shared Function GetUnexpectedSectorKey(args As UnexpectedSectorEventArgs) As String
+            Return args.C & "." & args.H & "." & args.R & "." & args.N
         End Function
 
         Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum, DoubleStep As Boolean) As BaseFluxForm.TrackStatusData
             Dim Data = GetTrackStatus(_CurrentStatusInfo, Action)
-
-            Dim TooltipText As String = ""
-
 
             Dim StatusData As BaseFluxForm.TrackStatusData
             With StatusData
@@ -495,17 +426,16 @@ Namespace Flux.Greaseweazle
             Return StatusData
         End Function
 
+        Private Function GetStatusInfo(Track As TrackInfo) As TrackStatusInfo
+            Return GetStatusInfo(Track.Cyl, Track.Head)
+        End Function
+
         Private Function GetStatusInfo(Track As Integer, Side As Integer) As TrackStatusInfo
             Dim Key = Track & "." & Side
-            Dim StatusInfo As TrackStatusInfo
 
-            If _StatusCollection.ContainsKey(Key) Then
-                StatusInfo = _StatusCollection.Item(Key)
-            Else
-                StatusInfo = New TrackStatusInfo With {
-                    .Track = Track,
-                    .Side = Side
-                }
+            Dim StatusInfo As TrackStatusInfo = Nothing
+            If Not _StatusCollection.TryGetValue(Key, StatusInfo) Then
+                StatusInfo = New TrackStatusInfo With {.Track = Track, .Side = Side}
                 _StatusCollection.Add(Key, StatusInfo)
             End If
 
@@ -520,21 +450,27 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub UpdateStatusUnexpectedSector(TrackInfo As UnexpectedSector, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
-            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
+        Private Sub UpdateStatusUnexpectedSector(args As UnexpectedSectorEventArgs, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
+            Dim StatusInfo = GetStatusInfo(args.Track)
 
-            StatusInfo.Action = InfoAction
+            Dim Key = GetUnexpectedSectorKey(args)
 
-            If Not StatusInfo.UnexpectedSectors.ContainsKey(TrackInfo.Key) Then
-                StatusInfo.UnexpectedSectors.Add(TrackInfo.Key, TrackInfo)
+            If Not StatusInfo.UnexpectedSectors.ContainsKey(Key) Then
+                StatusInfo.UnexpectedSectors.Add(Key, args)
                 _TotalUnexpectedSectors += 1
             End If
 
-            UpdateTrackStatus(StatusInfo, Action, DoubleStep)
+            UpdateTrackStatus(StatusInfo, InfoAction, Action, DoubleStep)
         End Sub
 
         Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum, DoubleStep As Boolean)
+            UpdateTrackStatus(Statusinfo, Action, Action, DoubleStep)
+        End Sub
+
+        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, InfoAction As ActionTypeEnum, Action As ActionTypeEnum, DoubleStep As Boolean)
             SetCurrentTrackStatusComplete(DoubleStep)
+
+            Statusinfo.Action = InfoAction
 
             _CurrentStatusInfo = Statusinfo
 
@@ -548,13 +484,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Class TrackStatusInfo
-            Public Sub New()
-                _UnexpectedSectors = New Dictionary(Of String, UnexpectedSector)
-                _BadSectorList = New List(Of UShort)
-            End Sub
-
             Public Property Action As ActionTypeEnum
-            Public Property BadSectorList As List(Of UShort)
+            Public Property BadSectorList As New List(Of UShort)
             Public Property BadSectors As UShort = 0
             Public Property Failed As Boolean
             Public Property OutOfRange As Boolean = False
@@ -562,7 +493,7 @@ Namespace Flux.Greaseweazle
             Public Property Retries As UShort = 0
             Public Property Side As Integer
             Public Property Track As Integer
-            Public Property UnexpectedSectors As Dictionary(Of String, UnexpectedSector)
+            Public Property UnexpectedSectors As New Dictionary(Of String, UnexpectedSectorEventArgs)
         End Class
     End Class
 End Namespace

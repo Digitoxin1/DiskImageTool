@@ -3,7 +3,6 @@
         Inherits ConsoleParser
         Implements ITrackStatus
 
-        Private ReadOnly _Failed As Boolean = False
         Private _CurrentTrack As DTCTrack = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
@@ -28,12 +27,6 @@
             MyBase.New
         End Sub
 
-        Public ReadOnly Property Failed As Boolean Implements ITrackStatus.Failed
-            Get
-                Return _Failed
-            End Get
-        End Property
-
         Public ReadOnly Property TrackFound As Boolean Implements ITrackStatus.TrackFound
             Get
                 Return _TrackFound
@@ -50,7 +43,6 @@
             _TotalUnexpectedSectors = 0
             _TrackFound = False
         End Sub
-
         Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
             UpdateTrackStatusType(TrackStatusEnum.Aborted)
         End Sub

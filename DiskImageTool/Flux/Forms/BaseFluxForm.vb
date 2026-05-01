@@ -1,20 +1,28 @@
-﻿Namespace Flux
+﻿Imports DiskImageTool.Flux.Greaseweazle
+Imports Greaseweazle.Actions
+Imports Greaseweazle.Tools
+
+Namespace Flux
     Public Class BaseFluxForm
-        Friend WithEvents Process As ConsoleProcessRunner
+        Protected WithEvents Process As ConsoleProcessRunner
+        Protected WithEvents Runner As GreaseweazleRunner
         Private WithEvents TS As ITrackStatus = Nothing
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
+        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _LogFileName As String = ""
+        Private _LogFilePath As String = ""
         Private _LogStripPath As Boolean = False
         Private _Sides As Byte
         Private _StatusData As TrackStatusData? = Nothing
         Private _Tracks As UShort
-        Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
-        Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
 
-        Public Sub New(LogFileName As String, Optional UseGrid As Boolean = True)
+        Protected Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
+        Protected Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
+
+        Public Sub New(LogFileName As String, Optional UseGrid As Boolean = True, Optional UseProcess As Boolean = False)
             ' This call is required by the designer.
             InitializeComponent()
 
@@ -23,9 +31,13 @@
             _LogFileName = LogFileName
             StatusDevice.Visible = False
 
-            Process = New ConsoleProcessRunner With {
-                .EventContext = Threading.SynchronizationContext.Current
-            }
+            Runner = New GreaseweazleRunner()
+
+            If UseProcess Then
+                Process = New ConsoleProcessRunner With {
+                    .EventContext = Threading.SynchronizationContext.Current
+                }
+            End If
 
             If UseGrid Then
                 TS0 = New FloppyTrackGrid(TOTAL_TRACKS, 0) With {
@@ -38,36 +50,6 @@
             End If
         End Sub
 
-        Public Property LogFileName As String
-            Get
-                Return _LogFileName
-            End Get
-            Set(value As String)
-                _LogFileName = value
-            End Set
-        End Property
-
-        Public Property LogStripPath As Boolean
-            Get
-                Return _LogStripPath
-            End Get
-            Set
-                _LogStripPath = Value
-            End Set
-        End Property
-
-        Public ReadOnly Property TableSide0 As FloppyTrackGrid
-            Get
-                Return TS0
-            End Get
-        End Property
-
-        Public ReadOnly Property TableSide1 As FloppyTrackGrid
-            Get
-                Return TS1
-            End Get
-        End Property
-
         Friend Property TrackStatus As ITrackStatus
             Get
                 Return TS
@@ -77,71 +59,63 @@
             End Set
         End Property
 
-        Public Sub AppendLogLine(line As String)
-            If TextBoxConsole.Text.Length > 0 Then
-                TextBoxConsole.AppendText(Environment.NewLine)
+        Protected ReadOnly Property Engine As GreaseweazleEngine
+            Get
+                Return _Engine
+            End Get
+        End Property
+
+        Protected ReadOnly Property IsIdle As Boolean
+            Get
+                Return Not IsRunning
+            End Get
+        End Property
+
+        Protected ReadOnly Property IsRunning As Boolean
+            Get
+                Return (Runner IsNot Nothing AndAlso Runner.IsRunning) OrElse (Process IsNot Nothing AndAlso Process.IsRunning)
+            End Get
+        End Property
+
+        Protected Property LogFileName As String
+            Get
+                Return _LogFileName
+            End Get
+            Set(value As String)
+                _LogFileName = value
+            End Set
+        End Property
+
+        Protected Property LogStripPath As Boolean
+            Get
+                Return _LogStripPath
+            End Get
+            Set
+                _LogStripPath = Value
+            End Set
+        End Property
+
+        Protected ReadOnly Property TableSide0 As FloppyTrackGrid
+            Get
+                Return TS0
+            End Get
+        End Property
+
+        Protected ReadOnly Property TableSide1 As FloppyTrackGrid
+            Get
+                Return TS1
+            End Get
+        End Property
+
+        Friend Function GetSelectedTrackHeads() As TrackHeads
+            If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
+                Return TrackHeads.both
+            ElseIf TableSide0.IsChecked Then
+                Return TrackHeads.head0
+            Else
+                Return TrackHeads.head1
             End If
-            TextBoxConsole.AppendText(line)
-        End Sub
-
-        Public Function CancelProcessIfRunning() As Boolean
-            If Process.IsRunning Then
-                If Not ConfirmCancel() Then
-                    Return True
-                End If
-                Process.Cancel()
-                Return True
-            End If
-
-            Return False
         End Function
-
-        Public Sub ClearStatusBar()
-            _StatusData = Nothing
-            StatusDevice.Text = ""
-            StatusDevice.Visible = False
-            StatusType.Text = ""
-            StatusTrack.Text = ""
-            StatusSide.Text = ""
-            StatusSide.Visible = False
-            StatusBadSectors.Text = ""
-            StatusBadSectors.Visible = False
-            StatusUnexpected.Text = ""
-            StatusUnexpected.Visible = False
-            ToolStripProgress.Visible = False
-        End Sub
-
-        Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, Environment.NewLine, DriveName, Title)
-            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation, Title) = MsgBoxResult.Yes
-        End Function
-
-        Public Function GetDriveName(Drive As String) As String
-            Select Case Drive
-                Case "A", "B"
-                    Return Drive & ":"
-                Case Else
-                    Return "DS" & Drive & ":"
-            End Select
-        End Function
-
-        Public Function GetState(Optional Doublestep As Boolean = False) As FluxFormState
-            Dim State As New FluxFormState With {
-                .LogFileName = _LogFileName,
-                .LogStripPath = _LogStripPath,
-                .Side0State = TS0.GetState(Doublestep),
-                .Side1State = TS1.GetState(Doublestep),
-                .StatusData = _StatusData,
-                .Device = StatusDevice.Text,
-                .Log = TextBoxConsole.Text
-            }
-
-            Return State
-        End Function
-
-        Public Sub GridReset()
-            GridReset(_Tracks, _Sides, _FluxHeaders)
-        End Sub
 
         Friend Sub GridReset(Tracks As UShort, Sides As Byte, Optional FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String)) = Nothing, Optional ResetSelected As Boolean = True)
             _Tracks = Tracks
@@ -156,7 +130,129 @@
             End If
         End Sub
 
-        Public Sub GridSetBusy(Busy As Boolean)
+        Protected Function CancelIfRunning() As Boolean
+            If (Process IsNot Nothing AndAlso Process.IsRunning) OrElse (Runner IsNot Nothing AndAlso Runner.IsRunning) Then
+                If Not ConfirmCancel() Then
+                    Return True
+                End If
+                If (Process IsNot Nothing AndAlso Process.IsRunning) Then
+                    Process.Cancel()
+                End If
+
+                If (Runner IsNot Nothing AndAlso Runner.IsRunning) Then
+                    Runner.Cancel()
+                End If
+                Return True
+            End If
+
+            Return False
+        End Function
+
+        Protected Sub CheckStateChanged(Checked As Boolean)
+            If Checked Then
+                GridReset()
+            End If
+
+            TableSide0.SelectEnabled = Checked
+            TableSide1.SelectEnabled = Checked
+        End Sub
+
+        Protected Sub ClearLogAndStatus()
+            ClearStatusBar()
+            TextBoxConsole.Clear()
+        End Sub
+
+        Protected Sub ClearStatusBar()
+            _StatusData = Nothing
+            StatusDevice.Text = ""
+            StatusDevice.Visible = False
+            StatusType.Text = ""
+            StatusTrack.Text = ""
+            StatusSide.Text = ""
+            StatusSide.Visible = False
+            StatusBadSectors.Text = ""
+            StatusBadSectors.Visible = False
+            StatusUnexpected.Text = ""
+            StatusUnexpected.Visible = False
+            ToolStripProgress.Visible = False
+        End Sub
+
+        Protected Function ConfirmWrite(Title As String, DriveName As String) As Boolean
+            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, Environment.NewLine, DriveName, Title)
+            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation, Title) = MsgBoxResult.Yes
+        End Function
+
+        <System.Diagnostics.DebuggerNonUserCode()>
+        Protected Overrides Sub Dispose(disposing As Boolean)
+            Try
+                If disposing Then
+                    Try
+                        Runner?.Dispose()
+                    Catch
+                    End Try
+                    Runner = Nothing
+
+                    Try
+                        Process?.Dispose()
+                    Catch
+                    End Try
+                    Process = Nothing
+
+                    components?.Dispose()
+                End If
+            Finally
+                MyBase.Dispose(disposing)
+            End Try
+        End Sub
+
+        Protected Function GetDriveName(Drive As String) As String
+            Select Case Drive
+                Case "A", "B"
+                    Return Drive & ":"
+                Case Else
+                    Return "DS" & Drive & ":"
+            End Select
+        End Function
+
+        Protected Function GetSelectedTrackRanges() As List(Of (StartTrack As UShort, EndTrack As UShort))
+            Dim Selected As New HashSet(Of UShort)(TableSide0.SelectedTracks)
+            Selected.UnionWith(TableSide1.SelectedTracks)
+
+            Dim Ranges = BuildRanges(Selected)
+
+            Return Ranges
+        End Function
+
+        Protected Function GetState(Optional Doublestep As Boolean = False) As FluxFormState
+            Dim State As New FluxFormState With {
+                .LogFileName = _LogFileName,
+                .LogStripPath = _LogStripPath,
+                .Side0State = TS0.GetState(Doublestep),
+                .Side1State = TS1.GetState(Doublestep),
+                .StatusData = _StatusData,
+                .Device = StatusDevice.Text,
+                .Log = TextBoxConsole.Text
+            }
+
+            Return State
+        End Function
+
+        Protected Sub GreaseweazleReset()
+            TextBoxConsole.Clear()
+
+            Try
+                Engine.Reset.Run(New ResetOptions With {
+                    .Live = True,
+                    .Device = ConfiguredDevice()
+                })
+
+                MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+            End Try
+        End Sub
+
+        Protected Sub GridSetBusy(Busy As Boolean)
             If TS0 IsNot Nothing Then
                 TS0.IsBusy = Busy
             End If
@@ -166,7 +262,53 @@
             End If
         End Sub
 
-        Public Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
+        Protected Sub HandleRunFailure(message As String)
+            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
+
+            AppendLogLine("Command Failed: " & Msg)
+        End Sub
+
+        Protected Sub InitLogFilePath(FilePath As String)
+            _LogFilePath = FilePath
+
+            If Not String.IsNullOrEmpty(_LogFilePath) Then
+                DeleteFileIfExists(_LogFilePath)
+            End If
+        End Sub
+
+        Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
+            ' Default: do nothing
+        End Sub
+
+        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+            If (Process IsNot Nothing AndAlso Process.IsRunning) OrElse (Runner IsNot Nothing AndAlso Runner.IsRunning) Then
+                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
+                    If Not ConfirmCancel() Then
+                        e.Cancel = True
+                        Exit Sub
+                    End If
+                End If
+                Try
+                    If Process IsNot Nothing AndAlso Process.IsRunning Then
+                        Process.Cancel()
+                    End If
+                    If Runner IsNot Nothing AndAlso Runner.IsRunning Then
+                        Runner.Cancel()
+                    End If
+                Catch ex As Exception
+                End Try
+            End If
+
+            OnAfterBaseFormClosing(e)
+
+            If e.Cancel Then
+                Exit Sub
+            End If
+
+            MyBase.OnFormClosing(e)
+        End Sub
+
+        Protected Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             Dim FileName As String = _LogFileName
             Dim Extension = IO.Path.GetExtension(FileName).ToLower
             Dim FilterIndex As Integer = 1
@@ -189,7 +331,7 @@
             End Using
         End Sub
 
-        Public Sub SetState(State As FluxFormState, Optional Doublestep As Boolean = False)
+        Protected Sub SetState(State As FluxFormState, Optional Doublestep As Boolean = False)
             _LogFileName = State.LogFileName
             _LogStripPath = State.LogStripPath
 
@@ -208,35 +350,29 @@
             TextBoxConsole.Text = State.Log
         End Sub
 
-        Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
-            ' Default: do nothing
-        End Sub
+        Protected Function TryMakeDriveSpec(Id As String, ByRef Drive As DriveSpec) As Boolean
+            Try
+                Drive = MakeDriveSpec(Id)
+                Return True
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                Return False
+            End Try
+        End Function
 
-        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
-            If Process.IsRunning Then
-                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
-                    If Not ConfirmCancel() Then
-                        e.Cancel = True
-                        Exit Sub
-                    End If
-                End If
+        Private Sub AppendLogLine(line As String)
+            If TextBoxConsole.Text.Length > 0 Then
+                TextBoxConsole.AppendText(Environment.NewLine)
+            End If
+            TextBoxConsole.AppendText(line)
+
+            If Not String.IsNullOrEmpty(_LogFilePath) Then
                 Try
-                    Process.Cancel()
+                    IO.File.AppendAllText(_LogFilePath, line & Environment.NewLine)
                 Catch ex As Exception
+                    Debug.WriteLine($"AppendLogLine failed: {ex.Message}")
                 End Try
             End If
-
-            If e.Cancel Then
-                Exit Sub
-            End If
-
-            OnAfterBaseFormClosing(e)
-
-            If e.Cancel Then
-                Exit Sub
-            End If
-
-            MyBase.OnFormClosing(e)
         End Sub
 
         Private Function ConfirmCancel() As Boolean
@@ -260,6 +396,9 @@
             Table?.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
         End Sub
 
+        Private Sub GridReset()
+            GridReset(_Tracks, _Sides, _FluxHeaders)
+        End Sub
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -268,12 +407,6 @@
                 Grid.IsChecked = False
             End If
             Grid.Disabled = Disabled
-        End Sub
-
-        Private Sub GridUpdateTooltip(Track As Integer, Side As Integer, Tooltip As String)
-            Dim Table = GridGetTable(Side)
-
-            Table?.SetCellTooltip(Track, Tooltip)
         End Sub
 
         Private Sub GridUpdateFluxHeaders()
@@ -300,6 +433,12 @@
                     End If
                 Next
             Next
+        End Sub
+
+        Private Sub GridUpdateTooltip(Track As Integer, Side As Integer, Tooltip As String)
+            Dim Table = GridGetTable(Side)
+
+            Table?.SetCellTooltip(Track, Tooltip)
         End Sub
 
         Private Sub LocalizeForm()
@@ -350,6 +489,18 @@
 #Region "Events"
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
             SaveLog(_LogStripPath)
+        End Sub
+
+        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
+            AppendLogLine(line)
+        End Sub
+
+        Private Sub Runner_OutputTextReceived(text As String) Handles Runner.OutputTextReceived
+            TextBoxConsole.AppendText(text)
+        End Sub
+
+        Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
+            HandleRunFailure(ex.Message)
         End Sub
 
         Private Sub TS_UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String) Handles TS.UpdateGridTooltip
@@ -404,7 +555,6 @@
 
             RaiseEvent SelectionChanged(Me, Track, 1, Selected)
         End Sub
-
 #End Region
         Public Structure FluxFormState
             Public Property Device As String

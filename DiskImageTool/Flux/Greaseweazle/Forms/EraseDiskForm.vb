@@ -6,30 +6,29 @@ Namespace Flux.Greaseweazle
     Public Class EraseDiskForm
         Inherits BaseFluxForm
 
+#Region "Form Controls"
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
+        Private _CheckBoxHFreq As CheckBox
+        Private _NumericRevs As NumericUpDown
+#End Region
         Private WithEvents EraseCmd As EraseCommand
-        Private WithEvents Runner As GreaseweazleRunner
-        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _Status As TrackStatus
-        Private CheckBoxHFreq As CheckBox
-        Private NumericRevs As NumericUpDown
 
         Public Sub New()
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
-            Runner = New GreaseweazleRunner()
-            EraseCmd = _Engine.Erase
+            EraseCmd = Engine.Erase
             _Status = New TrackStatus()
             TrackStatus = _Status
 
             Me.Text = My.Resources.Label_EraseDisk
 
-            NumericRevs.Value = DEFAULT_REVS
+            _NumericRevs.Value = DEFAULT_REVS
 
             PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown)
             ResetState()
@@ -51,26 +50,10 @@ Namespace Flux.Greaseweazle
             MyBase.OnFormClosed(e)
         End Sub
 
-        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
-            If Runner.IsRunning Then
-                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
-                    If Not ConfirmCancelRun() Then
-                        e.Cancel = True
-                        Return
-                    End If
-                End If
-                Runner.Cancel()
-            End If
-
-            MyBase.OnFormClosing(e)
-        End Sub
-
         Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum)
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    If Not TrackStatus.Failed Then
-                        TrackStatus.UpdateTrackStatusAborted()
-                    End If
+                    TrackStatus.UpdateTrackStatusAborted()
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     TrackStatus.UpdateTrackStatusComplete(False)
@@ -86,77 +69,49 @@ Namespace Flux.Greaseweazle
             RefreshButtonState()
         End Sub
 
-        Private Function ConfirmCancelRun() As Boolean
-            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
-        End Function
-
         Private Sub EraseDisk()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If Opt Is Nothing OrElse Opt.Id = "" Then
+            If String.IsNullOrEmpty(Opt?.Id) Then
                 Exit Sub
             End If
 
-            ResetState(False)
+            ResetState(ResetSelected:=False)
 
-            Dim Drive As DriveSpec
-            Try
-                Drive = MakeDriveSpec(Opt.Id)
-            Catch ex As Exception
-                HandleRunFailure(ex.Message)
+            Dim Drive As DriveSpec = Nothing
+            If Not TryMakeDriveSpec(Opt.Id, Drive) Then
+                ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
                 Return
-            End Try
+            End If
 
-            Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
-            Dim Heads As TrackHeads = TrackHeads.both
+            Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort))
+            Dim Heads As TrackHeads
 
             If CheckBoxSelect.Checked Then
-                Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
-                SelectedTracks.UnionWith(TableSide1.SelectedTracks)
-
-                TrackRanges = BuildRanges(SelectedTracks)
-
-                If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
-                    Heads = TrackHeads.both
-                ElseIf TableSide0.IsChecked Then
-                    Heads = TrackHeads.head0
-                Else
-                    Heads = TrackHeads.head1
-                End If
+                TrackRanges = GetSelectedTrackRanges()
+                Heads = GetSelectedTrackHeads()
 
                 If TrackRanges.Count = 0 Then
                     Exit Sub
                 End If
-            End If
-
-            If TrackRanges Is Nothing Then
-                TrackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
-                    (0, CUShort(Math.Max(0, CInt(Opt.Tracks) - 1)))
-                }
+            Else
+                Dim LastTrack As UShort = CUShort(Math.Max(0, CInt(Opt.Tracks) - 1))
+                TrackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {(0, LastTrack)}
+                Heads = TrackHeads.both
             End If
 
             Dim TrackSet = BuildUserSpec(TrackRanges, Heads)
 
             Dim Opts As New EraseOptions With {
                 .TrackSet = TrackSet,
-                .Revs = CInt(NumericRevs.Value),
-                .Hfreq = CheckBoxHFreq.Checked,
+                .Revs = CInt(_NumericRevs.Value),
+                .Hfreq = _CheckBoxHFreq.Checked,
                 .Live = True,
                 .Device = ConfiguredDevice(),
                 .Drive = Drive
             }
 
             Runner.RunAsync(Sub(Token) EraseCmd.Run(Opts, Token))
-        End Sub
-
-        Private Sub HandleRunFailure(message As String)
-            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
-
-            AppendLogLine("Command Failed: " & Msg)
-
-            _Status.OnEraseFailed()
-
-            ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
         End Sub
 
         Private Sub InitializeControls()
@@ -178,7 +133,7 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(32, 3, 3, 3)
             }
 
-            NumericRevs = New NumericUpDown With {
+            _NumericRevs = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = MIN_REVS,
@@ -192,7 +147,7 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(12, 3, 3, 3)
             }
 
-            CheckBoxHFreq = New CheckBox With {
+            _CheckBoxHFreq = New CheckBox With {
                 .Text = My.Resources.Label_Hfreq,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True,
@@ -261,9 +216,9 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(ComboImageDrives, 1, Row)
 
                 .Controls.Add(RevsLabel, 2, Row)
-                .Controls.Add(NumericRevs, 3, Row)
+                .Controls.Add(_NumericRevs, 3, Row)
 
-                .Controls.Add(CheckBoxHFreq, 4, Row)
+                .Controls.Add(_CheckBoxHFreq, 4, Row)
 
                 .Controls.Add(CheckBoxSelect, 5, Row)
 
@@ -283,20 +238,19 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            Dim IsRunning As Boolean = Runner.IsRunning
-            Dim IsIdle As Boolean = Not IsRunning
+            Dim HasOptId = Not String.IsNullOrEmpty(Opt?.Id)
 
             ComboImageDrives.Enabled = IsIdle
-            CheckBoxSelect.Enabled = IsIdle AndAlso Opt.Id <> ""
-            CheckBoxHFreq.Enabled = IsIdle
+            CheckBoxSelect.Enabled = IsIdle AndAlso HasOptId
+            _CheckBoxHFreq.Enabled = IsIdle
 
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Erase)
-            ButtonProcess.Enabled = Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
+            ButtonProcess.Enabled = HasOptId AndAlso (Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0)
 
             ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
 
             ButtonReset.Enabled = IsIdle
-            NumericRevs.Enabled = IsIdle
+            _NumericRevs.Enabled = IsIdle
         End Sub
 
         Private Sub ResetCheckBoxSelect()
@@ -305,32 +259,27 @@ Namespace Flux.Greaseweazle
 
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
-            ClearStatusBar()
+            ClearLogAndStatus()
             TrackStatus.Clear()
-
-            TextBoxConsole.Clear()
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            Dim TrackCount As UShort = If(Opt.Type = FloppyDriveType.DriveUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
+            Dim TrackCount As UShort = If(Opt Is Nothing OrElse Opt.Type = FloppyDriveType.DriveUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
 
             GridReset(TrackCount, 2, Nothing, ResetSelected)
         End Sub
 
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If Runner.IsRunning Then
-                If ConfirmCancelRun() Then
-                    Runner.Cancel()
-                End If
+            If CancelIfRunning() Then
                 Exit Sub
             End If
 
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If Opt.Id = "" Then
+            If String.IsNullOrEmpty(Opt?.Id) Then
                 Exit Sub
             End If
 
@@ -345,18 +294,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            TextBoxConsole.Clear()
-
-            Try
-                _Engine.Reset.Run(New ResetOptions With {
-                    .Live = True,
-                    .Device = ConfiguredDevice()
-                })
-            Catch ex As Exception
-                AppendLogLine("Command Failed: " & ex.Message)
-            End Try
-
-            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
+            GreaseweazleReset()
         End Sub
 
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
@@ -364,12 +302,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If CheckBoxSelect.Checked Then
-                GridReset()
-            End If
-
-            TableSide0.SelectEnabled = CheckBoxSelect.Checked
-            TableSide1.SelectEnabled = CheckBoxSelect.Checked
+            CheckStateChanged(CheckBoxSelect.Checked)
 
             RefreshButtonState()
         End Sub
@@ -384,32 +317,22 @@ Namespace Flux.Greaseweazle
             RefreshButtonState()
         End Sub
 
+        Private Sub EraseCmd_Started(sender As Object, e As EraseStartedEventArgs) Handles EraseCmd.Started
+            Runner.EmitOutputLine(FormatEraseStartedLine(e))
+        End Sub
+
+        Private Sub EraseCmd_TrackStarted(sender As Object, e As EraseTrackEventArgs) Handles EraseCmd.TrackStarted
+            Runner.EmitOutputLine(FormatEraseTrackStartedLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnEraseTrack(e))
+        End Sub
+
         Private Sub EraseDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged
             RefreshButtonState()
         End Sub
 
         Private Sub EraseDiskForm_SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean) Handles Me.SelectionChanged
             RefreshButtonState()
-        End Sub
-
-        Private Sub OnEraseStarted(sender As Object, e As EraseStartedEventArgs) Handles EraseCmd.Started
-            Runner.EmitOutputLine(FormatEraseStartedLine(e))
-        End Sub
-
-        Private Sub OnEraseTrackStarted(sender As Object, e As EraseTrackEventArgs) Handles EraseCmd.TrackStarted
-            Runner.EmitOutputLine(FormatEraseTrackStartedLine(e))
-
-            Runner.PostToUi(Sub() _Status.OnEraseTrack(e.Cyl, e.Head))
-        End Sub
-
-        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
-            AppendLogLine(line)
-        End Sub
-
-        Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
-            AppendLogLine("Command Failed: " & ex.Message)
-
-            _Status.OnEraseFailed()
         End Sub
 
         Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged

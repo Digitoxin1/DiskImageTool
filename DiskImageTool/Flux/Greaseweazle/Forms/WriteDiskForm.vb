@@ -6,17 +6,23 @@ Imports Greaseweazle.Tools
 Namespace Flux.Greaseweazle
     Public Class WriteDiskForm
         Inherits BaseFluxForm
-        
+
+#Region "Form Controls"
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckboxNoVerify As CheckBox
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
-        Private WithEvents Runner As GreaseweazleRunner
+        Private _CheckBoxContinue As CheckBox
+        Private _CheckBoxEraseEmpty As CheckBox
+        Private _CheckBoxPreErase As CheckBox
+        Private _LabelImageFormat As Label
+        Private _LabelWarning As Label
+        Private _NumericRetries As NumericUpDown
+#End Region
         Private WithEvents WriteCmd As WriteCommand
         Private ReadOnly _Disk As DiskImage.Disk
         Private ReadOnly _DiskParams As FloppyDiskParams
-        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
@@ -25,20 +31,12 @@ Namespace Flux.Greaseweazle
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
         Private _DoubleStep As Boolean = False
-        Private _LastSelected As (Track As UShort, Side As Byte, Selected As Boolean)? = Nothing
-        Private CheckBoxContinue As CheckBox
-        Private CheckBoxEraseEmpty As CheckBox
-        Private CheckBoxPreErase As CheckBox
-        Private LabelImageFormat As Label
-        Private LabelWarning As Label
-        Private NumericRetries As NumericUpDown
 
         Public Sub New(Disk As DiskImage.Disk, FileName As String)
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
-            Runner = New GreaseweazleRunner()
-            WriteCmd = _Engine.Write
+            WriteCmd = Engine.Write
             _Status = New TrackStatus()
             TrackStatus = _Status
 
@@ -61,9 +59,9 @@ Namespace Flux.Greaseweazle
                 _IsBitstreamImage = False
             End If
 
-            NumericRetries.Value = DEFAULT_RETRIES
+            _NumericRetries.Value = DEFAULT_RETRIES
 
-            LabelImageFormat.Text = _DiskParams.Description
+            _LabelImageFormat.Text = _DiskParams.Description
 
             Dim Mode As String = If(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
@@ -75,7 +73,7 @@ Namespace Flux.Greaseweazle
             ResetState()
             ResetCheckBoxSelect()
             RefreshButtonState()
-            LabelWarning.Visible = Not CheckCompatibility()
+            _LabelWarning.Visible = Not CheckCompatibility()
 
             _Initialized = True
         End Sub
@@ -92,18 +90,35 @@ Namespace Flux.Greaseweazle
             MyBase.OnFormClosed(e)
         End Sub
 
-        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
-            If Runner.IsRunning Then
-                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
-                    If Not ConfirmCancelRun() Then
-                        e.Cancel = True
-                        Return
+        Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum)
+            Select Case state
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    TrackStatus.UpdateTrackStatusAborted()
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
+                    TrackStatus.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
+
+                    If DoKeepProcessing Then
+                        KeepProcessing()
+                        Exit Sub
                     End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    TrackStatus.UpdateTrackStatusError()
+            End Select
+
+            If state <> ConsoleProcessRunner.ProcessStateEnum.Running Then
+                If _CurrentFilePath <> "" Then
+                    DeleteTempFileIfExists(_CurrentFilePath)
                 End If
-                Runner.Cancel()
+
+                GridSetBusy(False)
+                ResetCheckBoxSelect()
+                _ContinueAfterWrite = False
             End If
 
-            MyBase.OnFormClosing(e)
+            RefreshButtonState()
         End Sub
 
         Private Function CheckCompatibility() As Boolean
@@ -119,7 +134,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function CheckKeepProcessing() As Boolean
-            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (RetriesAllowed() AndAlso CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
+            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (RetriesAllowed() AndAlso _CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
 
             If KeepProcessing Then
                 KeepProcessing = TrackStatus.CanKeepProcessing
@@ -169,21 +184,21 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True
             }
 
-            NumericRetries = New NumericUpDown With {
+            _NumericRetries = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = MIN_RETRIES,
                 .Maximum = MAX_RETRIES
             }
 
-            CheckBoxPreErase = New CheckBox With {
+            _CheckBoxPreErase = New CheckBox With {
                 .Text = My.Resources.Label_PreErase,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
-            CheckBoxEraseEmpty = New CheckBox With {
+            _CheckBoxEraseEmpty = New CheckBox With {
                 .Text = My.Resources.Label_EraseEmpty,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -197,7 +212,7 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
-            CheckBoxContinue = New CheckBox With {
+            _CheckBoxContinue = New CheckBox With {
                 .Text = My.Resources.Label_ContinueAfterFailure,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -238,7 +253,7 @@ Namespace Flux.Greaseweazle
 
             ButtonContainer.Controls.Add(ButtonProcess)
 
-            LabelWarning = New Label With {
+            _LabelWarning = New Label With {
                 .Text = My.Resources.Message_ImageFormatWarning,
                 .ForeColor = Color.Red,
                 .AutoSize = True,
@@ -252,23 +267,21 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True
             }
 
-            LabelImageFormat = New Label With {
+            _LabelImageFormat = New Label With {
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .UseMnemonic = False
             }
 
-
             ButtonOk.Visible = False
             ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
-
 
             Dim Row As Integer
 
             With TableLayoutPanelMain
                 .SuspendLayout()
 
-                Left = 0
+                .Left = 0
                 .RowCount = 4
                 .ColumnCount = 8
                 .Dock = DockStyle.Fill
@@ -294,26 +307,26 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(DriveLabel, 0, Row)
                 .Controls.Add(ComboImageDrives, 1, Row)
 
-                .Controls.Add(CheckBoxPreErase, 4, Row)
+                .Controls.Add(_CheckBoxPreErase, 4, Row)
 
-                .Controls.Add(CheckBoxEraseEmpty, 5, Row)
+                .Controls.Add(_CheckBoxEraseEmpty, 5, Row)
 
                 .Controls.Add(RetriesLabel, 6, Row)
-                .Controls.Add(NumericRetries, 7, Row)
+                .Controls.Add(_NumericRetries, 7, Row)
 
                 Row = 1
                 .Controls.Add(ImageFormatCaption, 0, Row)
-                .Controls.Add(LabelImageFormat, 1, Row)
+                .Controls.Add(_LabelImageFormat, 1, Row)
 
                 .Controls.Add(CheckboxNoVerify, 4, Row)
 
-                .Controls.Add(CheckBoxContinue, 5, Row)
+                .Controls.Add(_CheckBoxContinue, 5, Row)
 
                 Row = 2
                 ' .RowStyles(Row).SizeType = SizeType.Absolute
                 ' .RowStyles(Row).Height = 20
-                .Controls.Add(LabelWarning, 0, Row)
-                .SetColumnSpan(LabelWarning, 2)
+                .Controls.Add(_LabelWarning, 0, Row)
+                .SetColumnSpan(_LabelWarning, 2)
 
                 .Controls.Add(CheckBoxSelect, 4, Row)
                 .SetColumnSpan(CheckBoxSelect, 2)
@@ -336,9 +349,7 @@ Namespace Flux.Greaseweazle
         Private Sub KeepProcessing()
             Dim Response = TrackStatus.GetNextTrackRange
 
-            If Response.Continue Then
-                _ContinueAfterWrite = True
-            End If
+            _ContinueAfterWrite = Response.Continue
 
             WriteDisk(_CurrentFilePath, Response.Ranges, Response.Heads)
         End Sub
@@ -349,63 +360,16 @@ Namespace Flux.Greaseweazle
             If Response.Result Then
                 _CurrentFilePath = Response.FilePath
 
+                ResetState(ResetSelected:=False)
+
                 WriteDisk(_CurrentFilePath)
             End If
         End Sub
 
-        Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum)
-            Select Case state
-                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    If Not _Status.Failed Then
-                        _Status.UpdateTrackStatusAborted()
-                    End If
-
-                Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
-                    _Status.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
-
-                    If DoKeepProcessing Then
-                        KeepProcessing()
-                        Exit Sub
-                    End If
-
-                Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    _Status.UpdateTrackStatusError()
-            End Select
-
-            If state <> ConsoleProcessRunner.ProcessStateEnum.Running Then
-                If _CurrentFilePath <> "" Then
-                    DeleteTempFileIfExists(_CurrentFilePath)
-                End If
-
-                GridSetBusy(False)
-                ResetCheckBoxSelect()
-            End If
-
-            RefreshButtonState()
-        End Sub
-
-        Private Function ConfirmCancelRun() As Boolean
-            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
-        End Function
-
-        Private Sub HandleRunFailure(message As String)
-            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
-
-            AppendLogLine("Command Failed: " & Msg)
-
-            _Status.OnWriteFailed()
-
-            ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
-        End Sub
-
         Private Sub RefreshButtonState()
-            Dim IsRunning As Boolean = Runner.IsRunning
-            Dim IsIdle As Boolean = Not IsRunning
-
             ComboImageDrives.Enabled = IsIdle
-            CheckBoxPreErase.Enabled = IsIdle
-            CheckBoxEraseEmpty.Enabled = IsIdle
+            _CheckBoxPreErase.Enabled = IsIdle
+            _CheckBoxEraseEmpty.Enabled = IsIdle
             CheckboxNoVerify.Enabled = IsIdle AndAlso VerifyAllowed()
             CheckBoxSelect.Enabled = IsIdle
 
@@ -421,15 +385,14 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshProcessButtonState()
             Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
-            ButtonProcess.Enabled = Opt IsNot Nothing AndAlso Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
+            ButtonProcess.Enabled = Not String.IsNullOrEmpty(Opt?.Id) AndAlso (Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0)
         End Sub
 
         Private Sub RefreshVerifyButtonState()
-            Dim IsIdle As Boolean = Not Runner.IsRunning
             Dim AllowRetries = RetriesAllowed()
 
-            CheckBoxContinue.Enabled = IsIdle AndAlso AllowRetries
-            NumericRetries.Enabled = IsIdle AndAlso AllowRetries
+            _CheckBoxContinue.Enabled = IsIdle AndAlso AllowRetries
+            _NumericRetries.Enabled = IsIdle AndAlso AllowRetries
         End Sub
 
         Private Sub ResetCheckBoxSelect()
@@ -438,9 +401,8 @@ Namespace Flux.Greaseweazle
 
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
-            ClearStatusBar()
+            ClearLogAndStatus()
             TrackStatus.Clear()
-            TextBoxConsole.Clear()
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
@@ -494,18 +456,8 @@ Namespace Flux.Greaseweazle
             Dim Heads As TrackHeads = TrackHeads.both
 
             If CheckBoxSelect.Checked Then
-                Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
-                SelectedTracks.UnionWith(TableSide1.SelectedTracks)
-
-                TrackRanges = BuildRanges(SelectedTracks)
-
-                If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
-                    Heads = TrackHeads.both
-                ElseIf TableSide0.IsChecked Then
-                    Heads = TrackHeads.head0
-                Else
-                    Heads = TrackHeads.head1
-                End If
+                TrackRanges = GetSelectedTrackRanges()
+                Heads = GetSelectedTrackHeads()
 
                 If TrackRanges.Count = 0 Then
                     Exit Sub
@@ -520,21 +472,17 @@ Namespace Flux.Greaseweazle
         Private Sub WriteDisk(FilePath As String, TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads)
             Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
-            If Opt Is Nothing OrElse Opt.Id = "" Then
+            If String.IsNullOrEmpty(Opt?.Id) Then
                 Exit Sub
             End If
 
-            ResetState(False)
-
-            Dim Drive As DriveSpec
-            Try
-                Drive = MakeDriveSpec(Opt.Id)
-            Catch ex As Exception
-                HandleRunFailure(ex.Message)
+            Dim Drive As DriveSpec = Nothing
+            If Not TryMakeDriveSpec(Opt.Id, Drive) Then
+                ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
                 Return
-            End Try
+            End If
 
-            _DoubleStep = (Opt.Type = FloppyDriveType.Drive525HighDensity And _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity)
+            _DoubleStep = (Opt.Type = FloppyDriveType.Drive525HighDensity AndAlso _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity)
 
             Dim Format As String = Nothing
 
@@ -557,10 +505,10 @@ Namespace Flux.Greaseweazle
                 .FileName = FilePath,
                 .Format = Format,
                 .TrackSet = TrackSet,
-                .PreErase = CheckBoxPreErase.Checked,
-                .EraseEmpty = CheckBoxEraseEmpty.Checked,
+                .PreErase = _CheckBoxPreErase.Checked,
+                .EraseEmpty = _CheckBoxEraseEmpty.Checked,
                 .NoVerify = VerifyAllowed() AndAlso CheckboxNoVerify.Checked,
-                .Retries = If(RetriesAllowed(), CInt(NumericRetries.Value), DEFAULT_RETRIES),
+                .Retries = If(RetriesAllowed(), CInt(_NumericRetries.Value), DEFAULT_RETRIES),
                 .Live = True,
                 .Device = ConfiguredDevice(),
                 .Drive = Drive
@@ -573,17 +521,13 @@ Namespace Flux.Greaseweazle
 
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If Runner.IsRunning Then
-                If ConfirmCancelRun() Then
-                    Runner.Cancel()
-                End If
-
+            If CancelIfRunning() Then
                 Exit Sub
             End If
 
             Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
-            If Opt Is Nothing OrElse Opt.Id = "" Then
+            If String.IsNullOrEmpty(Opt?.Id) Then
                 Exit Sub
             End If
 
@@ -604,18 +548,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            TextBoxConsole.Clear()
-
-            Try
-                _Engine.Reset.Run(New ResetOptions With {
-                    .Live = True,
-                    .Device = ConfiguredDevice()
-                })
-            Catch ex As Exception
-                AppendLogLine("Command Failed: " & ex.Message)
-            End Try
-
-            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
+            GreaseweazleReset()
         End Sub
 
         Private Sub CheckboxNoVerify_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckboxNoVerify.CheckStateChanged
@@ -631,12 +564,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If CheckBoxSelect.Checked Then
-                GridReset()
-            End If
-
-            TableSide0.SelectEnabled = CheckBoxSelect.Checked
-            TableSide1.SelectEnabled = CheckBoxSelect.Checked
+            CheckStateChanged(CheckBoxSelect.Checked)
 
             RefreshButtonState()
         End Sub
@@ -650,59 +578,51 @@ Namespace Flux.Greaseweazle
             ResetTrackGrid()
             RefreshProcessButtonState()
 
-            LabelWarning.Visible = Not CheckCompatibility()
-        End Sub
-
-        Private Sub OnWriteHardSectorsDetected(sender As Object, e As WriteHardSectorsEventArgs) Handles WriteCmd.HardSectorsDetected
-            Runner.EmitOutputLine(FormatWriteHardSectorsLine(e))
-        End Sub
-
-        Private Sub OnWriteStarted(sender As Object, e As WriteStartedEventArgs) Handles WriteCmd.Started
-            For Each Line In FormatWriteStartedLines(e)
-                Runner.EmitOutputLine(Line)
-            Next
-        End Sub
-
-        Private Sub OnWriteTrackErasing(sender As Object, e As WriteTrackErasingEventArgs) Handles WriteCmd.TrackErasing
-            Runner.EmitOutputLine(FormatWriteTrackErasingLine(e))
-
-            Runner.PostToUi(Sub() _Status.OnWriteTrackErasing(e.Track.Cyl, e.Track.Head, _DoubleStep))
-        End Sub
-
-        Private Sub OnWriteTrackOutOfRange(sender As Object, e As WriteTrackOutOfRangeEventArgs) Handles WriteCmd.TrackOutOfRange
-            Runner.EmitOutputLine(FormatWriteTrackOutOfRangeLine(e))
-
-            Runner.PostToUi(Sub() _Status.OnWriteTrackOutOfRange(e.Track.Cyl, e.Track.Head, e.FormatName, _DoubleStep))
-        End Sub
-
-        Private Sub OnWriteTrackWriting(sender As Object, e As WriteTrackWritingEventArgs) Handles WriteCmd.TrackWriting
-            Runner.EmitOutputLine(FormatWriteTrackWritingLine(e))
-
-            Runner.PostToUi(Sub() _Status.OnWriteTrackWriting(e.Track.Cyl, e.Track.Head, e.RetryNumber, _DoubleStep))
-        End Sub
-
-        Private Sub OnWriteVerifyCompleted(sender As Object, e As WriteVerifyOutcomeEventArgs) Handles WriteCmd.VerifyCompleted
-            Runner.EmitOutputLine(FormatWriteVerifyOutcomeLine(e))
-        End Sub
-
-        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
-            AppendLogLine(line)
+            _LabelWarning.Visible = Not CheckCompatibility()
         End Sub
 
         Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
-            AppendLogLine("Command Failed: " & ex.Message)
-
             Dim VerifyEx = TryCast(ex, WriteVerifyFailedException)
 
             If VerifyEx IsNot Nothing Then
                 _Status.OnWriteVerifyFailed(VerifyEx.Cyl, VerifyEx.Head, _DoubleStep)
             End If
-
-            _Status.OnWriteFailed()
         End Sub
 
         Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged
             ApplyProcessState(state)
+        End Sub
+
+        Private Sub WriteCmd_HardSectorsDetected(sender As Object, e As HardSectorsDetectedEventArgs) Handles WriteCmd.HardSectorsDetected
+            Runner.EmitOutputLine(FormatWriteHardSectorsLine(e))
+        End Sub
+
+        Private Sub WriteCmd_Started(sender As Object, e As WriteStartedEventArgs) Handles WriteCmd.Started
+            For Each Line In FormatWriteStartedLines(e)
+                Runner.EmitOutputLine(Line)
+            Next
+        End Sub
+
+        Private Sub WriteCmd_TrackErasing(sender As Object, e As WriteTrackErasingEventArgs) Handles WriteCmd.TrackErasing
+            Runner.EmitOutputLine(FormatWriteTrackErasingLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnWriteTrackErasing(e, _DoubleStep))
+        End Sub
+
+        Private Sub WriteCmd_TrackOutOfRange(sender As Object, e As WriteTrackOutOfRangeEventArgs) Handles WriteCmd.TrackOutOfRange
+            Runner.EmitOutputLine(FormatWriteTrackOutOfRangeLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnWriteTrackOutOfRange(e, _DoubleStep))
+        End Sub
+
+        Private Sub WriteCmd_TrackWriting(sender As Object, e As WriteTrackWritingEventArgs) Handles WriteCmd.TrackWriting
+            Runner.EmitOutputLine(FormatWriteTrackWritingLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnWriteTrackWriting(e, _DoubleStep))
+        End Sub
+
+        Private Sub WriteCmd_VerifyCompleted(sender As Object, e As WriteVerifyOutcomeEventArgs) Handles WriteCmd.VerifyCompleted
+            Runner.EmitOutputLine(FormatWriteVerifyOutcomeLine(e))
         End Sub
 
         Private Sub WriteDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged

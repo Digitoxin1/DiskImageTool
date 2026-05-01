@@ -10,6 +10,7 @@ Namespace Flux
     Public Class ConvertImageForm
         Inherits BaseFluxForm
 
+#Region "Form Controls"
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As SplitButton
         Private WithEvents ButtonImportAndClose As SplitButton
@@ -26,12 +27,15 @@ Namespace Flux
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputSource As ComboBox
         Private WithEvents ComboOutputType As ComboBox
+        Private WithEvents TextBoxFileName As TextBox
+        Private _CheckBox86FSurfaceData As CheckBox
+        Private _CheckBoxRemaster As CheckBox
+        Private _LabelOutputSource As Label
+        Private _LabelOutputType As Label
+#End Region
         Private WithEvents ConsoleTimer As Timer
         Private WithEvents ConvertCmd As ConvertCommand
-        Private WithEvents Runner As GreaseweazleRunner
-        Private WithEvents TextBoxFileName As TextBox
         Private ReadOnly _ConsoleQueue As New ConcurrentQueue(Of String)
-        Private ReadOnly _Engine As New GreaseweazleEngine()
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _LaunchedFromDialog As Boolean = False
         Private ReadOnly _OutputImages As OutputImages
@@ -43,7 +47,7 @@ Namespace Flux
         Private _DisplayInputFilePath As String = ""
         Private _DoubleStep As Boolean = False
         Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
-        Private _GwStatus As Greaseweazle.TrackStatus = Nothing
+        Private _GwStatus As TrackStatus = Nothing
         Private _ImportButtonNoEvent As Boolean = False
         Private _InputFilePath As String = ""
         Private _OutputFilePath As String = ""
@@ -52,14 +56,10 @@ Namespace Flux
         Private _SideCount As Integer
         Private _TrackCount As Integer
         Private _TrackLayoutExists As Boolean = False
-        Private CheckBox86FSurfaceData As CheckBox
-        Private CheckBoxRemaster As CheckBox
-        Private LabelOutputSource As Label
-        Private LabelOutputType As Label
 
         Public Event ImportProcess(File As String, NewFilename As String)
         Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "")
-            MyBase.New("")
+            MyBase.New("", UseProcess:=True)
 
             Me.AllowDrop = True
 
@@ -67,8 +67,7 @@ Namespace Flux
                 .Interval = 10
             }
 
-            Runner = New GreaseweazleRunner()
-            ConvertCmd = _Engine.Convert
+            ConvertCmd = Engine.Convert
 
             _UserState = App.UserState.Flux
             _LaunchedFromDialog = LaunchedFromDialog
@@ -107,23 +106,6 @@ Namespace Flux
             MyBase.OnFormClosed(e)
         End Sub
 
-        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
-            If Runner IsNot Nothing AndAlso Runner.IsRunning Then
-                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
-                    If Not ConfirmCancelRun() Then
-                        e.Cancel = True
-                        Return
-                    End If
-                End If
-                Try
-                    Runner.Cancel()
-                Catch ex As Exception
-                End Try
-            End If
-
-            MyBase.OnFormClosing(e)
-        End Sub
-
         Private Function AllowSectorImage() As Boolean
             If ComboDevices.SelectedIndex = -1 Then
                 Return False
@@ -147,13 +129,11 @@ Namespace Flux
             End Select
         End Function
 
-        Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum, completeImmediately As Boolean)
+        Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum, Optional completeImmediately As Boolean = False)
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     _OutputImages.ClearPendingImage()
-                    If Not TrackStatus.Failed Then
-                        TrackStatus.UpdateTrackStatusAborted()
-                    End If
+                    TrackStatus.UpdateTrackStatusAborted()
                     ToolStripProgress.Visible = False
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
@@ -258,23 +238,18 @@ Namespace Flux
             _DisplayInputFilePath = ""
             _FluxHeaders = Nothing
             ComboImageFormat.SelectedIndex = 0
-            CheckBoxRemaster.Checked = False
+            _CheckBoxRemaster.Checked = False
             _TrackLayoutExists = False
-            SetTiltebarText()
+            SetTitleBarText()
             RefreshButtonState()
         End Sub
 
         Private Sub ClearProcessedImage()
-            TextBoxConsole.Clear()
-            ClearStatusBar()
+            ClearLogAndStatus()
             GridReset(_TrackCount, _SideCount, _FluxHeaders)
 
             TrackStatus.Clear()
         End Sub
-
-        Private Function ConfirmCancelRun() As Boolean
-            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
-        End Function
 
         Private Sub DiscardLoadedImage()
             _OutputImages.ClearImages()
@@ -337,7 +312,7 @@ Namespace Flux
                     Response.Arguments = KryofluxResponse.Arguments
 
                 Case IDevice.FluxDevice.PcImgCnv
-                    Response.Arguments = PcImgCnv.GenerateCommandLineImport(InputFilePath, OutputFilePath, CheckBox86FSurfaceData.Checked, CheckBoxRemaster.Enabled AndAlso CheckBoxRemaster.Checked)
+                    Response.Arguments = PcImgCnv.GenerateCommandLineImport(InputFilePath, OutputFilePath, _CheckBox86FSurfaceData.Checked, _CheckBoxRemaster.Enabled AndAlso _CheckBoxRemaster.Checked)
             End Select
 
             Return Response
@@ -447,14 +422,6 @@ Namespace Flux
             Return _UserState.Convert.Device(_SelectedDevice.Device)
         End Function
 
-        Private Sub HandleRunFailure(message As String)
-            Dim Msg = If(String.IsNullOrEmpty(message), "Unknown error", message)
-
-            AppendLogLine("Command Failed: " & Msg)
-
-            ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error, completeImmediately:=True)
-        End Sub
-
         Private Sub ImagePostProcessCompleted()
             If Not TrackStatus.TrackFound Then
                 Exit Sub
@@ -496,7 +463,7 @@ Namespace Flux
                 .Margin = New Padding(12, 3, 3, 3)
             }
 
-            CheckBox86FSurfaceData = New CheckBox With {
+            _CheckBox86FSurfaceData = New CheckBox With {
                 .Text = My.Resources.Label_86FSurfaceData,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -504,7 +471,7 @@ Namespace Flux
                 .Visible = False
             }
 
-            CheckBoxRemaster = New CheckBox With {
+            _CheckBoxRemaster = New CheckBox With {
                 .Text = My.Resources.Label_Remaster,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -548,7 +515,7 @@ Namespace Flux
                 .Width = 200
             }
 
-            LabelOutputType = New Label With {
+            _LabelOutputType = New Label With {
                 .Text = My.Resources.Label_OutputType,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -651,8 +618,8 @@ Namespace Flux
                 .Visible = False
             }
 
-            LabelOutputSource = New Label With {
-                .Text = "Source",
+            _LabelOutputSource = New Label With {
+                .Text = My.Resources.Label_Source,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True,
                 .TabIndex = 0
@@ -669,7 +636,7 @@ Namespace Flux
             PanelButtonsRight.Controls.Add(ButtonImportAndClose)
             PanelButtonsRight.Controls.Add(ButtonImport)
             PanelButtonsRight.Controls.Add(ComboOutputSource)
-            PanelButtonsRight.Controls.Add(LabelOutputSource)
+            PanelButtonsRight.Controls.Add(_LabelOutputSource)
 
             ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
@@ -713,10 +680,10 @@ Namespace Flux
                 .Controls.Add(CheckBoxExtendedLogging, 2, Row)
                 .SetColumnSpan(CheckBoxExtendedLogging, 2)
 
-                .Controls.Add(CheckBoxRemaster, 2, Row)
+                .Controls.Add(_CheckBoxRemaster, 2, Row)
 
-                .Controls.Add(CheckBox86FSurfaceData, 3, Row)
-                .SetColumnSpan(CheckBox86FSurfaceData, 2)
+                .Controls.Add(_CheckBox86FSurfaceData, 3, Row)
+                .SetColumnSpan(_CheckBox86FSurfaceData, 2)
 
                 .Controls.Add(CheckBoxSaveLog, 5, Row)
                 .SetColumnSpan(CheckBoxSaveLog, 2)
@@ -733,7 +700,7 @@ Namespace Flux
                 .Controls.Add(ComboImageFormat, 1, Row)
                 .SetColumnSpan(ComboImageFormat, 2)
 
-                .Controls.Add(LabelOutputType, 3, Row)
+                .Controls.Add(_LabelOutputType, 3, Row)
                 .Controls.Add(ComboOutputType, 4, Row)
                 .SetColumnSpan(ComboOutputType, 2)
 
@@ -756,8 +723,6 @@ Namespace Flux
             If Repopulate Then
                 PopulateDeviceCombo()
             End If
-
-            ButtonProcess.Enabled = False
 
             _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
 
@@ -783,7 +748,7 @@ Namespace Flux
 
             If Clear Then
                 SetNewFileName()
-                SetTiltebarText()
+                SetTitleBarText()
                 GridReset(_TrackCount, _SideCount, _FluxHeaders)
                 ClearStatusBar()
             End If
@@ -797,18 +762,6 @@ Namespace Flux
 
             Me.Refresh()
         End Sub
-
-        Private Function IsAnyRunning() As Boolean
-            If Process IsNot Nothing AndAlso Process.IsRunning Then
-                Return True
-            End If
-
-            If Runner IsNot Nothing AndAlso Runner.IsRunning Then
-                Return True
-            End If
-
-            Return False
-        End Function
 
         Private Sub MoveLogs()
             If Not String.IsNullOrEmpty(_InputFilePath) Then
@@ -876,7 +829,7 @@ Namespace Flux
                 ComboDevices.SelectedValue = _UserState.Convert.LastDevice.Value
             End If
 
-            If ComboDevices.Items.Count > 0 And ComboDevices.SelectedIndex < 0 Then
+            If ComboDevices.Items.Count > 0 AndAlso ComboDevices.SelectedIndex < 0 Then
                 ComboDevices.SelectedIndex = 0
             End If
 
@@ -942,7 +895,7 @@ Namespace Flux
                 ComboOutputSource.SelectedValue = _UserState.Convert.LastSource.Value
             End If
 
-            If ComboOutputSource.Items.Count > 0 And ComboOutputSource.SelectedIndex < 0 Then
+            If ComboOutputSource.Items.Count > 0 AndAlso ComboOutputSource.SelectedIndex < 0 Then
                 ComboOutputSource.SelectedIndex = 0
             End If
 
@@ -981,7 +934,7 @@ Namespace Flux
                 ComboOutputType.SelectedIndex = 0
             End If
 
-            ComboOutputType.Enabled = (ComboDevices.Items.Count > 1)
+            ComboOutputType.Enabled = (ComboOutputType.Items.Count > 1)
 
             _ComboOutputTypeNoEvent = False
         End Sub
@@ -1012,10 +965,10 @@ Namespace Flux
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
                 Else
-                    ImagePreview.Display(Response.Filename, DiskParams.Value, Caption)
+                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption)
                 End If
 
-                DeleteTempFileIfExists(Response.Filename)
+                DeleteTempFileIfExists(Response.FileName)
             End If
         End Sub
 
@@ -1032,7 +985,7 @@ Namespace Flux
 
             Dim DiskParams = SelectedDiskParams()
 
-            If Not DiskParams.HasValue And UseImageFormat Then
+            If Not DiskParams.HasValue AndAlso UseImageFormat Then
                 Exit Sub
             End If
 
@@ -1069,16 +1022,6 @@ Namespace Flux
             End If
 
             DiscardLoadedImage()
-        End Sub
-
-        Private Sub ProcessOutputLine(line As String)
-            _ConsoleQueue.Enqueue(line)
-
-            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Import, _DoubleStep)
-
-            If TrackStatus.Failed Then
-                Process.Cancel()
-            End If
         End Sub
 
         Private Function ProcessSave() As Boolean
@@ -1130,7 +1073,7 @@ Namespace Flux
                 Return FloppyDiskFormat.FloppyUnknown
             End If
 
-            Return DetectImageFormat(Response.Filename, True)
+            Return DetectImageFormat(Response.FileName, True)
         End Function
 
         Private Sub RefreshButtonState()
@@ -1147,10 +1090,8 @@ Namespace Flux
             End If
 
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
-            Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
+            Dim HasSelectedOutputFile As Boolean = _SelectedDevice IsNot Nothing AndAlso _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
-            Dim IsRunning As Boolean = IsAnyRunning()
-            Dim IsIdle As Boolean = Not IsRunning
 
             Dim SettingsEnabled As Boolean = IsIdle
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
@@ -1159,19 +1100,19 @@ Namespace Flux
 
             Dim SourceIsPcImgCnv As Boolean = HasOutputfile AndAlso _OutputImages.HasPcImgCnvImage
 
-            ComboExtensions.Enabled = HasInputFile And ComboExtensions.Items.Count > 1
+            ComboExtensions.Enabled = HasInputFile AndAlso ComboExtensions.Items.Count > 1
             ComboImageFormat.Enabled = CanConfigure AndAlso UseImageFormat
 
             If ComboOutputType IsNot Nothing Then
                 If ComboOutputType.SelectedIndex > -1 Then
                     OutputType = ComboOutputType.SelectedValue
                 End If
-                ComboOutputType.Enabled = CanConfigure And ComboOutputType.Items.Count > 1
+                ComboOutputType.Enabled = CanConfigure AndAlso ComboOutputType.Items.Count > 1
             End If
 
             ComboDevices.Enabled = SettingsEnabled AndAlso ComboDevices.Items.Count > 1
 
-            ButtonCancel.Text = If(IsRunning Or HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
+            ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
             ButtonOpen.Enabled = SettingsEnabled AndAlso Not HasOutputfile
 
@@ -1203,17 +1144,17 @@ Namespace Flux
             End If
 
             CheckBoxExtendedLogging.Enabled = SettingsEnabled
-            CheckBox86FSurfaceData.Enabled = SettingsEnabled AndAlso OutputType.HasValue AndAlso OutputType.Value = ImageImportOutputTypes.F86
+            _CheckBox86FSurfaceData.Enabled = SettingsEnabled AndAlso OutputType.HasValue AndAlso OutputType.Value = ImageImportOutputTypes.F86
 
             If _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv Then
-                CheckBoxRemaster.Enabled = SettingsEnabled AndAlso _TrackLayoutExists
+                _CheckBoxRemaster.Enabled = SettingsEnabled AndAlso _TrackLayoutExists
             Else
-                CheckBoxRemaster.Enabled = False
+                _CheckBoxRemaster.Enabled = False
             End If
 
             CheckBoxSaveLog.Enabled = SettingsEnabled
 
-            LabelOutputSource.Visible = _OutputImages.Images.Count > 1
+            _LabelOutputSource.Visible = _OutputImages.Images.Count > 1
             ComboOutputSource.Visible = _OutputImages.Images.Count > 1
 
             RefreshImportButtonState()
@@ -1228,20 +1169,20 @@ Namespace Flux
 
             Select Case _SelectedDevice.Device
                 Case IDevice.FluxDevice.Kryoflux
-                    CheckBox86FSurfaceData.Visible = False
+                    _CheckBox86FSurfaceData.Visible = False
                     CheckBoxExtendedLogging.Visible = True
 
                 Case IDevice.FluxDevice.PcImgCnv
                     CheckBoxExtendedLogging.Visible = False
-                    CheckBox86FSurfaceData.Visible = True
+                    _CheckBox86FSurfaceData.Visible = True
                     IsPcImgCnv = True
 
                 Case Else
-                    CheckBox86FSurfaceData.Visible = False
+                    _CheckBox86FSurfaceData.Visible = False
                     CheckBoxExtendedLogging.Visible = False
             End Select
 
-            CheckBoxRemaster.Visible = IsPcImgCnv
+            _CheckBoxRemaster.Visible = IsPcImgCnv
             ButtonTrackLayout.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
             ButtonModifications.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
         End Sub
@@ -1267,7 +1208,7 @@ Namespace Flux
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
 
-            Dim EnableImport As Boolean = Not IsAnyRunning() AndAlso HasOutputfile AndAlso HasInputFile AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
+            Dim EnableImport As Boolean = IsIdle AndAlso HasOutputfile AndAlso HasInputFile AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
 
             ButtonImportAndClose.Enabled = EnableImport
             ButtonImport.Enabled = EnableImport
@@ -1305,7 +1246,7 @@ Namespace Flux
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
 
             _TrackLayoutExists = TrackLayoutExists()
-            CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
+            _CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
 
         Private Sub SaveAndClose(DialogResult As DialogResult)
@@ -1352,7 +1293,7 @@ Namespace Flux
             End If
         End Sub
 
-        Private Sub SetTiltebarText()
+        Private Sub SetTitleBarText()
             Dim Text = My.Resources.Caption_ConvertFluxImage
 
             If String.IsNullOrEmpty(_DisplayInputFilePath) Then
@@ -1377,6 +1318,7 @@ Namespace Flux
                 Opts = BuildConvertOptions(inputFilePath, outputFilePath, diskParams, outputType, doubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
+                ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
                 Exit Sub
             End Try
 
@@ -1461,14 +1403,7 @@ Namespace Flux
         End Sub
 
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If Runner IsNot Nothing AndAlso Runner.IsRunning Then
-                If ConfirmCancelRun() Then
-                    Runner.Cancel()
-                End If
-                Exit Sub
-            End If
-
-            If CancelProcessIfRunning() Then
+            If CancelIfRunning() Then
                 Exit Sub
             End If
 
@@ -1626,39 +1561,24 @@ Namespace Flux
             Next
         End Sub
 
-        Private Sub ConvertCmd_SummaryReady(sender As Object, e As ConvertSummaryReadyEventArgs) Handles ConvertCmd.SummaryReady
+        Private Sub ConvertCmd_SummaryReady(sender As Object, e As SectorSummaryReadyEventArgs) Handles ConvertCmd.SummaryReady
             For Each Line In FormatSectorSummaryLines(e.Grid)
                 Runner.EmitOutputLine(Line)
             Next
 
-            Dim Status = _GwStatus
-            If Status Is Nothing Then
-                Return
-            End If
-
-            Runner.PostToUi(Sub() Status.OnConvertSummary(e.Grid))
+            Runner.PostToUi(Sub() _GwStatus?.OnSummary(e.Grid))
         End Sub
 
-        Private Sub ConvertCmd_TrackProcessed(sender As Object, e As ConvertTrackProcessedEventArgs) Handles ConvertCmd.TrackProcessed
+        Private Sub ConvertCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ConvertCmd.TrackProcessed
             Runner.EmitOutputLine(FormatConvertTrackProcessedLine(e))
 
-            Dim Status = _GwStatus
-            If Status Is Nothing Then
-                Return
-            End If
-
-            Runner.PostToUi(Sub() Status.OnConvertTrackProcessed(e.Track.Cyl, e.Track.Head, e.Outcome, e.DecodedSectorsFound, e.DecodedSectorsTotal, e.FormatName, _DoubleStep))
+            Runner.PostToUi(Sub() _GwStatus?.OnConvertTrackProcessed(e, _DoubleStep))
         End Sub
 
-        Private Sub ConvertCmd_UnexpectedSectorIgnored(sender As Object, e As ConvertUnexpectedSectorEventArgs) Handles ConvertCmd.UnexpectedSectorIgnored
+        Private Sub ConvertCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ConvertCmd.UnexpectedSectorIgnored
             Runner.EmitOutputLine(FormatConvertUnexpectedSectorLine(e))
 
-            Dim Status = _GwStatus
-            If Status Is Nothing Then
-                Return
-            End If
-
-            Runner.PostToUi(Sub() Status.OnConvertUnexpectedSector(e.Track.Cyl, e.Track.Head, e.C, e.H, e.R, e.N, _DoubleStep))
+            Runner.PostToUi(Sub() _GwStatus?.OnConvertUnexpectedSector(e, _DoubleStep))
         End Sub
 
         Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
@@ -1670,7 +1590,7 @@ Namespace Flux
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
 
-            If IsAnyRunning() Or HasOutputfile Then
+            If IsRunning OrElse HasOutputfile Then
                 Return
             End If
 
@@ -1696,7 +1616,7 @@ Namespace Flux
         Private Sub ImageImportForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
 
-            If IsAnyRunning() Or HasOutputfile Then
+            If IsRunning OrElse HasOutputfile Then
                 e.Effect = DragDropEffects.None
                 Return
             End If
@@ -1713,7 +1633,8 @@ Namespace Flux
         End Sub
 
         Private Sub Process_DataReceived(Data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
-            ProcessOutputLine(Data)
+            _ConsoleQueue.Enqueue(Data)
+            TrackStatus.ProcessOutputLineRead(Data, ActionTypeEnum.Import, _DoubleStep)
 
             If Not ConsoleTimer.Enabled Then
                 ConsoleTimer.Start()
@@ -1724,24 +1645,17 @@ Namespace Flux
             StatusDevice.Text = _SelectedDevice.Name
             StatusDevice.Visible = True
 
-            If _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv AndAlso CheckBoxRemaster.Checked Then
+            If _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv AndAlso _CheckBoxRemaster.Checked Then
                 ToolStripProgress.Visible = True
             End If
         End Sub
 
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
-            ApplyProcessState(State, completeImmediately:=False)
+            ApplyProcessState(State)
         End Sub
 
-        Private Sub Runner_OutputDataReceived(line As String) Handles Runner.OutputDataReceived
-            AppendLogLine(line)
-        End Sub
-
-        Private Sub Runner_ProcessFailed(ex As Exception) Handles Runner.ProcessFailed
-            HandleRunFailure(ex.Message)
-        End Sub
         Private Sub Runner_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged
-            ApplyProcessState(State, completeImmediately:=True)
+            ApplyProcessState(State, True)
         End Sub
 
         Private Sub TextBoxFileName_Click(sender As Object, e As EventArgs) Handles TextBoxFileName.Click
@@ -1874,7 +1788,7 @@ Namespace Flux
 
             Public Sub MoveLogs(DestinationPath As String)
                 For Each LogFile In _LogFiles.Values
-                    If Not String.IsNullOrEmpty(LogFile.FilePath) And Not String.IsNullOrEmpty(LogFile.LogFileName) Then
+                    If Not String.IsNullOrEmpty(LogFile.FilePath) AndAlso Not String.IsNullOrEmpty(LogFile.LogFileName) Then
                         Dim NewFilePath As String = IO.Path.Combine(DestinationPath, LogFile.LogFileName)
                         Try
                             IO.File.Delete(NewFilePath)

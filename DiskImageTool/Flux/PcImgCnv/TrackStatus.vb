@@ -3,7 +3,6 @@
         Inherits ConsoleParser
         Implements ITrackStatus
 
-        Private ReadOnly _Failed As Boolean = False
         Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
         Private _TotalBadSectors As UInteger = 0
@@ -30,11 +29,6 @@
 
             _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
-        Public ReadOnly Property Failed As Boolean Implements ITrackStatus.Failed
-            Get
-                Return _Failed
-            End Get
-        End Property
 
         Public ReadOnly Property TrackFound As Boolean Implements ITrackStatus.TrackFound
             Get
@@ -52,7 +46,6 @@
             _TotalBadSectors = 0
             _TrackFound = False
         End Sub
-
         Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
             UpdateTrackStatusType(TrackStatusEnum.Aborted)
         End Sub

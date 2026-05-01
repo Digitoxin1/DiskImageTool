@@ -4,7 +4,6 @@
         Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData)
         Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData)
         Event UpdateStatusType(StatusText As String)
-        ReadOnly Property Failed As Boolean
         ReadOnly Property TrackFound As Boolean
         Function CanKeepProcessing() As Boolean
         Sub Clear()

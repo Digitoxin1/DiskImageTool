@@ -86,20 +86,20 @@ Namespace Flux.Greaseweazle
             Return lines
         End Function
 
-        Public Function FormatConvertTrackProcessedLine(e As ConvertTrackProcessedEventArgs) As String
+        Public Function FormatConvertTrackProcessedLine(e As TrackProcessedEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Dim spec = FormatConvertTrackSpec(e.Track)
 
             Select Case e.Outcome
-                Case ConvertTrackOutcome.NoFormat
+                Case TrackDecodeOutcome.NoFormat
                     Return String.Format("{0}: {1}", spec, e.FluxSummary)
 
-                Case ConvertTrackOutcome.OutOfRange
+                Case TrackDecodeOutcome.OutOfRange
                     Return String.Format("{0}: WARNING: Out of range for format '{1}': Track skipped",
                                          spec, If(e.FormatName, ""))
 
-                Case ConvertTrackOutcome.Decoded
+                Case TrackDecodeOutcome.Decoded
                     Return String.Format("{0}: {1} from {2}", spec, e.DecodedSummary, e.FluxSummary)
 
                 Case Else
@@ -107,7 +107,7 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function FormatConvertUnexpectedSectorLine(e As ConvertUnexpectedSectorEventArgs) As String
+        Public Function FormatConvertUnexpectedSectorLine(e As UnexpectedSectorEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Return String.Format(CultureInfo.InvariantCulture,
@@ -186,7 +186,7 @@ Namespace Flux.Greaseweazle
             Return sb.ToString()
         End Function
 
-        Public Function FormatReadHardSectorsLine(e As ReadHardSectorsEventArgs) As String
+        Public Function FormatReadHardSectorsLine(e As HardSectorsDetectedEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Return String.Format(CultureInfo.InvariantCulture,
@@ -214,20 +214,20 @@ Namespace Flux.Greaseweazle
                                  FormatTrackSpec(e.Track), e.MissingSectors)
         End Function
 
-        Public Function FormatReadTrackProcessedLine(e As ReadTrackProcessedEventArgs) As String
+        Public Function FormatReadTrackProcessedLine(e As TrackProcessedEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Dim spec = FormatTrackSpec(e.Track)
 
             Select Case e.Outcome
-                Case ReadTrackOutcome.NoFormat
+                Case TrackDecodeOutcome.NoFormat
                     Return String.Format("{0}: {1}", spec, e.FluxSummary)
 
-                Case ReadTrackOutcome.OutOfRange
+                Case TrackDecodeOutcome.OutOfRange
                     Return String.Format("{0}: WARNING: Out of range for format '{1}': No format conversion applied: {2}",
                                          spec, If(e.FormatName, ""), e.FluxSummary)
 
-                Case ReadTrackOutcome.Decoded
+                Case TrackDecodeOutcome.Decoded
                     Dim line = String.Format("{0}: {1} from {2}", spec, e.DecodedSummary, e.FluxSummary)
                     If e.Retry <> 0 Then
                         line &= String.Format(" (Retry #{0}.{1})", e.SeekRetry, e.Retry)
@@ -239,7 +239,7 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function FormatReadUnexpectedSectorLine(e As ReadUnexpectedSectorEventArgs) As String
+        Public Function FormatReadUnexpectedSectorLine(e As UnexpectedSectorEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Return String.Format(CultureInfo.InvariantCulture,
@@ -290,7 +290,7 @@ Namespace Flux.Greaseweazle
             Return lines
         End Function
 
-        Public Function FormatWriteHardSectorsLine(e As WriteHardSectorsEventArgs) As String
+        Public Function FormatWriteHardSectorsLine(e As HardSectorsDetectedEventArgs) As String
             If e Is Nothing Then Return String.Empty
 
             Return String.Format(CultureInfo.InvariantCulture, "Drive reports {0} hard sectors", e.HardSectorCount)
@@ -378,7 +378,7 @@ Namespace Flux.Greaseweazle
             Return lines
         End Function
 
-        Private Function FormatConvertTrackSpec(t As ConvertTrackInfo) As String
+        Private Function FormatConvertTrackSpec(t As TrackInfo) As String
             Dim spec = String.Format(CultureInfo.InvariantCulture, "T{0}.{1}", t.Cyl, t.Head)
 
             If t.PhysicalCyl <> t.Cyl OrElse t.PhysicalHead <> t.Head Then
@@ -388,7 +388,7 @@ Namespace Flux.Greaseweazle
             Return spec
         End Function
 
-        Private Function FormatTrackSpec(t As ReadTrackInfo) As String
+        Private Function FormatTrackSpec(t As TrackInfo) As String
             Dim spec = String.Format(CultureInfo.InvariantCulture, "T{0}.{1}", t.Cyl, t.Head)
 
             If t.PhysicalCyl <> t.Cyl OrElse t.PhysicalHead <> t.Head Then
@@ -398,7 +398,7 @@ Namespace Flux.Greaseweazle
             Return spec
         End Function
 
-        Private Function FormatWriteTrackSpec(t As WriteTrackInfo) As String
+        Private Function FormatWriteTrackSpec(t As TrackInfo) As String
             Dim spec = String.Format(CultureInfo.InvariantCulture, "T{0}.{1}", t.Cyl, t.Head)
 
             If t.PhysicalCyl <> t.Cyl OrElse t.PhysicalHead <> t.Head Then

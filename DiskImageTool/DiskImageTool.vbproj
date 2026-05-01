@@ -203,7 +203,6 @@
     <Compile Include="Flux\Greaseweazle\Models\TrackReadDetails..vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackReadOutOfRange.vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackWrite.vb" />
-    <Compile Include="Flux\Greaseweazle\Models\UnexpectedSector.vb" />
     <Compile Include="Flux\Kryoflux\Models\DTCTrack.vb" />
     <Compile Include="Flux\Kryoflux\Models\DTCTrackDetails.vb" />
     <Compile Include="Forms\ImagePreview.Designer.vb">

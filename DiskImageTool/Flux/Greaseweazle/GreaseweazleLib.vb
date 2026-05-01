@@ -340,17 +340,17 @@ Namespace Flux.Greaseweazle
 
             Dim StartedHandler As EventHandler(Of ReadStartedEventArgs) =
                 Sub(snd, args)
-                    For Each Line In GreaseweazleFormatters.FormatReadStartedLines(args)
+                    For Each Line In FormatReadStartedLines(args)
                         Sb.AppendLine(Line)
                     Next
                 End Sub
-            Dim HardSectorsHandler As EventHandler(Of ReadHardSectorsEventArgs) =
-                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadHardSectorsLine(args))
-            Dim TrackHandler As EventHandler(Of ReadTrackProcessedEventArgs) =
-                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadTrackProcessedLine(args))
+            Dim HardSectorsHandler As EventHandler(Of HardSectorsDetectedEventArgs) =
+                Sub(snd, args) Sb.AppendLine(FormatReadHardSectorsLine(args))
+            Dim TrackHandler As EventHandler(Of TrackProcessedEventArgs) =
+                Sub(snd, args) Sb.AppendLine(FormatReadTrackProcessedLine(args))
             Dim GaveUpHandler As EventHandler(Of ReadTrackGaveUpEventArgs) =
-                Sub(snd, args) Sb.AppendLine(GreaseweazleFormatters.FormatReadTrackGaveUpLine(args))
-            Dim SummaryHandler As EventHandler(Of ReadSummaryReadyEventArgs) =
+                Sub(snd, args) Sb.AppendLine(FormatReadTrackGaveUpLine(args))
+            Dim SummaryHandler As EventHandler(Of SectorSummaryReadyEventArgs) =
                 Sub(snd, args)
                     For Each Line In GreaseweazleFormatters.FormatSectorSummaryLines(args.Grid)
                         Sb.AppendLine(Line)
