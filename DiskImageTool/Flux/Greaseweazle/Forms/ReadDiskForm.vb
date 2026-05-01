@@ -50,6 +50,7 @@ Namespace Flux.Greaseweazle
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
         Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
+        Private ReadOnly _DrivesAvailable As Boolean = False
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
@@ -89,6 +90,8 @@ Namespace Flux.Greaseweazle
             InitializeHelp()
 
             _SelectedOption = PopulateDrives(ComboDrives, FloppyDriveType.DriveUnknown, GetSelectedDeviceState.DriveId)
+            _DrivesAvailable = ComboDrives.Items.OfType(Of DriveOption)().Any(Function(d) Not String.IsNullOrEmpty(d.Id))
+
             PopulateImageFormats()
             InitializeImage()
 
@@ -1438,7 +1441,7 @@ Namespace Flux.Greaseweazle
 
             ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
 
-            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputfile
+            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputfile AndAlso _DrivesAvailable
 
             RefreshProcessButtonState()
             RefreshImportButtonState()
