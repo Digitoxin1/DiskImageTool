@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 Imports Greaseweazle.Actions
+Imports Greaseweazle.Shared
 Imports Greaseweazle.Tools
 
 Namespace Flux.Greaseweazle
@@ -42,6 +43,7 @@ Namespace Flux.Greaseweazle
         Private _NumericRetries As NumericUpDown
         Private _NumericSeekRetries As NumericUpDown
 #End Region
+        Private WithEvents ConvertCmd As ConvertCommand
         Private WithEvents ReadCmd As ReadCommand
         Private Const DEFAULT_RAW_FILE_NAME As String = "track"
         Private Const FLUX_WILDCARD As String = "*.raw"
@@ -58,7 +60,6 @@ Namespace Flux.Greaseweazle
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
-        Private _FileRefineMode As Boolean = False
         Private _FileReprocessMode As Boolean = False
         Private _LastSequenceTextBox As TextBoxBase
         Private _NewFileName As String = ""
@@ -66,6 +67,7 @@ Namespace Flux.Greaseweazle
         Private _NumericRevsNoEvent As Boolean = False
         Private _OutputDoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
+        Private _RefineThrowawayPath As String = ""
         Private _SelectedOption As DriveOption
 
         Public Event ImportProcess(File As String, NewFilename As String)
@@ -74,6 +76,7 @@ Namespace Flux.Greaseweazle
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
+            ConvertCmd = Engine.Convert
             ReadCmd = Engine.Read
 
             _UserState = App.UserState.Flux
@@ -131,6 +134,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+            ConvertCmd = Nothing
             ReadCmd = Nothing
 
             MyBase.OnFormClosed(e)
@@ -201,6 +205,11 @@ Namespace Flux.Greaseweazle
                 End If
                 HideSelection(False)
                 _FileReprocessMode = False
+
+                If Not String.IsNullOrEmpty(_RefineThrowawayPath) Then
+                    DeleteTempFileIfExists(_RefineThrowawayPath)
+                    _RefineThrowawayPath = ""
+                End If
             End If
 
             RefreshFormState()
@@ -276,6 +285,19 @@ Namespace Flux.Greaseweazle
                 .Device = ConfiguredDevice(),
                 .Drive = Drive
             }
+        End Function
+
+        Private Function BuildRefineConvertOptions(inputFilePath As String, outputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
+            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
+            Dim Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+
+            Dim TrackSet As New TrackSetSpec
+
+            If doubleStep Then
+                TrackSet.Step = 2
+            End If
+
+            Return New ConvertOptions With {.InputFile = inputFilePath, .OutputFile = outputFilePath, .Format = Format, .TrackSet = TrackSet}
         End Function
 
         Private Sub CacheFilenameTemplate()
@@ -389,7 +411,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If Delete AndAlso Not _FileRefineMode Then
+            If Delete Then
                 If CheckIsFluxOutput() Then
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
                     DeleteFilesAndFolderIfEmpty(PathName, FLUX_WILDCARD, Settings.LogFileName)
@@ -400,7 +422,6 @@ Namespace Flux.Greaseweazle
 
             _OutputFilePath = ""
             _OutputDoubleStep = False
-            _FileRefineMode = False
             _FileReprocessMode = False
         End Sub
 
@@ -592,14 +613,6 @@ Namespace Flux.Greaseweazle
                 Return False
             End Try
         End Function
-        Private Sub FluxFolderBrowse()
-            Dim FolderName = BrowseFolderVista(TextBoxRootFolder.Text, Me.Handle)
-            If FolderName <> "" Then
-                If ProcessExistingFluxSet(FolderName) Then
-                    TextBoxFolderName.Text = NormalizeFluxFolder(FolderName, TextBoxRootFolder.Text)
-                End If
-            End If
-        End Sub
 
         Private Function FluxGetFirstTrackFileName(Prefix As String) As String
             Return FluxGetTrackFileName(Prefix, 0, 0)
@@ -969,7 +982,7 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_Detect
             }
 
-            'ButtonContainer.Controls.Add(ButtonRefine)
+            ButtonContainer.Controls.Add(ButtonRefine)
             ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonConvert)
@@ -1244,45 +1257,6 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Function ProcessExistingFluxSet(FilePath As String) As Boolean
-            If Not IO.Directory.Exists(FilePath) Then
-                Return True
-            End If
-
-            Dim FileName = GetFirstRawFile(FilePath)
-            If FileName = "" Then
-                Return True
-            End If
-
-            Dim Msg As String = "An existing Flux Image Set exists in:" &
-                vbNewLine & vbNewLine & "'" & FilePath & "'." &
-                vbNewLine & vbNewLine & "Do you wish to refine this set?"
-
-            If MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
-                Return False
-            End If
-
-            Dim FluxFilePath = IO.Path.Combine(FilePath, FileName)
-
-            Dim Response = GetFluxSetInfoRaw(FluxFilePath)
-
-            If Not Response.Result Then
-                MsgBox("Unable to process the existing Flux Image Set.", MsgBoxStyle.Exclamation)
-                Return False
-            End If
-
-            Dim OutputFile = IO.Path.Combine(FilePath, FluxGetFirstTrackFileName(Response.Prefix))
-
-            CheckBoxSelect.Checked = True
-            TextBoxPrefixName.Text = Response.Prefix
-            _OutputFilePath = OutputFile
-            _FileRefineMode = True
-
-            RefreshFormState()
-
-            Return True
-        End Function
-
         Private Sub ProcessImage()
             Dim DiskParams = SelectedDiskParams()
 
@@ -1332,6 +1306,96 @@ Namespace Flux.Greaseweazle
 
             Return DetectImageFormat(Response.FileName, True)
         End Function
+
+        Private Sub RefineFromRaw()
+            Dim SourceFile = OpenFluxImage(False)
+            If String.IsNullOrEmpty(SourceFile) Then
+                Exit Sub
+            End If
+
+            Dim Info = GetFluxSetInfoRaw(SourceFile, ReadHeaders:=True)
+            If Not Info.Result Then
+                MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
+                Exit Sub
+            End If
+
+            Dim FormatResp = ConvertFirstTrack(SourceFile, False)
+            Dim DetectedFormat As FloppyDiskFormat = If(FormatResp.Result,
+                DetectImageFormat(FormatResp.FileName, True),
+                FloppyDiskFormat.FloppyUnknown)
+
+            Dim TempRoot = InitTempImagePath()
+            If String.IsNullOrEmpty(TempRoot) Then
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
+                Exit Sub
+            End If
+
+            Dim TempFolder = IO.Path.Combine(TempRoot, Guid.NewGuid.ToString("N"))
+            Dim SourceFolder = IO.Path.GetDirectoryName(SourceFile)
+
+            Try
+                IO.Directory.CreateDirectory(TempFolder)
+
+                For Each src In IO.Directory.EnumerateFiles(SourceFolder, Info.Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
+                    IO.File.Copy(src, IO.Path.Combine(TempFolder, IO.Path.GetFileName(src)), True)
+                Next
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                DeleteFilesAndFolderIfEmpty(TempFolder, FLUX_WILDCARD)
+                Exit Sub
+            End Try
+
+            ClearProcessedImage(False, False)
+
+            SelectDriveForRefine(DetectedFormat)
+
+            If _SelectedOption IsNot Nothing AndAlso Not String.IsNullOrEmpty(_SelectedOption.Id) Then
+                _SelectedOption.SelectedFormat = DetectedFormat
+                _SelectedOption.DetectedFormat = DetectedFormat
+            End If
+
+            Dim Doublestep As Boolean = _SelectedOption IsNot Nothing AndAlso _SelectedOption.Type = FloppyDriveType.Drive525HighDensity
+            _ComboImageFormatNoEvent = True
+            SharedLib.PopulateImageFormats(ComboImageFormat, DetectedFormat, DetectedFormat, True, Doublestep)
+            _ComboImageFormatNoEvent = False
+
+            PopulateOutputTypes(ReadDiskOutputTypes.RAW)
+            PopulateFileExtensions()
+
+            TextBoxRootFolder.Text = IO.Path.GetDirectoryName(SourceFolder)
+            TextBoxFolderName.Text = NormalizeFluxFolder(SourceFolder, TextBoxRootFolder.Text)
+            TextBoxPrefixName.Text = Info.Prefix
+
+            Dim DiskParams = SelectedDiskParams()
+            If Not DiskParams.HasValue Then
+                MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
+                DeleteFilesAndFolderIfEmpty(TempFolder, FLUX_WILDCARD)
+                Exit Sub
+            End If
+
+            _OutputFilePath = IO.Path.Combine(TempFolder, FluxGetFirstTrackFileName(Info.Prefix))
+            _OutputDoubleStep = _SelectedOption IsNot Nothing AndAlso UseDoubleStep(_SelectedOption.Type, DetectedFormat)
+
+            _RefineThrowawayPath = IO.Path.Combine(TempRoot, Guid.NewGuid.ToString("N") & ".ima")
+
+            CheckBoxSelect.Checked = True
+
+            TrackStatus.Clear()
+            ResetTrackGrid()
+
+            Dim Opts As ConvertOptions
+            Try
+                Opts = BuildRefineConvertOptions(_OutputFilePath, _RefineThrowawayPath, DiskParams.Value, _OutputDoubleStep)
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
+                Return
+            End Try
+
+            InitLogFilePath(If(CheckBoxSaveLog.Checked, IO.Path.Combine(TempFolder, Settings.LogFileName), ""))
+
+            Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
+        End Sub
 
         Private Sub RefreshFormState()
             Dim DiskParams = SelectedDiskParams()
@@ -1535,6 +1599,48 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
+        Private Sub SelectDriveForRefine(detectedFormat As FloppyDiskFormat)
+            Dim CurrentOpt As DriveOption = _SelectedOption
+            Dim HasDriveSelected As Boolean = CurrentOpt IsNot Nothing AndAlso Not String.IsNullOrEmpty(CurrentOpt.Id)
+
+            Dim TargetType As FloppyDriveType = FloppyDriveType.DriveUnknown
+            If detectedFormat <> FloppyDiskFormat.FloppyUnknown Then
+                Dim DiskParams = FloppyDiskFormatGetParams(detectedFormat)
+                TargetType = GreaseweazleFindCompatibleDriveType(DiskParams, Settings.AvailableDriveTypes)
+            End If
+
+            If TargetType <> FloppyDriveType.DriveUnknown AndAlso HasDriveSelected AndAlso CurrentOpt.Type = TargetType Then
+                Return
+            End If
+
+            Dim TargetOpt As DriveOption = Nothing
+            Dim FirstOpt As DriveOption = Nothing
+
+            For Each Item In ComboDrives.Items
+                Dim Opt = TryCast(Item, DriveOption)
+                If Opt Is Nothing OrElse String.IsNullOrEmpty(Opt.Id) Then
+                    Continue For
+                End If
+
+                If FirstOpt Is Nothing Then
+                    FirstOpt = Opt
+                End If
+                If TargetOpt Is Nothing AndAlso TargetType <> FloppyDriveType.DriveUnknown AndAlso Opt.Type = TargetType Then
+                    TargetOpt = Opt
+                End If
+            Next
+
+            Dim NewSelection As DriveOption = Nothing
+            If TargetOpt IsNot Nothing Then
+                NewSelection = TargetOpt
+            ElseIf Not HasDriveSelected Then
+                NewSelection = FirstOpt
+            End If
+
+            If NewSelection IsNot Nothing AndAlso NewSelection IsNot CurrentOpt Then
+                ComboDrives.SelectedItem = NewSelection
+            End If
+        End Sub
         Private Function SelectedDiskFormat() As FloppyDiskFormat?
             If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
                 Return Nothing
@@ -1707,10 +1813,6 @@ Namespace Flux.Greaseweazle
             ClearProcessedImage(True, True)
         End Sub
 
-        'Private Sub ButtonFolderBrowse_Click(sender As Object, e As EventArgs) Handles ButtonFolderBrowse.Click
-        '    FluxFolderBrowse()
-        'End Sub
-
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
             If Not CheckFileNameEntered() Then
                 Exit Sub
@@ -1765,6 +1867,9 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
+        Private Sub ButtonRefine_Click(sender As Object, e As EventArgs) Handles ButtonRefine.Click
+            RefineFromRaw()
+        End Sub
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
             GreaseweazleReset()
         End Sub
@@ -1874,6 +1979,36 @@ Namespace Flux.Greaseweazle
             GetSelectedDeviceState.OutputType = ComboOutputType.SelectedValue
         End Sub
 
+        Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
+            Runner.EmitOutputLine(FormatConvertHardSectorsAppliedLine(e))
+        End Sub
+
+        Private Sub ConvertCmd_Started(sender As Object, e As ConvertStartedEventArgs) Handles ConvertCmd.Started
+            For Each Line In FormatConvertStartedLines(e)
+                Runner.EmitOutputLine(Line)
+            Next
+        End Sub
+
+        Private Sub ConvertCmd_SummaryReady(sender As Object, e As SectorSummaryReadyEventArgs) Handles ConvertCmd.SummaryReady
+            For Each Line In FormatSectorSummaryLines(e.Grid)
+                Runner.EmitOutputLine(Line)
+            Next
+
+            Runner.PostToUi(Sub() _Status.OnSummary(e.Grid))
+        End Sub
+
+        Private Sub ConvertCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ConvertCmd.TrackProcessed
+            Runner.EmitOutputLine(FormatConvertTrackProcessedLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnConvertTrackProcessed(e, _OutputDoubleStep))
+        End Sub
+
+        Private Sub ConvertCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ConvertCmd.UnexpectedSectorIgnored
+            Runner.EmitOutputLine(FormatConvertUnexpectedSectorLine(e))
+
+            Runner.PostToUi(Sub() _Status.OnConvertUnexpectedSector(e, _OutputDoubleStep))
+        End Sub
+
         Private Sub NumericRevs_ValueChanged(sender As Object, e As EventArgs) Handles NumericRevs.ValueChanged
             If Not _Initialized Then
                 Exit Sub
@@ -1889,7 +2024,6 @@ Namespace Flux.Greaseweazle
                 _CachedRevs = NumericRevs.Value
             End If
         End Sub
-
         Private Sub ReadCmd_HardSectorsDetected(sender As Object, e As HardSectorsDetectedEventArgs) Handles ReadCmd.HardSectorsDetected
             Runner.EmitOutputLine(FormatReadHardSectorsLine(e))
         End Sub
