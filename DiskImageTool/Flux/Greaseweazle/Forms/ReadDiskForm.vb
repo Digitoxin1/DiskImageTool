@@ -21,6 +21,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonRootBrowse As Button
         Private WithEvents ButtonToggleSequence As Button
         Private WithEvents ButtonToggleSequence2 As Button
+        Private WithEvents ButtonVerify As Button
         Private WithEvents CheckBoxSaveLog As CheckBox
         Private WithEvents ComboDrives As ComboBox
         Private WithEvents ComboExtensions As ComboBox
@@ -1410,6 +1411,13 @@ Namespace Flux.Greaseweazle
             ButtonConvert.Enabled = CanConvert
             ButtonConvert.Visible = IsFluxOutput
 
+            Dim KryofluxAvailable As Boolean = Flux.Kryoflux.Settings().IsPathValid()
+            Dim NonImageFormat As Boolean = Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage
+            Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso KryofluxAvailable
+
+            ButtonVerify.Enabled = CanVerify
+            ButtonVerify.Visible = IsFluxOutput AndAlso KryofluxAvailable
+
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
 
             ButtonDetect.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
@@ -2242,12 +2250,21 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeFooter()
+            ButtonVerify = New Button With {
+                .Margin = New Padding(18, 0, 6, 0),
+                .Text = My.Resources.Label_Verify,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 0,
+                .Visible = False
+            }
+
             ButtonImport = New SplitButton With {
                 .Margin = New Padding(6, 0, 6, 0),
                 .Text = My.Resources.Label_Import,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .TabIndex = 0
+                .TabIndex = 1
             }
 
             ButtonImportAndClose = New SplitButton With {
@@ -2255,12 +2272,13 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_ImportClose,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .TabIndex = 1
+                .TabIndex = 2
             }
 
-            BumpTabIndexes(PanelButtonsRight, 2)
+            BumpTabIndexes(PanelButtonsRight, 3)
             PanelButtonsRight.Controls.Add(ButtonImportAndClose)
             PanelButtonsRight.Controls.Add(ButtonImport)
+            PanelButtonsRight.Controls.Add(ButtonVerify)
 
             ButtonOk.Visible = False
         End Sub

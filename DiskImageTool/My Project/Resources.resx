@@ -777,6 +777,9 @@
   <data name="Label_Verified" xml:space="preserve">
     <value>Verified</value>
   </data>
+  <data name="Label_Verify" xml:space="preserve">
+    <value>Verify</value>
+  </data>
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Modified Files</value>
   </data>

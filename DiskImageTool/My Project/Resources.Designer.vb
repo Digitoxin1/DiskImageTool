@@ -4822,6 +4822,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Verify.
+        '''</summary>
+        Friend ReadOnly Property Label_Verify() As String
+            Get
+                Return ResourceManager.GetString("Label_Verify", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Verifying.
         '''</summary>
         Friend ReadOnly Property Label_Verifying() As String
