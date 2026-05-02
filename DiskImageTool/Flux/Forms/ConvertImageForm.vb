@@ -453,6 +453,33 @@ Namespace Flux
         End Sub
 
         Private Sub InitializeControls()
+            InitializeFooter()
+
+            With TableLayoutPanelMain
+                .SuspendLayout()
+
+                .Left = 0
+                .RowCount = 4
+                .ColumnCount = 7
+                .Dock = DockStyle.Fill
+
+                FillAutoSizeStyles()
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
+
+                Dim Row As Integer = 0
+
+                InitializeControlsRowDevice(Row) : Row += 1
+                InitializeControlsRowFileName(Row) : Row += 1
+                InitializeControlsRowFormat(Row) : Row += 1
+                InitializeControlsRowGrid(Row) : Row += 1
+
+                .ResumeLayout()
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowDevice(Row As Integer)
             _LabelDevice = New Label With {
                 .Text = My.Resources.Label_Device,
                 .Anchor = AnchorStyles.Right,
@@ -464,15 +491,8 @@ Namespace Flux
                 .Width = 100
             }
 
-            CheckBoxSaveLog = New CheckBox With {
-                .Text = My.Resources.Label_AutoSaveLog,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            _CheckBox86FSurfaceData = New CheckBox With {
-                .Text = My.Resources.Label_86FSurfaceData,
+            CheckBoxExtendedLogging = New CheckBox With {
+                .Text = My.Resources.Label_ExtendedLogOutput,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3),
@@ -487,14 +507,32 @@ Namespace Flux
                 .Visible = False
             }
 
-            CheckBoxExtendedLogging = New CheckBox With {
-                .Text = My.Resources.Label_ExtendedLogOutput,
+            _CheckBox86FSurfaceData = New CheckBox With {
+                .Text = My.Resources.Label_86FSurfaceData,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3),
                 .Visible = False
             }
 
+            CheckBoxSaveLog = New CheckBox With {
+                .Text = My.Resources.Label_AutoSaveLog,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelDevice, 0, Row)
+                .Controls.Add(ComboDevices, 1, Row)
+                .Controls.AddWithSpan(CheckBoxExtendedLogging, 2, Row, 2)
+                .Controls.Add(_CheckBoxRemaster, 2, Row)
+                .Controls.AddWithSpan(_CheckBox86FSurfaceData, 3, Row, 2)
+                .Controls.AddWithSpan(CheckBoxSaveLog, 5, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowFileName(Row As Integer)
             _LabelFileName = New Label With {
                 .Text = My.Resources.Label_FileName,
                 .Anchor = AnchorStyles.Right,
@@ -512,6 +550,22 @@ Namespace Flux
                 .DropDownStyle = ComboBoxStyle.DropDownList
             }
 
+            ButtonOpen = New Button With {
+                .Margin = New Padding(15, 3, 3, 3),
+                .Text = WithoutHotkey(My.Resources.Menu_Open),
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelFileName, 0, Row)
+                .Controls.AddWithSpan(TextBoxFileName, 1, Row, 4)
+                .Controls.Add(ComboExtensions, 4, Row)
+                .Controls.Add(ButtonOpen, 6, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowFormat(Row As Integer)
             _LabelImageFormat = New Label With {
                 .Text = My.Resources.Label_ImageFormat,
                 .Anchor = AnchorStyles.Right,
@@ -542,6 +596,16 @@ Namespace Flux
                 .Margin = New Padding(12, 3, 3, 3)
             }
 
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelImageFormat, 0, Row)
+                .Controls.AddWithSpan(ComboImageFormat, 1, Row, 2)
+                .Controls.Add(_LabelOutputType, 3, Row)
+                .Controls.AddWithSpan(ComboOutputType, 4, Row, 2)
+                .Controls.Add(CheckBoxDoublestep, 6, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowGrid(Row As Integer)
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
@@ -573,6 +637,62 @@ Namespace Flux
                 .Visible = Not _LaunchedFromDialog
             }
 
+            ButtonTrackLayout = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
+                .Text = My.Resources.Label_Tracklayout,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = False
+            }
+
+            ButtonModifications = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
+                .Text = My.Resources.Label_Modifications,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = False
+            }
+
+            ButtonContainer.Controls.Add(ButtonPreview)
+            ButtonContainer.Controls.Add(ButtonProcess)
+            ButtonContainer.Controls.Add(ButtonDiscard)
+            ButtonContainer.Controls.Add(ButtonTrackLayout)
+            ButtonContainer.Controls.Add(ButtonModifications)
+
+            With TableLayoutPanelMain
+                .Controls.AddWithSpan(TableSide0, 0, Row, 3)
+                .Controls.AddWithSpan(TableSide1, 3, Row, 3)
+                .Controls.Add(ButtonContainer, 6, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeDevice(Repopulate As Boolean)
+            If Repopulate Then
+                PopulateDeviceCombo()
+            End If
+
+            _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
+
+            LogFileName = _SelectedDevice.Settings.LogFileName
+            LogStripPath = _SelectedDevice.Settings.LogStripPath
+
+            TrackStatus = _SelectedDevice.TrackStatus
+
+            If _SelectedDevice.Device = IDevice.FluxDevice.Greaseweazle Then
+                _GwStatus = TryCast(TrackStatus, Greaseweazle.TrackStatus)
+            Else
+                _GwStatus = Nothing
+            End If
+
+            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
+            CheckBoxExtendedLogging.Checked = GetSelectedDeviceState.ExtendedLogs.GetValueOrDefault(False)
+
+            InitializeImage(Repopulate)
+        End Sub
+
+        Private Sub InitializeFooter()
             ButtonImport = New SplitButton With {
                 .Anchor = AnchorStyles.Right,
                 .Margin = New Padding(6, 0, 6, 0),
@@ -601,31 +721,6 @@ Namespace Flux
 
             _ImportButtonNoEvent = False
 
-            ButtonOpen = New Button With {
-                .Margin = New Padding(15, 3, 3, 3),
-                .Text = WithoutHotkey(My.Resources.Menu_Open),
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True
-            }
-
-            ButtonTrackLayout = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.Label_Tracklayout,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Visible = False
-            }
-
-            ButtonModifications = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.Label_Modifications,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Visible = False
-            }
-
             _LabelOutputSource = New Label With {
                 .Text = My.Resources.Label_Source,
                 .Anchor = AnchorStyles.Right,
@@ -646,73 +741,7 @@ Namespace Flux
             PanelButtonsRight.Controls.Add(ComboOutputSource)
             PanelButtonsRight.Controls.Add(_LabelOutputSource)
 
-            ButtonContainer.Controls.Add(ButtonPreview)
-            ButtonContainer.Controls.Add(ButtonProcess)
-            ButtonContainer.Controls.Add(ButtonDiscard)
-            ButtonContainer.Controls.Add(ButtonTrackLayout)
-            ButtonContainer.Controls.Add(ButtonModifications)
-
             ButtonOk.Visible = False
-
-            Dim Row As Integer
-
-            With TableLayoutPanelMain
-                .SuspendLayout()
-
-                .Left = 0
-                .RowCount = 4
-                .ColumnCount = 7
-                .Dock = DockStyle.Fill
-
-                FillAutoSizeStyles()
-
-                .ColumnStyles(0).SizeType = SizeType.Percent
-                .ColumnStyles(0).Width = 100
-
-                Row = 0
-                .Controls.Add(_LabelDevice, 0, Row)
-                .Controls.Add(ComboDevices, 1, Row)
-
-                .Controls.Add(CheckBoxExtendedLogging, 2, Row)
-                .SetColumnSpan(CheckBoxExtendedLogging, 2)
-
-                .Controls.Add(_CheckBoxRemaster, 2, Row)
-
-                .Controls.Add(_CheckBox86FSurfaceData, 3, Row)
-                .SetColumnSpan(_CheckBox86FSurfaceData, 2)
-
-                .Controls.Add(CheckBoxSaveLog, 5, Row)
-                .SetColumnSpan(CheckBoxSaveLog, 2)
-
-                Row = 1
-                .Controls.Add(_LabelFileName, 0, Row)
-                .Controls.Add(TextBoxFileName, 1, Row)
-                .SetColumnSpan(TextBoxFileName, 4)
-                .Controls.Add(ComboExtensions, 4, Row)
-                .Controls.Add(ButtonOpen, 6, Row)
-
-                Row = 2
-                .Controls.Add(_LabelImageFormat, 0, Row)
-                .Controls.Add(ComboImageFormat, 1, Row)
-                .SetColumnSpan(ComboImageFormat, 2)
-
-                .Controls.Add(_LabelOutputType, 3, Row)
-                .Controls.Add(ComboOutputType, 4, Row)
-                .SetColumnSpan(ComboOutputType, 2)
-
-                .Controls.Add(CheckBoxDoublestep, 6, Row)
-
-                Row = 3
-                .Controls.Add(TableSide0, 0, Row)
-                .SetColumnSpan(TableSide0, 3)
-
-                .Controls.Add(TableSide1, 3, Row)
-                .SetColumnSpan(TableSide1, 3)
-
-                .Controls.Add(ButtonContainer, 6, Row)
-
-                .ResumeLayout()
-            End With
         End Sub
 
         Private Sub InitializeHelp()
@@ -735,42 +764,6 @@ Namespace Flux
             SetHelpString(My.Resources.HelpStrings.Flux_OutputSource, _LabelOutputSource, ComboOutputSource)
 
             RefreshImportButtonsHelp()
-        End Sub
-
-        Private Sub RefreshImportButtonsHelp()
-            Dim Mode As ConversionMode = If(ButtonImport.SelectedValue Is Nothing, ConversionMode.Import, CType(ButtonImport.SelectedValue, ConversionMode))
-
-            If Mode = ConversionMode.Save Then
-                SetHelpString(My.Resources.HelpStrings.Flux_Save, ButtonImport)
-                SetHelpString(My.Resources.HelpStrings.Flux_SaveClose, ButtonImportAndClose)
-            Else
-                SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
-                SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
-            End If
-        End Sub
-
-        Private Sub InitializeDevice(Repopulate As Boolean)
-            If Repopulate Then
-                PopulateDeviceCombo()
-            End If
-
-            _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
-
-            LogFileName = _SelectedDevice.Settings.LogFileName
-            LogStripPath = _SelectedDevice.Settings.LogStripPath
-
-            TrackStatus = _SelectedDevice.TrackStatus
-
-            If _SelectedDevice.Device = IDevice.FluxDevice.Greaseweazle Then
-                _GwStatus = TryCast(TrackStatus, Greaseweazle.TrackStatus)
-            Else
-                _GwStatus = Nothing
-            End If
-
-            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
-            CheckBoxExtendedLogging.Checked = GetSelectedDeviceState.ExtendedLogs.GetValueOrDefault(False)
-
-            InitializeImage(Repopulate)
         End Sub
 
         Private Sub InitializeImage(Clear As Boolean)
@@ -1226,6 +1219,17 @@ Namespace Flux
             MyBase.Refresh()
         End Sub
 
+        Private Sub RefreshImportButtonsHelp()
+            Dim Mode As ConversionMode = If(ButtonImport.SelectedValue Is Nothing, ConversionMode.Import, CType(ButtonImport.SelectedValue, ConversionMode))
+
+            If Mode = ConversionMode.Save Then
+                SetHelpString(My.Resources.HelpStrings.Flux_Save, ButtonImport)
+                SetHelpString(My.Resources.HelpStrings.Flux_SaveClose, ButtonImportAndClose)
+            Else
+                SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
+                SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
+            End If
+        End Sub
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)

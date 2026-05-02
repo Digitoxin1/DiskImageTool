@@ -118,6 +118,32 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControls()
+            InitializeFooter()
+
+            With TableLayoutPanelMain
+                .SuspendLayout()
+
+                .Left = 0
+                .RowCount = 2
+                .ColumnCount = 6
+                .Dock = DockStyle.Fill
+
+                FillAutoSizeStyles()
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
+
+                Dim Row As Integer = 0
+
+                InitializeControlsRowDrive(Row) : Row += 1
+                InitializeControlsRowGrid(Row) : Row += 1
+
+                .ResumeLayout()
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowDrive(Row As Integer)
             _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
@@ -157,6 +183,20 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelDrive, 0, Row)
+                .Controls.Add(ComboImageDrives, 1, Row)
+
+                .Controls.Add(_LabelRevs, 2, Row)
+                .Controls.Add(_NumericRevs, 3, Row)
+
+                .Controls.Add(_CheckBoxHFreq, 4, Row)
+
+                .Controls.Add(CheckBoxSelect, 5, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowGrid(Row As Integer)
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
@@ -173,49 +213,18 @@ Namespace Flux.Greaseweazle
 
             ButtonContainer.Controls.Add(ButtonProcess)
 
-            ButtonOk.Visible = False
-            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
-
-            Dim Row As Integer
-
             With TableLayoutPanelMain
-                .SuspendLayout()
-
-                .Left = 0
-                .RowCount = 2
-                .ColumnCount = 6
-                .Dock = DockStyle.Fill
-
-                FillAutoSizeStyles()
-
-                .ColumnStyles(0).SizeType = SizeType.Percent
-                .ColumnStyles(0).Width = 100
-
-                Row = 0
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
-
-                .Controls.Add(_LabelRevs, 2, Row)
-                .Controls.Add(_NumericRevs, 3, Row)
-
-                .Controls.Add(_CheckBoxHFreq, 4, Row)
-
-                .Controls.Add(CheckBoxSelect, 5, Row)
-
-                Row = 1
-                .Controls.Add(TableSide0, 0, Row)
-                .SetColumnSpan(TableSide0, 2)
-
-                .Controls.Add(TableSide1, 2, Row)
-                .SetColumnSpan(TableSide1, 3)
+                .Controls.AddWithSpan(TableSide0, 0, Row, 2)
+                .Controls.AddWithSpan(TableSide1, 2, Row, 3)
 
                 .Controls.Add(ButtonContainer, 5, Row)
-
-                .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 
+        Private Sub InitializeFooter()
+            ButtonOk.Visible = False
+            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
+        End Sub
         Private Sub InitializeHelp()
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _LabelRevs, _NumericRevs)
@@ -281,6 +290,7 @@ Namespace Flux.Greaseweazle
 
             EraseDisk()
         End Sub
+
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub

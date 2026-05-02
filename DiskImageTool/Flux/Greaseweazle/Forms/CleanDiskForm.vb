@@ -84,6 +84,48 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControls()
+            InitializeFooter()
+
+            With TableLayoutPanelMain
+                .SuspendLayout()
+                .RowCount = 2
+                .ColumnCount = 9
+                .Dock = DockStyle.Fill
+
+                FillAutoSizeStyles()
+
+                .ColumnStyles(2).SizeType = SizeType.Percent
+                .ColumnStyles(2).Width = 100
+
+                Dim Row As Integer = 0
+
+                InitializeControlsRowDrive(Row) : Row += 1
+                InitializeControlsRowButtons(Row) : Row += 1
+
+                .ResumeLayout()
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowButtons(Row As Integer)
+            Dim ButtonContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.RightToLeft,
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Right,
+                .Margin = New Padding(3, 3, 0, 3)
+            }
+
+            ButtonProcess = New Button With {
+                .Width = 75,
+                .Margin = New Padding(3, 3, 3, 3),
+                .Text = My.Resources.Label_Erase
+            }
+
+            ButtonContainer.Controls.Add(ButtonProcess)
+
+            TableLayoutPanelMain.Controls.AddWithSpan(ButtonContainer, 5, Row, 4)
+        End Sub
+
+        Private Sub InitializeControlsRowDrive(Row As Integer)
             _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
@@ -137,38 +179,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = MAX_LINGER
             }
 
-            Dim ButtonContainer As New FlowLayoutPanel With {
-                .FlowDirection = FlowDirection.RightToLeft,
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Right,
-                .Margin = New Padding(3, 3, 0, 3)
-            }
-
-            ButtonProcess = New Button With {
-                .Width = 75,
-                .Margin = New Padding(3, 3, 3, 3),
-                .Text = My.Resources.Label_Erase
-            }
-
-            ButtonContainer.Controls.Add(ButtonProcess)
-
-            ButtonOk.Visible = False
-            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
-
-            Dim Row As Integer
-
             With TableLayoutPanelMain
-                .SuspendLayout()
-                .RowCount = 2
-                .ColumnCount = 9
-                .Dock = DockStyle.Fill
-
-                FillAutoSizeStyles()
-
-                .ColumnStyles(2).SizeType = SizeType.Percent
-                .ColumnStyles(2).Width = 100
-
-                Row = 0
                 .Controls.Add(_LabelDrive, 0, Row)
                 .Controls.Add(ComboImageDrives, 1, Row)
 
@@ -180,13 +191,12 @@ Namespace Flux.Greaseweazle
 
                 .Controls.Add(_LabelLinger, 7, Row)
                 .Controls.Add(_NumericLinger, 8, Row)
-
-                Row = 1
-                .Controls.Add(ButtonContainer, 5, Row)
-                .SetColumnSpan(ButtonContainer, 4)
-
-                .ResumeLayout()
             End With
+        End Sub
+
+        Private Sub InitializeFooter()
+            ButtonOk.Visible = False
+            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
         End Sub
 
         Private Sub InitializeHelp()

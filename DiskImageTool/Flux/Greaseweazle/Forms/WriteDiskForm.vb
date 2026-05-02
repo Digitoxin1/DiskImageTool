@@ -171,6 +171,34 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub InitializeControls()
+            InitializeFooter()
+
+            With TableLayoutPanelMain
+                .SuspendLayout()
+
+                .Left = 0
+                .RowCount = 4
+                .ColumnCount = 8
+                .Dock = DockStyle.Fill
+
+                FillAutoSizeStyles()
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
+
+                Dim Row As Integer = 0
+
+                InitializeControlsRowDrive(Row) : Row += 1
+                InitializeControlsRowFormat(Row) : Row += 1
+                InitializeControlsRowSelect(Row) : Row += 1
+                InitializeControlsRowGrid(Row) : Row += 1
+
+                .ResumeLayout()
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowDrive(Row As Integer)
             _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
@@ -209,6 +237,32 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelDrive, 0, Row)
+                .Controls.Add(ComboImageDrives, 1, Row)
+
+                .Controls.Add(_CheckBoxPreErase, 4, Row)
+
+                .Controls.Add(_CheckBoxEraseEmpty, 5, Row)
+
+                .Controls.Add(_LabelRetries, 6, Row)
+                .Controls.Add(_NumericRetries, 7, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowFormat(Row As Integer)
+            _LabelImageFormatCaption = New Label With {
+                .Text = My.Resources.Label_Format,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True
+            }
+
+            _LabelImageFormat = New Label With {
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .UseMnemonic = False
+            }
+
             CheckboxNoVerify = New CheckBox With {
                 .Text = My.Resources.Label_NoVerify,
                 .Anchor = AnchorStyles.Left,
@@ -223,13 +277,17 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
-            CheckBoxSelect = New CheckBox With {
-                .Text = My.Resources.Label_SelectTracks,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
-            }
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelImageFormatCaption, 0, Row)
+                .Controls.Add(_LabelImageFormat, 1, Row)
 
+                .Controls.Add(CheckboxNoVerify, 4, Row)
+
+                .Controls.Add(_CheckBoxContinue, 5, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowGrid(Row As Integer)
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
@@ -246,6 +304,14 @@ Namespace Flux.Greaseweazle
 
             ButtonContainer.Controls.Add(ButtonProcess)
 
+            With TableLayoutPanelMain
+                .Controls.AddWithSpan(TableSide0, 0, Row, 2)
+                .Controls.AddWithSpan(TableSide1, 2, Row, 4)
+                .Controls.AddWithSpan(ButtonContainer, 6, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowSelect(Row As Integer)
             _LabelWarning = New Label With {
                 .Text = My.Resources.Message_ImageFormatWarning,
                 .ForeColor = Color.Red,
@@ -254,77 +320,24 @@ Namespace Flux.Greaseweazle
                 .Visible = False
             }
 
-            _LabelImageFormatCaption = New Label With {
-                .Text = My.Resources.Label_Format,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
-            }
-
-            _LabelImageFormat = New Label With {
+            CheckBoxSelect = New CheckBox With {
+                .Text = My.Resources.Label_SelectTracks,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .UseMnemonic = False
+                .Margin = New Padding(3, 3, 3, 3)
             }
 
-            ButtonOk.Visible = False
-            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
-
-            Dim Row As Integer
-
             With TableLayoutPanelMain
-                .SuspendLayout()
-
-                .Left = 0
-                .RowCount = 4
-                .ColumnCount = 8
-                .Dock = DockStyle.Fill
-
-                FillAutoSizeStyles()
-
-                .ColumnStyles(0).SizeType = SizeType.Percent
-                .ColumnStyles(0).Width = 100
-
-                Row = 0
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
-
-                .Controls.Add(_CheckBoxPreErase, 4, Row)
-
-                .Controls.Add(_CheckBoxEraseEmpty, 5, Row)
-
-                .Controls.Add(_LabelRetries, 6, Row)
-                .Controls.Add(_NumericRetries, 7, Row)
-
-                Row = 1
-                .Controls.Add(_LabelImageFormatCaption, 0, Row)
-                .Controls.Add(_LabelImageFormat, 1, Row)
-
-                .Controls.Add(CheckboxNoVerify, 4, Row)
-
-                .Controls.Add(_CheckBoxContinue, 5, Row)
-
-                Row = 2
                 ' .RowStyles(Row).SizeType = SizeType.Absolute
                 ' .RowStyles(Row).Height = 20
-                .Controls.Add(_LabelWarning, 0, Row)
-                .SetColumnSpan(_LabelWarning, 2)
-
-                .Controls.Add(CheckBoxSelect, 4, Row)
-                .SetColumnSpan(CheckBoxSelect, 2)
-
-                Row = 3
-                .Controls.Add(TableSide0, 0, Row)
-                .SetColumnSpan(TableSide0, 2)
-
-                .Controls.Add(TableSide1, 2, Row)
-                .SetColumnSpan(TableSide1, 4)
-
-                .Controls.Add(ButtonContainer, 6, Row)
-                .SetColumnSpan(ButtonContainer, 2)
-
-                .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
+                .Controls.AddWithSpan(_LabelWarning, 0, Row, 2)
+                .Controls.AddWithSpan(CheckBoxSelect, 4, Row, 2)
             End With
+        End Sub
+
+        Private Sub InitializeFooter()
+            ButtonOk.Visible = False
+            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
         End Sub
 
         Private Sub InitializeHelp()

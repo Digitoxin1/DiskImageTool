@@ -60,6 +60,7 @@ Namespace Flux.Greaseweazle
         Private Shared _CachedFolderNameTemplate As String = ""
         Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
         Private ReadOnly _DrivesAvailable As Boolean = False
+        Private ReadOnly _GridIndex As New Dictionary(Of GridRows, Integer)
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
@@ -80,10 +81,6 @@ Namespace Flux.Greaseweazle
         Private _OutputFilePath As String = ""
         Private _OutputFilePath2 As String = ""
         Private _SelectedDriveOption As DriveOption
-        Private ReadOnly _GridIndex As New Dictionary(Of GridRows, Integer)
-
-        Public Event ImportProcess(File As String, NewFilename As String)
-
         Private Enum GridRows
             Drive
             Format
@@ -95,6 +92,7 @@ Namespace Flux.Greaseweazle
             Grid
         End Enum
 
+        Public Event ImportProcess(File As String, NewFilename As String)
         Public Sub New()
             MyBase.New(Settings.LogFileName)
             InitializeControls()
@@ -1186,17 +1184,6 @@ Namespace Flux.Greaseweazle
             End With
         End Sub
 
-        Private Sub InitializeControlsSpacerRow(Row As Integer)
-            Dim sep As New Panel With {
-                .Height = 1,
-                .Dock = DockStyle.Fill,
-                .BackColor = SystemColors.ControlDark,
-                .Margin = New Padding(3, 12, 3, 3)
-            }
-
-            TableLayoutPanelMain.Controls.AddWithSpan(sep, 0, Row, TableLayoutPanelMain.ColumnCount)
-        End Sub
-
         Private Sub InitializeControlsRowGrid(Row As Integer)
             _GridIndex.Add(GridRows.Grid, Row)
 
@@ -1382,6 +1369,16 @@ Namespace Flux.Greaseweazle
             End With
         End Sub
 
+        Private Sub InitializeControlsSpacerRow(Row As Integer)
+            Dim sep As New Panel With {
+                .Height = 1,
+                .Dock = DockStyle.Fill,
+                .BackColor = SystemColors.ControlDark,
+                .Margin = New Padding(3, 12, 3, 3)
+            }
+
+            TableLayoutPanelMain.Controls.AddWithSpan(sep, 0, Row, TableLayoutPanelMain.ColumnCount)
+        End Sub
         Private Sub InitializeFooter()
             ButtonImport = New SplitButton With {
                 .Margin = New Padding(6, 0, 6, 0),
