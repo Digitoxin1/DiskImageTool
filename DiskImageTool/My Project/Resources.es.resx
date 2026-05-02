@@ -1939,21 +1939,6 @@
   <data name="Label_None" xml:space="preserve">
     <value>Ninguno</value>
   </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Ubicación</value>
-  </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Carpeta de imagen</value>
-  </data>
-  <data name="Label_Custom" xml:space="preserve">
-    <value>Personalizado</value>
-  </data>
-  <data name="Label_FluxFolder" xml:space="preserve">
-    <value>Carpeta de flujo</value>
-  </data>
-  <data name="Dialog_SelectImageFolder" xml:space="preserve">
-    <value>Seleccione una carpeta de imagen.</value>
-  </data>
   <data name="Dialog_ImageFileExists" xml:space="preserve">
     <value>Ya existe un archivo de imagen en:
 
@@ -1968,5 +1953,27 @@ Conjunto de imágenes de flujo: '{0}'
 Archivo de imagen: '{1}'
 
 ¿Desea sobrescribirlos?</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>Seleccione una carpeta de imagen.</value>
+  </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Carpeta de flujo</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>Personalizado</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Carpeta de imagen</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Ubicación</value>
+  </data>
+  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
+    <value>Volver a volcar las pistas seleccionadas descartará el archivo de imagen secundario.
+
+Puede regenerarlo desde el conjunto de flujo usando Convertir después de que finalice el nuevo volcado.
+
+¿Desea continuar?</value>
   </data>
 </root>

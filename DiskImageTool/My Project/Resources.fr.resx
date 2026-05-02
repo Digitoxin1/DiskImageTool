@@ -1939,21 +1939,6 @@ Voulez-vous écraser ?</value>
   <data name="Label_None" xml:space="preserve">
     <value>Aucun</value>
   </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Emplacement</value>
-  </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Dossier image</value>
-  </data>
-  <data name="Label_Custom" xml:space="preserve">
-    <value>Personnalisé</value>
-  </data>
-  <data name="Label_FluxFolder" xml:space="preserve">
-    <value>Dossier flux</value>
-  </data>
-  <data name="Dialog_SelectImageFolder" xml:space="preserve">
-    <value>Veuillez sélectionner un dossier d’image.</value>
-  </data>
   <data name="Dialog_ImageFileExists" xml:space="preserve">
     <value>Un fichier image existe déjà à l’emplacement :
 
@@ -1968,5 +1953,27 @@ Ensemble d’images flux : '{0}'
 Fichier image : '{1}'
 
 Souhaitez-vous les remplacer ?</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>Veuillez sélectionner un dossier d’image.</value>
+  </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Dossier flux</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>Personnalisé</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Dossier image</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
+  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
+    <value>Redumper les pistes sélectionnées supprimera le fichier image secondaire.
+
+Vous pourrez le régénérer à partir de l’ensemble flux à l’aide de Convertir une fois le redump terminé.
+
+Souhaitez-vous continuer ?</value>
   </data>
 </root>

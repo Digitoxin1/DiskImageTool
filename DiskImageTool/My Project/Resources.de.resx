@@ -1939,21 +1939,6 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_None" xml:space="preserve">
     <value>Keine</value>
   </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Speicherort</value>
-  </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Image-Ordner</value>
-  </data>
-  <data name="Label_Custom" xml:space="preserve">
-    <value>Benutzerdefiniert</value>
-  </data>
-  <data name="Label_FluxFolder" xml:space="preserve">
-    <value>Flux-Ordner</value>
-  </data>
-  <data name="Dialog_SelectImageFolder" xml:space="preserve">
-    <value>Bitte wählen Sie einen Image-Ordner aus.</value>
-  </data>
   <data name="Dialog_ImageFileExists" xml:space="preserve">
     <value>An folgendem Speicherort existiert bereits eine Image-Datei:
 
@@ -1968,5 +1953,27 @@ Flux-Image-Satz: '{0}'
 Image-Datei: '{1}'
 
 Möchten Sie sie überschreiben?</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>Bitte wählen Sie einen Image-Ordner aus.</value>
+  </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Flux-Ordner</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>Benutzerdefiniert</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Image-Ordner</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Speicherort</value>
+  </data>
+  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
+    <value>Beim erneuten Dumpen der ausgewählten Spuren wird die sekundäre Image-Datei verworfen.
+
+Sie können sie nach Abschluss des erneuten Dumps mit „Konvertieren“ aus dem Flux-Satz neu erzeugen.
+
+Möchten Sie fortfahren?</value>
   </data>
 </root>

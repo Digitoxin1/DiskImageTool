@@ -917,6 +917,19 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Redumping selected tracks will discard the secondary image file.
+        '''
+        '''You can regenerate it from the flux set using Convert after the redump completes.
+        '''
+        '''Do you wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiscardSecondaryImageOnReprocess() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiscardSecondaryImageOnReprocess", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?.
         '''</summary>
         Friend ReadOnly Property Dialog_DiskNotEmptyWarning() As String

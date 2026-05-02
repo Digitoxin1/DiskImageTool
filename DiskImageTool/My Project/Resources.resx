@@ -2221,4 +2221,11 @@ Do you wish to overwrite?</value>
   <data name="Label_ImageLocation" xml:space="preserve">
     <value>Image Location</value>
   </data>
+  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
+    <value>Redumping selected tracks will discard the secondary image file.
+
+You can regenerate it from the flux set using Convert after the redump completes.
+
+Do you wish to continue?</value>
+  </data>
 </root>
