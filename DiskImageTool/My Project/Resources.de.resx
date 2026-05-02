@@ -1936,4 +1936,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Verfeinern</value>
   </data>
+  <data name="Label_None" xml:space="preserve">
+    <value>Keine</value>
+  </data>
 </root>

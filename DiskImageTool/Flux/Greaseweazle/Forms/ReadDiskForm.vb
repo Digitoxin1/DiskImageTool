@@ -12,6 +12,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonConvert As Button
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonDiscard As Button
+        Private WithEvents ButtonImageFolderBrowse As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonRead As Button
@@ -19,22 +20,29 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonReset As Button
         Private WithEvents ButtonRootBrowse As Button
         Private WithEvents ButtonToggleSequence As Button
+        Private WithEvents ButtonToggleSequence2 As Button
         Private WithEvents CheckBoxSaveLog As CheckBox
-        Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboDrives As ComboBox
         Private WithEvents ComboExtensions As ComboBox
+        Private WithEvents ComboExtensions2 As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
+        Private WithEvents ComboImageLocation As ComboBox
         Private WithEvents ComboOutputType As ComboBox
+        Private WithEvents ComboOutputType2 As ComboBox
         Private WithEvents NumericRevs As NumericUpDown
         Private WithEvents TextBoxFileName As TextBox
         Private WithEvents TextBoxFolderName As TextBox
+        Private WithEvents TextBoxImageFolder As TextBox
         Private WithEvents TextBoxPrefixName As PlaceholderTextBox
         Private WithEvents TextBoxRootFolder As TextBox
         Private _LabelDrive As Label
         Private _LabelFileName As Label
         Private _LabelFolderName As Label
+        Private _LabelImageFolder As Label
         Private _LabelImageFormat As Label
+        Private _LabelLocation As Label
         Private _LabelOutputType As Label
+        Private _LabelOutputType2 As Label
         Private _LabelPrefixName As Label
         Private _LabelRetries As Label
         Private _LabelRevs As Label
@@ -59,15 +67,18 @@ Namespace Flux.Greaseweazle
         Private _CachedRevsFlux As Byte = 0
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
+        Private _ComboImageLocationNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _FileReprocessMode As Boolean = False
+        Private _LastFluxOutput As Boolean? = Nothing
         Private _LastSequenceTextBox As TextBoxBase
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
         Private _NumericRevsNoEvent As Boolean = False
         Private _OutputDoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
-        Private _SelectedOption As DriveOption
+        Private _OutputFilePath2 As String = ""
+        Private _SelectedDriveOption As DriveOption
 
         Public Event ImportProcess(File As String, NewFilename As String)
 
@@ -88,14 +99,16 @@ Namespace Flux.Greaseweazle
 
             InitializeHelp()
 
-            _SelectedOption = PopulateDrives(ComboDrives, FloppyDriveType.DriveUnknown, GetSelectedDeviceState.DriveId)
+            _SelectedDriveOption = PopulateDrives(ComboDrives, FloppyDriveType.DriveUnknown, SelectedDeviceState.DriveId)
             _DrivesAvailable = ComboDrives.Items.OfType(Of DriveOption)().Any(Function(d) Not String.IsNullOrEmpty(d.Id))
 
             PopulateImageFormats()
+            PopulateImageLocations(SelectedDeviceState.ImageLocation)
             InitializeImage()
 
             SetFilenames(True)
             SetRootFolder(App.AppSettings.Greaseweazle.FluxRootPath)
+            SetImageFolder(SelectedDeviceState.ImageFolder)
 
             _CachedRevs = 2
             _CachedRevsFlux = Settings.DefaultRevs
@@ -105,9 +118,10 @@ Namespace Flux.Greaseweazle
             _NumericRetries.Value = DEFAULT_RETRIES
             _NumericSeekRetries.Value = DEFAULT_SEEK_RETRIES
 
-            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
+            CheckBoxSaveLog.Checked = SelectedDeviceState.SaveLog
 
             ButtonToggleSequence.Enabled = False
+            ButtonToggleSequence2.Enabled = False
 
             _Initialized = True
         End Sub
@@ -124,10 +138,160 @@ Namespace Flux.Greaseweazle
             End Get
         End Property
 
+        Private ReadOnly Property CanChangeSettings As Boolean
+            Get
+                Return IsIdle AndAlso Not HasOutputFile
+            End Get
+        End Property
+
+        Private ReadOnly Property CanRefine As Boolean
+            Get
+                Return HasOutputFile AndAlso IsFluxOutput
+            End Get
+        End Property
+
+        Private ReadOnly Property DisplayImageFolder As Boolean
+            Get
+                Return DisplayImageLocation AndAlso SelectedImageLocation = ReadDiskImageLocations.Other
+            End Get
+        End Property
+
+        Private ReadOnly Property DisplayImageLocation As Boolean
+            Get
+                Return IsFluxOutput AndAlso SelectedOutputType2 <> ReadDiskOutputTypes.None
+            End Get
+        End Property
+
+        Private Property FileNameInput As String
+            Get
+                Return TextBoxFileName.Text.Trim()
+            End Get
+            Set(value As String)
+                TextBoxFileName.Text = value.Trim
+            End Set
+        End Property
+
+        Private Property FolderNameInput As String
+            Get
+                Return TextBoxFolderName.Text.Trim()
+            End Get
+            Set(value As String)
+                TextBoxFolderName.Text = value.Trim
+            End Set
+        End Property
+
+        Private ReadOnly Property HasOptionId As Boolean
+            Get
+                Return Not String.IsNullOrEmpty(_SelectedDriveOption?.Id)
+            End Get
+        End Property
+
+        Private ReadOnly Property HasOutputFile As Boolean
+            Get
+                Return Not String.IsNullOrEmpty(_OutputFilePath)
+            End Get
+        End Property
+
+        Private ReadOnly Property HasOutputFile2 As Boolean
+            Get
+                Return Not String.IsNullOrEmpty(_OutputFilePath2)
+            End Get
+        End Property
+
+        Private ReadOnly Property HasSelectedTracks As Boolean
+            Get
+                Return TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
+            End Get
+        End Property
+
+        Private Property ImageFolderInput As String
+            Get
+                Return TextBoxImageFolder.Text.Trim()
+            End Get
+            Set(value As String)
+                TextBoxImageFolder.Text = value.Trim()
+            End Set
+        End Property
+
+        Private ReadOnly Property IsDoubleStepDrive As Boolean
+            Get
+                Return _SelectedDriveOption IsNot Nothing AndAlso _SelectedDriveOption.Type = FloppyDriveType.Drive525HighDensity
+            End Get
+        End Property
+
+        Private ReadOnly Property IsFluxOutput As Boolean
+            Get
+                Return SelectedOutputType = ReadDiskOutputTypes.RAW
+            End Get
+        End Property
+
+        Private Property RootFolderInput As String
+            Get
+                Return TextBoxRootFolder.Text.Trim()
+            End Get
+            Set(value As String)
+                TextBoxRootFolder.Text = value.Trim()
+            End Set
+        End Property
+        Private ReadOnly Property SelectedDeviceState As Settings.UserStateFluxReadDevice
+            Get
+                Return _UserState.Read.Device(IDevice.FluxDevice.Greaseweazle)
+            End Get
+        End Property
+
+        Private ReadOnly Property SelectedDiskFormat As FloppyDiskFormat?
+            Get
+                If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                    Return Nothing
+                End If
+
+                Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams).Format
+            End Get
+        End Property
+
+        Private ReadOnly Property SelectedDiskParams As FloppyDiskParams?
+            Get
+                If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                    Return Nothing
+                End If
+
+                Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams)
+            End Get
+        End Property
+
+        Private ReadOnly Property SelectedImageLocation As ReadDiskImageLocations?
+            Get
+                If TypeOf ComboImageLocation.SelectedValue IsNot ReadDiskImageLocations Then
+                    Return Nothing
+                End If
+
+                Return DirectCast(ComboImageLocation.SelectedValue, ReadDiskImageLocations)
+            End Get
+        End Property
+
+        Private ReadOnly Property SelectedOutputType As ReadDiskOutputTypes
+            Get
+                If ComboOutputType.SelectedValue Is Nothing Then
+                    Return ReadDiskOutputTypes.None
+                End If
+
+                Return DirectCast(ComboOutputType.SelectedValue, ReadDiskOutputTypes)
+            End Get
+        End Property
+
+        Private ReadOnly Property SelectedOutputType2 As ReadDiskOutputTypes
+            Get
+                If ComboOutputType2.SelectedValue Is Nothing Then
+                    Return ReadDiskOutputTypes.None
+                End If
+
+                Return DirectCast(ComboOutputType2.SelectedValue, ReadDiskOutputTypes)
+            End Get
+        End Property
+
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             If Me.DialogResult = DialogResult.Cancel OrElse Me.DialogResult = DialogResult.None Then
                 ClearOutputFile(True)
-                HideSelection(False)
                 _NewFilePath = ""
                 _NewFileName = ""
             End If
@@ -142,8 +306,8 @@ Namespace Flux.Greaseweazle
 
         Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
             If keyData = (Keys.Alt Or Keys.S) Then
-                If ButtonToggleSequence.Enabled Then
-                    ButtonToggleSequence.PerformClick()
+                If IsToggleSequenceEnabled() Then
+                    DoToggleSequence()
                 End If
                 Return True
             End If
@@ -153,7 +317,7 @@ Namespace Flux.Greaseweazle
 
         Protected Overrides Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             If String.IsNullOrEmpty(InitialDirectory) Then
-                If Not String.IsNullOrEmpty(_OutputFilePath) AndAlso CheckIsFluxOutput() Then
+                If HasOutputFile AndAlso IsFluxOutput Then
                     InitialDirectory = IO.Path.GetDirectoryName(_OutputFilePath)
                 End If
             End If
@@ -203,7 +367,6 @@ Namespace Flux.Greaseweazle
                 ElseIf Not _FileReprocessMode Then
                     ClearOutputFile(True)
                 End If
-                HideSelection(False)
                 _FileReprocessMode = False
             End If
 
@@ -219,34 +382,40 @@ Namespace Flux.Greaseweazle
                                           heads As TrackHeads?,
                                           retries As Integer,
                                           seekRetries As Integer,
-                                          revs As Integer) As ReadOptions
+                                          revs As Integer,
+                                          filePath2 As String,
+                                          outputType2 As ReadDiskOutputTypes) As ReadOptions
 
             Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
             Dim Format As String = Nothing
             Dim Raw As Boolean = False
             Dim AdjustSpeed As Double? = Nothing
-            Dim BitRateKbps As Integer? = Nothing
 
             If outputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None Then
-                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
+            Dim FileNameWithOpts As String = filePath
+            Dim FileName2WithOpts As String = ""
+
             If outputType = ReadDiskOutputTypes.HFE Then
-                BitRateKbps = CInt(diskParams.BitRateKbps)
                 AdjustSpeed = 60.0 / diskParams.RPM
                 Raw = True
+                FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
                 If diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
                     AdjustSpeed = 60.0 / diskParams.RPM
                 End If
                 Raw = True
-            End If
 
-            Dim FileNameWithOpts As String = filePath
+                If Not String.IsNullOrEmpty(filePath2) AndAlso outputType2 <> ReadDiskOutputTypes.None Then
+                    FileName2WithOpts = filePath2
 
-            If BitRateKbps.HasValue Then
-                FileNameWithOpts &= "::bitrate=" & BitRateKbps.Value
+                    If outputType2 = ReadDiskOutputTypes.HFE Then
+                        FileName2WithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
+                    End If
+                End If
             End If
 
             If trackRanges Is Nothing Then
@@ -267,7 +436,7 @@ Namespace Flux.Greaseweazle
 
             Dim Drive = MakeDriveSpec(opt.Id)
 
-            Return New ReadOptions With {
+            Dim Opts = New ReadOptions With {
                 .FileName = FileNameWithOpts,
                 .Format = Format,
                 .TrackSet = TrackSet,
@@ -280,11 +449,17 @@ Namespace Flux.Greaseweazle
                 .Device = ConfiguredDevice(),
                 .Drive = Drive
             }
+
+            If Not String.IsNullOrEmpty(FileName2WithOpts) Then
+                Opts.AdditionalFiles = New List(Of String) From {FileName2WithOpts}
+            End If
+
+            Return Opts
         End Function
 
         Private Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
             Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
-            Dim Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            Dim Format = GreaseweazleImageFormatString(ImageFormat)
 
             Dim TrackSet As New TrackSetSpec
 
@@ -296,10 +471,8 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub CacheFilenameTemplate()
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
             If IsFluxOutput Then
-                Dim FolderName = TextBoxFolderName.Text.Trim
+                Dim FolderName = FolderNameInput
 
                 If ContainsPlaceholder(FolderName) Then
                     _CachedFolderNameTemplate = IncrementPlaceholders(FolderName)
@@ -315,8 +488,9 @@ Namespace Flux.Greaseweazle
                 End If
 
                 _CachedFileNameTemplate = ""
+
             Else
-                Dim Filename = TextBoxFileName.Text.Trim
+                Dim Filename = FileNameInput
 
                 If ContainsPlaceholder(Filename) Then
                     _CachedFileNameTemplate = IncrementPlaceholders(Filename)
@@ -330,8 +504,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function CheckCompatibility() As Boolean
-            Dim Opt As DriveOption = _SelectedOption
-            Dim DiskParams = SelectedDiskParams()
+            Dim Opt As DriveOption = _SelectedDriveOption
+            Dim DiskParams = SelectedDiskParams
 
             If Opt Is Nothing OrElse Opt.Type = FloppyDriveType.DriveUnknown Then
                 Return True
@@ -341,34 +515,39 @@ Namespace Flux.Greaseweazle
                 Return True
             End If
 
-
             Dim FloppyType = GreaseweazleFindCompatibleDriveType(DiskParams.Value, Opt.Type)
 
             Return FloppyType = Opt.Type
         End Function
 
-        Private Function CheckFileNameEntered() As Boolean
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
+        Private Function CheckFileNameEntered(CheckImageFile As Boolean) As Boolean
             If IsFluxOutput Then
-                If String.IsNullOrEmpty(TextBoxRootFolder.Text.Trim) Then
+                If String.IsNullOrEmpty(RootFolderInput) Then
                     MsgBox(My.Resources.Dialog_SelectRootFolder, MsgBoxStyle.Exclamation)
                     ButtonRootBrowse.Focus()
                     Return False
                 End If
 
-                If String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
+                If CheckImageFile AndAlso DisplayImageFolder AndAlso String.IsNullOrEmpty(ImageFolderInput) Then
+                    MsgBox(My.Resources.Dialog_SelectImageFolder, MsgBoxStyle.Exclamation)
+                    TextBoxImageFolder.Focus()
+                    Return False
+                End If
+
+                If String.IsNullOrEmpty(FolderNameInput) Then
                     MsgBox(My.Resources.Dialog_EnterFolderName, MsgBoxStyle.Exclamation)
                     TextBoxFolderName.Focus()
                     Return False
                 End If
 
-                If Not ConfirmFluxDestinationOverwrite() Then
+
+                If Not ConfirmFluxDestinationOverwrite(CheckImageFile) Then
                     TextBoxFolderName.Focus()
                     Return False
                 End If
+
             Else
-                If String.IsNullOrEmpty(TextBoxFileName.Text.Trim) Then
+                If String.IsNullOrEmpty(FileNameInput) Then
                     MsgBox(My.Resources.Dialog_EnterFileName, MsgBoxStyle.Exclamation)
                     TextBoxFileName.Focus()
                     Return False
@@ -376,15 +555,6 @@ Namespace Flux.Greaseweazle
             End If
 
             Return True
-        End Function
-
-        Private Function CheckIsFluxOutput() As Boolean
-            If ComboOutputType.SelectedValue Is Nothing Then
-                Return False
-            End If
-
-            Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
-            Return (OutputType = ReadDiskOutputTypes.RAW)
         End Function
 
         Private Function CheckRawFolderExists(FilePath As String) As (Result As Boolean, Overwritemode As Boolean)
@@ -402,12 +572,12 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub ClearOutputFile(Delete As Boolean)
-            If String.IsNullOrEmpty(_OutputFilePath) Then
+            If Not HasOutputFile Then
                 Exit Sub
             End If
 
             If Delete Then
-                If CheckIsFluxOutput() Then
+                If IsFluxOutput Then
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
                     DeleteFilesAndFolderIfEmpty(PathName, FLUX_WILDCARD, Settings.LogFileName)
                 Else
@@ -415,7 +585,12 @@ Namespace Flux.Greaseweazle
                 End If
             End If
 
+            If HasOutputFile2 Then
+                DeleteTempFileIfExists(_OutputFilePath2)
+            End If
+
             _OutputFilePath = ""
+            _OutputFilePath2 = ""
             _OutputDoubleStep = False
             _FileReprocessMode = False
         End Sub
@@ -424,12 +599,10 @@ Namespace Flux.Greaseweazle
             _FileReprocessMode = False
 
             ClearOutputFile(DeleteOutputFile)
-            HideSelection(False)
             ClearLogAndStatus()
             ResetTrackGrid()
             TrackStatus.Clear()
             SetTitleBarText()
-            CheckBoxSelect.Checked = False
 
             If Not DeleteOutputFile Then
                 CacheFilenameTemplate()
@@ -457,20 +630,35 @@ Namespace Flux.Greaseweazle
             Me.Close()
         End Sub
 
-        Private Function ConfirmFluxDestinationOverwrite() As Boolean
+        Private Function ConfirmFluxDestinationOverwrite(CheckImageFile As Boolean) As Boolean
             Dim destinationFolder = FluxGetFolderPath()
+            Dim imageFilePath = GetImageFilePath()
 
-            If Not IO.Directory.Exists(destinationFolder) Then
+            Dim ImageSetExists As Boolean = False
+            Dim ImageFileExists As Boolean = False
+
+            If CheckImageFile AndAlso Not String.IsNullOrEmpty(imageFilePath) AndAlso IO.File.Exists(imageFilePath) Then
+                ImageFileExists = True
+            End If
+
+            If IO.Directory.Exists(destinationFolder) Then
+                If IO.Directory.EnumerateFiles(destinationFolder, FluxGetWildcardFileName(), IO.SearchOption.TopDirectoryOnly).Any() Then
+                    ImageSetExists = True
+                End If
+            End If
+
+            If Not ImageSetExists AndAlso Not ImageFileExists Then
                 Return True
             End If
 
-            Dim existing = IO.Directory.EnumerateFiles(destinationFolder, FluxGetWildcardFileName(), IO.SearchOption.TopDirectoryOnly).Any()
-
-            If Not existing Then
-                Return True
+            Dim msg As String
+            If ImageSetExists AndAlso ImageFileExists Then
+                msg = String.Format(My.Resources.Dialog_ImageSetAndFileExist, destinationFolder, imageFilePath)
+            ElseIf ImageSetExists Then
+                msg = String.Format(My.Resources.Dialog_ImageSetExists, destinationFolder)
+            Else
+                msg = String.Format(My.Resources.Dialog_ImageFileExists, imageFilePath)
             End If
-
-            Dim msg = String.Format(My.Resources.Dialog_ImageSetExists, destinationFolder)
 
             Return MsgBox(msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or vbDefaultButton2) = MsgBoxResult.Ok
         End Function
@@ -495,22 +683,31 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub DoFormatDetection()
-            Dim Opt As DriveOption = _SelectedOption
-
             Dim ImageFormat As FloppyDiskFormat?
             Dim Doublestep As Boolean
 
-            If String.IsNullOrEmpty(Opt?.Id) Then
+            If Not HasOptionId Then
                 ImageFormat = Nothing
                 Doublestep = False
             Else
+                Dim Opt As DriveOption = _SelectedDriveOption
+
                 ImageFormat = ReadImageFormat(Opt.Id)
                 Opt.SelectedFormat = ImageFormat
                 Opt.DetectedFormat = ImageFormat
-                Doublestep = (Opt.Type = FloppyDriveType.Drive525HighDensity)
+                Doublestep = IsDoubleStepDrive
             End If
 
             SharedLib.PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, True, Doublestep)
+        End Sub
+
+        Private Sub DoToggleSequence()
+            If _LastSequenceTextBox Is Nothing Then
+                Exit Sub
+            End If
+            ToggleNumberTokenAtCaretOrSelection(_LastSequenceTextBox)
+            UpdateSequenceButtonState()
+            _LastSequenceTextBox.Focus()
         End Sub
 
         Private Sub FileNameChangePostProcess()
@@ -520,7 +717,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function FinalizeFluxOutput() As Boolean
-            If String.IsNullOrEmpty(_OutputFilePath) Then
+            If Not HasOutputFile Then
                 Return False
             End If
 
@@ -609,6 +806,51 @@ Namespace Flux.Greaseweazle
             End Try
         End Function
 
+        Private Function GetImageFilePath() As String
+            If Not HasOutputFile2 Then
+                Return ""
+            End If
+
+            If Not SelectedImageLocation.HasValue Then
+                Return ""
+            End If
+
+            Dim ImageLocation = SelectedImageLocation.Value
+
+            Dim Extension = IO.Path.GetExtension(_OutputFilePath2)
+            Dim FileName = GetOutputFolderName(FolderNameInput) & Extension
+            Dim PathName As String
+
+            If ImageLocation = ReadDiskImageLocations.Root Then
+                PathName = RootFolderInput
+            ElseIf ImageLocation = ReadDiskImageLocations.Flux Then
+                PathName = FluxGetFolderPath()
+            Else
+                PathName = ImageFolderInput
+            End If
+
+            Dim FilePath = IO.Path.Combine(PathName, FileName)
+
+            Return FilePath
+        End Function
+
+        Private Sub FinalizeImageOutput()
+            Dim FilePath = GetImageFilePath()
+
+            If String.IsNullOrEmpty(FilePath) Then
+                Return
+            End If
+            Try
+                IO.File.Copy(_OutputFilePath2, FilePath, True)
+                DeleteFileIfExists(_OutputFilePath2)
+            Catch
+                MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
+                Return
+            End Try
+
+            Return
+        End Sub
+
         Private Function FluxGetFirstTrackFileName(Prefix As String) As String
             Return FluxGetTrackFileName(Prefix, 0, 0)
         End Function
@@ -618,10 +860,9 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function FluxGetFolderPath() As String
-            Dim Root = TextBoxRootFolder.Text.Trim()
-            Dim Folder = GetOutputFolderName(TextBoxFolderName.Text.Trim())
+            Dim Folder = GetOutputFolderName(FolderNameInput)
 
-            Return IO.Path.Combine(Root, Folder)
+            Return IO.Path.Combine(RootFolderInput, Folder)
         End Function
 
         Private Function FluxGetOutputFilePath() As String
@@ -660,7 +901,7 @@ Namespace Flux.Greaseweazle
                 Extension = IO.Path.GetExtension(FilePath)
             End If
 
-            Dim NewFileName As String = TextBoxFileName.Text
+            Dim NewFileName As String = FileNameInput
 
             If ContainsPlaceholder(NewFileName) Then
                 NewFileName = StripAngleBrackets(NewFileName)
@@ -671,17 +912,21 @@ Namespace Flux.Greaseweazle
             Return NewFileName
         End Function
 
-        Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
-            Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
+        Private Function GetOutputFilePaths() As (FilePath As String, FilePath2 As String, LogFilePath As String, IsFlux As Boolean)
+            Dim Response As (FilePath As String, FilePath2 As String, LogFilePath As String, IsFlux As Boolean)
+
             Response.LogFilePath = ""
+            Response.FilePath2 = ""
+            Response.IsFlux = IsFluxOutput
 
-            Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
-            Dim IsFluxOutput = (OutputType = ReadDiskOutputTypes.RAW)
+            Dim DiskParams = SelectedDiskParams
+            Dim NonStandard As Boolean = Not DiskParams.HasValue OrElse Not DiskParams.Value.IsStandard
 
-            If IsFluxOutput Then
+            If Response.IsFlux Then
                 Dim FileName = "~gwread_" & Guid.NewGuid().ToString("N")
-                Dim Pathname = IO.Path.Combine(TextBoxRootFolder.Text, FileName)
+                Dim Pathname = IO.Path.Combine(RootFolderInput, FileName)
                 Dim FilePath = IO.Path.Combine(Pathname, FluxGetFirstTrackFileName())
+
                 Try
                     IO.Directory.CreateDirectory(Pathname)
                     Response.FilePath = FilePath
@@ -690,20 +935,20 @@ Namespace Flux.Greaseweazle
                     Response.FilePath = ""
                 End Try
 
-                Response.IsFlux = True
                 If CheckBoxSaveLog.Checked Then
                     Response.LogFilePath = IO.Path.Combine(Pathname, Settings.LogFileName)
                 End If
 
-            Else
-                Dim DiskParams = SelectedDiskParams()
+                If SelectedOutputType2 <> ReadDiskOutputTypes.None AndAlso SelectedOutputType2 <> ReadDiskOutputTypes.RAW Then
+                    Dim OutputType2 = If(NonStandard, ReadDiskOutputTypes.HFE, SelectedOutputType2)
 
-                If Not DiskParams.HasValue OrElse Not DiskParams.Value.IsStandard Then
-                    OutputType = ReadDiskOutputTypes.HFE
+                    Response.FilePath2 = GenerateOutputFile(ReadDisktOutputTypeFileExt(OutputType2))
                 End If
 
+            Else
+                Dim OutputType = If(NonStandard, ReadDiskOutputTypes.HFE, SelectedOutputType)
+
                 Response.FilePath = GenerateOutputFile(ReadDisktOutputTypeFileExt(OutputType))
-                Response.IsFlux = False
             End If
 
             Return Response
@@ -717,10 +962,6 @@ Namespace Flux.Greaseweazle
             Return FolderName
         End Function
 
-        Private Function GetSelectedDeviceState() As Settings.UserStateFluxReadDevice
-            Return _UserState.Read.Device(IDevice.FluxDevice.Greaseweazle)
-        End Function
-
         Private Sub HideSelection(Value As Boolean)
             TableSide0.HideSelection = Value
             TableSide0.IsBusy = Value
@@ -729,38 +970,61 @@ Namespace Flux.Greaseweazle
             TableSide1.IsBusy = Value
         End Sub
 
+        Private Sub ImageFolderBrowse()
+            Dim FolderName = BrowseFolderVista(ImageFolderInput, Me.Handle)
+            If FolderName <> "" Then
+                SetImageFolder(FolderName)
+            End If
+        End Sub
+
         Private Sub InitializeControls()
             Dim ColWidth As Integer = 0
 
-            _LabelRootFolder = New Label With {
-                .Text = My.Resources.Label_RootFolder,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, SetControlWidth(_LabelRootFolder))
+            InitializeFooter()
 
-            TextBoxRootFolder = New TextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255,
-                .[ReadOnly] = True,
-                .BackColor = SystemColors.Window
-            }
+            With TableLayoutPanelMain
+                .SuspendLayout()
 
-            ButtonRootBrowse = New Button With {
-                .Text = My.Resources.Label_Browse,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
+                .Left = 0
+                .RowCount = 8
+                .ColumnCount = 11
+                .Dock = DockStyle.Fill
 
-            ButtonToggleSequence = New Button With {
-                .Margin = New Padding(15, 0, 0, 0),
-                .Text = "< >",
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
-            _ToolTip.SetToolTip(ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
+                While .RowStyles.Count < .RowCount
+                    .RowStyles.Add(New RowStyle())
+                End While
 
+                For i As Integer = 0 To .RowCount - 1
+                    .RowStyles(i).SizeType = SizeType.AutoSize
+                Next
+
+                While .ColumnStyles.Count < .ColumnCount
+                    .ColumnStyles.Add(New ColumnStyle())
+                End While
+
+                For j As Integer = 0 To .ColumnCount - 1
+                    .ColumnStyles(j).SizeType = SizeType.AutoSize
+                Next
+
+                .ColumnStyles(0).SizeType = SizeType.Absolute
+
+                InitializeControlsRowDrive(0, ColWidth)
+                InitializeControlsRowFormat(1, ColWidth)
+                InitializeControlsRowFileName(2, ColWidth)
+                InitializeControlsRowPrefix(3, ColWidth)
+                InitializeControlsRowRootFolder(4, ColWidth)
+                InitializeControlsRowImageFolder(5, ColWidth)
+                InitializeControlsRowFolderName(6, ColWidth)
+                InitializeControlsRowGrid(7)
+
+                .ColumnStyles(0).Width = ColWidth
+
+                .ResumeLayout()
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowDrive(Row As Integer, ByRef ColWidth As Integer)
             _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
@@ -774,6 +1038,43 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
+            _LabelOutputType = New Label With {
+                .Text = My.Resources.Label_OutputType,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            ComboOutputType = New ComboBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+
+            ComboExtensions = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 50,
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            }
+
+            CheckBoxSaveLog = New CheckBox With {
+                .Text = My.Resources.Label_SaveLog,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelDrive, 0, Row)
+                .Controls.AddWithSpan(ComboDrives, 1, Row, 2)
+
+                .Controls.Add(_LabelOutputType, 3, Row)
+                .Controls.AddWithSpan(ComboOutputType, 4, Row, 4)
+                .Controls.Add(ComboExtensions, 8, Row)
+
+                .Controls.AddWithSpan(CheckBoxSaveLog, 9, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowFileName(Row As Integer, ByRef ColWidth As Integer)
             _LabelFileName = New Label With {
                 .Text = My.Resources.Label_FileName,
                 .Anchor = AnchorStyles.Right,
@@ -787,23 +1088,22 @@ Namespace Flux.Greaseweazle
                 .MaxLength = 255
             }
 
-            _LabelPrefixName = New Label With {
-                .Text = My.Resources.Label_Prefix,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False,
-                .Visible = False
+            ButtonToggleSequence = New Button With {
+                .Margin = New Padding(15, 0, 0, 0),
+                .Text = "< >",
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True
             }
-            ColWidth = Math.Max(ColWidth, SetControlWidth(_LabelPrefixName))
+            _ToolTip.SetToolTip(ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
 
-            TextBoxPrefixName = New PlaceholderTextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255,
-                .Visible = False,
-                .PlaceholderText = DEFAULT_RAW_FILE_NAME,
-                .ShowCueWhenFocused = True
-            }
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelFileName, 0, Row)
+                .Controls.AddWithSpan(TextBoxFileName, 1, Row, 8)
+                .Controls.AddWithSpan(ButtonToggleSequence, 9, Row, 2)
+            End With
+        End Sub
 
+        Private Sub InitializeControlsRowFolderName(Row As Integer, ByRef ColWidth As Integer)
             _LabelFolderName = New Label With {
                 .Text = My.Resources.Label_FolderName,
                 .Anchor = AnchorStyles.Right,
@@ -817,12 +1117,22 @@ Namespace Flux.Greaseweazle
                 .MaxLength = 255
             }
 
-            ComboExtensions = New ComboBox With {
+            ButtonToggleSequence2 = New Button With {
+                .Margin = New Padding(15, 0, 0, 0),
+                .Text = "< >",
                 .Anchor = AnchorStyles.Left,
-                .Width = 50,
-                .DropDownStyle = ComboBoxStyle.DropDownList
+                .AutoSize = True
             }
+            _ToolTip.SetToolTip(ButtonToggleSequence2, My.Resources.Label_ToggleSequence & " (Alt+S)")
 
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelFolderName, 0, Row)
+                .Controls.AddWithSpan(TextBoxFolderName, 1, Row, 8)
+                .Controls.AddWithSpan(ButtonToggleSequence2, 9, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowFormat(Row As Integer, ByRef ColWidth As Integer)
             _LabelImageFormat = New Label With {
                 .Text = My.Resources.Label_Format,
                 .Anchor = AnchorStyles.Right,
@@ -836,42 +1146,23 @@ Namespace Flux.Greaseweazle
                 .Width = 200
             }
 
-            _LabelOutputType = New Label With {
-                .Text = My.Resources.Label_OutputType,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+            ButtonDetect = New Button With {
+                .Width = 75,
+                .Margin = New Padding(3, 3, 3, 3),
+                .Text = My.Resources.Label_Detect
             }
 
-            ComboOutputType = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Width = 175
-            }
-
-            CheckBoxSaveLog = New CheckBox With {
-                .Text = My.Resources.Label_SaveLog,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            CheckBoxSelect = New CheckBox With {
-                .Text = My.Resources.Label_SelectTracks,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            _LabelSeekRetries = New Label With {
-                .Text = My.Resources.Label_SeekRetries,
+            _LabelRevs = New Label With {
+                .Text = My.Resources.Label_Revs,
                 .Anchor = AnchorStyles.Right,
-                .AutoSize = True
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
             }
 
-            _NumericSeekRetries = New NumericUpDown With {
-                .Minimum = MIN_RETRIES,
-                .Maximum = MAX_RETRIES,
-                .Width = 45,
+            NumericRevs = New NumericUpDown With {
+                .Minimum = MIN_REVS,
+                .Maximum = MAX_REVS,
+                .Width = 50,
                 .Anchor = AnchorStyles.Left
             }
 
@@ -888,20 +1179,36 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left
             }
 
-            _LabelRevs = New Label With {
-                .Text = My.Resources.Label_Revs,
+            _LabelSeekRetries = New Label With {
+                .Text = My.Resources.Label_SeekRetries,
                 .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .AutoSize = True
             }
 
-            NumericRevs = New NumericUpDown With {
-                .Minimum = MIN_REVS,
-                .Maximum = MAX_REVS,
-                .Width = 40,
+            _NumericSeekRetries = New NumericUpDown With {
+                .Minimum = MIN_RETRIES,
+                .Maximum = MAX_RETRIES,
+                .Width = 45,
                 .Anchor = AnchorStyles.Left
             }
 
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelImageFormat, 0, Row)
+                .Controls.AddWithSpan(ComboImageFormat, 1, Row, 2)
+                .Controls.Add(ButtonDetect, 3, Row)
+
+                .Controls.Add(_LabelRevs, 4, Row)
+                .Controls.Add(NumericRevs, 5, Row)
+
+                .Controls.AddWithSpan(_LabelRetries, 6, Row, 2)
+                .Controls.Add(_NumericRetries, 8, Row)
+
+                .Controls.Add(_LabelSeekRetries, 9, Row)
+                .Controls.Add(_NumericSeekRetries, 10, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowGrid(Row As Integer)
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
@@ -949,6 +1256,136 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
+            ButtonContainer.Controls.Add(ButtonRefine)
+            ButtonContainer.Controls.Add(ButtonPreview)
+            ButtonContainer.Controls.Add(ButtonRead)
+            ButtonContainer.Controls.Add(ButtonConvert)
+            ButtonContainer.Controls.Add(ButtonDiscard)
+
+            With TableLayoutPanelMain
+                .Controls.AddWithSpan(TableSide0, 0, Row, 3)
+                .Controls.AddWithSpan(TableSide1, 3, Row, 6)
+                .Controls.AddWithSpan(ButtonContainer, 9, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowImageFolder(Row As Integer, ByRef ColWidth As Integer)
+            _LabelImageFolder = New Label With {
+                .Text = "Image Folder",
+                .Anchor = AnchorStyles.Right,
+                .TextAlign = ContentAlignment.MiddleRight,
+                .AutoSize = False
+            }
+            ColWidth = Math.Max(ColWidth, SetControlWidth(_LabelImageFolder))
+
+            TextBoxImageFolder = New TextBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .MaxLength = 255,
+                .[ReadOnly] = True,
+                .BackColor = SystemColors.Window
+            }
+
+            ButtonImageFolderBrowse = New Button With {
+                .Text = My.Resources.Label_Browse,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelImageFolder, 0, Row)
+                .Controls.AddWithSpan(TextBoxImageFolder, 1, Row, 6)
+                .Controls.AddWithSpan(ButtonImageFolderBrowse, 7, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowPrefix(Row As Integer, ByRef ColWidth As Integer)
+            _LabelPrefixName = New Label With {
+                .Text = My.Resources.Label_Prefix,
+                .Anchor = AnchorStyles.Right,
+                .TextAlign = ContentAlignment.MiddleRight,
+                .AutoSize = False,
+                .Visible = False
+            }
+            ColWidth = Math.Max(ColWidth, SetControlWidth(_LabelPrefixName))
+
+            TextBoxPrefixName = New PlaceholderTextBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .MaxLength = 255,
+                .Visible = False,
+                .PlaceholderText = DEFAULT_RAW_FILE_NAME,
+                .ShowCueWhenFocused = True
+            }
+
+            _LabelOutputType2 = New Label With {
+                .Text = My.Resources.Label_OutputType & " 2",
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            ComboOutputType2 = New ComboBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+
+            ComboExtensions2 = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 50,
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            }
+
+            _LabelLocation = New Label With {
+                .Text = "Image Location",
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            ComboImageLocation = New ComboBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Margin = New Padding(0, 3, 0, 3)
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelPrefixName, 0, Row)
+                .Controls.Add(TextBoxPrefixName, 1, Row)
+                .Controls.Add(_LabelOutputType2, 2, Row)
+                .Controls.AddWithSpan(ComboOutputType2, 3, Row, 2)
+                .Controls.Add(ComboExtensions2, 5, Row)
+                .Controls.AddWithSpan(_LabelLocation, 6, Row, 3)
+                .Controls.AddWithSpan(ComboImageLocation, 9, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowRootFolder(Row As Integer, ByRef ColWidth As Integer)
+            _LabelRootFolder = New Label With {
+                .Text = My.Resources.Label_RootFolder,
+                .Anchor = AnchorStyles.Right,
+                .TextAlign = ContentAlignment.MiddleRight,
+                .AutoSize = False
+            }
+            ColWidth = Math.Max(ColWidth, SetControlWidth(_LabelRootFolder))
+
+            TextBoxRootFolder = New TextBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .MaxLength = 255,
+                .[ReadOnly] = True,
+                .BackColor = SystemColors.Window
+            }
+
+            ButtonRootBrowse = New Button With {
+                .Text = My.Resources.Label_Browse,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True
+            }
+
+            With TableLayoutPanelMain
+                .Controls.Add(_LabelRootFolder, 0, Row)
+                .Controls.AddWithSpan(TextBoxRootFolder, 1, Row, 6)
+                .Controls.AddWithSpan(ButtonRootBrowse, 7, Row, 2)
+            End With
+        End Sub
+
+        Private Sub InitializeFooter()
             ButtonReset = New Button With {
                 .Margin = New Padding(6, 0, 6, 0),
                 .Text = My.Resources.Label_Reset,
@@ -971,115 +1408,8 @@ Namespace Flux.Greaseweazle
             BumpTabIndexes(PanelButtonsRight, 1)
             PanelButtonsRight.Controls.Add(ButtonImport)
 
-            ButtonDetect = New Button With {
-                .Width = 75,
-                .Margin = New Padding(3, 3, 3, 3),
-                .Text = My.Resources.Label_Detect
-            }
-
-            ButtonContainer.Controls.Add(ButtonRefine)
-            ButtonContainer.Controls.Add(ButtonPreview)
-            ButtonContainer.Controls.Add(ButtonRead)
-            ButtonContainer.Controls.Add(ButtonConvert)
-            ButtonContainer.Controls.Add(ButtonDiscard)
-
-
             ButtonOk.Text = My.Resources.Label_ImportClose
             ButtonOk.Visible = True
-
-            Dim Row As Integer
-
-            With TableLayoutPanelMain
-                .SuspendLayout()
-
-                .Left = 0
-                .RowCount = 6
-                .ColumnCount = 10
-                .Dock = DockStyle.Fill
-
-                While .RowStyles.Count < .RowCount
-                    .RowStyles.Add(New RowStyle())
-                End While
-                For i As Integer = 0 To .RowCount - 1
-                    .RowStyles(i).SizeType = SizeType.AutoSize
-                Next
-
-                While .ColumnStyles.Count < .ColumnCount
-                    .ColumnStyles.Add(New ColumnStyle())
-                End While
-                For j As Integer = 0 To .ColumnCount - 1
-                    .ColumnStyles(j).SizeType = SizeType.AutoSize
-                Next
-                .ColumnStyles(0).SizeType = SizeType.Absolute
-                .ColumnStyles(0).Width = ColWidth
-
-                Row = 0
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboDrives, 1, Row)
-
-                .Controls.Add(_LabelOutputType, 2, Row)
-                .Controls.Add(ComboOutputType, 3, Row)
-                .SetColumnSpan(ComboOutputType, 5)
-
-                .Controls.Add(CheckBoxSaveLog, 8, Row)
-                .SetColumnSpan(CheckBoxSaveLog, 2)
-
-                Row = 1
-                .Controls.Add(_LabelImageFormat, 0, Row)
-                .Controls.Add(ComboImageFormat, 1, Row)
-                .Controls.Add(ButtonDetect, 2, Row)
-
-                .Controls.Add(_LabelRevs, 3, Row)
-                .Controls.Add(NumericRevs, 4, Row)
-
-                .Controls.Add(_LabelRetries, 5, Row)
-                .SetColumnSpan(_LabelRetries, 2)
-                .Controls.Add(_NumericRetries, 7, Row)
-
-                .Controls.Add(_LabelSeekRetries, 8, Row)
-                .Controls.Add(_NumericSeekRetries, 9, Row)
-
-                Row = 2
-                .Controls.Add(_LabelFileName, 0, Row)
-                .Controls.Add(_LabelPrefixName, 0, Row)
-                .Controls.Add(TextBoxFileName, 1, Row)
-                .SetColumnSpan(TextBoxFileName, 6)
-                .Controls.Add(TextBoxPrefixName, 1, Row)
-                .SetColumnSpan(TextBoxPrefixName, 6)
-
-                .Controls.Add(ComboExtensions, 7, Row)
-                .Controls.Add(ButtonToggleSequence, 8, Row)
-                .SetColumnSpan(ButtonToggleSequence, 2)
-
-                Row = 3
-                .Controls.Add(_LabelRootFolder, 0, Row)
-                .Controls.Add(TextBoxRootFolder, 1, Row)
-                .SetColumnSpan(TextBoxRootFolder, 5)
-                .Controls.Add(ButtonRootBrowse, 6, Row)
-                .SetColumnSpan(ButtonRootBrowse, 2)
-
-
-                Row = 4
-                .Controls.Add(_LabelFolderName, 0, Row)
-                .Controls.Add(TextBoxFolderName, 1, Row)
-                .SetColumnSpan(TextBoxFolderName, 7)
-
-                .Controls.Add(CheckBoxSelect, 8, Row)
-                .SetColumnSpan(CheckBoxSelect, 2)
-
-                Row = 5
-                .Controls.Add(TableSide0, 0, Row)
-                .SetColumnSpan(TableSide0, 2)
-
-                .Controls.Add(TableSide1, 2, Row)
-                .SetColumnSpan(TableSide1, 6)
-
-                .Controls.Add(ButtonContainer, 8, Row)
-                .SetColumnSpan(ButtonContainer, 2)
-
-                .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
-            End With
         End Sub
 
         Private Sub InitializeHelp()
@@ -1100,12 +1430,12 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
             SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
-            SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _LabelRootFolder, TextBoxRootFolder)
             SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, ButtonRootBrowse)
             SetHelpString(My.Resources.HelpStrings.Flux_FolderName, _LabelFolderName, TextBoxFolderName)
             SetHelpString(My.Resources.HelpStrings.Flux_PrefixName, _LabelPrefixName, TextBoxPrefixName)
             SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence)
+            SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence2)
 
             InitializeHelpImportButtons(False)
         End Sub
@@ -1121,13 +1451,21 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeImage()
-            PopulateOutputTypes(GetSelectedDeviceState.OutputType)
-            PopulateFileExtensions()
+            PopulateOutputTypes(ComboOutputType, SelectedDeviceState.OutputType)
+            PopulateFileExtensions(ComboExtensions, SelectedOutputType)
+
+            PopulateOutputTypes(ComboOutputType2, SelectedDeviceState.OutputType2, NoFlux:=True)
+            PopulateFileExtensions(ComboExtensions2, SelectedOutputType2)
+
             ResetTrackGrid()
             ClearStatusBar()
             RefreshFormState()
             SetTitleBarText()
         End Sub
+
+        Private Function IsToggleSequenceEnabled() As Boolean
+            Return (_LastSequenceTextBox IsNot Nothing AndAlso CanToggleSequenceAtCaretOrSelection(_LastSequenceTextBox))
+        End Function
 
         Private Function NormalizeFluxFolder(selectedPath As String, rootPath As String) As String
             If String.IsNullOrWhiteSpace(selectedPath) OrElse String.IsNullOrWhiteSpace(rootPath) Then
@@ -1152,17 +1490,24 @@ Namespace Flux.Greaseweazle
             Return selFull
         End Function
 
-        Private Sub PopulateFileExtensions()
+        Private Sub PopulateFileExtensions(Combo As ComboBox, OutputType As ReadDiskOutputTypes)
             _ComboExtensionsNoEvent = True
 
-            Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
             Dim IsBitstreamOutput As Boolean = (OutputType = ReadDiskOutputTypes.HFE OrElse OutputType = ReadDiskOutputTypes.RAW)
 
-            If IsBitstreamOutput Then
+            If OutputType = ReadDiskOutputTypes.None Then
+                With Combo
+                    .DataSource = Nothing
+                    .Items.Clear()
+                    .DisplayMember = "Extension"
+                    .DropDownStyle = ComboBoxStyle.DropDownList
+                End With
+
+            ElseIf IsBitstreamOutput Then
                 Dim items As New List(Of FileExtensionItem) From {
                     New FileExtensionItem(ReadDisktOutputTypeFileExt(OutputType), Nothing)
                 }
-                With ComboExtensions
+                With Combo
                     .DataSource = Nothing
                     .Items.Clear()
                     .DisplayMember = "Extension"
@@ -1171,60 +1516,89 @@ Namespace Flux.Greaseweazle
                     .DropDownStyle = ComboBoxStyle.DropDownList
                 End With
             Else
-                SharedLib.PopulateFileExtensions(ComboExtensions, SelectedDiskFormat())
+                SharedLib.PopulateFileExtensions(Combo, SelectedDiskFormat)
             End If
 
-            ComboExtensions.Enabled = (ComboExtensions.Items.Count > 1)
+            Combo.Enabled = (Combo.Items.Count > 1)
 
             _ComboExtensionsNoEvent = False
         End Sub
 
         Private Sub PopulateImageFormats()
-            Dim Doublestep As Boolean = _SelectedOption IsNot Nothing AndAlso _SelectedOption.Type = FloppyDriveType.Drive525HighDensity
-
             _ComboImageFormatNoEvent = True
-            SharedLib.PopulateImageFormats(ComboImageFormat, _SelectedOption, True, Doublestep)
+            SharedLib.PopulateImageFormats(ComboImageFormat, _SelectedDriveOption, True, IsDoubleStepDrive)
             _ComboImageFormatNoEvent = False
         End Sub
 
-        Private Sub PopulateOutputTypes(Optional CurrentValue As ReadDiskOutputTypes? = Nothing)
+        Private Sub PopulateImageLocations(Optional CurrentValue As ReadDiskImageLocations? = Nothing)
+            _ComboImageLocationNoEvent = True
+
+            Dim ComboList As New List(Of KeyValuePair(Of String, ReadDiskImageLocations))
+
+            For Each Location As ReadDiskImageLocations In [Enum].GetValues(GetType(ReadDiskImageLocations))
+                ComboList.Add(New KeyValuePair(Of String, ReadDiskImageLocations)(
+                    ReadDiskImageLocationDescription(Location), Location)
+                )
+            Next
+
+            InitializeCombo(ComboImageLocation, ComboList, CurrentValue)
+
+            If ComboImageLocation.Items.Count > 0 AndAlso ComboImageLocation.SelectedIndex = -1 Then
+                ComboImageLocation.SelectedIndex = 0
+            End If
+
+            ComboImageLocation.Enabled = (ComboImageLocation.Items.Count > 1)
+
+            _ComboImageLocationNoEvent = False
+        End Sub
+
+        Private Sub PopulateOutputTypes(Combo As ComboBox, Optional CurrentValue As ReadDiskOutputTypes = ReadDiskOutputTypes.None, Optional NoFlux As Boolean = False)
             _ComboOutputTypeNoEvent = True
 
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
 
             Dim DriveList As New List(Of KeyValuePair(Of String, ReadDiskOutputTypes))
+
+
             For Each OutputType As ReadDiskOutputTypes In [Enum].GetValues(GetType(ReadDiskOutputTypes))
-                If DiskParams.HasValue Then
+                If OutputType = ReadDiskOutputTypes.None AndAlso Not NoFlux Then
+                    Continue For
+                End If
+
+                If OutputType = ReadDiskOutputTypes.RAW AndAlso NoFlux Then
+                    Continue For
+                End If
+
+                If OutputType <> ReadDiskOutputTypes.None AndAlso DiskParams.HasValue Then
                     If DiskParams.Value.IsNonImage AndAlso OutputType <> ReadDiskOutputTypes.RAW Then
                         Continue For
                     ElseIf Not DiskParams.Value.IsStandard AndAlso OutputType = ReadDiskOutputTypes.IMA Then
                         Continue For
                     End If
                 End If
+
+
                 DriveList.Add(New KeyValuePair(Of String, ReadDiskOutputTypes)(
                     ReadDiskOutputTypeDescription(OutputType), OutputType)
                 )
             Next
 
-            InitializeCombo(ComboOutputType, DriveList, CurrentValue)
+            InitializeCombo(Combo, DriveList, CurrentValue)
 
-            If ComboOutputType.Items.Count > 0 AndAlso ComboOutputType.SelectedIndex = -1 Then
-                ComboOutputType.SelectedIndex = 0
+            If Combo.Items.Count > 0 AndAlso Combo.SelectedIndex = -1 Then
+                Combo.SelectedIndex = 0
             End If
 
-            ComboOutputType.Enabled = (ComboOutputType.Items.Count > 1)
+            Combo.Enabled = (Combo.Items.Count > 1)
 
             _ComboOutputTypeNoEvent = False
         End Sub
 
         Private Sub PreviewImage()
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
             Dim Caption As String
 
             If IsFluxOutput Then
-                Dim FileName = GetOutputFolderName(TextBoxFolderName.Text.Trim)
+                Dim FileName = GetOutputFolderName(FolderNameInput)
 
                 If String.IsNullOrEmpty(FileName) Then
                     Caption = ""
@@ -1232,20 +1606,26 @@ Namespace Flux.Greaseweazle
                     Caption = IO.Path.GetFileName(FileName)
                 End If
             Else
-                Caption = GetOutputFolderName(TextBoxFileName.Text.Trim)
+                Caption = GetOutputFolderName(FileNameInput)
             End If
 
-            If HasOutputfile AndAlso Not IsFluxOutput Then
+            If HasOutputFile2 Then
+                Dim ImageData = New ImageData(_OutputFilePath2)
+
+                ImagePreview.Display(ImageData, Caption)
+
+            ElseIf HasOutputFile AndAlso Not IsFluxOutput Then
                 Dim ImageData = New ImageData(_OutputFilePath)
 
                 ImagePreview.Display(ImageData, Caption)
-            Else
-                Dim DiskParams = SelectedDiskParams()
-                Dim Opt As DriveOption = _SelectedOption
 
-                If Not DiskParams.HasValue OrElse String.IsNullOrEmpty(Opt?.Id) Then
+            Else
+                Dim DiskParams = SelectedDiskParams
+                If Not DiskParams.HasValue OrElse Not HasOptionId Then
                     Exit Sub
                 End If
+
+                Dim Opt As DriveOption = _SelectedDriveOption
 
                 Dim Response = ReadFirstTrack(Opt.Id, True, DiskParams.Value)
 
@@ -1260,33 +1640,33 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ProcessImage()
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
 
             If Not DiskParams.HasValue Then
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = _SelectedOption
-
-            If String.IsNullOrEmpty(Opt?.Id) Then
+            If Not HasOptionId Then
                 Exit Sub
             End If
 
+            Dim Opt As DriveOption = _SelectedDriveOption
+
             Dim Response = GetOutputFilePaths()
+
             If Response.FilePath = "" Then
                 Exit Sub
             End If
 
             ClearProcessedImage(True, False)
 
-            Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
-
             _OutputFilePath = Response.FilePath
+            _OutputFilePath2 = Response.FilePath2
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
 
             InitLogFilePath(If(Response.LogFilePath, ""))
 
-            StartReadRun(Response.FilePath, Opt, DiskParams.Value, OutputType, _OutputDoubleStep, Nothing, Nothing)
+            StartReadRun(Response.FilePath, Opt, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2)
         End Sub
 
         Private Sub ProcessImport(OutputFile As String, NewFileName As String)
@@ -1311,22 +1691,24 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefineFromRaw()
             Dim SourceFile = OpenFluxImage(False)
+
             If String.IsNullOrEmpty(SourceFile) Then
                 Exit Sub
             End If
 
             Dim Info = GetFluxSetInfoRaw(SourceFile, ReadHeaders:=True)
+
             If Not Info.Result Then
                 MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
                 Exit Sub
             End If
 
             Dim FormatResp = ConvertFirstTrack(SourceFile, False)
-            Dim DetectedFormat As FloppyDiskFormat = If(FormatResp.Result,
-                DetectImageFormat(FormatResp.FileName, True),
-                FloppyDiskFormat.FloppyUnknown)
+
+            Dim DetectedFormat As FloppyDiskFormat = If(FormatResp.Result, DetectImageFormat(FormatResp.FileName, True), FloppyDiskFormat.FloppyUnknown)
 
             Dim TempRoot = InitTempImagePath()
+
             If String.IsNullOrEmpty(TempRoot) Then
                 MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
                 Exit Sub
@@ -1351,24 +1733,30 @@ Namespace Flux.Greaseweazle
 
             SelectDriveForRefine(DetectedFormat)
 
-            If _SelectedOption IsNot Nothing AndAlso Not String.IsNullOrEmpty(_SelectedOption.Id) Then
-                _SelectedOption.SelectedFormat = DetectedFormat
-                _SelectedOption.DetectedFormat = DetectedFormat
+            If HasOptionId Then
+                _SelectedDriveOption.SelectedFormat = DetectedFormat
+                _SelectedDriveOption.DetectedFormat = DetectedFormat
             End If
 
-            Dim Doublestep As Boolean = _SelectedOption IsNot Nothing AndAlso _SelectedOption.Type = FloppyDriveType.Drive525HighDensity
             _ComboImageFormatNoEvent = True
-            SharedLib.PopulateImageFormats(ComboImageFormat, DetectedFormat, DetectedFormat, True, Doublestep)
+            SharedLib.PopulateImageFormats(ComboImageFormat, DetectedFormat, DetectedFormat, True, IsDoubleStepDrive)
             _ComboImageFormatNoEvent = False
 
-            PopulateOutputTypes(ReadDiskOutputTypes.RAW)
-            PopulateFileExtensions()
+            PopulateOutputTypes(ComboOutputType, ReadDiskOutputTypes.RAW)
+            PopulateFileExtensions(ComboExtensions, SelectedOutputType)
 
-            TextBoxRootFolder.Text = IO.Path.GetDirectoryName(SourceFolder)
-            TextBoxFolderName.Text = NormalizeFluxFolder(SourceFolder, TextBoxRootFolder.Text)
+            _ComboOutputTypeNoEvent = True
+            ComboOutputType2.SelectedValue = ReadDiskOutputTypes.None
+            _ComboOutputTypeNoEvent = False
+
+            PopulateFileExtensions(ComboExtensions2, SelectedOutputType2)
+
+            RootFolderInput = IO.Path.GetDirectoryName(SourceFolder)
+            FolderNameInput = NormalizeFluxFolder(SourceFolder, RootFolderInput)
             TextBoxPrefixName.Text = Info.Prefix
 
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
+
             If Not DiskParams.HasValue Then
                 MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
                 DeleteFilesAndFolderIfEmpty(TempFolder, FLUX_WILDCARD)
@@ -1376,9 +1764,8 @@ Namespace Flux.Greaseweazle
             End If
 
             _OutputFilePath = IO.Path.Combine(TempFolder, FluxGetFirstTrackFileName(Info.Prefix))
-            _OutputDoubleStep = _SelectedOption IsNot Nothing AndAlso UseDoubleStep(_SelectedOption.Type, DetectedFormat)
-
-            CheckBoxSelect.Checked = True
+            _OutputFilePath2 = ""
+            _OutputDoubleStep = _SelectedDriveOption IsNot Nothing AndAlso UseDoubleStep(_SelectedDriveOption.Type, DetectedFormat)
 
             TrackStatus.Clear()
             ResetTrackGrid()
@@ -1398,20 +1785,22 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshFormState()
-            Dim DiskParams = SelectedDiskParams()
-            Dim IsFluxOutput = CheckIsFluxOutput()
-            Dim Opt As DriveOption = _SelectedOption
+            Dim DiskParams = SelectedDiskParams
 
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim HasOutputFile As Boolean = Me.HasOutputFile
 
-            Dim CanChangeSettings As Boolean = IsIdle AndAlso Not HasOutputfile
-            Dim CanConvert As Boolean = IsIdle AndAlso HasOutputfile AndAlso IsFluxOutput
-            Dim DriveSelected As Boolean = Not String.IsNullOrEmpty(Opt?.Id)
-            Dim SelectMode As Boolean = CanConvert AndAlso CheckBoxSelect.Checked
+            Dim CanChangeSettings = Me.CanChangeSettings
+            Dim CanConvert As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not HasOutputFile2
+            Dim DriveSelected As Boolean = HasOptionId
+            Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
 
             ComboImageFormat.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
             ComboDrives.Enabled = CanChangeSettings OrElse SelectMode
+
             ComboOutputType.Enabled = CanChangeSettings AndAlso ComboOutputType.Items.Count > 1
+            ComboOutputType2.Enabled = CanChangeSettings AndAlso ComboOutputType2.Items.Count > 1
+
+            ComboExtensions2.Enabled = CanChangeSettings AndAlso ComboExtensions2.Items.Count > 1
 
             NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
             _NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
@@ -1423,27 +1812,28 @@ Namespace Flux.Greaseweazle
             ButtonConvert.Enabled = CanConvert
             ButtonConvert.Visible = IsFluxOutput
 
-            ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
-
-            CheckBoxSelect.Enabled = CanConvert
+            ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
 
             ButtonDetect.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
 
-            ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
+            ButtonCancel.Text = If(IsRunning OrElse HasOutputFile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
             ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
 
-            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputfile AndAlso _DrivesAvailable
+            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
+
+            TableSide0.SelectEnabled = CanRefine
+            TableSide1.SelectEnabled = CanRefine
+            HideSelection(Not IsIdle)
 
             RefreshProcessButtonState()
             RefreshImportButtonState()
             ToggleRootFolderControls()
+            ToggleImageLocationVisible()
         End Sub
 
         Private Sub RefreshImportButtonState()
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
-            Dim EnableImport As Boolean = IsIdle AndAlso Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim EnableImport As Boolean = IsIdle AndAlso HasOutputFile
 
             ButtonOk.Enabled = EnableImport
             ButtonOk.Text = If(IsFluxOutput, My.Resources.Label_SaveAndClose, My.Resources.Label_ImportClose)
@@ -1461,7 +1851,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Format = SelectedDiskFormat()
+            Dim Format = SelectedDiskFormat
 
             If Not Format.HasValue Then
                 Exit Sub
@@ -1479,19 +1869,17 @@ Namespace Flux.Greaseweazle
                 ButtonRead.Text = My.Resources.Label_Abort
                 ButtonRead.Enabled = True
             Else
-                Dim Opt As DriveOption = _SelectedOption
-                Dim DiskParams = SelectedDiskParams()
-                Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-                Dim TracksSelected As Boolean = CheckBoxSelect.Checked AndAlso (TableSide0.SelectedTracks.Count + TableSide1.SelectedTracks.Count > 0)
+                Dim DiskParams = SelectedDiskParams
+                Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
 
                 ButtonRead.Text = My.Resources.Label_Read
-                ButtonRead.Enabled = Not String.IsNullOrEmpty(Opt?.Id) AndAlso DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
+                ButtonRead.Enabled = HasOptionId AndAlso DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
         Private Sub RefreshRevs()
             _NumericRevsNoEvent = True
-            If CheckIsFluxOutput() Then
+            If IsFluxOutput Then
                 NumericRevs.Value = _CachedRevsFlux
             Else
                 NumericRevs.Value = _CachedRevs
@@ -1508,7 +1896,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
 
             If Not DiskParams.HasValue Then
                 Exit Sub
@@ -1527,44 +1915,44 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ReprocessImage()
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
 
             If Not DiskParams.HasValue Then
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = _SelectedOption
-
-            If String.IsNullOrEmpty(Opt?.Id) Then
+            If Not HasOptionId Then
                 Exit Sub
             End If
 
-            Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
+            Dim Opt As DriveOption = _SelectedDriveOption
 
             TrackStatus.Clear()
             _FileReprocessMode = True
 
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As TrackHeads? = Nothing
+            Dim AppendLog As Boolean = False
 
-            If CheckBoxSelect.Checked Then
+            If HasSelectedTracks Then
                 TrackRanges = GetSelectedTrackRanges()
                 Heads = GetSelectedTrackHeads()
 
                 TableSide0.ResetSelectedSells()
                 TableSide1.ResetSelectedSells()
-                HideSelection(True)
+
+                AppendLog = True
             End If
 
             _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
 
-            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName), Append:=CheckBoxSelect.Checked)
+            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName), Append:=AppendLog)
 
-            StartReadRun(_OutputFilePath, Opt, DiskParams.Value, OutputType, _OutputDoubleStep, TrackRanges, Heads)
+            StartReadRun(_OutputFilePath, Opt, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None)
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
-            Dim DiskParams = SelectedDiskParams()
+            Dim DiskParams = SelectedDiskParams
 
             Dim SideCount As Byte
             Dim FormatDriveType As FloppyDriveType
@@ -1577,7 +1965,7 @@ Namespace Flux.Greaseweazle
                 FormatDriveType = DiskParams.Value.DriveType
             End If
 
-            Dim Opt As DriveOption = _SelectedOption
+            Dim Opt As DriveOption = _SelectedDriveOption
             Dim TrackCount As UShort
 
             If Opt Is Nothing OrElse Opt.Type = FloppyDriveType.DriveUnknown Then
@@ -1594,23 +1982,20 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RootFolderBrowse()
-            Dim FolderName = BrowseFolderVista(TextBoxRootFolder.Text, Me.Handle)
+            Dim FolderName = BrowseFolderVista(RootFolderInput, Me.Handle)
             If FolderName <> "" Then
                 SetRootFolder(FolderName)
             End If
         End Sub
-
         Private Sub SelectDriveForRefine(detectedFormat As FloppyDiskFormat)
-            Dim CurrentOpt As DriveOption = _SelectedOption
-            Dim HasDriveSelected As Boolean = CurrentOpt IsNot Nothing AndAlso Not String.IsNullOrEmpty(CurrentOpt.Id)
-
             Dim TargetType As FloppyDriveType = FloppyDriveType.DriveUnknown
+
             If detectedFormat <> FloppyDiskFormat.FloppyUnknown Then
                 Dim DiskParams = FloppyDiskFormatGetParams(detectedFormat)
                 TargetType = GreaseweazleFindCompatibleDriveType(DiskParams, Settings.AvailableDriveTypes)
             End If
 
-            If TargetType <> FloppyDriveType.DriveUnknown AndAlso HasDriveSelected AndAlso CurrentOpt.Type = TargetType Then
+            If TargetType <> FloppyDriveType.DriveUnknown AndAlso HasOptionId AndAlso _SelectedDriveOption.Type = TargetType Then
                 Return
             End If
 
@@ -1634,29 +2019,14 @@ Namespace Flux.Greaseweazle
             Dim NewSelection As DriveOption = Nothing
             If TargetOpt IsNot Nothing Then
                 NewSelection = TargetOpt
-            ElseIf Not HasDriveSelected Then
+            ElseIf Not HasOptionId Then
                 NewSelection = FirstOpt
             End If
 
-            If NewSelection IsNot Nothing AndAlso NewSelection IsNot CurrentOpt Then
+            If NewSelection IsNot Nothing AndAlso NewSelection IsNot _SelectedDriveOption Then
                 ComboDrives.SelectedItem = NewSelection
             End If
         End Sub
-        Private Function SelectedDiskFormat() As FloppyDiskFormat?
-            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
-                Return Nothing
-            End If
-
-            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams).Format
-        End Function
-
-        Private Function SelectedDiskParams() As FloppyDiskParams?
-            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
-                Return Nothing
-            End If
-
-            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams)
-        End Function
 
         Private Function SetControlWidth(Control As Control, Optional ExtraPadding As Integer = 2) As Integer
             Dim TextWidth = TextRenderer.MeasureText(Control.Text, Control.Font).Width
@@ -1668,14 +2038,23 @@ Namespace Flux.Greaseweazle
 
         Private Sub SetFilenames(UseCache As Boolean)
             If UseCache Then
-                TextBoxFileName.Text = _CachedFileNameTemplate
+                FileNameInput = _CachedFileNameTemplate
                 TextBoxPrefixName.Text = _CachedPrefixNameTemplate
-                TextBoxFolderName.Text = _CachedFolderNameTemplate
+                FolderNameInput = _CachedFolderNameTemplate
             Else
-                TextBoxFileName.Text = ""
+                FileNameInput = ""
                 TextBoxPrefixName.Text = DEFAULT_RAW_FILE_NAME
-                TextBoxFolderName.Text = ""
+                FolderNameInput = ""
             End If
+        End Sub
+
+        Private Sub SetImageFolder(Path As String)
+            If Path <> "" AndAlso Not IO.Directory.Exists(Path) Then
+                Path = ""
+            End If
+
+            ImageFolderInput = Path
+            SelectedDeviceState.ImageFolder = Path
         End Sub
 
         Private Sub SetRootFolder(Path As String)
@@ -1683,23 +2062,21 @@ Namespace Flux.Greaseweazle
                 Path = ""
             End If
 
-            TextBoxRootFolder.Text = Path
+            RootFolderInput = Path
             App.AppSettings.Greaseweazle.FluxRootPath = Path
         End Sub
         Private Sub SetTitleBarText()
             Dim Text = My.Resources.Label_ReadDisk
 
-            If String.IsNullOrEmpty(_OutputFilePath) Then
+            If Not HasOutputFile Then
                 Me.Text = Text
                 Exit Sub
             End If
 
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
-            If Not IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFileName.Text.Trim) Then
+            If Not IsFluxOutput AndAlso String.IsNullOrEmpty(FileNameInput) Then
                 Me.Text = Text
                 Exit Sub
-            ElseIf IsFluxOutput AndAlso String.IsNullOrEmpty(TextBoxFolderName.Text.Trim) Then
+            ElseIf IsFluxOutput AndAlso String.IsNullOrEmpty(FolderNameInput) Then
                 Me.Text = Text
                 Exit Sub
             End If
@@ -1707,7 +2084,7 @@ Namespace Flux.Greaseweazle
             Dim DisplayFileName As String
 
             If IsFluxOutput Then
-                Dim ParentFolder As String = GetOutputFolderName(TextBoxFolderName.Text.Trim())
+                Dim ParentFolder As String = GetOutputFolderName(FolderNameInput)
                 DisplayFileName = IO.Path.Combine(ParentFolder, FLUX_WILDCARD)
             Else
                 DisplayFileName = GetNewFileName(_OutputFilePath)
@@ -1722,7 +2099,9 @@ Namespace Flux.Greaseweazle
                                  outputType As ReadDiskOutputTypes,
                                  doubleStep As Boolean,
                                  trackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)),
-                                 heads As TrackHeads?)
+                                 heads As TrackHeads?,
+                                 filePath2 As String,
+                                 outputType2 As ReadDiskOutputTypes)
 
             Dim Opts As ReadOptions
             Try
@@ -1735,7 +2114,9 @@ Namespace Flux.Greaseweazle
                                         heads,
                                         CInt(_NumericRetries.Value),
                                         CInt(_NumericSeekRetries.Value),
-                                        CInt(NumericRevs.Value))
+                                        CInt(NumericRevs.Value),
+                                        filePath2,
+                                        outputType2)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1745,43 +2126,56 @@ Namespace Flux.Greaseweazle
             Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
         End Sub
 
-        Private Sub ToggleRootFolderControls()
-            Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
+        Private Sub ToggleImageLocationControls()
             TableLayoutPanelMain.SuspendLayout()
-            If IsFluxOutput Then
-                TextBoxPrefixName.Visible = True
-                TextBoxPrefixName.BringToFront()
-                TextBoxFileName.Visible = False
-
-                _LabelPrefixName.Visible = True
-                _LabelPrefixName.BringToFront()
-                _LabelFileName.Visible = False
-            Else
-                TextBoxFileName.Visible = True
-                TextBoxFileName.BringToFront()
-                TextBoxPrefixName.Visible = False
-
-                _LabelFileName.Visible = True
-                _LabelFileName.BringToFront()
-                _LabelPrefixName.Visible = False
-            End If
-            SetRowVisible(TableLayoutPanelMain, 3, IsFluxOutput)
-            SetRowVisible(TableLayoutPanelMain, 4, IsFluxOutput)
+            SetRowVisible(TableLayoutPanelMain, 5, DisplayImageFolder)
             TableLayoutPanelMain.ResumeLayout(True)
+        End Sub
 
-            TextBoxRootFolder.Enabled = IsIdle AndAlso Not HasOutputFile
-            TextBoxPrefixName.Enabled = IsIdle AndAlso Not HasOutputFile
+        Private Sub ToggleImageLocationVisible()
+            Dim Visible = DisplayImageLocation
+
+            _LabelLocation.Visible = Visible
+            ComboImageLocation.Visible = Visible
+            ComboExtensions2.Visible = Visible
+
+            ToggleImageLocationControls()
+        End Sub
+
+        Private Sub ToggleRootFolderControls()
+            Dim HasOutputFile As Boolean = Me.HasOutputFile
+
+            If Not _LastFluxOutput.HasValue OrElse _LastFluxOutput.Value <> IsFluxOutput Then
+                _LastFluxOutput = IsFluxOutput
+                TableLayoutPanelMain.SuspendLayout()
+                SetRowVisible(TableLayoutPanelMain, 2, Not IsFluxOutput)
+                SetRowVisible(TableLayoutPanelMain, 3, IsFluxOutput)
+                SetRowVisible(TableLayoutPanelMain, 4, IsFluxOutput)
+                SetRowVisible(TableLayoutPanelMain, 5, DisplayImageFolder)
+                SetRowVisible(TableLayoutPanelMain, 6, IsFluxOutput)
+                TableLayoutPanelMain.ResumeLayout(True)
+
+                UpdateSequenceButtonState()
+            End If
+
+            Dim CanChangeSettings = Me.CanChangeSettings
+
+            TextBoxRootFolder.Enabled = CanChangeSettings
+            TextBoxPrefixName.Enabled = CanChangeSettings
+            'TextBoxImageFolder.Enabled = CanChangeSettings
 
             ButtonRootBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            'ButtonImageFolderBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
             CheckBoxSaveLog.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
             CheckBoxSaveLog.Visible = IsFluxOutput
         End Sub
 
         Private Sub UpdateSequenceButtonState()
-            ButtonToggleSequence.Enabled = (_LastSequenceTextBox IsNot Nothing AndAlso CanToggleSequenceAtCaretOrSelection(_LastSequenceTextBox))
+            Dim Enabled = IsToggleSequenceEnabled()
+
+            ButtonToggleSequence.Enabled = Enabled
+            ButtonToggleSequence2.Enabled = Enabled
         End Sub
 
         Private Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean
@@ -1792,7 +2186,7 @@ Namespace Flux.Greaseweazle
 
 #Region "Events"
         Private Sub ButtonConvert_Click(sender As Object, e As EventArgs) Handles ButtonConvert.Click
-            If Not CheckFileNameEntered() Then
+            If Not CheckFileNameEntered(CheckImageFile:=False) Then
                 Exit Sub
             End If
 
@@ -1807,18 +2201,29 @@ Namespace Flux.Greaseweazle
             ClearProcessedImage(True, True)
         End Sub
 
+        Private Sub ButtonImageFolderBrowse_Click(sender As Object, e As EventArgs) Handles ButtonImageFolderBrowse.Click
+            ImageFolderBrowse()
+        End Sub
+
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
-            If Not CheckFileNameEntered() Then
+            If Not CheckFileNameEntered(CheckImageFile:=True) Then
                 Exit Sub
             End If
 
-            If CheckIsFluxOutput() Then
+            If IsFluxOutput Then
                 If Not FinalizeFluxOutput() Then
                     Exit Sub
                 End If
+
+                If HasOutputFile2 Then
+                    FinalizeImageOutput()
+                    _OutputFilePath2 = ""
+                End If
+
+
                 ClearProcessedImage(False, True)
             Else
-                If String.IsNullOrEmpty(_OutputFilePath) Then
+                If Not HasOutputFile Then
                     Exit Sub
                 End If
 
@@ -1827,14 +2232,20 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonOk.Click
-            If Not CheckFileNameEntered() Then
+            If Not CheckFileNameEntered(CheckImageFile:=True) Then
                 Exit Sub
             End If
 
-            If CheckIsFluxOutput() Then
+            If IsFluxOutput Then
                 If Not FinalizeFluxOutput() Then
                     Exit Sub
                 End If
+
+                If HasOutputFile2 Then
+                    FinalizeImageOutput()
+                    _OutputFilePath2 = ""
+                End If
+
                 CloseForm("", "")
             Else
                 CloseForm(_OutputFilePath, GetNewFileName(_OutputFilePath))
@@ -1850,11 +2261,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim IsFluxOutput = CheckIsFluxOutput()
-
-            Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-
-            If HasOutputFile AndAlso IsFluxOutput Then
+            If CanRefine Then
                 ReprocessImage()
             Else
                 ProcessImage()
@@ -1864,6 +2271,7 @@ Namespace Flux.Greaseweazle
         Private Sub ButtonRefine_Click(sender As Object, e As EventArgs) Handles ButtonRefine.Click
             RefineFromRaw()
         End Sub
+
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
             GreaseweazleReset()
         End Sub
@@ -1872,13 +2280,8 @@ Namespace Flux.Greaseweazle
             RootFolderBrowse()
         End Sub
 
-        Private Sub ButtonToggleSequence_Click(sender As Object, e As EventArgs) Handles ButtonToggleSequence.Click
-            If _LastSequenceTextBox Is Nothing Then
-                Exit Sub
-            End If
-            ToggleNumberTokenAtCaretOrSelection(_LastSequenceTextBox)
-            UpdateSequenceButtonState()
-            _LastSequenceTextBox.Focus()
+        Private Sub ButtonToggleSequence_Click(sender As Object, e As EventArgs) Handles ButtonToggleSequence.Click, ButtonToggleSequence2.Click
+            DoToggleSequence()
         End Sub
 
         Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
@@ -1886,18 +2289,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
-        End Sub
-
-        Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            TableSide0.SelectEnabled = CheckBoxSelect.Checked
-            TableSide1.SelectEnabled = CheckBoxSelect.Checked
-
-            RefreshFormState()
+            SelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
         End Sub
 
         Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
@@ -1918,21 +2310,20 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim PrevOption = _SelectedOption
-            _SelectedOption = ComboDrives.SelectedValue
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim PrevOption = _SelectedDriveOption
+            _SelectedDriveOption = ComboDrives.SelectedValue
 
-            If Not HasOutputfile Then
+            If Not HasOutputFile Then
                 PopulateImageFormats()
                 ResetTrackGrid()
             Else
-                RefreshTrackState(PrevOption, _SelectedOption)
+                RefreshTrackState(PrevOption, _SelectedDriveOption)
             End If
 
             RefreshFormState()
             RefreshWarningLabel()
 
-            GetSelectedDeviceState.DriveId = _SelectedOption.Id
+            SelectedDeviceState.DriveId = _SelectedDriveOption.Id
         End Sub
 
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
@@ -1944,17 +2335,21 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = _SelectedOption
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim Opt As DriveOption = _SelectedDriveOption
 
             If Not String.IsNullOrEmpty(Opt?.Id) Then
-                Opt.SelectedFormat = SelectedDiskFormat()
+                Opt.SelectedFormat = SelectedDiskFormat
             End If
 
-            PopulateOutputTypes(GetSelectedDeviceState.OutputType)
-            PopulateFileExtensions()
+            If Not HasOutputFile OrElse Not IsFluxOutput Then
+                PopulateOutputTypes(ComboOutputType, SelectedDeviceState.OutputType)
+                PopulateFileExtensions(ComboExtensions, SelectedOutputType)
+            End If
 
-            If Not HasOutputfile Then
+            PopulateOutputTypes(ComboOutputType2, SelectedDeviceState.OutputType2, NoFlux:=True)
+            PopulateFileExtensions(ComboExtensions2, SelectedOutputType2)
+
+            If Not HasOutputFile Then
                 ResetTrackGrid()
             Else
                 RefreshTrackState(Opt, Opt)
@@ -1962,6 +2357,20 @@ Namespace Flux.Greaseweazle
 
             RefreshFormState()
             RefreshWarningLabel()
+        End Sub
+
+        Private Sub ComboImageLocation_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageLocation.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboImageLocationNoEvent Then
+                Exit Sub
+            End If
+
+            SelectedDeviceState.ImageLocation = SelectedImageLocation
+
+            ToggleImageLocationControls()
         End Sub
 
         Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
@@ -1973,11 +2382,27 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            PopulateFileExtensions()
+            PopulateFileExtensions(ComboExtensions, SelectedOutputType)
             RefreshFormState()
             RefreshRevs()
 
-            GetSelectedDeviceState.OutputType = ComboOutputType.SelectedValue
+            SelectedDeviceState.OutputType = SelectedOutputType
+        End Sub
+
+        Private Sub ComboOutputType2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType2.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboOutputTypeNoEvent Then
+                Exit Sub
+            End If
+
+            PopulateFileExtensions(ComboExtensions2, SelectedOutputType2)
+
+            SelectedDeviceState.OutputType2 = SelectedOutputType2
+
+            ToggleImageLocationVisible()
         End Sub
 
         Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
@@ -2019,12 +2444,13 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            If CheckIsFluxOutput() Then
+            If IsFluxOutput Then
                 _CachedRevsFlux = NumericRevs.Value
             Else
                 _CachedRevs = NumericRevs.Value
             End If
         End Sub
+
         Private Sub ReadCmd_HardSectorsDetected(sender As Object, e As HardSectorsDetectedEventArgs) Handles ReadCmd.HardSectorsDetected
             Runner.EmitOutputLine(FormatReadHardSectorsLine(e))
         End Sub
@@ -2083,7 +2509,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub TextBox_Leave(sender As Object, e As EventArgs) Handles TextBoxPrefixName.Leave, TextBoxFolderName.Leave, TextBoxFileName.Leave
-            If Me.ActiveControl Is ButtonToggleSequence Then
+            If Me.ActiveControl Is ButtonToggleSequence OrElse Me.ActiveControl Is ButtonToggleSequence2 Then
                 Return
             End If
 
@@ -2135,8 +2561,14 @@ Namespace Flux.Greaseweazle
             FileNameChangePostProcess()
         End Sub
 
+        Private Sub TextBoxImageFolder_Click(sender As Object, e As EventArgs) Handles TextBoxImageFolder.Click
+            If TextBoxImageFolder.Enabled AndAlso String.IsNullOrEmpty(ImageFolderInput) Then
+                ImageFolderBrowse()
+            End If
+        End Sub
+
         Private Sub TextBoxRootFolder_Click(sender As Object, e As EventArgs) Handles TextBoxRootFolder.Click
-            If TextBoxRootFolder.Enabled AndAlso String.IsNullOrEmpty(TextBoxRootFolder.Text) Then
+            If TextBoxRootFolder.Enabled AndAlso String.IsNullOrEmpty(RootFolderInput) Then
                 RootFolderBrowse()
             End If
         End Sub

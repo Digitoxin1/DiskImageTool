@@ -2188,4 +2188,25 @@ Do you wish to overwrite?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Refine</value>
   </data>
+  <data name="Label_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Dialog_ImageFileExists" xml:space="preserve">
+    <value>An image file already exists at:
+
+'{0}'
+
+Do you wish to overwrite?</value>
+  </data>
+  <data name="Dialog_ImageSetAndFileExist" xml:space="preserve">
+    <value>The following already exist:
+
+Flux image set: '{0}'
+Image file: '{1}'
+
+Do you wish to overwrite?</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>Please select an image folder.</value>
+  </data>
 </root>

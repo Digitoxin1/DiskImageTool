@@ -139,7 +139,7 @@ Namespace Flux.Greaseweazle
 
             If ImageParams.HasValue Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
-                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
             Dim spec As New TrackSetSpec
@@ -322,7 +322,7 @@ Namespace Flux.Greaseweazle
             Dim Format As String = "ibm.scan"
             If ImageParams.HasValue Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
-                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
             Dim Sb As New StringBuilder()

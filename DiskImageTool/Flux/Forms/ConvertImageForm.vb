@@ -196,7 +196,7 @@ Namespace Flux
 
             If outputType <> ImageImportOutputTypes.HFE Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
-                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             Else
                 BitRateKbps = CInt(diskParams.BitRateKbps)
                 AdjustSpeed = 60.0 / diskParams.RPM

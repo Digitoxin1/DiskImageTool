@@ -509,7 +509,7 @@ Namespace Flux.Greaseweazle
 
             If FileExt = ".ima" Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(_DiskParams.Format)
-                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
             If TrackRanges Is Nothing Then

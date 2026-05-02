@@ -18,9 +18,16 @@ Namespace Flux.Greaseweazle
 
 
         Public Enum ReadDiskOutputTypes
+            None
             IMA
             HFE
             RAW
+        End Enum
+
+        Public Enum ReadDiskImageLocations
+            Root
+            Flux
+            Other
         End Enum
 
         Public Function GreaseweazleFindCompatibleDriveType(DiskParams As FloppyDiskParams, AvailableTypes As FloppyDriveType) As FloppyDriveType
@@ -87,7 +94,7 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function GreaseweazleImageFormatCommandLine(Value As GreaseweazleImageFormat) As String
+        Public Function GreaseweazleImageFormatString(Value As GreaseweazleImageFormat) As String
             Select Case Value
                 Case GreaseweazleImageFormat.None
                     Return "ibm.scan"
@@ -152,14 +159,14 @@ Namespace Flux.Greaseweazle
 
         Public Function ReadDisktOutputTypeFileExt(Value As ReadDiskOutputTypes) As String
             Select Case Value
-                Case ImageImportOutputTypes.HFE
+                Case ReadDiskOutputTypes.HFE
                     Return ".hfe"
-                Case ImageImportOutputTypes.IMA
+                Case ReadDiskOutputTypes.IMA
                     Return ".ima"
                 Case ReadDiskOutputTypes.RAW
                     Return ".raw"
                 Case Else
-                    Return ".ima"
+                    Return ""
             End Select
         End Function
 
@@ -182,6 +189,19 @@ Namespace Flux.Greaseweazle
                     Return "Basic Sector Image"
                 Case ReadDiskOutputTypes.RAW
                     Return "Flux Image Set"
+                Case Else
+                    Return "None"
+            End Select
+        End Function
+
+        Public Function ReadDiskImageLocationDescription(Value As ReadDiskImageLocations) As String
+            Select Case Value
+                Case ReadDiskImageLocations.Root
+                    Return "Root Folder"
+                Case ReadDiskImageLocations.Flux
+                    Return "Flux Folder"
+                Case ReadDiskImageLocations.Other
+                    Return "Other"
                 Case Else
                     Return ""
             End Select

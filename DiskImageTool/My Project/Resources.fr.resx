@@ -1936,4 +1936,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Affiner</value>
   </data>
+  <data name="Label_None" xml:space="preserve">
+    <value>Aucun</value>
+  </data>
 </root>

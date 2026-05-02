@@ -1133,6 +1133,19 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to An image file already exists at:
+        '''
+        '''&apos;{0}&apos;
+        '''
+        '''Do you wish to overwrite?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ImageFileExists() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ImageFileExists", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Warning: The Image Format is incompatible with the currently selected drive.{0}{0}Do you still wish to continue?.
         '''</summary>
         Friend ReadOnly Property Dialog_ImageFormatWarning() As String
@@ -1147,6 +1160,20 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_ImagePreviewFail() As String
             Get
                 Return ResourceManager.GetString("Dialog_ImagePreviewFail", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to The following already exist:
+        '''
+        '''Flux image set: &apos;{0}&apos;
+        '''Image file: &apos;{1}&apos;
+        '''
+        '''Do you wish to overwrite?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ImageSetAndFileExist() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ImageSetAndFileExist", resourceCulture)
             End Get
         End Property
         
@@ -1394,6 +1421,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_SearchNotFound() As String
             Get
                 Return ResourceManager.GetString("Dialog_SearchNotFound", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Please select an image folder..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SelectImageFolder() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SelectImageFolder", resourceCulture)
             End Get
         End Property
         
@@ -3923,6 +3959,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_NoFiles() As String
             Get
                 Return ResourceManager.GetString("Label_NoFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to None.
+        '''</summary>
+        Friend ReadOnly Property Label_None() As String
+            Get
+                Return ResourceManager.GetString("Label_None", resourceCulture)
             End Get
         End Property
         

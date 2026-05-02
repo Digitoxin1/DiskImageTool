@@ -188,6 +188,7 @@
     <Compile Include="DiskImage\ImageHistory.vb" />
     <Compile Include="DiskImage\Modules\Structures.vb" />
     <Compile Include="DiskImage\Modules\UpdateFunctions.vb" />
+    <Compile Include="Extensions\TableLayoutExtensions.vb" />
     <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
