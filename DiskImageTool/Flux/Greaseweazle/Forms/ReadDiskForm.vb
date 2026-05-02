@@ -965,7 +965,7 @@ Namespace Flux.Greaseweazle
                 .SuspendLayout()
 
                 .Left = 0
-                .RowCount = 9
+                .RowCount = 10
                 .ColumnCount = 11
                 .Dock = DockStyle.Fill
 
@@ -977,12 +977,13 @@ Namespace Flux.Greaseweazle
 
                 InitializeControlsRowDrive(row, ColWidth) : row += 1
                 InitializeControlsRowFormat(row, ColWidth) : row += 1
+                GridAddSpacerRow(row) : row += 1
                 InitializeControlsRowFileName(row, ColWidth) : row += 1
                 InitializeControlsRowPrefix(row, ColWidth) : row += 1
                 InitializeControlsRowRootFolder(row, ColWidth) : row += 1
                 InitializeControlsRowImageFolder(row, ColWidth) : row += 1
                 InitializeControlsRowFolderName(row, ColWidth) : row += 1
-                InitializeControlsSpacerRow(row) : row += 1
+                GridAddSeparatorrRow(row) : row += 1
                 InitializeControlsRowGrid(row) : row += 1
 
                 .ColumnStyles(0).Width = ColWidth
@@ -1251,7 +1252,7 @@ Namespace Flux.Greaseweazle
             _GridIndex.Add(GridRows.ImageFolder, Row)
 
             _LabelImageFolder = New Label With {
-                .Text = "Image Folder",
+                .Text = My.Resources.Label_ImageFolder,
                 .Anchor = AnchorStyles.Right,
                 .TextAlign = ContentAlignment.MiddleRight,
                 .AutoSize = False
@@ -1316,7 +1317,7 @@ Namespace Flux.Greaseweazle
             }
 
             _LabelLocation = New Label With {
-                .Text = "Image Location",
+                .Text = My.Resources.Label_ImageLocation,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3)
@@ -1369,16 +1370,6 @@ Namespace Flux.Greaseweazle
             End With
         End Sub
 
-        Private Sub InitializeControlsSpacerRow(Row As Integer)
-            Dim sep As New Panel With {
-                .Height = 1,
-                .Dock = DockStyle.Fill,
-                .BackColor = SystemColors.ControlDark,
-                .Margin = New Padding(3, 12, 3, 3)
-            }
-
-            TableLayoutPanelMain.Controls.AddWithSpan(sep, 0, Row, TableLayoutPanelMain.ColumnCount)
-        End Sub
         Private Sub InitializeFooter()
             ButtonImport = New SplitButton With {
                 .Margin = New Padding(6, 0, 6, 0),

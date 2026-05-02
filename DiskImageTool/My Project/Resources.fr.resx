@@ -1939,4 +1939,34 @@ Voulez-vous écraser ?</value>
   <data name="Label_None" xml:space="preserve">
     <value>Aucun</value>
   </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Dossier image</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>Personnalisé</value>
+  </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Dossier flux</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>Veuillez sélectionner un dossier d’image.</value>
+  </data>
+  <data name="Dialog_ImageFileExists" xml:space="preserve">
+    <value>Un fichier image existe déjà à l’emplacement :
+
+'{0}'
+
+Souhaitez-vous le remplacer ?</value>
+  </data>
+  <data name="Dialog_ImageSetAndFileExist" xml:space="preserve">
+    <value>Les éléments suivants existent déjà :
+
+Ensemble d’images flux : '{0}'
+Fichier image : '{1}'
+
+Souhaitez-vous les remplacer ?</value>
+  </data>
 </root>

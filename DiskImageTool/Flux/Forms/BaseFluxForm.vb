@@ -279,6 +279,21 @@ Namespace Flux
             End Try
         End Sub
 
+        Protected Sub GridAddSeparatorrRow(Row As Integer)
+            Dim sep As New Panel With {
+                .Height = 1,
+                .Dock = DockStyle.Fill,
+                .BackColor = SystemColors.ControlDark,
+                .Margin = New Padding(3, 9, 3, 3)
+            }
+
+            TableLayoutPanelMain.Controls.AddWithSpan(sep, 0, Row, TableLayoutPanelMain.ColumnCount)
+        End Sub
+
+        Protected Sub GridAddSpacerRow(Row As Integer)
+            TableLayoutPanelMain.RowStyles.Insert(Row, New RowStyle(SizeType.Absolute, 6))
+        End Sub
+
         Protected Sub GridHideSelection(Value As Boolean)
             TS0.HideSelection = Value
             TS0.IsBusy = Value

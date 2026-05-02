@@ -2802,6 +2802,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Custom.
+        '''</summary>
+        Friend ReadOnly Property Label_Custom() As String
+            Get
+                Return ResourceManager.GetString("Label_Custom", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Custom Boot Loader.
         '''</summary>
         Friend ReadOnly Property Label_CustomBootLoader() As String
@@ -3432,6 +3441,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Flux Folder.
+        '''</summary>
+        Friend ReadOnly Property Label_FluxFolder() As String
+            Get
+                Return ResourceManager.GetString("Label_FluxFolder", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Folder Name.
         '''</summary>
         Friend ReadOnly Property Label_FolderName() As String
@@ -3558,11 +3576,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Image Folder.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageFolder() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageFolder", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Image Format.
         '''</summary>
         Friend ReadOnly Property Label_ImageFormat() As String
             Get
                 Return ResourceManager.GetString("Label_ImageFormat", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image Location.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageLocation() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageLocation", resourceCulture)
             End Get
         End Property
         

@@ -459,7 +459,7 @@ Namespace Flux
                 .SuspendLayout()
 
                 .Left = 0
-                .RowCount = 4
+                .RowCount = 5
                 .ColumnCount = 7
                 .Dock = DockStyle.Fill
 
@@ -473,6 +473,7 @@ Namespace Flux
                 InitializeControlsRowDevice(Row) : Row += 1
                 InitializeControlsRowFileName(Row) : Row += 1
                 InitializeControlsRowFormat(Row) : Row += 1
+                GridAddSeparatorrRow(Row) : Row += 1
                 InitializeControlsRowGrid(Row) : Row += 1
 
                 .ResumeLayout()

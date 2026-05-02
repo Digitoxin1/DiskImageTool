@@ -124,7 +124,7 @@ Namespace Flux.Greaseweazle
                 .SuspendLayout()
 
                 .Left = 0
-                .RowCount = 2
+                .RowCount = 3
                 .ColumnCount = 6
                 .Dock = DockStyle.Fill
 
@@ -136,6 +136,7 @@ Namespace Flux.Greaseweazle
                 Dim Row As Integer = 0
 
                 InitializeControlsRowDrive(Row) : Row += 1
+                GridAddSeparatorrRow(Row) : Row += 1
                 InitializeControlsRowGrid(Row) : Row += 1
 
                 .ResumeLayout()

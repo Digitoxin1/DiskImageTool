@@ -2209,4 +2209,16 @@ Do you wish to overwrite?</value>
   <data name="Dialog_SelectImageFolder" xml:space="preserve">
     <value>Please select an image folder.</value>
   </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Flux Folder</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Image Folder</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Image Location</value>
+  </data>
 </root>

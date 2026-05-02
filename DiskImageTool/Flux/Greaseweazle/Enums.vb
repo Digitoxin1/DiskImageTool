@@ -197,11 +197,11 @@ Namespace Flux.Greaseweazle
         Public Function ReadDiskImageLocationDescription(Value As ReadDiskImageLocations) As String
             Select Case Value
                 Case ReadDiskImageLocations.Root
-                    Return "Root Folder"
+                    Return My.Resources.Label_RootFolder
                 Case ReadDiskImageLocations.Flux
-                    Return "Flux Folder"
+                    Return My.Resources.Label_FluxFolder
                 Case ReadDiskImageLocations.Other
-                    Return "Other"
+                    Return My.Resources.Label_Custom
                 Case Else
                     Return ""
             End Select
