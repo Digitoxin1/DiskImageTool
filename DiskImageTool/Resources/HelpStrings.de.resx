@@ -222,10 +222,10 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
     <value>Anzahl der Umdrehungen pro Spur zum Lesen</value>
   </data>
   <data name="Greaseweazle_Retries" xml:space="preserve">
-    <value>Anzahl der Wiederholungen pro Such-Wiederholung</value>
+    <value>Maximale Anzahl an Lese-Wiederholungen pro Spur, wenn ein Lesefehler auftritt.</value>
   </data>
   <data name="Greaseweazle_SeekRetries" xml:space="preserve">
-    <value>Anzahl der Such-Wiederholungen</value>
+    <value>Maximale Anzahl, mit der der Laufwerkskopf eine Spur erneut anfährt, wenn alle Lese-Wiederholungen fehlschlagen.</value>
   </data>
   <data name="Greaseweazle_DeviceReset" xml:space="preserve">
     <value>Das Greaseweazle-Gerät auf den Einschalt-Standardzustand zurücksetzen.</value>
@@ -246,12 +246,24 @@ Greaseweazle-Konfiguration im Optionsmenü angepasst werden.</value>
     <value>Das Format der Diskette im ausgewählten Laufwerk.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>Der Ausgabetyp für den Lesevorgang.
+    <value>Der primäre Ausgabetyp für den Lesevorgang.
 
 Flux-Image-Set speichert den rohen Flux als .raw-Set,
 das später erneut konvertiert werden kann. Die anderen
 Typen (.ima, .img, .hfe, ...) dekodieren die Diskette
-direkt in ein Sektor-Image.</value>
+direkt in ein Sektor-Image.
+
+Wenn Flux-Image-Set ausgewählt ist, kann während desselben
+Lesevorgangs ein zusätzliches dekodiertes Image durch die
+Auswahl eines Ausgabetyps 2 erzeugt werden.</value>
+  </data>
+  <data name="Flux_OutputType2" xml:space="preserve">
+    <value>Eine optionale zweite Ausgabe, die zusammen mit dem
+Flux-Image-Set während desselben Lesevorgangs erzeugt wird.
+
+Nur verfügbar, wenn der primäre Ausgabetyp Flux-Image-Set
+ist. Der ausgewählte Typ wird von der Diskette dekodiert
+und am unten gewählten Speicherort gespeichert.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
     <value>Der Name der Ausgabedatei.
@@ -264,6 +276,9 @@ automatisch erhöht.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
     <value>Die Erweiterung der Ausgabedatei.</value>
+  </data>
+  <data name="Greaseweazle_FileExt2" xml:space="preserve">
+    <value>Die Dateierweiterung für die sekundäre Ausgabe.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
     <value>Eine Protokolldatei neben dem Flux-Image-Set speichern,
@@ -291,16 +306,16 @@ Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
     <value>Jede zweite Spur überspringen beim Lesen einer 360-KB-Diskette in einem 1,2-MB-Laufwerk.</value>
   </data>
   <data name="Flux_Import" xml:space="preserve">
-    <value>Das geladene Image importieren.</value>
+    <value>Das geladene Image in Disk Image Tool importieren.</value>
   </data>
   <data name="Flux_ImportClose" xml:space="preserve">
     <value>Das geladene Image importieren und diesen Dialog schließen.</value>
   </data>
   <data name="Flux_Save" xml:space="preserve">
-    <value>Das geladene Image-Set speichern.</value>
+    <value>Das geladene Flux-Image-Set am gewählten Zielort speichern.</value>
   </data>
   <data name="Flux_SaveClose" xml:space="preserve">
-    <value>Das geladene Image-Set speichern und diesen Dialog schließen.</value>
+    <value>Das geladene Flux-Image-Set speichern und diesen Dialog schließen.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
     <value>Das geladene Flux-Image-Set in den ausgewählten
@@ -324,6 +339,22 @@ Flux-Set gelesen werden können.</value>
   </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Nach dem Stammordner suchen, in dem Flux-Image-Sets gespeichert werden.</value>
+  </data>
+  <data name="Flux_ImageLocation" xml:space="preserve">
+    <value>Wo die sekundäre Image-Datei gespeichert wird.
+
+Wählen Sie den Stammordner, denselben Ordner wie das
+Flux-Image-Set oder einen benutzerdefinierten Ordner.
+Die Auswahl von Benutzerdefiniert aktiviert das Feld
+Image-Ordner unten.</value>
+  </data>
+  <data name="Flux_ImageFolder" xml:space="preserve">
+    <value>Der benutzerdefinierte Zielordner für die sekundäre
+Image-Datei, der verwendet wird, wenn Speicherort auf
+Benutzerdefiniert gesetzt ist.</value>
+  </data>
+  <data name="Flux_ImageFolderBrowse" xml:space="preserve">
+    <value>Nach dem Ordner suchen, in dem die sekundäre Image-Datei gespeichert wird.</value>
   </data>
   <data name="Flux_ToggleSequence" xml:space="preserve">
     <value>Die spitzen Klammern (&lt; &gt;) um die aktuelle Zahl im

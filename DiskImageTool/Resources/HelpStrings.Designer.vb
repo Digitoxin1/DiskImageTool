@@ -494,11 +494,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The output type for the read.
+        '''  Looks up a localized string similar to The custom destination folder for the secondary image
+        '''file, used when Image Location is set to Custom..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ImageFolder() As String
+            Get
+                Return ResourceManager.GetString("Flux_ImageFolder", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Browse for the folder where the secondary image file is saved..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ImageFolderBrowse() As String
+            Get
+                Return ResourceManager.GetString("Flux_ImageFolderBrowse", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Where the secondary image file is saved.
+        '''
+        '''Choose the Root Folder, the same folder as the flux
+        '''image set, or a custom folder. Selecting Custom enables
+        '''the Image Folder field below..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_ImageLocation() As String
+            Get
+                Return ResourceManager.GetString("Flux_ImageLocation", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to The primary output type for the read.
         '''
         '''Flux Image Set saves the raw flux as a .raw set that
         '''can be re-converted later. The other types (.ima, .img,
-        '''.hfe, ...) decode the disk directly into a sector image..
+        '''.hfe, ...) decode the disk directly into a sector image.
+        '''
+        '''When Flux Image Set is selected, an additional decoded
+        '''image can be produced during the same read by choosing
+        '''an Output Type 2..
         '''</summary>
         Friend Shared ReadOnly Property Flux_ImageType() As String
             Get
@@ -507,7 +543,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Import the currently loaded image..
+        '''  Looks up a localized string similar to Import the currently loaded image into Disk Image Tool..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Import() As String
             Get
@@ -564,6 +600,31 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to An optional second output produced alongside the flux
+        '''image set during the same read.
+        '''
+        '''Available only when the primary output type is Flux
+        '''Image Set. The selected type is decoded from the disk
+        '''and saved to the location chosen below..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_OutputType2() As String
+            Get
+                Return ResourceManager.GetString("Flux_OutputType2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erase each track before writing it.
+        '''
+        '''Slower but more reliable on worn or previously formatted media..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_PreErase() As String
+            Get
+                Return ResourceManager.GetString("Flux_PreErase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Filename prefix for the .raw track files in the flux
         '''image set (for example, &quot;track&quot; produces track00.0.raw,
         '''track00.1.raw, ...).
@@ -577,17 +638,6 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Flux_PrefixName() As String
             Get
                 Return ResourceManager.GetString("Flux_PrefixName", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Erase each track before writing it.
-        '''
-        '''Slower but more reliable on worn or previously formatted media..
-        '''</summary>
-        Friend Shared ReadOnly Property Flux_PreErase() As String
-            Get
-                Return ResourceManager.GetString("Flux_PreErase", resourceCulture)
             End Get
         End Property
         
@@ -674,7 +724,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Save the currently loaded image set..
+        '''  Looks up a localized string similar to Save the currently loaded flux image set to the chosen destination..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Save() As String
             Get
@@ -683,7 +733,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Save the currently loaded image set and close this dialog..
+        '''  Looks up a localized string similar to Save the currently loaded flux image set and close this dialog..
         '''</summary>
         Friend Shared ReadOnly Property Flux_SaveClose() As String
             Get
@@ -808,6 +858,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to The file extension for the secondary output..
+        '''</summary>
+        Friend Shared ReadOnly Property Greaseweazle_FileExt2() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_FileExt2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Erase using a high-frequency signal instead of the
         '''default DC erase. Use this for media that does not
         '''respond to a normal erase..
@@ -834,7 +893,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of retries per seek-retry.
+        '''  Looks up a localized string similar to Maximum number of read retries per track when a read error is encountered..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_Retries() As String
             Get
@@ -877,7 +936,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of seek retries.
+        '''  Looks up a localized string similar to Maximum number of times the drive head re-seeks to a track if all read retries fail..
         '''</summary>
         Friend Shared ReadOnly Property Greaseweazle_SeekRetries() As String
             Get

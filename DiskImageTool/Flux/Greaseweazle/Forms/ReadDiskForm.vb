@@ -1413,8 +1413,13 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _LabelRootFolder, TextBoxRootFolder)
             SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, ButtonRootBrowse)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolder, _LabelImageFolder, TextBoxImageFolder)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolderBrowse, ButtonImageFolderBrowse)
             SetHelpString(My.Resources.HelpStrings.Flux_FolderName, _LabelFolderName, TextBoxFolderName)
             SetHelpString(My.Resources.HelpStrings.Flux_PrefixName, _LabelPrefixName, TextBoxPrefixName)
+            SetHelpString(My.Resources.HelpStrings.Flux_OutputType2, _LabelOutputType2, ComboOutputType2)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt2, ComboExtensions2)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageLocation, _LabelLocation, ComboImageLocation)
             SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence)
             SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence2)
 

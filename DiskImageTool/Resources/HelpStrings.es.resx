@@ -222,10 +222,10 @@ Nota: Esta ID se genera normalmente convirtiendo la fecha y hora actual en un va
     <value>Número de revoluciones a leer por pista</value>
   </data>
   <data name="Greaseweazle_Retries" xml:space="preserve">
-    <value>Número de reintentos por reintento de búsqueda</value>
+    <value>Número máximo de reintentos de lectura por pista cuando se produce un error de lectura.</value>
   </data>
   <data name="Greaseweazle_SeekRetries" xml:space="preserve">
-    <value>Número de reintentos de búsqueda</value>
+    <value>Número máximo de veces que el cabezal de la unidad vuelve a buscar una pista si fallan todos los reintentos de lectura.</value>
   </data>
   <data name="Greaseweazle_DeviceReset" xml:space="preserve">
     <value>Restablecer el dispositivo Greaseweazle a su estado predeterminado de encendido.</value>
@@ -246,12 +246,24 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>El formato del disquete en la unidad seleccionada.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
-    <value>El tipo de salida para la lectura.
+    <value>El tipo de salida primario para la lectura.
 
 Conjunto de Imágenes Flux guarda el flujo en bruto como
 un conjunto .raw que se puede reconvertir más tarde. Los
 demás tipos (.ima, .img, .hfe, ...) decodifican el disco
-directamente en una imagen de sectores.</value>
+directamente en una imagen de sectores.
+
+Cuando se selecciona Conjunto de Imágenes Flux, se puede
+producir una imagen decodificada adicional durante la misma
+lectura eligiendo un Tipo de salida 2.</value>
+  </data>
+  <data name="Flux_OutputType2" xml:space="preserve">
+    <value>Una segunda salida opcional producida junto con el
+conjunto de imágenes de flujo durante la misma lectura.
+
+Disponible solo cuando el tipo de salida primario es
+Conjunto de Imágenes Flux. El tipo seleccionado se decodifica
+del disco y se guarda en la ubicación elegida abajo.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
     <value>El nombre del archivo de salida.
@@ -264,6 +276,9 @@ en cada lectura posterior.</value>
   </data>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
     <value>La extensión del archivo de salida.</value>
+  </data>
+  <data name="Greaseweazle_FileExt2" xml:space="preserve">
+    <value>La extensión de archivo para la salida secundaria.</value>
   </data>
   <data name="Greaseweazle_SaveLog" xml:space="preserve">
     <value>Guardar un archivo de registro junto al conjunto de imágenes
@@ -291,16 +306,16 @@ Configuración de Greaseweazle en el menú Opciones.</value>
     <value>Saltar una pista sí y otra no al leer un disquete de 360 KB en una unidad de 1,2 MB.</value>
   </data>
   <data name="Flux_Import" xml:space="preserve">
-    <value>Importar la imagen cargada.</value>
+    <value>Importar la imagen cargada a Disk Image Tool.</value>
   </data>
   <data name="Flux_ImportClose" xml:space="preserve">
     <value>Importar la imagen cargada y cerrar este diálogo.</value>
   </data>
   <data name="Flux_Save" xml:space="preserve">
-    <value>Guardar el conjunto de imágenes cargado.</value>
+    <value>Guardar el conjunto de imágenes de flujo cargado en el destino elegido.</value>
   </data>
   <data name="Flux_SaveClose" xml:space="preserve">
-    <value>Guardar el conjunto de imágenes cargado y cerrar este diálogo.</value>
+    <value>Guardar el conjunto de imágenes de flujo cargado y cerrar este diálogo.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
     <value>Convertir el conjunto de imágenes de flujo cargado al
@@ -324,6 +339,22 @@ contra el conjunto de flujo original.</value>
   </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Buscar la carpeta raíz donde se guardan los conjuntos de imágenes de flujo.</value>
+  </data>
+  <data name="Flux_ImageLocation" xml:space="preserve">
+    <value>Dónde se guarda el archivo de imagen secundario.
+
+Elija la Carpeta raíz, la misma carpeta que el conjunto
+de imágenes de flujo o una carpeta personalizada. Al
+seleccionar Personalizado se habilita el campo Carpeta
+de imagen a continuación.</value>
+  </data>
+  <data name="Flux_ImageFolder" xml:space="preserve">
+    <value>La carpeta de destino personalizada para el archivo de
+imagen secundario, utilizada cuando Ubicación está
+establecida en Personalizado.</value>
+  </data>
+  <data name="Flux_ImageFolderBrowse" xml:space="preserve">
+    <value>Buscar la carpeta donde se guarda el archivo de imagen secundario.</value>
   </data>
   <data name="Flux_ToggleSequence" xml:space="preserve">
     <value>Encerrar o quitar los corchetes angulares (&lt; &gt;) del número
