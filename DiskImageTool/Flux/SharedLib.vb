@@ -181,6 +181,14 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
+        Public Sub FinalizeCombo(Combo As ComboBox)
+            If Combo.Items.Count > 0 AndAlso Combo.SelectedIndex = -1 Then
+                Combo.SelectedIndex = 0
+            End If
+
+            Combo.Enabled = (Combo.Items.Count > 1)
+        End Sub
+
         Public Function GetFirstRawInFolder(folderPath As String) As String
             Try
                 Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()

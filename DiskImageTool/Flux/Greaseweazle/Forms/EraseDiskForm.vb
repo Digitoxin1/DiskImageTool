@@ -8,7 +8,6 @@ Namespace Flux.Greaseweazle
 
 #Region "Form Controls"
         Private WithEvents ButtonProcess As Button
-        Private WithEvents ButtonReset As Button
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private _CheckBoxHFreq As CheckBox
@@ -172,17 +171,6 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
-            ButtonReset = New Button With {
-                .Margin = New Padding(6, 0, 6, 0),
-                .Text = My.Resources.Label_Reset,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .TabIndex = 0
-            }
-
-            PanelButtonsLeft.Controls.Add(ButtonReset)
-            ButtonReset.BringToFront()
-
             ButtonContainer.Controls.Add(ButtonProcess)
 
             ButtonOk.Visible = False
@@ -198,19 +186,7 @@ Namespace Flux.Greaseweazle
                 .ColumnCount = 6
                 .Dock = DockStyle.Fill
 
-                While .RowStyles.Count < .RowCount
-                    .RowStyles.Add(New RowStyle())
-                End While
-                For i As Integer = 0 To .RowCount - 1
-                    .RowStyles(i).SizeType = SizeType.AutoSize
-                Next
-
-                While .ColumnStyles.Count < .ColumnCount
-                    .ColumnStyles.Add(New ColumnStyle())
-                End While
-                For j As Integer = 0 To .ColumnCount - 1
-                    .ColumnStyles(j).SizeType = SizeType.AutoSize
-                Next
+                FillAutoSizeStyles()
 
                 .ColumnStyles(0).SizeType = SizeType.Percent
                 .ColumnStyles(0).Width = 100
@@ -246,7 +222,6 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Hfreq, _CheckBoxHFreq)
             SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)
             SetHelpString(My.Resources.HelpStrings.Flux_Erase, ButtonProcess)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
             SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
         End Sub
 
@@ -261,7 +236,7 @@ Namespace Flux.Greaseweazle
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Erase)
             ButtonProcess.Enabled = HasOptId AndAlso (Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0)
 
-            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
+            RefreshSaveLogButtonState()
 
             ButtonReset.Enabled = IsIdle
             _NumericRevs.Enabled = IsIdle
@@ -306,11 +281,6 @@ Namespace Flux.Greaseweazle
 
             EraseDisk()
         End Sub
-
-        Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            GreaseweazleReset()
-        End Sub
-
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub

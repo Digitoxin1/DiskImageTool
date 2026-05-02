@@ -17,6 +17,7 @@
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
             Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
+            Me.ButtonReset = New System.Windows.Forms.Button()
             Me.ButtonSaveLog = New System.Windows.Forms.Button()
             Me.PanelMain = New System.Windows.Forms.Panel()
             Me.PanelInner = New System.Windows.Forms.Panel()
@@ -116,20 +117,34 @@
             '
             Me.PanelButtonsLeft.AutoSize = True
             Me.PanelButtonsLeft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelButtonsLeft.Controls.Add(Me.ButtonReset)
             Me.PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
             Me.PanelButtonsLeft.Location = New System.Drawing.Point(0, 0)
             Me.PanelButtonsLeft.Margin = New System.Windows.Forms.Padding(0)
             Me.PanelButtonsLeft.Name = "PanelButtonsLeft"
             Me.PanelButtonsLeft.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
-            Me.PanelButtonsLeft.Size = New System.Drawing.Size(99, 43)
+            Me.PanelButtonsLeft.Size = New System.Drawing.Size(186, 43)
             Me.PanelButtonsLeft.TabIndex = 0
             Me.PanelButtonsLeft.WrapContents = False
+            '
+            'ButtonReset
+            '
+            Me.ButtonReset.Anchor = System.Windows.Forms.AnchorStyles.Left
+            Me.ButtonReset.AutoSize = True
+            Me.ButtonReset.Location = New System.Drawing.Point(12, 10)
+            Me.ButtonReset.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+            Me.ButtonReset.MinimumSize = New System.Drawing.Size(75, 0)
+            Me.ButtonReset.Name = "ButtonReset"
+            Me.ButtonReset.Size = New System.Drawing.Size(75, 23)
+            Me.ButtonReset.TabIndex = 0
+            Me.ButtonReset.Text = "{Reset}"
+            Me.ButtonReset.UseVisualStyleBackColor = True
             '
             'ButtonSaveLog
             '
             Me.ButtonSaveLog.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonSaveLog.AutoSize = True
-            Me.ButtonSaveLog.Location = New System.Drawing.Point(12, 10)
+            Me.ButtonSaveLog.Location = New System.Drawing.Point(99, 10)
             Me.ButtonSaveLog.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.ButtonSaveLog.MinimumSize = New System.Drawing.Size(75, 0)
             Me.ButtonSaveLog.Name = "ButtonSaveLog"
@@ -318,6 +333,7 @@
         Friend WithEvents StatusSide As ToolStripStatusLabel
         Friend WithEvents StatusBadSectors As ToolStripStatusLabel
         Friend WithEvents StatusUnexpected As ToolStripStatusLabel
+        Friend WithEvents ButtonReset As Button
         Friend WithEvents ButtonSaveLog As Button
         Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
         Friend WithEvents PanelButtonsRight As FlowLayoutPanel

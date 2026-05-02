@@ -271,7 +271,7 @@ Public Class FloppyTrackGrid
         ResetCellInternal(TrackIndex)
     End Sub
 
-    Public Sub ResetSelectedSells()
+    Public Sub ResetSelectedCells()
         For Each TrackIndex In _SelectedTracks.ToList()
             ResetCellInternal(TrackIndex)
         Next

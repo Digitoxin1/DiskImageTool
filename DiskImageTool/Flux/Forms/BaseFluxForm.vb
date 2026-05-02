@@ -3,7 +3,7 @@ Imports Greaseweazle.Actions
 Imports Greaseweazle.Tools
 
 Namespace Flux
-    Public Class BaseFluxForm
+    Public MustInherit Class BaseFluxForm
         Protected WithEvents Process As ConsoleProcessRunner
         Protected WithEvents Runner As GreaseweazleRunner
         Private WithEvents TS As ITrackStatus = Nothing
@@ -66,6 +66,12 @@ Namespace Flux
             End Get
         End Property
 
+        Protected ReadOnly Property HasSelectedTracks As Boolean
+            Get
+                Return TS0.SelectedTracks.Count > 0 OrElse TS1.SelectedTracks.Count > 0
+            End Get
+        End Property
+
         Protected ReadOnly Property IsIdle As Boolean
             Get
                 Return Not IsRunning
@@ -109,9 +115,9 @@ Namespace Flux
         End Property
 
         Friend Function GetSelectedTrackHeads() As TrackHeads
-            If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
+            If TS0.IsChecked AndAlso TS1.IsChecked Then
                 Return TrackHeads.both
-            ElseIf TableSide0.IsChecked Then
+            ElseIf TS0.IsChecked Then
                 Return TrackHeads.head0
             Else
                 Return TrackHeads.head1
@@ -154,8 +160,8 @@ Namespace Flux
                 GridReset()
             End If
 
-            TableSide0.SelectEnabled = Checked
-            TableSide1.SelectEnabled = Checked
+            TS0.SelectEnabled = Checked
+            TS1.SelectEnabled = Checked
         End Sub
 
         Protected Sub ClearLogAndStatus()
@@ -206,6 +212,26 @@ Namespace Flux
             End Try
         End Sub
 
+        Protected Sub FillAutoSizeStyles()
+            With TableLayoutPanelMain
+                While .RowStyles.Count < .RowCount
+                    .RowStyles.Add(New RowStyle())
+                End While
+
+                For i = 0 To .RowCount - 1
+                    .RowStyles(i).SizeType = SizeType.AutoSize
+                Next
+
+                While .ColumnStyles.Count < .ColumnCount
+                    .ColumnStyles.Add(New ColumnStyle())
+                End While
+
+                For j = 0 To .ColumnCount - 1
+                    .ColumnStyles(j).SizeType = SizeType.AutoSize
+                Next
+            End With
+        End Sub
+
         Protected Function GetDriveName(Drive As String) As String
             Select Case Drive
                 Case "A", "B"
@@ -216,8 +242,8 @@ Namespace Flux
         End Function
 
         Protected Function GetSelectedTrackRanges() As List(Of (StartTrack As UShort, EndTrack As UShort))
-            Dim Selected As New HashSet(Of UShort)(TableSide0.SelectedTracks)
-            Selected.UnionWith(TableSide1.SelectedTracks)
+            Dim Selected As New HashSet(Of UShort)(TS0.SelectedTracks)
+            Selected.UnionWith(TS1.SelectedTracks)
 
             Dim Ranges = BuildRanges(Selected)
 
@@ -251,6 +277,24 @@ Namespace Flux
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
             End Try
+        End Sub
+
+        Protected Sub GridHideSelection(Value As Boolean)
+            TS0.HideSelection = Value
+            TS0.IsBusy = Value
+
+            TS1.HideSelection = Value
+            TS1.IsBusy = Value
+        End Sub
+
+        Protected Sub GridResetSelectedCells()
+            TS0.ResetSelectedCells()
+            TS1.ResetSelectedCells()
+        End Sub
+
+        Protected Sub GridSelectEnabled(Value As Boolean)
+            TS0.SelectEnabled = Value
+            TS1.SelectEnabled = Value
         End Sub
 
         Protected Sub GridSetBusy(Busy As Boolean)
@@ -309,6 +353,10 @@ Namespace Flux
             MyBase.OnFormClosing(e)
         End Sub
 
+        Protected Sub RefreshSaveLogButtonState()
+            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.TextLength > 0
+        End Sub
+
         Protected Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             Dim FileName As String = _LogFileName
             Dim Extension = IO.Path.GetExtension(FileName).ToLower
@@ -336,6 +384,21 @@ Namespace Flux
             For Each Control In ControlArray
                 _HelpProvider.SetHelpString(Control, HelpString.Replace("\t", vbTab))
                 _HelpProvider.SetShowHelp(Control, True)
+            Next
+        End Sub
+
+        Protected Sub SetRowVisible(row As Integer, visible As Boolean)
+            If visible Then
+                TableLayoutPanelMain.RowStyles(row).SizeType = SizeType.AutoSize
+            Else
+                TableLayoutPanelMain.RowStyles(row).SizeType = SizeType.Absolute
+                TableLayoutPanelMain.RowStyles(row).Height = 0
+            End If
+
+            For Each c As Control In TableLayoutPanelMain.Controls
+                If TableLayoutPanelMain.GetRow(c) = row Then
+                    c.Visible = visible
+                End If
             Next
         End Sub
 
@@ -452,7 +515,10 @@ Namespace Flux
         Private Sub LocalizeForm()
             ButtonCancel.Text = My.Resources.Menu_Cancel
             ButtonSaveLog.Text = My.Resources.Label_SaveLog
+            ButtonReset.Text = My.Resources.Label_Reset
             LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
+
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
         End Sub
 
         Private Sub UpdateStatus(StatusData As TrackStatusData)
@@ -495,6 +561,10 @@ Namespace Flux
             StatusType.Text = Text
         End Sub
 #Region "Events"
+        Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
+            GreaseweazleReset()
+        End Sub
+
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
             SaveLog(_LogStripPath)
         End Sub

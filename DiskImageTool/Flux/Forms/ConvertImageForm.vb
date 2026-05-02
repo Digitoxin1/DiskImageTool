@@ -70,6 +70,8 @@ Namespace Flux
                 .Interval = 10
             }
 
+            ButtonReset.Visible = False
+
             ConvertCmd = Engine.Convert
 
             _UserState = App.UserState.Flux
@@ -403,7 +405,7 @@ Namespace Flux
                 Return ""
             End If
 
-            Dim FluxSetPath As String = IO.Path.GetDirectoryName(_InputFilePath)
+            Dim FluxSetPath As String = IO.Path.GetDirectoryName(_DisplayInputFilePath)
             If String.IsNullOrEmpty(FluxSetPath) Then
                 Return ""
             End If
@@ -662,19 +664,7 @@ Namespace Flux
                 .ColumnCount = 7
                 .Dock = DockStyle.Fill
 
-                While .RowStyles.Count < .RowCount
-                    .RowStyles.Add(New RowStyle())
-                End While
-                For i As Integer = 0 To .RowCount - 1
-                    .RowStyles(i).SizeType = SizeType.AutoSize
-                Next
-
-                While .ColumnStyles.Count < .ColumnCount
-                    .ColumnStyles.Add(New ColumnStyle())
-                End While
-                For j As Integer = 0 To .ColumnCount - 1
-                    .ColumnStyles(j).SizeType = SizeType.AutoSize
-                Next
+                FillAutoSizeStyles()
 
                 .ColumnStyles(0).SizeType = SizeType.Percent
                 .ColumnStyles(0).Width = 100
@@ -906,11 +896,7 @@ Namespace Flux
                 SharedLib.PopulateFileExtensions(ComboExtensions, SelectedDiskFormat())
             End If
 
-            If ComboExtensions.SelectedIndex = -1 AndAlso ComboExtensions.Items.Count > 0 Then
-                ComboExtensions.SelectedIndex = 0
-            End If
-
-            ComboExtensions.Enabled = (ComboExtensions.Items.Count > 1)
+            FinalizeCombo(ComboExtensions)
 
             _ComboExtensionsNoEvent = False
         End Sub
@@ -970,11 +956,7 @@ Namespace Flux
                 End If
             End If
 
-            If ComboOutputType.SelectedIndex = -1 AndAlso ComboOutputType.Items.Count > 0 Then
-                ComboOutputType.SelectedIndex = 0
-            End If
-
-            ComboOutputType.Enabled = (ComboOutputType.Items.Count > 1)
+            FinalizeCombo(ComboOutputType)
 
             _ComboOutputTypeNoEvent = False
         End Sub
@@ -1166,7 +1148,7 @@ Namespace Flux
                 ButtonProcess.Text = My.Resources.Label_Process
             End If
 
-            ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
+            RefreshSaveLogButtonState()
 
             ButtonTrackLayout.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
             ButtonModifications.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv

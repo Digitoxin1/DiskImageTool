@@ -8,7 +8,6 @@ Namespace Flux.Greaseweazle
 
 #Region "Form Controls"
         Private WithEvents ButtonProcess As Button
-        Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
         Private _LabelCyls As Label
         Private _LabelDrive As Label
@@ -151,17 +150,6 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_Erase
             }
 
-            ButtonReset = New Button With {
-                .Margin = New Padding(6, 0, 6, 0),
-                .Text = My.Resources.Label_Reset,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .TabIndex = 0
-            }
-
-            PanelButtonsLeft.Controls.Add(ButtonReset)
-            ButtonReset.BringToFront()
-
             ButtonContainer.Controls.Add(ButtonProcess)
 
             ButtonOk.Visible = False
@@ -175,19 +163,7 @@ Namespace Flux.Greaseweazle
                 .ColumnCount = 9
                 .Dock = DockStyle.Fill
 
-                While .RowStyles.Count < .RowCount
-                    .RowStyles.Add(New RowStyle())
-                End While
-                For i As Integer = 0 To .RowCount - 1
-                    .RowStyles(i).SizeType = SizeType.AutoSize
-                Next
-
-                While .ColumnStyles.Count < .ColumnCount
-                    .ColumnStyles.Add(New ColumnStyle())
-                End While
-                For j As Integer = 0 To .ColumnCount - 1
-                    .ColumnStyles(j).SizeType = SizeType.AutoSize
-                Next
+                FillAutoSizeStyles()
 
                 .ColumnStyles(2).SizeType = SizeType.Percent
                 .ColumnStyles(2).Width = 100
@@ -219,7 +195,6 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanPasses, _LabelPasses, _NumericPasses)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanLinger, _LabelLinger, _NumericLinger)
             SetHelpString(My.Resources.HelpStrings.Flux_Clean, ButtonProcess)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
             SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
         End Sub
 
@@ -234,7 +209,7 @@ Namespace Flux.Greaseweazle
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Clean)
             ButtonProcess.Enabled = Not String.IsNullOrEmpty(Opt?.Id)
 
-            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
+            RefreshSaveLogButtonState()
 
             ButtonReset.Enabled = IsIdle
         End Sub
@@ -257,10 +232,6 @@ Namespace Flux.Greaseweazle
             End If
 
             CleanDisk()
-        End Sub
-
-        Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
-            GreaseweazleReset()
         End Sub
 
         Private Sub CleanCmd_CylinderSeeked(sender As Object, e As CleanCylinderEventArgs) Handles CleanCmd.CylinderSeeked

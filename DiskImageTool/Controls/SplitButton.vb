@@ -7,6 +7,8 @@ Public Class SplitButton
     Private ReadOnly _Items As New List(Of SplitButtonItem)
     Private _Menu As ContextMenuStrip
     Private _SelectedIndex As Integer = -1
+    Private _SplitPaddingApplied As Boolean = False
+    Private _SuppressPaddingHook As Boolean = False
 
     Public Event ItemClicked As EventHandler
     Public Event SelectedIndexChanged As EventHandler
@@ -16,10 +18,7 @@ Public Class SplitButton
 
         Me.TextAlign = ContentAlignment.MiddleCenter
 
-        Dim p = Me.Padding
-        If p.Right < SplitWidth Then
-            Me.Padding = New Padding(p.Left, p.Top, p.Right + SplitWidth, p.Bottom)
-        End If
+        UpdateSplitPadding()
 
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint Or ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw, True)
     End Sub
@@ -112,12 +111,21 @@ Public Class SplitButton
         End Set
     End Property
 
+    Private ReadOnly Property HasSplit As Boolean
+        Get
+            Return _Items.Count >= 2
+        End Get
+    End Property
+
     Public Sub AddItem(Text As String, Optional Value As Object = Nothing)
         _Items.Add(New SplitButtonItem(Text, Value))
 
         If _SelectedIndex = -1 Then
             SelectedIndex = 0
         End If
+
+        UpdateSplitPadding()
+        Invalidate()
     End Sub
 
     Public Sub ClearItems()
@@ -126,7 +134,32 @@ Public Class SplitButton
         Me.Text = String.Empty
         DisposeMenu()
 
+        UpdateSplitPadding()
+        Invalidate()
+
         RaiseEvent SelectedIndexChanged(Me, EventArgs.Empty)
+    End Sub
+
+    Private Sub UpdateSplitPadding()
+        Dim ShouldApply = HasSplit
+
+        If ShouldApply = _SplitPaddingApplied Then
+            Return
+        End If
+
+        _SuppressPaddingHook = True
+
+        Try
+            Dim p = Me.Padding
+            If ShouldApply Then
+                Me.Padding = New Padding(p.Left, p.Top, p.Right + SplitWidth, p.Bottom)
+            Else
+                Me.Padding = New Padding(p.Left, p.Top, Math.Max(0, p.Right - SplitWidth), p.Bottom)
+            End If
+            _SplitPaddingApplied = ShouldApply
+        Finally
+            _SuppressPaddingHook = False
+        End Try
     End Sub
 
     Protected Overrides Sub Dispose(disposing As Boolean)
@@ -143,14 +176,14 @@ Public Class SplitButton
     Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
         MyBase.OnKeyDown(e)
 
-        If (e.Alt AndAlso e.KeyCode = Keys.Down) OrElse e.KeyCode = Keys.F4 Then
+        If HasSplit AndAlso ((e.Alt AndAlso e.KeyCode = Keys.Down) OrElse e.KeyCode = Keys.F4) Then
             ShowMenu()
             e.Handled = True
         End If
     End Sub
 
     Protected Overrides Sub OnMouseUp(e As MouseEventArgs)
-        If e.Button = MouseButtons.Left AndAlso IsOnSplit(e.Location) Then
+        If HasSplit AndAlso e.Button = MouseButtons.Left AndAlso IsOnSplit(e.Location) Then
             ShowMenu()
             Return
         End If
@@ -161,15 +194,28 @@ Public Class SplitButton
     Protected Overrides Sub OnPaddingChanged(e As EventArgs)
         MyBase.OnPaddingChanged(e)
 
+        If _SuppressPaddingHook OrElse Not HasSplit Then
+            Return
+        End If
+
         Dim p = Me.Padding
 
         If p.Right < SplitWidth Then
-            Me.Padding = New Padding(p.Left, p.Top, SplitWidth, p.Bottom)
+            _SuppressPaddingHook = True
+            Try
+                Me.Padding = New Padding(p.Left, p.Top, SplitWidth, p.Bottom)
+            Finally
+                _SuppressPaddingHook = False
+            End Try
         End If
     End Sub
 
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
         MyBase.OnPaint(e)
+
+        If Not HasSplit Then
+            Return
+        End If
 
         Dim g = e.Graphics
 
@@ -235,7 +281,7 @@ Public Class SplitButton
     End Sub
 
     Private Sub ShowMenu()
-        If _Items.Count = 0 Then
+        If Not HasSplit Then
             Return
         End If
 
