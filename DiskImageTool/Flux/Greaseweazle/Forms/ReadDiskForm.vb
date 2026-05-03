@@ -81,8 +81,8 @@ Namespace Flux.Greaseweazle
         Private _NewFilePath As String = ""
         Private _NumericRevsNoEvent As Boolean = False
         Private _OutputDoubleStep As Boolean = False
-        Private _OutputFilePath As String = ""
-        Private _OutputFilePath2 As String = ""
+        Private _TempFilePath As String = ""
+        Private _TempFilePath2 As String = ""
         Private _SelectedDriveOption As DriveOption
 
         Private Enum GridRows
@@ -209,13 +209,13 @@ Namespace Flux.Greaseweazle
 
         Private ReadOnly Property HasOutputFile As Boolean
             Get
-                Return Not String.IsNullOrEmpty(_OutputFilePath)
+                Return Not String.IsNullOrEmpty(_TempFilePath)
             End Get
         End Property
 
         Private ReadOnly Property HasOutputFile2 As Boolean
             Get
-                Return Not String.IsNullOrEmpty(_OutputFilePath2)
+                Return Not String.IsNullOrEmpty(_TempFilePath2)
             End Get
         End Property
 
@@ -333,7 +333,7 @@ Namespace Flux.Greaseweazle
         Protected Overrides Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             If String.IsNullOrEmpty(InitialDirectory) Then
                 If HasOutputFile AndAlso IsFluxOutput Then
-                    InitialDirectory = IO.Path.GetDirectoryName(_OutputFilePath)
+                    InitialDirectory = IO.Path.GetDirectoryName(_TempFilePath)
                 End If
             End If
 
@@ -579,27 +579,27 @@ Namespace Flux.Greaseweazle
 
             If Delete Then
                 If IsFluxOutput Then
-                    Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
-                    DeleteFilesAndFolderIfEmpty(PathName, FLUX_WILDCARD, Settings.LogFileName)
+                    Dim PathName = IO.Path.GetDirectoryName(_TempFilePath)
+                    DeleteTempFolder(PathName)
                 Else
-                    DeleteTempFileIfExists(_OutputFilePath)
+                    DeleteTempFileIfExists(_TempFilePath)
                 End If
             End If
 
             If HasOutputFile2 Then
-                DeleteTempFileIfExists(_OutputFilePath2)
+                DeleteTempFileIfExists(_TempFilePath2)
             End If
 
-            _OutputFilePath = ""
-            _OutputFilePath2 = ""
+            _TempFilePath = ""
+            _TempFilePath2 = ""
             _OutputDoubleStep = False
             _FileReprocessMode = False
         End Sub
 
         Private Sub ClearOutputType2()
-            If Not String.IsNullOrEmpty(_OutputFilePath2) Then
-                DeleteFileIfExists(_OutputFilePath2)
-                _OutputFilePath2 = ""
+            If Not String.IsNullOrEmpty(_TempFilePath2) Then
+                DeleteFileIfExists(_TempFilePath2)
+                _TempFilePath2 = ""
             End If
 
             _ComboOutputTypeNoEvent = True
@@ -695,7 +695,7 @@ Namespace Flux.Greaseweazle
             Return MsgBox(msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or vbDefaultButton2) = MsgBoxResult.Ok
         End Function
         Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True, FluxGetOutputFilePath())
+            Dim Response = ConvertFluxImage(_TempFilePath, True, Nothing, True, FluxGetOutputFilePath())
 
             If Response.Result = DialogResult.OK Then
                 If Not FinalizeFluxOutput() Then
@@ -711,6 +711,51 @@ Namespace Flux.Greaseweazle
 
                 ProcessImport(Response.OutputFile, Response.NewFileName)
             End If
+        End Sub
+
+        Private Sub VerifyImage()
+            If Not HasOutputFile OrElse Not IsFluxOutput Then
+                Exit Sub
+            End If
+
+            Dim DiskParams = SelectedDiskParams
+
+            If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
+                Exit Sub
+            End If
+
+            If Not _KryofluxAvailable Then
+                Exit Sub
+            End If
+
+            Dim TrackCount As Integer
+
+            If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
+                TrackCount = If(DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
+            Else
+                TrackCount = _SelectedDriveOption.Tracks
+            End If
+
+            Dim Args As (Arguments As String, SingleSide As Boolean)
+            Try
+                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, _OutputDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+                Exit Sub
+            End Try
+
+            ClearLogAndStatus()
+            TrackStatus = _KryofluxStatus
+            TrackStatus.Clear()
+            ResetTrackGrid(ResetSelected:=False)
+
+            LogStripPath = Flux.Kryoflux.Settings().LogStripPath
+
+            Try
+                Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Args.Arguments)
+            Catch ex As Exception
+                HandleRunFailure(ex.Message)
+            End Try
         End Sub
 
         Private Sub DoFormatDetection()
@@ -750,7 +795,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
-            Dim tempFolder = IO.Path.GetDirectoryName(_OutputFilePath)
+            Dim tempFolder = IO.Path.GetDirectoryName(_TempFilePath)
             Dim destFolder = FluxGetFolderPath()
             Dim prefix = FluxGetPrefix()
 
@@ -759,7 +804,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
-            _OutputFilePath = FluxGetOutputFilePath()
+            _TempFilePath = FluxGetOutputFilePath()
 
             Return True
         End Function
@@ -842,8 +887,8 @@ Namespace Flux.Greaseweazle
                 Return
             End If
             Try
-                IO.File.Copy(_OutputFilePath2, FilePath, True)
-                DeleteFileIfExists(_OutputFilePath2)
+                IO.File.Copy(_TempFilePath2, FilePath, True)
+                DeleteFileIfExists(_TempFilePath2)
             Catch
                 MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
                 Return
@@ -899,7 +944,7 @@ Namespace Flux.Greaseweazle
 
             Dim ImageLocation = SelectedImageLocation.Value
 
-            Dim Extension = IO.Path.GetExtension(_OutputFilePath2)
+            Dim Extension = IO.Path.GetExtension(_TempFilePath2)
             Dim FileName = GetOutputFolderName(FolderNameInput) & Extension
             Dim PathName As String
 
@@ -988,6 +1033,26 @@ Namespace Flux.Greaseweazle
             End If
 
             Return FolderName
+        End Function
+
+        Private Function GetVerifyLogPath() As String
+            If Not CheckBoxSaveLog.Checked Then
+                Return ""
+            End If
+
+            Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
+            If String.IsNullOrEmpty(KfLogName) Then
+                Return ""
+            End If
+
+            Dim GwLogName = Settings.LogFileName
+            If String.Equals(KfLogName, GwLogName, StringComparison.OrdinalIgnoreCase) Then
+                Dim Base = IO.Path.GetFileNameWithoutExtension(KfLogName)
+                Dim Ext = IO.Path.GetExtension(KfLogName)
+                KfLogName = Base & ".verify" & Ext
+            End If
+
+            Return IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), KfLogName)
         End Function
 
         Private Sub ImageFolderBrowse()
@@ -1188,12 +1253,12 @@ Namespace Flux.Greaseweazle
             End If
 
             If HasOutputFile2 Then
-                Dim ImageData = New ImageData(_OutputFilePath2)
+                Dim ImageData = New ImageData(_TempFilePath2)
 
                 ImagePreview.Display(ImageData, Caption)
 
             ElseIf HasOutputFile AndAlso Not IsFluxOutput Then
-                Dim ImageData = New ImageData(_OutputFilePath)
+                Dim ImageData = New ImageData(_TempFilePath)
 
                 ImagePreview.Display(ImageData, Caption)
 
@@ -1232,10 +1297,11 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
+            TrackStatus = _Status
             ClearProcessedImage(True, False)
 
-            _OutputFilePath = Response.FilePath
-            _OutputFilePath2 = Response.FilePath2
+            _TempFilePath = Response.FilePath
+            _TempFilePath2 = Response.FilePath2
             _OutputDoubleStep = UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
 
             InitLogFilePath(If(Response.LogFilePath, ""))
@@ -1252,7 +1318,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function ProcessSave() As Boolean
-            Dim NewFileName = GetNewFileName(_OutputFilePath)
+            Dim NewFileName = GetNewFileName(_TempFilePath)
             Dim Extension = IO.Path.GetExtension(NewFileName)
             Dim ImageTypeName = GetImageTypeNameFromExtension(Extension)
             Dim FileName = IO.Path.GetFileName(NewFileName)
@@ -1278,8 +1344,8 @@ Namespace Flux.Greaseweazle
             End If
 
             Try
-                IO.File.Copy(_OutputFilePath, FilePath, True)
-                DeleteFileIfExists(_OutputFilePath)
+                IO.File.Copy(_TempFilePath, FilePath, True)
+                DeleteFileIfExists(_TempFilePath)
             Catch
                 MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
                 Return False
@@ -1338,7 +1404,7 @@ Namespace Flux.Greaseweazle
                 Next
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
-                DeleteFilesAndFolderIfEmpty(TempFolder, FLUX_WILDCARD)
+                DeleteTempFolder(TempFolder)
                 Exit Sub
             End Try
 
@@ -1365,19 +1431,20 @@ Namespace Flux.Greaseweazle
 
             If Not DiskParams.HasValue Then
                 MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
-                DeleteFilesAndFolderIfEmpty(TempFolder, FLUX_WILDCARD)
+                DeleteTempFolder(TempFolder)
                 Exit Sub
             End If
 
-            _OutputFilePath = IO.Path.Combine(TempFolder, FluxGetFirstTrackFileName(Info.Prefix))
+            _TempFilePath = IO.Path.Combine(TempFolder, FluxGetFirstTrackFileName(Info.Prefix))
             _OutputDoubleStep = _SelectedDriveOption IsNot Nothing AndAlso UseDoubleStep(_SelectedDriveOption.Type, DetectedFormat)
 
+            TrackStatus = _Status
             TrackStatus.Clear()
             ResetTrackGrid()
 
             Dim Opts As ConvertOptions
             Try
-                Opts = BuildRefineConvertOptions(_OutputFilePath, DiskParams.Value, _OutputDoubleStep)
+                Opts = BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, _OutputDoubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1564,6 +1631,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
+            TrackStatus = _Status
             TrackStatus.Clear()
             _FileReprocessMode = True
 
@@ -1582,9 +1650,9 @@ Namespace Flux.Greaseweazle
 
             _OutputDoubleStep = UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
 
-            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_OutputFilePath), Settings.LogFileName), Append:=AppendLog)
+            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), Append:=AppendLog)
 
-            StartReadRun(_OutputFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None)
+            StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None)
         End Sub
 
         Private Sub ResetOutputTypes(Optional OutputType As ReadDiskOutputTypes? = Nothing)
@@ -1744,7 +1812,7 @@ Namespace Flux.Greaseweazle
                 Dim ParentFolder As String = GetOutputFolderName(FolderNameInput)
                 DisplayFileName = IO.Path.Combine(ParentFolder, FLUX_WILDCARD)
             Else
-                DisplayFileName = GetNewFileName(_OutputFilePath)
+                DisplayFileName = GetNewFileName(_TempFilePath)
             End If
 
             Me.Text = Text & " - " & DisplayFileName
@@ -2324,7 +2392,7 @@ Namespace Flux.Greaseweazle
 
                 If HasOutputFile2 Then
                     FinalizeImageOutput()
-                    _OutputFilePath2 = ""
+                    _TempFilePath2 = ""
                 End If
 
 
@@ -2339,7 +2407,7 @@ Namespace Flux.Greaseweazle
             If CType(ButtonImport.SelectedValue, ConversionMode) = ConversionMode.Save Then
                 ProcessSave()
             Else
-                ProcessImport(_OutputFilePath, GetNewFileName(_OutputFilePath))
+                ProcessImport(_TempFilePath, GetNewFileName(_TempFilePath))
             End If
         End Sub
 
@@ -2373,7 +2441,7 @@ Namespace Flux.Greaseweazle
 
                 If HasOutputFile2 Then
                     FinalizeImageOutput()
-                    _OutputFilePath2 = ""
+                    _TempFilePath2 = ""
                 End If
 
                 CloseForm("", "")
@@ -2383,7 +2451,7 @@ Namespace Flux.Greaseweazle
             If CType(ButtonImportAndClose.SelectedValue, ConversionMode) = ConversionMode.Save Then
                 SaveAndClose(DialogResult.OK)
             Else
-                CloseForm(_OutputFilePath, GetNewFileName(_OutputFilePath))
+                CloseForm(_TempFilePath, GetNewFileName(_TempFilePath))
             End If
         End Sub
 
@@ -2417,6 +2485,14 @@ Namespace Flux.Greaseweazle
 
         Private Sub ButtonToggleSequence_Click(sender As Object, e As EventArgs) Handles ButtonToggleSequence.Click, ButtonToggleSequence2.Click
             DoToggleSequence()
+        End Sub
+
+        Private Sub ButtonVerify_Click(sender As Object, e As EventArgs) Handles ButtonVerify.Click
+            If CancelIfRunning() Then
+                Exit Sub
+            End If
+
+            VerifyImage()
         End Sub
 
         Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
@@ -2624,6 +2700,44 @@ Namespace Flux.Greaseweazle
 
         Private Sub ReadDiskForm_SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean) Handles Me.SelectionChanged
             RefreshFormState()
+        End Sub
+
+        Private Sub Process_DataReceived(Data As String) Handles Process.OutputDataReceived, Process.ErrorDataReceived
+            AppendLogLine(Data)
+            _KryofluxStatus.ProcessOutputLineRead(Data, _OutputDoubleStep)
+        End Sub
+
+        Private Sub Process_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            Select Case state
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    _KryofluxStatus.UpdateTrackStatusAborted()
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    If _KryofluxStatus.TrackFound Then
+                        _KryofluxStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
+                        AutoSaveVerifyLog()
+                    Else
+                        _KryofluxStatus.UpdateTrackStatusError()
+                    End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    _KryofluxStatus.UpdateTrackStatusError()
+            End Select
+
+            RefreshFormState()
+        End Sub
+
+        Private Sub AutoSaveVerifyLog()
+            Dim Path = GetVerifyLogPath()
+            If String.IsNullOrEmpty(Path) Then
+                Exit Sub
+            End If
+
+            Try
+                SaveLogFile(Path, TextBoxConsole.Text, LogStripPath)
+            Catch ex As Exception
+                Debug.WriteLine($"AutoSaveVerifyLog failed: {ex.Message}")
+            End Try
         End Sub
 
         Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged

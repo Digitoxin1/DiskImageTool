@@ -181,6 +181,24 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
+        Public Sub DeleteTempFolder(folderPath As String)
+            If String.IsNullOrWhiteSpace(folderPath) Then
+                Exit Sub
+            End If
+
+            If Not IO.Directory.Exists(folderPath) Then
+                Exit Sub
+            End If
+
+            Try
+                IO.Directory.Delete(folderPath, recursive:=True)
+            Catch ex As IO.IOException
+                Debug.WriteLine($"Failed to delete temp folder {folderPath}: {ex.Message}")
+            Catch ex As UnauthorizedAccessException
+                Debug.WriteLine($"Access denied deleting temp folder {folderPath}: {ex.Message}")
+            End Try
+        End Sub
+
         Public Sub FinalizeCombo(Combo As ComboBox)
             If Combo.Items.Count > 0 AndAlso Combo.SelectedIndex = -1 Then
                 Combo.SelectedIndex = 0
