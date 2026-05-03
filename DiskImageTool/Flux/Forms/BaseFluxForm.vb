@@ -446,7 +446,7 @@ Namespace Flux
             End Try
         End Function
 
-        Private Sub AppendLogLine(line As String)
+        Protected Sub AppendLogLine(line As String)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
             End If

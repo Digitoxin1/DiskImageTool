@@ -63,6 +63,8 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _DrivesAvailable As Boolean = False
         Private ReadOnly _GridIndex As New Dictionary(Of GridRows, Integer)
         Private ReadOnly _Initialized As Boolean = False
+        Private ReadOnly _KryofluxAvailable As Boolean = False
+        Private ReadOnly _KryofluxStatus As Flux.Kryoflux.TrackStatus
         Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
         Private ReadOnly _UserState As Settings.UserStateFlux
@@ -96,8 +98,8 @@ Namespace Flux.Greaseweazle
 
         Public Event ImportProcess(File As String, NewFilename As String)
 
-        Public Sub New()
-            MyBase.New(Settings.LogFileName)
+        Public Sub New(KryofluxAvailable As Boolean)
+            MyBase.New(Settings.LogFileName, UseProcess:=KryofluxAvailable)
             InitializeControls()
 
             ConvertCmd = Engine.Convert
@@ -106,6 +108,12 @@ Namespace Flux.Greaseweazle
             _UserState = App.UserState.Flux
             _Status = New TrackStatus()
             TrackStatus = _Status
+
+            _KryofluxAvailable = KryofluxAvailable
+
+            If _KryofluxAvailable Then
+                _KryofluxStatus = New Flux.Kryoflux.TrackStatus()
+            End If
 
             Me.HelpButton = True
             Me.Text = My.Resources.Label_ReadDisk
@@ -1411,12 +1419,11 @@ Namespace Flux.Greaseweazle
             ButtonConvert.Enabled = CanConvert
             ButtonConvert.Visible = IsFluxOutput
 
-            Dim KryofluxAvailable As Boolean = Flux.Kryoflux.Settings().IsPathValid()
             Dim NonImageFormat As Boolean = Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage
-            Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso KryofluxAvailable
+            Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso _KryofluxAvailable
 
             ButtonVerify.Enabled = CanVerify
-            ButtonVerify.Visible = IsFluxOutput AndAlso KryofluxAvailable
+            ButtonVerify.Visible = IsFluxOutput AndAlso _KryofluxAvailable
 
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
 

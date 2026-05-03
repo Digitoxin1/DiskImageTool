@@ -396,7 +396,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Public Function ReadFluxImage(importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Using dlg As New ReadDiskForm()
+            Using dlg As New ReadDiskForm(Flux.Kryoflux.Settings().IsPathValid())
 
                 If importHandler IsNot Nothing Then
                     AddHandler dlg.ImportProcess, importHandler
