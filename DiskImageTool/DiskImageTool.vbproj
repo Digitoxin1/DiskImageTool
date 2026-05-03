@@ -198,12 +198,19 @@
     <Compile Include="Flux\GeneralSettingsPanel.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.Init.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.Verify.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Flux\Greaseweazle\Models\ConvertingRange.vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackRange.vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackRead.vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackReadDetails..vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackReadOutOfRange.vb" />
     <Compile Include="Flux\Greaseweazle\Models\TrackWrite.vb" />
+    <Compile Include="Flux\Greaseweazle\ReadDiskHelpers.vb" />
     <Compile Include="Flux\Kryoflux\Models\DTCTrack.vb" />
     <Compile Include="Flux\Kryoflux\Models\DTCTrackDetails.vb" />
     <Compile Include="Forms\ImagePreview.Designer.vb">
