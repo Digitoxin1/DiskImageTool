@@ -1979,4 +1979,10 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
 
 ¿Desea continuar?</value>
   </data>
+  <data name="Label_EntriesFree" xml:space="preserve">
+    <value>Entradas libres</value>
+  </data>
+  <data name="Label_EntriesRequired" xml:space="preserve">
+    <value>Entradas requeridas</value>
+  </data>
 </root>

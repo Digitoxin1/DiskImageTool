@@ -1979,4 +1979,10 @@ Vous pourrez le régénérer à partir de l’ensemble flux à l’aide de Conve
 
 Souhaitez-vous continuer ?</value>
   </data>
+  <data name="Label_EntriesFree" xml:space="preserve">
+    <value>Entrées libres</value>
+  </data>
+  <data name="Label_EntriesRequired" xml:space="preserve">
+    <value>Entrées requises</value>
+  </data>
 </root>
