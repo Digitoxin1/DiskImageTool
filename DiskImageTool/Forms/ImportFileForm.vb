@@ -682,9 +682,14 @@ Public Class ImportFileForm
                 End If
             End If
         End Sub
+
         Private Function GetRequiredBytes() As Integer
             Dim RequiredBytes As Integer = 0
             Dim EntryCount As Integer = _EntriesRequired - _AvailableEntries
+
+            If _EntriesRequired > 0 AndAlso _Root IsNot Nothing Then
+                EntryCount += 2
+            End If
 
             If EntryCount > 0 Then
                 Dim EntriesPerCluster As UInteger = Root.BytesPerCluster \ 32
@@ -903,7 +908,7 @@ Public Class ImportFileForm
 
             If Not UseNTExtensions Or Not _CanUseNTExtensions Then
                 If UseLFN And _IsLongFileName Then
-                    EntriesRequired += CeilDiv(CUInt(_FileName.Length), 26)
+                    EntriesRequired += CeilDiv(CUInt(_FileName.Length * 2), 26)
                 End If
             End If
 
@@ -915,18 +920,19 @@ Public Class ImportFileForm
 
             If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
                 Return False
-            Else
-                Dim CleanFileName = DOSCleanFileName(FileParts.Name)
-                Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
-
-                If CleanFileName = FileParts.Name.ToUpper And CleanExtension = FileParts.Extension.ToUpper Then
-                    If (CleanFileName = FileParts.Name Or FileParts.Name.ToLower = FileParts.Name) And (CleanExtension = FileParts.Extension Or FileParts.Extension.ToLower = FileParts.Extension) Then
-                        Return True
-                    End If
-                End If
             End If
 
-            Return False
+            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+            Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
+
+            If CleanFileName <> FileParts.Name.ToUpper OrElse CleanExtension <> FileParts.Extension.ToUpper Then
+                Return False
+            End If
+
+            Dim NameQualifies = FileParts.Name.Length > 0 AndAlso FileParts.Name = FileParts.Name.ToLower
+            Dim ExtQualifies = FileParts.Extension.Length > 0 AndAlso FileParts.Extension = FileParts.Extension.ToLower
+
+            Return NameQualifies OrElse ExtQualifies
         End Function
 
         Private Function CalcIsLongFileName() As Boolean
