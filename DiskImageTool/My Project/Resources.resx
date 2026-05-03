@@ -2237,4 +2237,16 @@ Do you wish to continue?</value>
   <data name="Label_EntriesRequired" xml:space="preserve">
     <value>Entries Required</value>
   </data>
+  <data name="Menu_NoRecentFiles" xml:space="preserve">
+    <value>(empty)</value>
+  </data>
+  <data name="Menu_ClearRecent" xml:space="preserve">
+    <value>Clear Recent</value>
+  </data>
+  <data name="Dialog_RecentFileMissing" xml:space="preserve">
+    <value>The file '{0}' no longer exists. Remove it from recent files?</value>
+  </data>
+  <data name="Dialog_RecentFolderMissing" xml:space="preserve">
+    <value>The folder '{0}' no longer exists. Remove it from recent folders?</value>
+  </data>
 </root>

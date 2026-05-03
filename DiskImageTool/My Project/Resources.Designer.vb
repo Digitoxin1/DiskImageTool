@@ -1348,6 +1348,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to The file &apos;{0}&apos; no longer exists. Remove it from recent files?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_RecentFileMissing() As String
+            Get
+                Return ResourceManager.GetString("Dialog_RecentFileMissing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to The folder &apos;{0}&apos; no longer exists. Remove it from recent folders?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_RecentFolderMissing() As String
+            Get
+                Return ResourceManager.GetString("Dialog_RecentFolderMissing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Are you sure you wish to remove {0}?.
         '''</summary>
         Friend ReadOnly Property Dialog_RemoveFile() As String
@@ -4993,6 +5011,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Clear Recent.
+        '''</summary>
+        Friend ReadOnly Property Menu_ClearRecent() As String
+            Get
+                Return ResourceManager.GetString("Menu_ClearRecent", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Close.
         '''</summary>
         Friend ReadOnly Property Menu_Close() As String
@@ -5304,6 +5331,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_No() As String
             Get
                 Return ResourceManager.GetString("Menu_No", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to (empty).
+        '''</summary>
+        Friend ReadOnly Property Menu_NoRecentFiles() As String
+            Get
+                Return ResourceManager.GetString("Menu_NoRecentFiles", resourceCulture)
             End Get
         End Property
         

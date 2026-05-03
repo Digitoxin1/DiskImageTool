@@ -270,4 +270,7 @@
   <data name="MenuReportsBatchImageAnalysis.Text" xml:space="preserve">
     <value>Análisis de imágenes por lote (XML)</value>
   </data>
+  <data name="MenuFileRecent.Text" xml:space="preserve">
+    <value>Recientes</value>
+  </data>
 </root>

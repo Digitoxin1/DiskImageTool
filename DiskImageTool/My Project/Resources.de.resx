@@ -1985,4 +1985,16 @@ Möchten Sie fortfahren?</value>
   <data name="Label_EntriesRequired" xml:space="preserve">
     <value>Erforderliche Einträge</value>
   </data>
+  <data name="Menu_NoRecentFiles" xml:space="preserve">
+    <value>(leer)</value>
+  </data>
+  <data name="Menu_ClearRecent" xml:space="preserve">
+    <value>Zuletzt verwendete löschen</value>
+  </data>
+  <data name="Dialog_RecentFileMissing" xml:space="preserve">
+    <value>Die Datei '{0}' existiert nicht mehr. Aus den zuletzt verwendeten Dateien entfernen?</value>
+  </data>
+  <data name="Dialog_RecentFolderMissing" xml:space="preserve">
+    <value>Der Ordner '{0}' existiert nicht mehr. Aus den zuletzt verwendeten Ordnern entfernen?</value>
+  </data>
 </root>

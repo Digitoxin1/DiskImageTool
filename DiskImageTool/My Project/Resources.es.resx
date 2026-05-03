@@ -1985,4 +1985,16 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Label_EntriesRequired" xml:space="preserve">
     <value>Entradas requeridas</value>
   </data>
+  <data name="Menu_NoRecentFiles" xml:space="preserve">
+    <value>(vacío)</value>
+  </data>
+  <data name="Menu_ClearRecent" xml:space="preserve">
+    <value>Borrar recientes</value>
+  </data>
+  <data name="Dialog_RecentFileMissing" xml:space="preserve">
+    <value>El archivo '{0}' ya no existe. ¿Desea eliminarlo de los archivos recientes?</value>
+  </data>
+  <data name="Dialog_RecentFolderMissing" xml:space="preserve">
+    <value>La carpeta '{0}' ya no existe. ¿Desea eliminarla de las carpetas recientes?</value>
+  </data>
 </root>

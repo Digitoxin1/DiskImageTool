@@ -5,7 +5,10 @@ Public Class MainForm
     Private WithEvents FilePanelMain As FilePanel
     Private WithEvents ImageCombo As LoadedImageList
     Private WithEvents ImageFilters As Filters.ImageFilters
+
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
+    Private Const RECENT_BATCH_LIMIT As Integer = 10
+
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _FileVersion As String = ""
@@ -21,6 +24,7 @@ Public Class MainForm
     Private _ToolStripOEMNameCombo As ToolStripComboBox
     Private _ToolStripOEMNameLabel As ToolStripLabel
     Private _ToolStripSearchText As ToolStripSpringTextBox
+
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -219,6 +223,10 @@ Public Class MainForm
 
             FilePanel.ClearModifiedFlag()
             RefreshCurrentState(FilePanel)
+
+            If NewFileName Then
+                RecordRecentFiles({NewFilePath})
+            End If
         End If
     End Sub
 
@@ -483,6 +491,7 @@ Public Class MainForm
         End Using
 
         ProcessFileDrop(FileNames, True)
+        RecordRecentFiles(FileNames)
     End Sub
 
     Private Function FilterComboAdd(Width As Integer, Sorted As Boolean) As ToolStripComboBox
@@ -699,6 +708,7 @@ Public Class MainForm
         End If
 
         ProcessFileDrop(Files, True)
+        RecordRecentFiles(Files)
     End Sub
 
     Private Function HandleImageDiscovered(Args As ImageDiscoveredEventArgs) As ImageData
@@ -946,6 +956,21 @@ Public Class MainForm
         Return r.Contains(pt)
     End Function
 
+    Private Function IsSubPathOf(Child As String, Parent As String) As Boolean
+        If String.IsNullOrEmpty(Child) OrElse String.IsNullOrEmpty(Parent) Then
+            Return False
+        End If
+
+        Dim NormChild = IO.Path.GetFullPath(Child).TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar)
+        Dim NormParent = IO.Path.GetFullPath(Parent).TrimEnd(IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar)
+
+        If String.Equals(NormChild, NormParent, StringComparison.OrdinalIgnoreCase) Then
+            Return True
+        End If
+
+        Return NormChild.StartsWith(NormParent & IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+    End Function
+
     Private Sub LaunchNewInstance(FilePath As String)
         Process.Start(Application.ExecutablePath, """" & FilePath & """")
     End Sub
@@ -1053,6 +1078,20 @@ Public Class MainForm
         MenuHexRawTrackData.DropDownItems.Add(Item)
         AddHandler Item.Click, AddressOf MenuHexRawTrackData_Click
     End Sub
+
+    Private Function MnemonicForIndex(index As Integer) As String
+        If index < 0 Then
+            Return ""
+        End If
+        If index < 9 Then
+            Return (index + 1).ToString()
+        End If
+        If index = 9 Then
+            Return "0"
+        End If
+
+        Return ""
+    End Function
 
     Private Sub OpenImageInNewInstance(CurrentImage As DiskImageContainer)
         If FileCloseCurrent(CurrentImage) Then
@@ -1209,6 +1248,43 @@ Public Class MainForm
     Private Function ProcessImportedImage(File As String, NewFileName As String) As ImageData
         Return ProcessFileDropNew(File, NewFileName)
     End Function
+
+    Private Sub RecordRecentFiles(Paths() As String)
+        If Paths Is Nothing OrElse Paths.Length = 0 Then
+            Return
+        End If
+        Dim Settings = App.Globals.AppSettings
+
+        Dim Existing = Paths _
+            .Where(Function(p) Not String.IsNullOrWhiteSpace(p) AndAlso (IO.File.Exists(p) OrElse IO.Directory.Exists(p))) _
+            .ToArray()
+
+        If Existing.Length = 0 Then
+            Return
+        End If
+
+        Settings.RecentFilesBeginUpdate()
+
+        Try
+            If Existing.Length > RECENT_BATCH_LIMIT Then
+                Dim CommonParent = TryGetCommonParent(Existing)
+                If Not String.IsNullOrEmpty(CommonParent) Then
+                    Settings.RecentFoldersAdd(CommonParent)
+                End If
+                Return
+            End If
+
+            For Each P In Existing
+                If IO.Directory.Exists(P) Then
+                    Settings.RecentFoldersAdd(P)
+                ElseIf IO.File.Exists(P) Then
+                    Settings.RecentFilesAdd(P)
+                End If
+            Next
+        Finally
+            Settings.RecentFilesEndUpdate()
+        End Try
+    End Sub
 
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshItemText()
@@ -1374,6 +1450,63 @@ Public Class MainForm
 
         MenuHexRawTrackData.Enabled = RawTrackDataEnabled
         MenuHexRawTrackData.Tag = RawTrackDataTag
+    End Sub
+
+    Private Sub RefreshRecentFilesMenu()
+        MenuFileRecent.DropDownItems.Clear()
+
+        Dim Settings = App.Globals.AppSettings
+        Dim Files As IReadOnlyList(Of String) = Settings.RecentFiles
+        Dim Folders As IReadOnlyList(Of String) = Settings.RecentFolders
+
+        If Files.Count = 0 AndAlso Folders.Count = 0 Then
+            Dim EmptyItem As New ToolStripMenuItem(My.Resources.Menu_NoRecentFiles) With {
+                .Enabled = False
+            }
+            MenuFileRecent.DropDownItems.Add(EmptyItem)
+            Return
+        End If
+
+        For i = 0 To Files.Count - 1
+            Dim FilePath = Files(i)
+            Dim Hotkey = MnemonicForIndex(i)
+            Dim Display = If(Hotkey = "", ShortenPathForMenu(FilePath, 60), String.Format("&{0}: {1}", Hotkey, ShortenPathForMenu(FilePath, 60)))
+
+            Dim Item As New ToolStripMenuItem(Display) With {
+                .Tag = FilePath,
+                .ToolTipText = FilePath,
+                .Enabled = IO.File.Exists(FilePath)
+            }
+            AddHandler Item.Click, AddressOf MenuFileRecent_FileClick
+            MenuFileRecent.DropDownItems.Add(Item)
+        Next
+
+        If Files.Count > 0 AndAlso Folders.Count > 0 Then
+            MenuFileRecent.DropDownItems.Add(New ToolStripSeparator())
+        End If
+
+        For i = 0 To Folders.Count - 1
+            Dim FolderPath = Folders(i)
+            Dim Hotkey = MnemonicForIndex(Files.Count + i)
+            Dim Shortened = ShortenPathForMenu(FolderPath, 60) & IO.Path.DirectorySeparatorChar
+            Dim Display = If(Hotkey = "", Shortened, String.Format("&{0}: {1}", Hotkey, Shortened))
+
+            Dim Item As New ToolStripMenuItem(Display) With {
+                .Tag = FolderPath,
+                .ToolTipText = FolderPath,
+                .Enabled = IO.Directory.Exists(FolderPath)
+            }
+            AddHandler Item.Click, AddressOf MenuFileRecent_FolderClick
+            MenuFileRecent.DropDownItems.Add(Item)
+        Next
+
+        MenuFileRecent.DropDownItems.Add(New ToolStripSeparator())
+
+        If Files.Count > 0 OrElse Folders.Count > 0 Then
+            Dim ClearRecent As New ToolStripMenuItem(My.Resources.Menu_ClearRecent)
+            AddHandler ClearRecent.Click, AddressOf MenuFileRecent_ClearRecent_Click
+            MenuFileRecent.DropDownItems.Add(ClearRecent)
+        End If
     End Sub
 
     Private Sub RefreshSaveButtons(CurrentImage As DiskImageContainer)
@@ -1713,6 +1846,45 @@ Public Class MainForm
         SetMenuItemState(MenuHexFile, MenuState.ViewHexFile, MenuState.DirectoryEntry)
         MenuHexSeparatorFile.Visible = MenuState.ViewHexFile.Visible
     End Sub
+
+    Private Function TryGetCommonParent(Paths() As String) As String
+        If Paths Is Nothing OrElse Paths.Length = 0 Then Return Nothing
+        ' Build a list of "deepest containing directory" for each input:
+        '  - For a file:   its parent directory
+        '  - For a folder: the folder itself (it already IS a containing directory)
+        Dim Containers As New List(Of String)
+        For Each P In Paths
+            Try
+                Dim Full = IO.Path.GetFullPath(P)
+                Dim Container As String
+                If IO.Directory.Exists(Full) Then
+                    Container = Full
+                Else
+                    Container = IO.Path.GetDirectoryName(Full)
+                End If
+                If Not String.IsNullOrEmpty(Container) AndAlso IO.Directory.Exists(Container) Then
+                    Containers.Add(Container)
+                End If
+            Catch
+                ' Skip malformed entries
+            End Try
+        Next
+        If Containers.Count = 0 Then
+            Return Nothing
+        End If
+
+        ' Walk up from the first container until every other one is a sub-path of it
+        Dim Candidate = Containers(0)
+        While Not String.IsNullOrEmpty(Candidate)
+            If Containers.All(Function(c) IsSubPathOf(c, Candidate)) Then
+                Return Candidate
+            End If
+            Candidate = IO.Path.GetDirectoryName(Candidate)
+        End While
+
+        Return Nothing
+    End Function
+
 #Region "Events"
     Private Sub BMenuHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdateCheck.Click, MainMenuUpdateAvailable.Click
         Dim Result = CheckForUpdates()
@@ -1936,6 +2108,7 @@ Public Class MainForm
         InitOptionsMenu()
         InitDebugFeatures(App.Globals.AppSettings.Debug)
         RefreshFluxMenu()
+        RefreshRecentFilesMenu()
         ResetAll()
 
         ProcessCommandLineArgs()
@@ -2038,6 +2211,62 @@ Public Class MainForm
 
     Private Sub MenuFileOpen_Click(sender As Object, e As EventArgs) Handles MenuFileOpen.Click, ToolStripOpen.Click
         FilesOpen()
+    End Sub
+
+    Private Sub MenuFileRecent_DropDownOpening(sender As Object, e As EventArgs) Handles MenuFileRecent.DropDownOpening
+        RefreshRecentFilesMenu()
+    End Sub
+
+    Private Sub MenuFileRecent_FileClick(sender As Object, e As EventArgs)
+        Dim Item = TryCast(sender, ToolStripMenuItem)
+        If Item Is Nothing Then
+            Return
+        End If
+
+        Dim FilePath = TryCast(Item.Tag, String)
+        If String.IsNullOrEmpty(FilePath) Then
+            Return
+        End If
+
+        If Not IO.File.Exists(FilePath) Then
+            If MsgBox(String.Format(My.Resources.Dialog_RecentFileMissing, FilePath),
+                  MsgBoxStyle.YesNo + MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+                App.Globals.AppSettings.RecentFilesRemove(FilePath)
+            End If
+            Return
+        End If
+
+        ProcessFileDrop({FilePath}, True)
+
+        App.Globals.AppSettings.RecentFilesAdd(FilePath)
+    End Sub
+
+    Private Sub MenuFileRecent_FolderClick(sender As Object, e As EventArgs)
+        Dim Item = TryCast(sender, ToolStripMenuItem)
+        If Item Is Nothing Then
+            Return
+        End If
+
+        Dim FolderPath = TryCast(Item.Tag, String)
+        If String.IsNullOrEmpty(FolderPath) Then
+            Return
+        End If
+
+        If Not IO.Directory.Exists(FolderPath) Then
+            If MsgBox(String.Format(My.Resources.Dialog_RecentFolderMissing, FolderPath),
+                  MsgBoxStyle.YesNo + MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+                App.Globals.AppSettings.RecentFoldersRemove(FolderPath)
+            End If
+            Return
+        End If
+
+        ProcessFileDrop({FolderPath}, True)
+
+        App.Globals.AppSettings.RecentFoldersAdd(FolderPath)
+    End Sub
+
+    Private Sub MenuFileRecent_ClearRecent_Click(sender As Object, e As EventArgs)
+        App.Globals.AppSettings.RecentClearAll()
     End Sub
 
     Private Sub MenuFileReload_Click(sender As Object, e As EventArgs) Handles MenuFileReload.Click
@@ -2253,6 +2482,7 @@ Public Class MainForm
 
         If Args.Length > 0 Then
             Dim ShowDialog As Boolean = False
+
             If Args.Length > 1 Then
                 ShowDialog = True
             Else
@@ -2260,7 +2490,9 @@ Public Class MainForm
                     ShowDialog = True
                 End If
             End If
+
             ProcessFileDrop(Args, ShowDialog)
+            RecordRecentFiles(Args)
         End If
     End Sub
     Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs)

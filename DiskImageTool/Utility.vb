@@ -391,4 +391,34 @@ Module Utility
         Return value.Replace("&&", Placeholder).Replace("&", "").Replace(Placeholder, "&")
     End Function
 
+    Public Function ShortenPathForMenu(Path As String, MaxLength As Integer) As String
+        If String.IsNullOrEmpty(Path) OrElse Path.Length <= MaxLength Then
+            Return Path
+        End If
+
+        Dim FileName = IO.Path.GetFileName(Path)
+        Dim Directory = IO.Path.GetDirectoryName(Path)
+
+        If String.IsNullOrEmpty(Directory) Then
+            Return Path
+        End If
+
+        If FileName.Length >= MaxLength - 5 Then
+            Return Path
+        End If
+
+        Dim Available = MaxLength - FileName.Length - 5  ' room for "...\" and separators
+
+        If Directory.Length <= Available Then
+            Return Path
+        End If
+
+        Dim Root = IO.Path.GetPathRoot(Directory)
+
+        If Root.Length + 4 >= Available Then
+            Return Root & "...\" & FileName
+        End If
+
+        Return Root & "..." & Directory.Substring(Directory.Length - (Available - Root.Length - 3)) & "\" & FileName
+    End Function
 End Module

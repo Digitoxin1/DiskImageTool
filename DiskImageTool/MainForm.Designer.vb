@@ -169,6 +169,7 @@ Partial Class MainForm
         Me.StatusBarFileTrack = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusBarImageCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusBarImagesModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.MenuFileRecent = New System.Windows.Forms.ToolStripMenuItem()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SplitContainer1 = New System.Windows.Forms.SplitContainer()
         PanelSpacer3 = New System.Windows.Forms.Panel()
@@ -566,7 +567,7 @@ Partial Class MainForm
         '
         'MainMenuFile
         '
-        Me.MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
+        Me.MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileRecent, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
         Me.MainMenuFile.Name = "MainMenuFile"
         resources.ApplyResources(Me.MainMenuFile, "MainMenuFile")
         '
@@ -1086,6 +1087,11 @@ Partial Class MainForm
         Me.StatusBarImagesModified.Name = "StatusBarImagesModified"
         resources.ApplyResources(Me.StatusBarImagesModified, "StatusBarImagesModified")
         '
+        'MenuFileRecent
+        '
+        Me.MenuFileRecent.Name = "MenuFileRecent"
+        resources.ApplyResources(Me.MenuFileRecent, "MenuFileRecent")
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -1241,4 +1247,5 @@ Partial Class MainForm
     Friend WithEvents LabelImportFiles As Label
     Friend WithEvents MenuReportsImageAnalysis As ToolStripMenuItem
     Friend WithEvents MenuReportsBatchImageAnalysis As ToolStripMenuItem
+    Friend WithEvents MenuFileRecent As ToolStripMenuItem
 End Class

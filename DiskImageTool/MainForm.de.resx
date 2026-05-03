@@ -270,4 +270,7 @@
   <data name="MenuReportsBatchImageAnalysis.Text" xml:space="preserve">
     <value>Stapel-Imageanalyse (XML)</value>
   </data>
+  <data name="MenuFileRecent.Text" xml:space="preserve">
+    <value>Zuletzt verwendet</value>
+  </data>
 </root>
