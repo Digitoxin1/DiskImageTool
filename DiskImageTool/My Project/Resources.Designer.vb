@@ -3076,6 +3076,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Entries Free.
+        '''</summary>
+        Friend ReadOnly Property Label_EntriesFree() As String
+            Get
+                Return ResourceManager.GetString("Label_EntriesFree", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Entries Required.
+        '''</summary>
+        Friend ReadOnly Property Label_EntriesRequired() As String
+            Get
+                Return ResourceManager.GetString("Label_EntriesRequired", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} entry.
         '''</summary>
         Friend ReadOnly Property Label_Entry() As String

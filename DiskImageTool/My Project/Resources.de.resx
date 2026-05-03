@@ -717,6 +717,9 @@
   <data name="Label_Verified" xml:space="preserve">
     <value>Verifiziert</value>
   </data>
+  <data name="Label_Verify" xml:space="preserve">
+    <value>Verifizieren</value>
+  </data>
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Geänderte Dateien</value>
   </data>
@@ -1133,9 +1136,6 @@
   </data>
   <data name="Label_Value" xml:space="preserve">
     <value>Wert</value>
-  </data>
-  <data name="Label_Verify" xml:space="preserve">
-    <value>Verifizieren</value>
   </data>
   <data name="Label_Verifying" xml:space="preserve">
     <value>Verifizieren</value>

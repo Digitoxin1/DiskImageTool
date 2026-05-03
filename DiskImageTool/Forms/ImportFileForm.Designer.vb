@@ -33,9 +33,6 @@ Partial Class ImportFileForm
         Me.FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileSizeOnDisk = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileDisabled = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.LabelBytesRequired = New System.Windows.Forms.Label()
-        Me.LabelBytesFree = New System.Windows.Forms.Label()
-        Me.LabelFilesSelected = New System.Windows.Forms.Label()
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastWriteDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LabelOptions = New System.Windows.Forms.Label()
@@ -43,18 +40,25 @@ Partial Class ImportFileForm
         Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ListViewFiles = New System.Windows.Forms.ListView()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.FlowLayoutTotals = New System.Windows.Forms.FlowLayoutPanel()
-        Me.LblSelected = New System.Windows.Forms.Label()
-        Me.LblBytesFree = New System.Windows.Forms.Label()
-        Me.LblBytesRequired = New System.Windows.Forms.Label()
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.LblSelected = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LblBytesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LblBytesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lblEntriesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lblEntriesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LabelFilesSelected = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LabelBytesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LabelBytesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LabelEntriesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LabelEntriesRequired = New System.Windows.Forms.ToolStripStatusLabel()
         PanelTop = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         PanelTop.SuspendLayout()
         FlowLayoutPanel1.SuspendLayout()
         Me.Panel1.SuspendLayout()
-        Me.FlowLayoutTotals.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'PanelTop
@@ -159,39 +163,6 @@ Partial Class ImportFileForm
         Me.FileDisabled.Text = "{Disabled}"
         Me.FileDisabled.Width = 0
         '
-        'LabelBytesRequired
-        '
-        Me.LabelBytesRequired.AutoSize = True
-        Me.LabelBytesRequired.Location = New System.Drawing.Point(334, 0)
-        Me.LabelBytesRequired.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelBytesRequired.Name = "LabelBytesRequired"
-        Me.LabelBytesRequired.Size = New System.Drawing.Size(90, 13)
-        Me.LabelBytesRequired.TabIndex = 4
-        Me.LabelBytesRequired.Text = "{Bytes Required:}"
-        Me.LabelBytesRequired.UseMnemonic = False
-        '
-        'LabelBytesFree
-        '
-        Me.LabelBytesFree.AutoSize = True
-        Me.LabelBytesFree.Location = New System.Drawing.Point(178, 0)
-        Me.LabelBytesFree.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelBytesFree.Name = "LabelBytesFree"
-        Me.LabelBytesFree.Size = New System.Drawing.Size(68, 13)
-        Me.LabelBytesFree.TabIndex = 2
-        Me.LabelBytesFree.Text = "{Bytes Free:}"
-        Me.LabelBytesFree.UseMnemonic = False
-        '
-        'LabelFilesSelected
-        '
-        Me.LabelFilesSelected.AutoSize = True
-        Me.LabelFilesSelected.Location = New System.Drawing.Point(3, 0)
-        Me.LabelFilesSelected.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
-        Me.LabelFilesSelected.Name = "LabelFilesSelected"
-        Me.LabelFilesSelected.Size = New System.Drawing.Size(84, 13)
-        Me.LabelFilesSelected.TabIndex = 0
-        Me.LabelFilesSelected.Text = "{Files Selected:}"
-        Me.LabelFilesSelected.UseMnemonic = False
-        '
         'FileLastAccessDate
         '
         Me.FileLastAccessDate.Text = "{Last Accessed}"
@@ -236,7 +207,7 @@ Partial Class ImportFileForm
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(12, 98)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(760, 418)
+        Me.ListViewFiles.Size = New System.Drawing.Size(760, 393)
         Me.ListViewFiles.TabIndex = 3
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
@@ -244,60 +215,14 @@ Partial Class ImportFileForm
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel1.Controls.Add(Me.FlowLayoutTotals)
         Me.Panel1.Controls.Add(Me.BtnOK)
         Me.Panel1.Controls.Add(Me.BtnCancel)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel1.Location = New System.Drawing.Point(0, 519)
+        Me.Panel1.Location = New System.Drawing.Point(0, 495)
         Me.Panel1.Margin = New System.Windows.Forms.Padding(3, 3, 50, 3)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(784, 42)
         Me.Panel1.TabIndex = 4
-        '
-        'FlowLayoutTotals
-        '
-        Me.FlowLayoutTotals.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.FlowLayoutTotals.Controls.Add(Me.LabelFilesSelected)
-        Me.FlowLayoutTotals.Controls.Add(Me.LblSelected)
-        Me.FlowLayoutTotals.Controls.Add(Me.LabelBytesFree)
-        Me.FlowLayoutTotals.Controls.Add(Me.LblBytesFree)
-        Me.FlowLayoutTotals.Controls.Add(Me.LabelBytesRequired)
-        Me.FlowLayoutTotals.Controls.Add(Me.LblBytesRequired)
-        Me.FlowLayoutTotals.Location = New System.Drawing.Point(12, 17)
-        Me.FlowLayoutTotals.Name = "FlowLayoutTotals"
-        Me.FlowLayoutTotals.Size = New System.Drawing.Size(591, 13)
-        Me.FlowLayoutTotals.TabIndex = 0
-        '
-        'LblSelected
-        '
-        Me.LblSelected.Location = New System.Drawing.Point(87, 0)
-        Me.LblSelected.Margin = New System.Windows.Forms.Padding(0)
-        Me.LblSelected.Name = "LblSelected"
-        Me.LblSelected.Size = New System.Drawing.Size(82, 13)
-        Me.LblSelected.TabIndex = 1
-        Me.LblSelected.Text = "{FilesSelected}"
-        Me.LblSelected.UseMnemonic = False
-        '
-        'LblBytesFree
-        '
-        Me.LblBytesFree.Location = New System.Drawing.Point(246, 0)
-        Me.LblBytesFree.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
-        Me.LblBytesFree.Name = "LblBytesFree"
-        Me.LblBytesFree.Size = New System.Drawing.Size(76, 13)
-        Me.LblBytesFree.TabIndex = 3
-        Me.LblBytesFree.Text = "{BytesFree}"
-        Me.LblBytesFree.UseMnemonic = False
-        '
-        'LblBytesRequired
-        '
-        Me.LblBytesRequired.Location = New System.Drawing.Point(424, 0)
-        Me.LblBytesRequired.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
-        Me.LblBytesRequired.Name = "LblBytesRequired"
-        Me.LblBytesRequired.Size = New System.Drawing.Size(82, 13)
-        Me.LblBytesRequired.TabIndex = 5
-        Me.LblBytesRequired.Text = "{BytesRequired}"
-        Me.LblBytesRequired.UseMnemonic = False
         '
         'BtnOK
         '
@@ -325,6 +250,89 @@ Partial Class ImportFileForm
         Me.BtnCancel.Text = "{Cancel}"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LabelFilesSelected, Me.LblSelected, Me.LabelBytesFree, Me.LblBytesFree, Me.LabelBytesRequired, Me.LblBytesRequired, Me.LabelEntriesFree, Me.lblEntriesFree, Me.LabelEntriesRequired, Me.lblEntriesRequired})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 537)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(784, 24)
+        Me.StatusStrip1.TabIndex = 5
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'LblSelected
+        '
+        Me.LblSelected.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.LblSelected.Name = "LblSelected"
+        Me.LblSelected.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
+        Me.LblSelected.Size = New System.Drawing.Size(49, 19)
+        Me.LblSelected.Text = "0 of 0"
+        '
+        'LblBytesFree
+        '
+        Me.LblBytesFree.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.LblBytesFree.Name = "LblBytesFree"
+        Me.LblBytesFree.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
+        Me.LblBytesFree.Size = New System.Drawing.Size(26, 19)
+        Me.LblBytesFree.Text = "0"
+        '
+        'LblBytesRequired
+        '
+        Me.LblBytesRequired.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.LblBytesRequired.Name = "LblBytesRequired"
+        Me.LblBytesRequired.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
+        Me.LblBytesRequired.Size = New System.Drawing.Size(26, 19)
+        Me.LblBytesRequired.Text = "0"
+        '
+        'lblEntriesFree
+        '
+        Me.lblEntriesFree.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.lblEntriesFree.Name = "lblEntriesFree"
+        Me.lblEntriesFree.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
+        Me.lblEntriesFree.Size = New System.Drawing.Size(26, 19)
+        Me.lblEntriesFree.Text = "0"
+        '
+        'lblEntriesRequired
+        '
+        Me.lblEntriesRequired.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.lblEntriesRequired.Name = "lblEntriesRequired"
+        Me.lblEntriesRequired.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
+        Me.lblEntriesRequired.Size = New System.Drawing.Size(26, 19)
+        Me.lblEntriesRequired.Text = "0"
+        '
+        'LabelFilesSelected
+        '
+        Me.LabelFilesSelected.Name = "LabelFilesSelected"
+        Me.LabelFilesSelected.Size = New System.Drawing.Size(88, 19)
+        Me.LabelFilesSelected.Text = "{Files Selected:}"
+        '
+        'LabelBytesFree
+        '
+        Me.LabelBytesFree.Name = "LabelBytesFree"
+        Me.LabelBytesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesFree.Size = New System.Drawing.Size(80, 19)
+        Me.LabelBytesFree.Text = "{Bytes Free:}"
+        '
+        'LabelBytesRequired
+        '
+        Me.LabelBytesRequired.Name = "LabelBytesRequired"
+        Me.LabelBytesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesRequired.Size = New System.Drawing.Size(105, 19)
+        Me.LabelBytesRequired.Text = "{Bytes Required:}"
+        '
+        'LabelEntriesFree
+        '
+        Me.LabelEntriesFree.Name = "LabelEntriesFree"
+        Me.LabelEntriesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelEntriesFree.Size = New System.Drawing.Size(87, 19)
+        Me.LabelEntriesFree.Text = "{Entries Free:}"
+        '
+        'LabelEntriesRequired
+        '
+        Me.LabelEntriesRequired.Name = "LabelEntriesRequired"
+        Me.LabelEntriesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelEntriesRequired.Size = New System.Drawing.Size(112, 19)
+        Me.LabelEntriesRequired.Text = "{Entries Required:}"
+        '
         'ImportFileForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -335,6 +343,7 @@ Partial Class ImportFileForm
         Me.Controls.Add(PanelTop)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.ListViewFiles)
+        Me.Controls.Add(Me.StatusStrip1)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.MinimumSize = New System.Drawing.Size(800, 480)
@@ -347,8 +356,8 @@ Partial Class ImportFileForm
         FlowLayoutPanel1.ResumeLayout(False)
         FlowLayoutPanel1.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.FlowLayoutTotals.ResumeLayout(False)
-        Me.FlowLayoutTotals.PerformLayout()
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -358,10 +367,6 @@ Partial Class ImportFileForm
     Friend WithEvents Panel1 As Panel
     Friend WithEvents BtnOK As Button
     Friend WithEvents BtnCancel As Button
-    Friend WithEvents FlowLayoutTotals As FlowLayoutPanel
-    Friend WithEvents LblSelected As Label
-    Friend WithEvents LblBytesFree As Label
-    Friend WithEvents LblBytesRequired As Label
     Friend WithEvents ChkLastAccessed As CheckBox
     Friend WithEvents ChkCreated As CheckBox
     Friend WithEvents ChkLFN As CheckBox
@@ -371,12 +376,20 @@ Partial Class ImportFileForm
     Friend WithEvents LabelOptions As Label
     Friend WithEvents FileLastWriteDate As ColumnHeader
     Friend WithEvents FileLastAccessDate As ColumnHeader
-    Friend WithEvents LabelFilesSelected As Label
-    Friend WithEvents LabelBytesFree As Label
-    Friend WithEvents LabelBytesRequired As Label
     Friend WithEvents FileDisabled As ColumnHeader
     Friend WithEvents FileSizeOnDisk As ColumnHeader
     Friend WithEvents FileName As ColumnHeader
     Friend WithEvents LabelDirectoryList As Label
     Friend WithEvents ComboDirectoryList As ComboBox
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents LblSelected As ToolStripStatusLabel
+    Friend WithEvents LblBytesFree As ToolStripStatusLabel
+    Friend WithEvents LabelFilesSelected As ToolStripStatusLabel
+    Friend WithEvents LabelBytesFree As ToolStripStatusLabel
+    Friend WithEvents LabelBytesRequired As ToolStripStatusLabel
+    Friend WithEvents LblBytesRequired As ToolStripStatusLabel
+    Friend WithEvents LabelEntriesFree As ToolStripStatusLabel
+    Friend WithEvents lblEntriesFree As ToolStripStatusLabel
+    Friend WithEvents LabelEntriesRequired As ToolStripStatusLabel
+    Friend WithEvents lblEntriesRequired As ToolStripStatusLabel
 End Class

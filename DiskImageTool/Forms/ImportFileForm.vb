@@ -234,6 +234,9 @@ Public Class ImportFileForm
         LabelDirectoryList.Text = My.Resources.Label_ImportIntoDirectory
         LabelFilesSelected.Text = My.Resources.Label_FilesSelected & ":"
         LabelOptions.Text = My.Resources.Label_Options
+        LabelEntriesFree.Text = My.Resources.Label_EntriesFree & ":"
+        LabelEntriesRequired.Text = My.Resources.Label_EntriesRequired & ":"
+
         Me.Text = My.Resources.Label_ImportFiles
     End Sub
 
@@ -410,13 +413,26 @@ Public Class ImportFileForm
         LblSelected.Text = FormatThousands(_FileList.SelectedFiles) & " of " & FormatThousands(ListViewFiles.Items.Count)
         LblBytesRequired.Text = FormatThousands(_FileList.TotalSpaceRequired)
         LblBytesFree.Text = FormatThousands(_FileList.FreeSpace)
-        If _FileList.TotalSpaceRequired > _FileList.FreeSpace Then
-            LblBytesRequired.ForeColor = Color.Red
-        Else
-            LblBytesRequired.ForeColor = SystemColors.WindowText
+
+        Dim FitsBytes = _FileList.TotalSpaceRequired <= _FileList.FreeSpace
+        Dim FitsEntries = Not _FileList.IsEntryOverflow
+
+        LblBytesRequired.ForeColor = If(FitsBytes, SystemColors.WindowText, Color.Red)
+
+        Dim ShowEntries = Not _FileList.CanExpand
+
+        LabelEntriesRequired.Visible = ShowEntries
+        LabelEntriesFree.Visible = ShowEntries
+        lblEntriesRequired.Visible = ShowEntries
+        lblEntriesFree.Visible = ShowEntries
+
+        If ShowEntries Then
+            lblEntriesRequired.Text = FormatThousands(_FileList.EntriesRequired)
+            lblEntriesFree.Text = FormatThousands(_FileList.AvailableEntries)
+            lblEntriesRequired.ForeColor = If(FitsEntries, SystemColors.WindowText, Color.Red)
         End If
 
-        BtnOK.Enabled = _FileList.SelectedFiles > 0 And _FileList.TotalSpaceRequired <= _FileList.FreeSpace
+        BtnOK.Enabled = _FileList.SelectedFiles > 0 AndAlso FitsBytes AndAlso FitsEntries
     End Sub
 
     Private Sub SaveSelections()
@@ -584,6 +600,12 @@ Public Class ImportFileForm
             _AvailableEntries = AvailableEntries
         End Sub
 
+        Public ReadOnly Property AvailableEntries As Integer
+            Get
+                Return _AvailableEntries
+            End Get
+        End Property
+
         Public ReadOnly Property DirectoryList As List(Of ImportDirectory)
             Get
                 Return _DirectoryList
@@ -692,6 +714,10 @@ Public Class ImportFileForm
             End If
 
             If EntryCount > 0 Then
+                If _Root Is Nothing AndAlso Not Root.CanExpand Then
+                    Return 0
+                End If
+
                 Dim EntriesPerCluster As UInteger = Root.BytesPerCluster \ 32
                 RequiredBytes = CeilDiv(CUInt(EntryCount), EntriesPerCluster) * Root.BytesPerCluster
             End If
@@ -704,16 +730,19 @@ Public Class ImportFileForm
         Inherits ImportDirectory
 
         Private ReadOnly _BytesPerCluster As UInteger
+        Private ReadOnly _CanExpand As Boolean
         Private ReadOnly _CurrentDirectory As IDirectory
         Private ReadOnly _FreeSpace As UInteger
         Private ReadOnly _Options As AddFileOptions
         Private _TotalSpaceRequired As Long
+
         Public Sub New(CurrentDirectory As IDirectory)
             MyBase.New(CurrentDirectory.Data.AvailableEntryCount)
 
             _CurrentDirectory = CurrentDirectory
             _BytesPerCluster = CurrentDirectory.Disk.BPB.BytesPerCluster
             _FreeSpace = CurrentDirectory.Disk.FAT.GetFreeSpace
+            _CanExpand = Not CurrentDirectory.IsRootDirectory
 
             _Options = New AddFileOptions With {
             .UseLFN = True,
@@ -729,14 +758,27 @@ Public Class ImportFileForm
             End Get
         End Property
 
+        Public ReadOnly Property CanExpand As Boolean
+            Get
+                Return _CanExpand
+            End Get
+        End Property
+
         Public ReadOnly Property CurrentDirectory As IDirectory
             Get
                 Return _CurrentDirectory
             End Get
         End Property
+
         Public ReadOnly Property FreeSpace As UInteger
             Get
                 Return _FreeSpace
+            End Get
+        End Property
+
+        Public ReadOnly Property IsEntryOverflow As Boolean
+            Get
+                Return Not _CanExpand AndAlso EntriesRequired > AvailableEntries
             End Get
         End Property
 

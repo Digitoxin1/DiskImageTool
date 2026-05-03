@@ -2231,4 +2231,10 @@ You can regenerate it from the flux set using Convert after the redump completes
 
 Do you wish to continue?</value>
   </data>
+  <data name="Label_EntriesFree" xml:space="preserve">
+    <value>Entries Free</value>
+  </data>
+  <data name="Label_EntriesRequired" xml:space="preserve">
+    <value>Entries Required</value>
+  </data>
 </root>
