@@ -570,21 +570,18 @@ Namespace Flux
             Return fields
         End Function
 
-        Public Function RemovePathFromLog(logText As String) As String
+        Public Function RemovePathFromLog(logText As String, Optional newFolderName As String = "") As String
             Const Prefix As String = "Stream file:"
 
             Dim lines = logText.Split({vbCrLf, vbLf}, StringSplitOptions.None)
 
             For i As Integer = 0 To lines.Length - 1
                 If lines(i).StartsWith(Prefix, StringComparison.OrdinalIgnoreCase) Then
+                    Dim fullPath As String = lines(i).Substring(Prefix.Length).Trim()
+                    Dim folder As String = If(String.IsNullOrEmpty(newFolderName), IO.Path.GetFileName(IO.Path.GetDirectoryName(fullPath)), newFolderName)
+                    Dim file As String = IO.Path.GetFileName(fullPath)
 
-                    Dim fullPath As String = lines(i).Substring("Stream file:".Length).Trim()
-
-                    Dim lastFolder As String = IO.Path.GetFileName(IO.Path.GetDirectoryName(fullPath))
-                    Dim lastItem As String = IO.Path.GetFileName(fullPath)
-                    Dim shortPath As String = $"{lastFolder}\{lastItem}"
-
-                    lines(i) = $"{Prefix} {shortPath}"
+                    lines(i) = $"{Prefix} {folder}\{file}"
                 End If
             Next
 

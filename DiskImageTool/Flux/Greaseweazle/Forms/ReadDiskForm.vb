@@ -749,7 +749,7 @@ Namespace Flux.Greaseweazle
             TrackStatus.Clear()
             ResetTrackGrid(ResetSelected:=False)
 
-            LogStripPath = Flux.Kryoflux.Settings().LogStripPath
+            InitLogFilePath(GetVerifyLogPath())
 
             Try
                 Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Args.Arguments)
@@ -804,6 +804,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
+            UpdateVerifyLogPaths(destFolder)
             _TempFilePath = FluxGetOutputFilePath()
 
             Return True
@@ -1035,12 +1036,9 @@ Namespace Flux.Greaseweazle
             Return FolderName
         End Function
 
-        Private Function GetVerifyLogPath() As String
-            If Not CheckBoxSaveLog.Checked Then
-                Return ""
-            End If
-
+        Private Function GetVerifyLogFileName() As String
             Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
+
             If String.IsNullOrEmpty(KfLogName) Then
                 Return ""
             End If
@@ -1052,8 +1050,43 @@ Namespace Flux.Greaseweazle
                 KfLogName = Base & ".verify" & Ext
             End If
 
-            Return IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), KfLogName)
+            Return KfLogName
         End Function
+
+        Private Function GetVerifyLogPath() As String
+            If Not CheckBoxSaveLog.Checked Then
+                Return ""
+            End If
+
+            Dim Name = GetVerifyLogFileName()
+
+            If String.IsNullOrEmpty(Name) Then
+                Return ""
+            End If
+
+            Return IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Name)
+        End Function
+
+        Private Sub UpdateVerifyLogPaths(destFolder As String)
+            Dim LogName = GetVerifyLogFileName()
+
+            If String.IsNullOrEmpty(LogName) Then
+                Exit Sub
+            End If
+
+            Dim LogPath = IO.Path.Combine(destFolder, LogName)
+            If Not IO.File.Exists(LogPath) Then
+                Exit Sub
+            End If
+
+            Try
+                Dim Content = IO.File.ReadAllText(LogPath)
+                Content = RemovePathFromLog(Content, IO.Path.GetFileName(destFolder))
+                IO.File.WriteAllText(LogPath, Content)
+            Catch ex As Exception
+                Debug.WriteLine($"UpdateVerifyLogPaths failed: {ex.Message}")
+            End Try
+        End Sub
 
         Private Sub ImageFolderBrowse()
             Dim FolderName = BrowseFolderVista(ImageFolderInput, Me.Handle)
@@ -2715,7 +2748,6 @@ Namespace Flux.Greaseweazle
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If _KryofluxStatus.TrackFound Then
                         _KryofluxStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
-                        AutoSaveVerifyLog()
                     Else
                         _KryofluxStatus.UpdateTrackStatusError()
                     End If
@@ -2725,19 +2757,6 @@ Namespace Flux.Greaseweazle
             End Select
 
             RefreshFormState()
-        End Sub
-
-        Private Sub AutoSaveVerifyLog()
-            Dim Path = GetVerifyLogPath()
-            If String.IsNullOrEmpty(Path) Then
-                Exit Sub
-            End If
-
-            Try
-                SaveLogFile(Path, TextBoxConsole.Text, LogStripPath)
-            Catch ex As Exception
-                Debug.WriteLine($"AutoSaveVerifyLog failed: {ex.Message}")
-            End Try
         End Sub
 
         Private Sub Runner_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Runner.ProcessStateChanged
