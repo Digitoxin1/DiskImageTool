@@ -18,8 +18,8 @@ What does DiskImageTool do?
 - Easily repair a modified boot sector OEM Name using a built in database of suggestions.
 - Clean up modifications made by Windows to the boot sector and directory entries with one click.
 - Open hundreds of images at one time and use powerful filters to narrow down your search to the ones that need your attention.
-- Read and Write floppy disks using a Greaseweazle (https://decromancer.ca/greaseweazle/)
-- Import raw Flux Sets using either Greaseweazle Tools (https://github.com/keirf/greaseweazle) or KryoFlux Host Software (https://kryoflux.com/)
+- Natively Read and Write floppy disks using a Greaseweazle (https://decromancer.ca/greaseweazle/)
+- Import raw Flux Sets using either built in Greaseweazle support or KryoFlux Host Software (https://kryoflux.com/)
 - Built in Database to identify known disk images (Mostly games at this time)
 
 DiskImageTool suports the following image formats:
@@ -33,12 +33,12 @@ DiskImageTool suports the following image formats:
 - HxC HFE v1 Image (.hfe)
 - HxC MFM Image (.mfm)
 - Transcopy Image (.tc)
-- Raw Flux Set (.raw) * Import Only; Requires Greaseweazle Tools or KryoFlux Host Software
-- Supercard Pro image (.scp) * Import Only; Requires Greaseweazle Tools
+- Raw Flux Set (.raw) * Import Only; Uses built in Greaseweazle support or KryoFlux Host Software
+- Supercard Pro image (.scp) * Import Only
 
 DiskImageTool can also open the above image types from within Zip files.
 
-Greaseweazle Tools and KryoFlux Host Software can be used for importing without requiring a hardware device.
+KryoFlux Host Software can be used for importing without requiring a hardware device.
 
 Suggestions for new features are welcome.
 
