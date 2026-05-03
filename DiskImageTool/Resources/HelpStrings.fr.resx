@@ -338,6 +338,13 @@ Le formulaire est ensuite placé en mode sélection de pistes
 afin que des pistes individuelles puissent être relues
 contre l’ensemble flux d’origine.</value>
   </data>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>Vérifier l’ensemble d’images flux chargé à l’aide
+de Kryoflux sans relire le lecteur.
+
+Les résultats de vérification de chaque piste sont
+affichés dans la grille ci-dessus.</value>
+  </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Parcourir pour le dossier racine où sont enregistrés les ensembles d’images flux.</value>
   </data>

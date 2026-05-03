@@ -337,6 +337,13 @@ A continuación, el formulario se coloca en modo de selección
 de pistas para que se puedan volver a leer pistas individuales
 contra el conjunto de flujo original.</value>
   </data>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>Verificar el conjunto de imágenes de flujo cargado
+usando Kryoflux sin volver a leer la unidad.
+
+Los resultados de la verificación de cada pista se
+muestran en la cuadrícula superior.</value>
+  </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Buscar la carpeta raíz donde se guardan los conjuntos de imágenes de flujo.</value>
   </data>

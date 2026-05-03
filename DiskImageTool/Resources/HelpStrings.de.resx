@@ -337,6 +337,13 @@ Das Formular wird anschließend in den Spurenauswahl-Modus
 versetzt, sodass einzelne Spuren erneut gegen das ursprüngliche
 Flux-Set gelesen werden können.</value>
   </data>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>Das geladene Flux-Image-Set mit Kryoflux überprüfen,
+ohne das Laufwerk erneut zu lesen.
+
+Die Überprüfungsergebnisse jeder Spur werden im
+oberen Raster angezeigt.</value>
+  </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Nach dem Stammordner suchen, in dem Flux-Image-Sets gespeichert werden.</value>
   </data>

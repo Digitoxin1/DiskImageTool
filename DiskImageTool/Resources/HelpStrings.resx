@@ -336,6 +336,13 @@ The form is then placed in select-tracks mode so
 individual tracks can be re-read against the original
 flux set.</value>
   </data>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>Verify the currently loaded flux image set using
+Kryoflux without re-reading the drive.
+
+Verification results for each track are displayed
+in the grid above.</value>
+  </data>
   <data name="Flux_RootBrowse" xml:space="preserve">
     <value>Browse for the root folder where flux image sets are saved.</value>
   </data>

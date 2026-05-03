@@ -1112,6 +1112,7 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
             SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
+            SetHelpString(My.Resources.HelpStrings.Flux_Verify, ButtonVerify)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _LabelRootFolder, TextBoxRootFolder)
             SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, ButtonRootBrowse)
             SetHelpString(My.Resources.HelpStrings.Flux_ImageFolder, _LabelImageFolder, TextBoxImageFolder)
@@ -2359,7 +2360,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub InitializeFooter()
             ButtonVerify = New Button With {
-                .Margin = New Padding(18, 0, 6, 0),
+                .Margin = New Padding(6, 0, 18, 0),
                 .Text = My.Resources.Label_Verify,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,

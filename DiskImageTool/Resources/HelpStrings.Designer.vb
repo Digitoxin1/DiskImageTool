@@ -784,6 +784,19 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Verify the currently loaded flux image set using
+        '''Kryoflux without re-reading the drive.
+        '''
+        '''Verification results for each track are displayed
+        '''in the grid above..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Verify() As String
+            Get
+                Return ResourceManager.GetString("Flux_Verify", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Write the loaded image to the floppy disk in the
         '''selected drive.
         '''
