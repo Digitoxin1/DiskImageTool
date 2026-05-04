@@ -689,6 +689,11 @@ Module DiskImageLib
     Private Sub ImageImportFiles(FileList As List(Of ImportFileForm.ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each File In FileList
             If File.IsSelected Then
+                If File.Skip Then
+                    FilesAdded += 1
+                    Continue For
+                End If
+
                 Dim FileInfo As New IO.FileInfo(File.FilePath)
                 Dim EntriesAdded = ParentDirectory.AddFile(FileInfo, Options, Index)
                 If EntriesAdded > -1 Then
@@ -703,22 +708,99 @@ Module DiskImageLib
 
     Private Sub ImageImportFolders(FolderList As List(Of ImportFileForm.ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each Folder In FolderList
-            If Folder.SelectedFiles > 0 Then
-                Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
+            If Folder.SelectedFiles = 0 Then
+                Continue For
+            End If
 
-                Dim DirectoryEntry As New DirectoryEntryBase
-                DirectoryEntry.SetFileInfo(DirectoryInfo, Options.UseCreatedDate, Options.UseLastAccessedDate)
-
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
-                If AddDirectoryResponse.Entry IsNot Nothing Then
-                    FilesAdded += 1
-                    If Index > -1 Then
-                        Index += AddDirectoryResponse.EntriesNeeded
+            If Folder.ExistsOnDisk Then
+                Dim Name = IO.Path.GetFileName(Folder.FilePath)
+                Dim ExistingIndex = ParentDirectory.FindFileName(Name, True)
+                If ExistingIndex >= 0 Then
+                    Dim ExistingDir = ParentDirectory.GetFile(CUInt(ExistingIndex))
+                    If ExistingDir.IsDirectory AndAlso ExistingDir.SubDirectory IsNot Nothing Then
+                        ImageImportFolders(Folder.DirectoryList, ExistingDir.SubDirectory, -1, Options, FilesAdded)
+                        ImageImportFiles(Folder.FileList, ExistingDir.SubDirectory, -1, Options, FilesAdded)
+                        Continue For
                     End If
-
-                    ImageImportFolders(Folder.DirectoryList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
-                    ImageImportFiles(Folder.FileList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
                 End If
+            End If
+
+            Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
+
+            Dim DirectoryEntry As New DirectoryEntryBase
+            DirectoryEntry.SetFileInfo(DirectoryInfo, Options.UseCreatedDate, Options.UseLastAccessedDate)
+
+            Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
+            If AddDirectoryResponse.Entry IsNot Nothing Then
+                FilesAdded += 1
+                If Index > -1 Then
+                    Index += AddDirectoryResponse.EntriesNeeded
+                End If
+
+                ImageImportFolders(Folder.DirectoryList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
+                ImageImportFiles(Folder.FileList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
+            End If
+        Next
+    End Sub
+
+    Private Sub ImageImportFreeReplacedFiles(Dir As ImportFileForm.ImportDirectory, ParentDirectory As IDirectory)
+        For Each File In Dir.FileList
+            If Not File.IsSelected Then
+                Continue For
+            End If
+
+            If Not File.HasExistingMatch Then
+                Continue For
+            End If
+
+            If File.ExistingIsDirectory Then
+                Continue For
+            End If
+
+            Dim Name = IO.Path.GetFileName(File.FilePath)
+            Dim ExistingIndex = ParentDirectory.FindFileName(Name, False)
+
+            If ExistingIndex < 0 Then
+                Continue For
+            End If
+
+            Dim Existing = ParentDirectory.GetFile(CUInt(ExistingIndex))
+
+            Dim FileInfo As New IO.FileInfo(File.FilePath)
+
+            If Existing.FileSize = CUInt(FileInfo.Length) Then
+                Dim ImportedCRC = CRC32.ComputeChecksum(IO.File.ReadAllBytes(File.FilePath))
+                If Existing.GetChecksum() = ImportedCRC Then
+                    File.Skip = True
+                    Continue For
+                End If
+            End If
+
+            If DirectoryEntryDelete(Existing, &HF6, True) Then
+                ParentDirectory.RemoveEntry(CUInt(ExistingIndex))
+            End If
+        Next
+
+        For Each SubDir In Dir.DirectoryList
+            If SubDir.SelectedFiles = 0 Then
+                Continue For
+            End If
+
+            If Not SubDir.ExistsOnDisk Then
+                Continue For
+            End If
+
+            Dim Name = IO.Path.GetFileName(SubDir.FilePath)
+            Dim ExistingIndex = ParentDirectory.FindFileName(Name, True)
+
+            If ExistingIndex < 0 Then
+                Continue For
+            End If
+
+            Dim ExistingDir = ParentDirectory.GetFile(CUInt(ExistingIndex))
+
+            If ExistingDir.IsDirectory AndAlso ExistingDir.SubDirectory IsNot Nothing Then
+                ImageImportFreeReplacedFiles(SubDir, ExistingDir.SubDirectory)
             End If
         Next
     End Sub
@@ -762,6 +844,10 @@ Module DiskImageLib
 
         Dim FilesAdded As UInteger = 0
         Dim FileCount As UInteger = Response.FileList.SelectedFiles
+
+        If Response.FileList.Options.OverwriteExisting Then
+            ImageImportFreeReplacedFiles(Response.FileList, CurrentDirectory)
+        End If
 
         ImageImportFolders(Response.FileList.DirectoryList, CurrentDirectory, Index, Response.FileList.Options, FilesAdded)
         ImageImportFiles(Response.FileList.FileList, CurrentDirectory, Index, Response.FileList.Options, FilesAdded)

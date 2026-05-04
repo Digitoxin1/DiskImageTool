@@ -137,12 +137,12 @@
             Return Index
         End Function
 
-        Public Function FindFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindFileName
+        Public Function FindFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1, Optional IncludeVolumeNames As Boolean = False) As Integer Implements IDirectory.FindFileName
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
                     If Counter <> SkipIndex Then
                         Dim File = _DirectoryEntries.Item(Counter)
-                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                        If Not File.IsDeleted And (IncludeVolumeNames Or Not File.IsVolumeName) And (IncludeDirectories Or Not File.IsDirectory) Then
                             If File.GetFullFileName = Filename Then
                                 Return Counter
                             End If
@@ -154,12 +154,12 @@
             Return -1
         End Function
 
-        Public Function FindShortFileName(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindShortFileName
+        Public Function FindShortFileName(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1, Optional IncludeVolumeNames As Boolean = False) As Integer Implements IDirectory.FindShortFileName
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
                     If Counter <> SkipIndex Then
                         Dim File = _DirectoryEntries.Item(Counter)
-                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                        If Not File.IsDeleted And (IncludeVolumeNames Or Not File.IsVolumeName) And (IncludeDirectories Or Not File.IsDirectory) Then
                             If FileBytes.CompareTo(File.FileNameWithExtension) Then
                                 Return Counter
                             End If
@@ -171,12 +171,12 @@
             Return -1
         End Function
 
-        Public Function FindShortFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindShortFileName
+        Public Function FindShortFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1, Optional IncludeVolumeNames As Boolean = False) As Integer Implements IDirectory.FindShortFileName
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
                     If Counter <> SkipIndex Then
                         Dim File = _DirectoryEntries.Item(Counter)
-                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                        If Not File.IsDeleted And (IncludeVolumeNames Or Not File.IsVolumeName) And (IncludeDirectories Or Not File.IsDirectory) Then
                             If File.GetShortFileName = Filename Then
                                 Return Counter
                             End If
@@ -214,7 +214,7 @@
             Dim NewFileName As String = FileName
             Dim Index As UInteger = 1
 
-            Do While FindFileName(NewFileName, True, CurrentIndex) > -1
+            Do While FindFileName(NewFileName, True, CurrentIndex, True) > -1
                 NewFileName = CombineFileParts(FileParts.Name & " " & InParens(Index), FileParts.Extension)
                 Index += 1
             Loop
@@ -244,7 +244,7 @@
                 NewFileName = CombineFileParts(CleanFileName, CleanExtension)
             End If
 
-            Do While FindShortFileName(NewFileName, True, CurrentIndex) > -1
+            Do While FindShortFileName(NewFileName, True, CurrentIndex, True) > -1
                 NewFileName = TruncateFileName(CleanFileName, CleanExtension, Checksum, Index, UseNTExtensions)
                 Index += 1
             Loop

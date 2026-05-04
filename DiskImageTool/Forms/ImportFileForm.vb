@@ -166,7 +166,7 @@ Public Class ImportFileForm
         Dim Existing = LookupExistingEntry(FullPath)
 
         If Existing IsNot Nothing Then
-            If Existing.IsDirectory Then
+            If Existing.IsDirectory OrElse Existing.IsVolumeName Then
                 ImportFile.SetExistingMatch(0, 0, True)
             Else
                 Dim StartIndex = Existing.ParentDirectory.AdjustIndexForLFN(Existing.Index)
@@ -321,7 +321,7 @@ Public Class ImportFileForm
         For Counter As UInteger = 0 To Directory.Data.EntryCount - 1
             Dim Entry = Directory.GetFile(Counter)
 
-            If Entry.IsDeleted OrElse Entry.IsVolumeName OrElse Entry.IsLink OrElse Entry.IsLFN Then
+            If Entry.IsDeleted OrElse Entry.IsLink OrElse Entry.IsLFN Then
                 Continue For
             End If
 
@@ -1058,6 +1058,7 @@ Public Class ImportFileForm
         Private _ExistingSizeOnDisk As Long = 0
         Private _HasExistingMatch As Boolean = False
         Private _IsSelected As Boolean
+        Private _Skip As Boolean = False
         Private _UserIntendsSelected As Boolean = True
 
         Public Sub New(FilePath As String, FileName As String, SizeOnDisk As Long, Root As ImportDirectoryRoot, Parent As ImportDirectory)
@@ -1121,6 +1122,15 @@ Public Class ImportFileForm
             Get
                 Return _SizeOnDisk
             End Get
+        End Property
+
+        Friend Property Skip As Boolean
+            Get
+                Return _Skip
+            End Get
+            Set(value As Boolean)
+                _Skip = value
+            End Set
         End Property
 
         Friend ReadOnly Property UserIntendsSelected As Boolean
