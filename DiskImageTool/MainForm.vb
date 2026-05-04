@@ -638,7 +638,6 @@ Public Class MainForm
         Dim TextBox As New ToolStripSpringTextBox With {
             .Alignment = ToolStripItemAlignment.Right,
             .BorderStyle = BorderStyle.FixedSingle,
-            .Font = New Font("Segoe UI", 9),
             .Margin = New Padding(1, 0, 0, 0),
             .MaxLength = 255,
             .MaxWidth = 195,

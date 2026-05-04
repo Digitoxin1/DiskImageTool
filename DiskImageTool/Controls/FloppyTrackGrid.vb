@@ -14,8 +14,6 @@ Public Class FloppyTrackGrid
     Private Shared ReadOnly DEFAULT_BACKCOLOR As Color = Color.White
     Private Shared ReadOnly DEFAULT_FORECOLOR As Color = SystemColors.ControlText
     Private Shared ReadOnly DISABLED_COLOR As Color = Color.LightGray
-    Private Shared ReadOnly GRID_FONT As New Font("Segoe UI", 8.0F, FontStyle.Regular)
-    Private Shared ReadOnly HEADER_FONT As New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular)
     Private Shared ReadOnly SELECTED_BACKCOLOR As Color = Color.LightSkyBlue
     Private ReadOnly _SelectedTracks As HashSet(Of UShort)
     Private ReadOnly _ToolTip As ToolTip
@@ -26,6 +24,8 @@ Public Class FloppyTrackGrid
     Private _FooterCheckRect As Rectangle
     Private _FooterHasFocus As Boolean = False
     Private _FooterTextRect As Rectangle
+    Private _GridFont As Font
+    Private _HeaderFont As Font
     Private _HideSelection As Boolean = False
     Private _IsBusy As Boolean = False
     Private _IsChecked As Boolean
@@ -215,6 +215,45 @@ Public Class FloppyTrackGrid
             End If
         End Set
     End Property
+
+    Private ReadOnly Property GridFont As Font
+        Get
+            If _GridFont Is Nothing Then
+                _GridFont = New Font(Me.Font.FontFamily, 8.0F, Me.Font.Style, Me.Font.Unit, Me.Font.GdiCharSet, Me.Font.GdiVerticalFont)
+            End If
+            Return _GridFont
+        End Get
+    End Property
+
+    Private ReadOnly Property HeaderFont As Font
+        Get
+            If _HeaderFont Is Nothing Then
+                _HeaderFont = New Font(Me.Font.FontFamily, 8.25F, Me.Font.Style, Me.Font.Unit, Me.Font.GdiCharSet, Me.Font.GdiVerticalFont)
+            End If
+            Return _HeaderFont
+        End Get
+    End Property
+
+    Protected Overrides Sub OnFontChanged(e As EventArgs)
+        MyBase.OnFontChanged(e)
+
+        _GridFont?.Dispose()
+        _GridFont = Nothing
+
+        _HeaderFont?.Dispose()
+        _HeaderFont = Nothing
+
+        Invalidate()
+    End Sub
+
+    Protected Overrides Sub Dispose(disposing As Boolean)
+        If disposing Then
+            _GridFont?.Dispose()
+            _HeaderFont?.Dispose()
+        End If
+
+        MyBase.Dispose(disposing)
+    End Sub
 
     Private ReadOnly Property RowCount As Integer
         Get
@@ -527,7 +566,7 @@ Public Class FloppyTrackGrid
                 Else
                     ' cells -> previous control (external)
                     If Me.Parent IsNot Nothing Then
-                        Me.Parent.SelectNextControl(Me, False, True, True, True)
+                        Me.Parent?.SelectNextControl(Me, False, True, True, True)
                     End If
                 End If
                 ' Shift+Tab from cells: let focus move to previous control
@@ -691,14 +730,14 @@ Public Class FloppyTrackGrid
             For Col As Integer = 0 To COLUMNS - 1
                 Dim x As Integer = (Col + 1) * CELL_WIDTH    ' skip header column
                 Dim rect As New Rectangle(x, 0, CELL_WIDTH, CELL_HEIGHT)
-                g.DrawString(Col.ToString(), HEADER_FONT, SystemBrushes.ControlText, rect, sf)
+                g.DrawString(Col.ToString(), HeaderFont, SystemBrushes.ControlText, rect, sf)
             Next
 
             '--- Row headers (left, starting at 0) ---
             For Row As Integer = 0 To Math.Max(Rows - 1, 0)
                 Dim y As Integer = (Row + 1) * CELL_HEIGHT   ' skip header row
                 Dim rect As New Rectangle(0, y, CELL_WIDTH, CELL_HEIGHT)
-                g.DrawString(Row.ToString(), HEADER_FONT, SystemBrushes.ControlText, rect, sf)
+                g.DrawString(Row.ToString(), HeaderFont, SystemBrushes.ControlText, rect, sf)
             Next
 
             '--- Data cells (background, border, text) ---
@@ -742,7 +781,7 @@ Public Class FloppyTrackGrid
                         If Not String.IsNullOrEmpty(cell.Text) Then
                             Using fb As New SolidBrush(cell.ForeColor)
                                 Dim textRect As New Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height)
-                                g.DrawString(cell.Text, GRID_FONT, fb, textRect, sf)
+                                g.DrawString(cell.Text, GridFont, fb, textRect, sf)
                             End Using
                         End If
 
@@ -816,7 +855,7 @@ Public Class FloppyTrackGrid
         Dim spacing As Integer = 4
 
         ' Measure text
-        Dim textSize As Size = TextRenderer.MeasureText(_Label, HEADER_FONT)
+        Dim textSize As Size = TextRenderer.MeasureText(_Label, HeaderFont)
         Dim contentWidth As Integer = glyphSize.Width + spacing + textSize.Width
 
         Dim startX As Integer = (innerFooterRect.Width - contentWidth) \ 2
@@ -849,7 +888,7 @@ Public Class FloppyTrackGrid
 
         TextRenderer.DrawText(g,
                               _Label,
-                              HEADER_FONT,
+                              HeaderFont,
                               textRect,
                               SystemColors.ControlText,
                               TextFormatFlags.VerticalCenter Or TextFormatFlags.Left Or TextFormatFlags.NoPadding)
@@ -859,7 +898,7 @@ Public Class FloppyTrackGrid
         _FooterTextRect = textRect
 
         If _SelectEnabled AndAlso Not _Disabled AndAlso _FooterHasFocus AndAlso Me.Focused Then
-            Dim tightSize As Size = TextRenderer.MeasureText(g, _Label, HEADER_FONT, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPadding Or TextFormatFlags.NoClipping)
+            Dim tightSize As Size = TextRenderer.MeasureText(g, _Label, HeaderFont, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPadding Or TextFormatFlags.NoClipping)
 
             ' Create a tight box around the text only
             Dim fr As New Rectangle(textRect.X, textRect.Y + (textRect.Height - tightSize.Height) \ 2, tightSize.Width, tightSize.Height)

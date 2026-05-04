@@ -127,7 +127,6 @@ Partial Class ImagePreview
         'ListViewFiles
         '
         Me.ListViewFiles.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(0, 0)
         Me.ListViewFiles.Name = "ListViewFiles"
