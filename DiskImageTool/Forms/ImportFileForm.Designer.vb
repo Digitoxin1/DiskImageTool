@@ -39,20 +39,22 @@ Partial Class ImportFileForm
         Me.FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ListViewFiles = New System.Windows.Forms.ListView()
+        Me.Action = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-        Me.LblSelected = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.LblBytesFree = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.LblBytesRequired = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.lblEntriesFree = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.lblEntriesRequired = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LabelFilesSelected = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LblSelected = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LabelBytesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LblBytesFree = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LabelBytesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LblBytesRequired = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LabelEntriesFree = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lblEntriesFree = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LabelEntriesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lblEntriesRequired = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.chkOverwrite = New System.Windows.Forms.CheckBox()
         PanelTop = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         PanelTop.SuspendLayout()
@@ -123,9 +125,10 @@ Partial Class ImportFileForm
         FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         FlowLayoutPanel1.Controls.Add(Me.LabelDirectoryList)
         FlowLayoutPanel1.Controls.Add(Me.ComboDirectoryList)
+        FlowLayoutPanel1.Controls.Add(Me.chkOverwrite)
         FlowLayoutPanel1.Location = New System.Drawing.Point(12, 65)
         FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        FlowLayoutPanel1.Size = New System.Drawing.Size(246, 27)
+        FlowLayoutPanel1.Size = New System.Drawing.Size(340, 27)
         FlowLayoutPanel1.TabIndex = 2
         '
         'LabelDirectoryList
@@ -201,7 +204,7 @@ Partial Class ImportFileForm
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.FileName, Me.FileSize, Me.FileSizeOnDisk, Me.FileLastWriteDate, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileDisabled})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.FileName, Me.Action, Me.FileSize, Me.FileSizeOnDisk, Me.FileLastWriteDate, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileDisabled})
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
@@ -211,6 +214,11 @@ Partial Class ImportFileForm
         Me.ListViewFiles.TabIndex = 3
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
+        '
+        'Action
+        '
+        Me.Action.Text = "{Action}"
+        Me.Action.Width = 70
         '
         'Panel1
         '
@@ -259,6 +267,12 @@ Partial Class ImportFileForm
         Me.StatusStrip1.TabIndex = 5
         Me.StatusStrip1.Text = "StatusStrip1"
         '
+        'LabelFilesSelected
+        '
+        Me.LabelFilesSelected.Name = "LabelFilesSelected"
+        Me.LabelFilesSelected.Size = New System.Drawing.Size(88, 19)
+        Me.LabelFilesSelected.Text = "{Files Selected:}"
+        '
         'LblSelected
         '
         Me.LblSelected.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
@@ -266,6 +280,13 @@ Partial Class ImportFileForm
         Me.LblSelected.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
         Me.LblSelected.Size = New System.Drawing.Size(49, 19)
         Me.LblSelected.Text = "0 of 0"
+        '
+        'LabelBytesFree
+        '
+        Me.LabelBytesFree.Name = "LabelBytesFree"
+        Me.LabelBytesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesFree.Size = New System.Drawing.Size(80, 19)
+        Me.LabelBytesFree.Text = "{Bytes Free:}"
         '
         'LblBytesFree
         '
@@ -275,6 +296,13 @@ Partial Class ImportFileForm
         Me.LblBytesFree.Size = New System.Drawing.Size(26, 19)
         Me.LblBytesFree.Text = "0"
         '
+        'LabelBytesRequired
+        '
+        Me.LabelBytesRequired.Name = "LabelBytesRequired"
+        Me.LabelBytesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesRequired.Size = New System.Drawing.Size(105, 19)
+        Me.LabelBytesRequired.Text = "{Bytes Required:}"
+        '
         'LblBytesRequired
         '
         Me.LblBytesRequired.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
@@ -282,6 +310,13 @@ Partial Class ImportFileForm
         Me.LblBytesRequired.Padding = New System.Windows.Forms.Padding(0, 0, 9, 0)
         Me.LblBytesRequired.Size = New System.Drawing.Size(26, 19)
         Me.LblBytesRequired.Text = "0"
+        '
+        'LabelEntriesFree
+        '
+        Me.LabelEntriesFree.Name = "LabelEntriesFree"
+        Me.LabelEntriesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelEntriesFree.Size = New System.Drawing.Size(87, 19)
+        Me.LabelEntriesFree.Text = "{Entries Free:}"
         '
         'lblEntriesFree
         '
@@ -291,6 +326,13 @@ Partial Class ImportFileForm
         Me.lblEntriesFree.Size = New System.Drawing.Size(26, 19)
         Me.lblEntriesFree.Text = "0"
         '
+        'LabelEntriesRequired
+        '
+        Me.LabelEntriesRequired.Name = "LabelEntriesRequired"
+        Me.LabelEntriesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelEntriesRequired.Size = New System.Drawing.Size(112, 19)
+        Me.LabelEntriesRequired.Text = "{Entries Required:}"
+        '
         'lblEntriesRequired
         '
         Me.lblEntriesRequired.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
@@ -299,39 +341,17 @@ Partial Class ImportFileForm
         Me.lblEntriesRequired.Size = New System.Drawing.Size(26, 19)
         Me.lblEntriesRequired.Text = "0"
         '
-        'LabelFilesSelected
+        'chkOverwrite
         '
-        Me.LabelFilesSelected.Name = "LabelFilesSelected"
-        Me.LabelFilesSelected.Size = New System.Drawing.Size(88, 19)
-        Me.LabelFilesSelected.Text = "{Files Selected:}"
-        '
-        'LabelBytesFree
-        '
-        Me.LabelBytesFree.Name = "LabelBytesFree"
-        Me.LabelBytesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelBytesFree.Size = New System.Drawing.Size(80, 19)
-        Me.LabelBytesFree.Text = "{Bytes Free:}"
-        '
-        'LabelBytesRequired
-        '
-        Me.LabelBytesRequired.Name = "LabelBytesRequired"
-        Me.LabelBytesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelBytesRequired.Size = New System.Drawing.Size(105, 19)
-        Me.LabelBytesRequired.Text = "{Bytes Required:}"
-        '
-        'LabelEntriesFree
-        '
-        Me.LabelEntriesFree.Name = "LabelEntriesFree"
-        Me.LabelEntriesFree.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelEntriesFree.Size = New System.Drawing.Size(87, 19)
-        Me.LabelEntriesFree.Text = "{Entries Free:}"
-        '
-        'LabelEntriesRequired
-        '
-        Me.LabelEntriesRequired.Name = "LabelEntriesRequired"
-        Me.LabelEntriesRequired.Padding = New System.Windows.Forms.Padding(9, 0, 0, 0)
-        Me.LabelEntriesRequired.Size = New System.Drawing.Size(112, 19)
-        Me.LabelEntriesRequired.Text = "{Entries Required:}"
+        Me.chkOverwrite.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.chkOverwrite.AutoSize = True
+        Me.chkOverwrite.Location = New System.Drawing.Point(258, 5)
+        Me.chkOverwrite.Margin = New System.Windows.Forms.Padding(12, 3, 3, 3)
+        Me.chkOverwrite.Name = "chkOverwrite"
+        Me.chkOverwrite.Size = New System.Drawing.Size(79, 17)
+        Me.chkOverwrite.TabIndex = 2
+        Me.chkOverwrite.Text = "{Overwrite}"
+        Me.chkOverwrite.UseVisualStyleBackColor = True
         '
         'ImportFileForm
         '
@@ -392,4 +412,6 @@ Partial Class ImportFileForm
     Friend WithEvents lblEntriesFree As ToolStripStatusLabel
     Friend WithEvents LabelEntriesRequired As ToolStripStatusLabel
     Friend WithEvents lblEntriesRequired As ToolStripStatusLabel
+    Friend WithEvents Action As ColumnHeader
+    Friend WithEvents chkOverwrite As CheckBox
 End Class

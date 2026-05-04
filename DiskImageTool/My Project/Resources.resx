@@ -2249,4 +2249,22 @@ Do you wish to continue?</value>
   <data name="Dialog_RecentFolderMissing" xml:space="preserve">
     <value>The folder '{0}' no longer exists. Remove it from recent folders?</value>
   </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Action_Merge" xml:space="preserve">
+    <value>Merge</value>
+  </data>
+  <data name="Action_Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="Action_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Action_Skip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="Label_OverwriteExisting" xml:space="preserve">
+    <value>Overwrite existing files</value>
+  </data>
 </root>

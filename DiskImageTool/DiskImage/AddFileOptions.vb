@@ -4,5 +4,6 @@
         Public Property UseNTExtensions As Boolean
         Public Property UseCreatedDate As Boolean
         Public Property UseLastAccessedDate As Boolean
+        Public Property OverwriteExisting As Boolean
     End Class
 End Namespace

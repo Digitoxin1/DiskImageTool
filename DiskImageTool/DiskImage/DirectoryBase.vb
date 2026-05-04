@@ -120,7 +120,7 @@
 
         Public MustOverride Function AddFile(FileInfo As IO.FileInfo, Options As AddFileOptions, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
-        Public Function AdjustIndexForLFN(Index As Integer) As Integer
+        Public Function AdjustIndexForLFN(Index As Integer) As Integer Implements IDirectory.AdjustIndexForLFN
             If Index < 1 Then
                 Return Index
             End If

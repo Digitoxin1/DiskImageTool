@@ -1997,4 +1997,22 @@ Souhaitez-vous continuer ?</value>
   <data name="Dialog_RecentFolderMissing" xml:space="preserve">
     <value>Le dossier '{0}' n’existe plus. Le supprimer des dossiers récents ?</value>
   </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Action_Merge" xml:space="preserve">
+    <value>Fusionner</value>
+  </data>
+  <data name="Action_Rename" xml:space="preserve">
+    <value>Renommer</value>
+  </data>
+  <data name="Action_Add" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="Action_Skip" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
+  <data name="Label_OverwriteExisting" xml:space="preserve">
+    <value>Écraser les fichiers existants</value>
+  </data>
 </root>

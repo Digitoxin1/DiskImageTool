@@ -81,6 +81,42 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Add.
+        '''</summary>
+        Friend ReadOnly Property Action_Add() As String
+            Get
+                Return ResourceManager.GetString("Action_Add", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Merge.
+        '''</summary>
+        Friend ReadOnly Property Action_Merge() As String
+            Get
+                Return ResourceManager.GetString("Action_Merge", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Rename.
+        '''</summary>
+        Friend ReadOnly Property Action_Rename() As String
+            Get
+                Return ResourceManager.GetString("Action_Rename", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Skip.
+        '''</summary>
+        Friend ReadOnly Property Action_Skip() As String
+            Get
+                Return ResourceManager.GetString("Action_Skip", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property AdjustOffset() As System.Drawing.Bitmap
@@ -2446,6 +2482,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Action.
+        '''</summary>
+        Friend ReadOnly Property Label_Action() As String
+            Get
+                Return ResourceManager.GetString("Label_Action", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Additional Data.
         '''</summary>
         Friend ReadOnly Property Label_AdditionalData() As String
@@ -4152,6 +4197,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_OutputType() As String
             Get
                 Return ResourceManager.GetString("Label_OutputType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Overwrite existing files.
+        '''</summary>
+        Friend ReadOnly Property Label_OverwriteExisting() As String
+            Get
+                Return ResourceManager.GetString("Label_OverwriteExisting", resourceCulture)
             End Get
         End Property
         

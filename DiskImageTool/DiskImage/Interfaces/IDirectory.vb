@@ -10,6 +10,7 @@
         Function AddDirectory(EntryData() As Byte, Options As AddFileOptions, Filename As String, Optional Index As Integer = -1) As AddFileData
         Function AddFile(FilePath As String, Options As AddFileOptions, Optional Index As Integer = -1) As Integer
         Function AddFile(FileInfo As IO.FileInfo, Options As AddFileOptions, Optional Index As Integer = -1) As Integer
+        Function AdjustIndexForLFN(Index As Integer) As Integer
         Function FindFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer
         Function FindShortFileName(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer
         Function FindShortFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer

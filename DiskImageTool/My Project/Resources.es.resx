@@ -1997,4 +1997,22 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Dialog_RecentFolderMissing" xml:space="preserve">
     <value>La carpeta '{0}' ya no existe. ¿Desea eliminarla de las carpetas recientes?</value>
   </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>Acción</value>
+  </data>
+  <data name="Action_Merge" xml:space="preserve">
+    <value>Fusionar</value>
+  </data>
+  <data name="Action_Rename" xml:space="preserve">
+    <value>Renombrar</value>
+  </data>
+  <data name="Action_Add" xml:space="preserve">
+    <value>Agregar</value>
+  </data>
+  <data name="Action_Skip" xml:space="preserve">
+    <value>Omitir</value>
+  </data>
+  <data name="Label_OverwriteExisting" xml:space="preserve">
+    <value>Sobrescribir archivos existentes</value>
+  </data>
 </root>

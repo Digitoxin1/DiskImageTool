@@ -1997,4 +1997,22 @@ Möchten Sie fortfahren?</value>
   <data name="Dialog_RecentFolderMissing" xml:space="preserve">
     <value>Der Ordner '{0}' existiert nicht mehr. Aus den zuletzt verwendeten Ordnern entfernen?</value>
   </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>Aktion</value>
+  </data>
+  <data name="Action_Merge" xml:space="preserve">
+    <value>Zusammenführen</value>
+  </data>
+  <data name="Action_Rename" xml:space="preserve">
+    <value>Umbenennen</value>
+  </data>
+  <data name="Action_Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="Action_Skip" xml:space="preserve">
+    <value>Überspringen</value>
+  </data>
+  <data name="Label_OverwriteExisting" xml:space="preserve">
+    <value>Vorhandene Dateien überschreiben</value>
+  </data>
 </root>
