@@ -48,11 +48,11 @@ I have a discord channel set up for the discussion of DiskImageTool at [#diskima
 
 ---
 
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/UI-Overview"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Main-Window.png" height="204"></a>&nbsp;&nbsp;
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-Boot-Sector"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Boot-Sector-Dialog.png" height="204"></a>&nbsp;&nbsp;
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-FAT"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/FAT-Dialog.png" height="204"></a>
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/UI-Overview" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Main-Window.png" height="204"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-Boot-Sector" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Boot-Sector-Dialog.png" height="204"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-FAT" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/FAT-Dialog.png" height="204"></a>
 <br><br>
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Hex-Editor"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Hex-Editor-Dialog.png" height="193"></a>&nbsp;&nbsp;
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Raw-Track-Data"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Raw-Track-Data-Dialog.png" height="193"></a>
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Hex-Editor" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Hex-Editor-Dialog.png" height="193"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Raw-Track-Data" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Raw-Track-Data-Dialog.png" height="193"></a>
 <br><br>
-<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Flux-Read-Disk"><img height="204" src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Flux-Read-Dialog.png"></a>
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Flux-Read-Disk" target="_blank" rel="noopener noreferrer"><img height="204" src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Flux-Read-Dialog.png"></a>
