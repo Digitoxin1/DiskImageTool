@@ -612,9 +612,7 @@
     <Compile Include="Forms\HexViewForm.Designer.vb">
       <DependentUpon>HexViewForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\HexViewForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\HexViewForm.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

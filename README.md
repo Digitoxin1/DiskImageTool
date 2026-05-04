@@ -48,11 +48,11 @@ I have a discord channel set up for the discussion of DiskImageTool at [#diskima
 
 ---
 
-<img src="https://github.com/user-attachments/assets/0fcb62da-5853-4f97-a20e-7e5db8e23aad" height="204">&nbsp;&nbsp;
-<img src="https://github.com/user-attachments/assets/4e4afab9-e869-42bd-a2d3-ffb9cb93b836" height="204">&nbsp;&nbsp;
-<img src="https://github.com/user-attachments/assets/71d62245-b98b-4e5c-88a8-81ebbdb2b045" height="204">
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/UI-Overview"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Main-Window.png" height="204"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-Boot-Sector"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Boot-Sector-Dialog.png" height="204"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Edit-FAT"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/FAT-Dialog.png" height="204"></a>
 <br><br>
-<img src="https://github.com/user-attachments/assets/17b94e20-a136-476f-bbb7-95558a433aa7" height="193">&nbsp;&nbsp;
-<img src="https://github.com/user-attachments/assets/4bee7e29-0faf-4418-8488-031c3814becc" height="193">
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Hex-Editor"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Hex-Editor-Dialog.png" height="193"></a>&nbsp;&nbsp;
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Raw-Track-Data"><img src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Raw-Track-Data-Dialog.png" height="193"></a>
 <br><br>
-<img height="204" src="https://github.com/user-attachments/assets/4b0c466d-d884-461e-ac55-ef920ac222b4" />
+<a href="https://github.com/Digitoxin1/DiskImageTool/wiki/Dialog-Flux-Read-Disk"><img height="204" src="https://raw.githubusercontent.com/wiki/Digitoxin1/DiskImageTool/assets/Flux-Read-Dialog.png"></a>
