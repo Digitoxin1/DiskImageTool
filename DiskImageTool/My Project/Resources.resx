@@ -195,9 +195,6 @@
   <data name="Caption_ScanImages" xml:space="preserve">
     <value>Scan Images</value>
   </data>
-  <data name="Caption_TrackLayout" xml:space="preserve">
-    <value>Tracklayout</value>
-  </data>
   <data name="Debug_BatchProcessTimeTaken" xml:space="preserve">
     <value>Batch Process Time Taken: {0}</value>
   </data>
@@ -651,55 +648,55 @@
   <data name="Dialog_Image_SurfaceData" xml:space="preserve">
     <value>This image contains additional surface data which may be required for copy protection.{0}{0}This data will be lost when saving to this image type.{0}{0}Do you wish to continue?</value>
   </data>
-  <data name="DirectorytEntryLFN_Attributes" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Attributes" xml:space="preserve">
     <value>LFN Attributes</value>
   </data>
-  <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Checksum" xml:space="preserve">
     <value>LFN Checksum</value>
   </data>
-  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
+  <data name="DirectoryEntryLFN_FilePart" xml:space="preserve">
     <value>LFN Name {0}</value>
   </data>
-  <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Sequence" xml:space="preserve">
     <value>LFN Sequence</value>
   </data>
-  <data name="DirectorytEntryLFN_StartingCluster" xml:space="preserve">
+  <data name="DirectoryEntryLFN_StartingCluster" xml:space="preserve">
     <value>LFN Starting Cluster</value>
   </data>
-  <data name="DirectorytEntryLFN_Type" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Type" xml:space="preserve">
     <value>LFN Type</value>
   </data>
   <data name="Label_Attributes" xml:space="preserve">
     <value>Attributes</value>
   </data>
-  <data name="DirectorytEntry_CreationDate" xml:space="preserve">
+  <data name="DirectoryEntry_CreationDate" xml:space="preserve">
     <value>Creation Date</value>
   </data>
-  <data name="DirectorytEntry_CreationMillisecond" xml:space="preserve">
+  <data name="DirectoryEntry_CreationMillisecond" xml:space="preserve">
     <value>Creation Time Tenths</value>
   </data>
-  <data name="DirectorytEntry_CreationTime" xml:space="preserve">
+  <data name="DirectoryEntry_CreationTime" xml:space="preserve">
     <value>Creation Time</value>
   </data>
-  <data name="DirectorytEntry_Extension" xml:space="preserve">
+  <data name="DirectoryEntry_Extension" xml:space="preserve">
     <value>Extension</value>
   </data>
-  <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
+  <data name="DirectoryEntry_LastAccessDate" xml:space="preserve">
     <value>Last Access Date</value>
   </data>
-  <data name="DirectorytEntry_LastWriteDate" xml:space="preserve">
+  <data name="DirectoryEntry_LastWriteDate" xml:space="preserve">
     <value>Last Write Date</value>
   </data>
-  <data name="DirectorytEntry_LastWriteTime" xml:space="preserve">
+  <data name="DirectoryEntry_LastWriteTime" xml:space="preserve">
     <value>Last Write Time</value>
   </data>
-  <data name="DirectorytEntry_ReservedForFAT32" xml:space="preserve">
+  <data name="DirectoryEntry_ReservedForFAT32" xml:space="preserve">
     <value>Reserved for FAT 32</value>
   </data>
-  <data name="DirectorytEntry_ReservedForWinNT" xml:space="preserve">
+  <data name="DirectoryEntry_ReservedForWinNT" xml:space="preserve">
     <value>Reserved For Windows NT</value>
   </data>
-  <data name="DirectorytEntry_StartingCluster" xml:space="preserve">
+  <data name="DirectoryEntry_StartingCluster" xml:space="preserve">
     <value>Starting Cluster</value>
   </data>
   <data name="FileType_AdvancedSectorImage" xml:space="preserve">
@@ -1449,7 +1446,7 @@
   <data name="Menu_NewDirectoryHere" xml:space="preserve">
     <value>&amp;New Directory Here</value>
   </data>
-  <data name="Menu_FixFlieSize" xml:space="preserve">
+  <data name="Menu_FixFileSize" xml:space="preserve">
     <value>Fix File &amp;Size</value>
   </data>
   <data name="URL_Repository" xml:space="preserve">
@@ -1660,7 +1657,7 @@
   <data name="Label_Modified" xml:space="preserve">
     <value>Modified</value>
   </data>
-  <data name="Label_Staus" xml:space="preserve">
+  <data name="Label_Status" xml:space="preserve">
     <value>Status</value>
   </data>
   <data name="Label_Sectors" xml:space="preserve">
@@ -1855,7 +1852,7 @@ Do you wish to overwrite?</value>
   <data name="Label_Find" xml:space="preserve">
     <value>Find</value>
   </data>
-  <data name="Label_FIndNext" xml:space="preserve">
+  <data name="Label_FindNext" xml:space="preserve">
     <value>Find Next</value>
   </data>
   <data name="Label_FillSelectionWith" xml:space="preserve">
@@ -2106,7 +2103,7 @@ Do you wish to overwrite?</value>
   <data name="Label_Details" xml:space="preserve">
     <value>Details</value>
   </data>
-  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+  <data name="Modifications_LastAccessDateAdded" xml:space="preserve">
     <value>Last Access Date added to directory entries</value>
   </data>
   <data name="Modifications_BootSector" xml:space="preserve">

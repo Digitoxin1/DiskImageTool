@@ -471,15 +471,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Tracklayout.
-        '''</summary>
-        Friend ReadOnly Property Caption_TrackLayout() As String
-            Get
-                Return ResourceManager.GetString("Caption_TrackLayout", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Valid Clusters.
         '''</summary>
         Friend ReadOnly Property Caption_ValidClusters() As String
@@ -1629,144 +1620,144 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Creation Date.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_CreationDate() As String
+        Friend ReadOnly Property DirectoryEntry_CreationDate() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_CreationDate", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_CreationDate", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Creation Time Tenths.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_CreationMillisecond() As String
+        Friend ReadOnly Property DirectoryEntry_CreationMillisecond() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_CreationMillisecond", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_CreationMillisecond", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Creation Time.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_CreationTime() As String
+        Friend ReadOnly Property DirectoryEntry_CreationTime() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_CreationTime", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_CreationTime", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Extension.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_Extension() As String
+        Friend ReadOnly Property DirectoryEntry_Extension() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_Extension", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_Extension", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Last Access Date.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_LastAccessDate() As String
+        Friend ReadOnly Property DirectoryEntry_LastAccessDate() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_LastAccessDate", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_LastAccessDate", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Last Write Date.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_LastWriteDate() As String
+        Friend ReadOnly Property DirectoryEntry_LastWriteDate() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_LastWriteDate", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_LastWriteDate", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Last Write Time.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_LastWriteTime() As String
+        Friend ReadOnly Property DirectoryEntry_LastWriteTime() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_LastWriteTime", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_LastWriteTime", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Reserved for FAT 32.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_ReservedForFAT32() As String
+        Friend ReadOnly Property DirectoryEntry_ReservedForFAT32() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_ReservedForFAT32", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_ReservedForFAT32", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Reserved For Windows NT.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_ReservedForWinNT() As String
+        Friend ReadOnly Property DirectoryEntry_ReservedForWinNT() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_ReservedForWinNT", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_ReservedForWinNT", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Starting Cluster.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntry_StartingCluster() As String
+        Friend ReadOnly Property DirectoryEntry_StartingCluster() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntry_StartingCluster", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntry_StartingCluster", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Attributes.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_Attributes() As String
+        Friend ReadOnly Property DirectoryEntryLFN_Attributes() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_Attributes", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_Attributes", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Checksum.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_Checksum() As String
+        Friend ReadOnly Property DirectoryEntryLFN_Checksum() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_Checksum", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_Checksum", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Name {0}.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_FilePart() As String
+        Friend ReadOnly Property DirectoryEntryLFN_FilePart() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_FilePart", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_FilePart", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Sequence.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_Sequence() As String
+        Friend ReadOnly Property DirectoryEntryLFN_Sequence() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_Sequence", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_Sequence", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Starting Cluster.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_StartingCluster() As String
+        Friend ReadOnly Property DirectoryEntryLFN_StartingCluster() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_StartingCluster", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_StartingCluster", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to LFN Type.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_Type() As String
+        Friend ReadOnly Property DirectoryEntryLFN_Type() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_Type", resourceCulture)
+                Return ResourceManager.GetString("DirectoryEntryLFN_Type", resourceCulture)
             End Get
         End Property
         
@@ -3501,9 +3492,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Find Next.
         '''</summary>
-        Friend ReadOnly Property Label_FIndNext() As String
+        Friend ReadOnly Property Label_FindNext() As String
             Get
-                Return ResourceManager.GetString("Label_FIndNext", resourceCulture)
+                Return ResourceManager.GetString("Label_FindNext", resourceCulture)
             End Get
         End Property
         
@@ -4707,9 +4698,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Status.
         '''</summary>
-        Friend ReadOnly Property Label_Staus() As String
+        Friend ReadOnly Property Label_Status() As String
             Get
-                Return ResourceManager.GetString("Label_Staus", resourceCulture)
+                Return ResourceManager.GetString("Label_Status", resourceCulture)
             End Get
         End Property
         
@@ -5337,9 +5328,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Fix File &amp;Size.
         '''</summary>
-        Friend ReadOnly Property Menu_FixFlieSize() As String
+        Friend ReadOnly Property Menu_FixFileSize() As String
             Get
-                Return ResourceManager.GetString("Menu_FixFlieSize", resourceCulture)
+                Return ResourceManager.GetString("Menu_FixFileSize", resourceCulture)
             End Get
         End Property
         
@@ -5797,9 +5788,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Last Access Date added to directory entries.
         '''</summary>
-        Friend ReadOnly Property Modifcations_LastAccessDateAdded() As String
+        Friend ReadOnly Property Modifications_LastAccessDateAdded() As String
             Get
-                Return ResourceManager.GetString("Modifcations_LastAccessDateAdded", resourceCulture)
+                Return ResourceManager.GetString("Modifications_LastAccessDateAdded", resourceCulture)
             End Get
         End Property
         

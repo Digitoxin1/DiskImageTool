@@ -211,7 +211,7 @@ Module Reports
                             Details.Add(My.Resources.Modifications_CreatedDateAdded)
                         End If
                         If ScanResponse.HasLastAccessed Then
-                            Details.Add(My.Resources.Modifcations_LastAccessDateAdded)
+                            Details.Add(My.Resources.Modifications_LastAccessDateAdded)
                         End If
                         If ScanResponse.HasBootSector Then
                             Details.Add(My.Resources.Modifications_BootSectorCopy)

@@ -59,27 +59,27 @@
                 Case DirectoryEntry.DirectoryEntryOffsets.FileName
                     Return My.Resources.Label_Name
                 Case DirectoryEntry.DirectoryEntryOffsets.Extension
-                    Return My.Resources.DirectorytEntry_Extension
+                    Return My.Resources.DirectoryEntry_Extension
                 Case DirectoryEntry.DirectoryEntryOffsets.Attributes
                     Return My.Resources.Label_Attributes
                 Case DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
-                    Return My.Resources.DirectorytEntry_ReservedForWinNT
+                    Return My.Resources.DirectoryEntry_ReservedForWinNT
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
-                    Return My.Resources.DirectorytEntry_CreationMillisecond
+                    Return My.Resources.DirectoryEntry_CreationMillisecond
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationTime
-                    Return My.Resources.DirectorytEntry_CreationTime
+                    Return My.Resources.DirectoryEntry_CreationTime
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationDate
-                    Return My.Resources.DirectorytEntry_CreationDate
+                    Return My.Resources.DirectoryEntry_CreationDate
                 Case DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
-                    Return My.Resources.DirectorytEntry_LastAccessDate
+                    Return My.Resources.DirectoryEntry_LastAccessDate
                 Case DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
-                    Return My.Resources.DirectorytEntry_ReservedForFAT32
+                    Return My.Resources.DirectoryEntry_ReservedForFAT32
                 Case DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
-                    Return My.Resources.DirectorytEntry_LastWriteTime
+                    Return My.Resources.DirectoryEntry_LastWriteTime
                 Case DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
-                    Return My.Resources.DirectorytEntry_LastWriteDate
+                    Return My.Resources.DirectoryEntry_LastWriteDate
                 Case DirectoryEntry.DirectoryEntryOffsets.StartingCluster
-                    Return My.Resources.DirectorytEntry_StartingCluster
+                    Return My.Resources.DirectoryEntry_StartingCluster
                 Case DirectoryEntry.DirectoryEntryOffsets.FileSize
                     Return My.Resources.Label_Size
                 Case Else
@@ -90,21 +90,21 @@
         Public Function DirectorytEntryLFNDescription(Offset As DirectoryEntry.LFNOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.LFNOffsets.Sequence
-                    Return My.Resources.DirectorytEntryLFN_Sequence
+                    Return My.Resources.DirectoryEntryLFN_Sequence
                 Case DirectoryEntry.LFNOffsets.FilePart1
-                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "1")
+                    Return String.Format(My.Resources.DirectoryEntryLFN_FilePart, "1")
                 Case DirectoryEntry.LFNOffsets.Attributes
-                    Return My.Resources.DirectorytEntryLFN_Attributes
+                    Return My.Resources.DirectoryEntryLFN_Attributes
                 Case DirectoryEntry.LFNOffsets.Type
-                    Return My.Resources.DirectorytEntryLFN_Type
+                    Return My.Resources.DirectoryEntryLFN_Type
                 Case DirectoryEntry.LFNOffsets.Checksum
-                    Return My.Resources.DirectorytEntryLFN_Checksum
+                    Return My.Resources.DirectoryEntryLFN_Checksum
                 Case DirectoryEntry.LFNOffsets.FilePart2
-                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "2")
+                    Return String.Format(My.Resources.DirectoryEntryLFN_FilePart, "2")
                 Case DirectoryEntry.LFNOffsets.StartingCluster
-                    Return My.Resources.DirectorytEntryLFN_StartingCluster
+                    Return My.Resources.DirectoryEntryLFN_StartingCluster
                 Case DirectoryEntry.LFNOffsets.FilePart3
-                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "3")
+                    Return String.Format(My.Resources.DirectoryEntryLFN_FilePart, "3")
                 Case Else
                     Return Offset.ToString
             End Select

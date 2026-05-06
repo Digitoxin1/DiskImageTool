@@ -675,7 +675,7 @@ Public Class FilePanel
         Item = AddMenuSeparator(ContextMenuFiles)
         Item.Visible = False
 
-        Item = AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize, My.Resources.Menu_FixFlieSize)
+        Item = AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize, My.Resources.Menu_FixFileSize)
         Item.Visible = False
     End Sub
 

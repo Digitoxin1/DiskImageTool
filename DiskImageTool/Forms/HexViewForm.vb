@@ -108,7 +108,7 @@ Public Class HexViewForm
         BtnFill.Text = My.Resources.Label_FillSelection
         BtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
         BtnFind.Text = My.Resources.Label_Find
-        BtnFindNext.Text = My.Resources.Label_FIndNext
+        BtnFindNext.Text = My.Resources.Label_FindNext
         BtnPaste.Text = My.Resources.Menu_PasteOver
         BtnRedo.Text = My.Resources.Menu_Redo
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
@@ -124,7 +124,7 @@ Public Class HexViewForm
         ToolStripBtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
         ToolStripBtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
         ToolStripBtnFind.Text = My.Resources.Label_Find
-        ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
+        ToolStripBtnFindNext.Text = My.Resources.Label_FindNext
         ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
         ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll

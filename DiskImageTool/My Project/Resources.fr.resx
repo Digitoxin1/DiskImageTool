@@ -195,9 +195,6 @@
   <data name="Caption_ScanImages" xml:space="preserve">
     <value>Analyser les images</value>
   </data>
-  <data name="Caption_TrackLayout" xml:space="preserve">
-    <value>Disposition des pistes</value>
-  </data>
   <data name="Debug_BatchProcessTimeTaken" xml:space="preserve">
     <value>Durée du traitement par lot: {0}</value>
   </data>
@@ -591,55 +588,55 @@
   <data name="Dialog_Image_SurfaceData" xml:space="preserve">
     <value>Cette image contient des données de surface supplémentaires qui peuvent être requises pour la protection contre la copie.{0}{0}Ces données seront perdues lors de l’enregistrement dans ce format.{0}{0}Souhaitez-vous continuer ?</value>
   </data>
-  <data name="DirectorytEntryLFN_Attributes" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Attributes" xml:space="preserve">
     <value>Attributs LFN</value>
   </data>
-  <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Checksum" xml:space="preserve">
     <value>Somme de contrôle LFN</value>
   </data>
-  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
+  <data name="DirectoryEntryLFN_FilePart" xml:space="preserve">
     <value>Nom LFN {0}</value>
   </data>
-  <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Sequence" xml:space="preserve">
     <value>Séquence LFN</value>
   </data>
-  <data name="DirectorytEntryLFN_StartingCluster" xml:space="preserve">
+  <data name="DirectoryEntryLFN_StartingCluster" xml:space="preserve">
     <value>Cluster de départ LFN</value>
   </data>
-  <data name="DirectorytEntryLFN_Type" xml:space="preserve">
+  <data name="DirectoryEntryLFN_Type" xml:space="preserve">
     <value>Type LFN</value>
   </data>
   <data name="Label_Attributes" xml:space="preserve">
     <value>Attributs</value>
   </data>
-  <data name="DirectorytEntry_CreationDate" xml:space="preserve">
+  <data name="DirectoryEntry_CreationDate" xml:space="preserve">
     <value>Date de création</value>
   </data>
-  <data name="DirectorytEntry_CreationMillisecond" xml:space="preserve">
+  <data name="DirectoryEntry_CreationMillisecond" xml:space="preserve">
     <value>Heure de création (dixièmes)</value>
   </data>
-  <data name="DirectorytEntry_CreationTime" xml:space="preserve">
+  <data name="DirectoryEntry_CreationTime" xml:space="preserve">
     <value>Heure de création</value>
   </data>
-  <data name="DirectorytEntry_Extension" xml:space="preserve">
+  <data name="DirectoryEntry_Extension" xml:space="preserve">
     <value>Extension</value>
   </data>
-  <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
+  <data name="DirectoryEntry_LastAccessDate" xml:space="preserve">
     <value>Date du dernier accès</value>
   </data>
-  <data name="DirectorytEntry_LastWriteDate" xml:space="preserve">
+  <data name="DirectoryEntry_LastWriteDate" xml:space="preserve">
     <value>Date de dernière modification</value>
   </data>
-  <data name="DirectorytEntry_LastWriteTime" xml:space="preserve">
+  <data name="DirectoryEntry_LastWriteTime" xml:space="preserve">
     <value>Heure de dernière modification</value>
   </data>
-  <data name="DirectorytEntry_ReservedForFAT32" xml:space="preserve">
+  <data name="DirectoryEntry_ReservedForFAT32" xml:space="preserve">
     <value>Réservé pour FAT 32</value>
   </data>
-  <data name="DirectorytEntry_ReservedForWinNT" xml:space="preserve">
+  <data name="DirectoryEntry_ReservedForWinNT" xml:space="preserve">
     <value>Réservé pour Windows NT</value>
   </data>
-  <data name="DirectorytEntry_StartingCluster" xml:space="preserve">
+  <data name="DirectoryEntry_StartingCluster" xml:space="preserve">
     <value>Cluster de départ</value>
   </data>
   <data name="FileType_AdvancedSectorImage" xml:space="preserve">
@@ -1272,7 +1269,7 @@
   <data name="Menu_NewDirectoryHere" xml:space="preserve">
     <value>&amp;Nouveau dossier ici</value>
   </data>
-  <data name="Menu_FixFlieSize" xml:space="preserve">
+  <data name="Menu_FixFileSize" xml:space="preserve">
     <value>Corriger la &amp;taille du fichier</value>
   </data>
   <data name="Dialog_OpenFileError" xml:space="preserve">
@@ -1446,7 +1443,7 @@
   <data name="Label_Modified" xml:space="preserve">
     <value>Modifié</value>
   </data>
-  <data name="Label_Staus" xml:space="preserve">
+  <data name="Label_Status" xml:space="preserve">
     <value>Statut</value>
   </data>
   <data name="Label_Sectors" xml:space="preserve">
@@ -1633,7 +1630,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_Find" xml:space="preserve">
     <value>Rechercher</value>
   </data>
-  <data name="Label_FIndNext" xml:space="preserve">
+  <data name="Label_FindNext" xml:space="preserve">
     <value>Rechercher suivant</value>
   </data>
   <data name="Label_FillSelectionWith" xml:space="preserve">
@@ -1864,7 +1861,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_Details" xml:space="preserve">
     <value>Détails</value>
   </data>
-  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+  <data name="Modifications_LastAccessDateAdded" xml:space="preserve">
     <value>Date du dernier accès ajoutée aux entrées de répertoire</value>
   </data>
   <data name="Modifications_BootSector" xml:space="preserve">

@@ -90,7 +90,7 @@ Public Class HexViewRawForm
         BtnCopyText.Text = My.Resources.Menu_CopyText
         BtnCopyValue.Text = My.Resources.Menu_CopyValue
         BtnFind.Text = My.Resources.Label_Find
-        BtnFindNext.Text = My.Resources.Label_FIndNext
+        BtnFindNext.Text = My.Resources.Label_FindNext
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
         BtnSelectData.Text = My.Resources.Menu_SelectData
         BtnSelectRegion.Text = My.Resources.Menu_SelectRegion
@@ -102,7 +102,7 @@ Public Class HexViewRawForm
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
         ToolStripBtnFind.Text = My.Resources.Label_Find
-        ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
+        ToolStripBtnFindNext.Text = My.Resources.Label_FindNext
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
         ToolStripBtnSelectData.Text = My.Resources.Label_Data
         ToolStripBtnSelectData.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectData)

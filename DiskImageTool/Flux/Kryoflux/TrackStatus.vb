@@ -109,7 +109,7 @@
             End If
 
             If Track.Details.Status <> "" Then
-                Tooltip.Add(My.Resources.Label_Staus & ":  " & UppercaseFirst(Track.Details.Status))
+                Tooltip.Add(My.Resources.Label_Status & ":  " & UppercaseFirst(Track.Details.Status))
             End If
 
             Dim Sectors As New List(Of String)
