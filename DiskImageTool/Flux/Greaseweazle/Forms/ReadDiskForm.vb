@@ -125,7 +125,7 @@ Namespace Flux.Greaseweazle
             InitializeImage()
 
             SetFilenames(True)
-            SetRootFolder(App.AppSettings.Greaseweazle.FluxRootPath)
+            SetRootFolder(SelectedDeviceState.RootFolder)
             SetImageFolder(SelectedDeviceState.ImageFolder)
 
             _CachedRevs = 2
@@ -1449,7 +1449,7 @@ Namespace Flux.Greaseweazle
             End If
 
             RootFolderInput = Path
-            App.AppSettings.Greaseweazle.FluxRootPath = Path
+            SelectedDeviceState.RootFolder = Path
         End Sub
         Private Sub SetTitleBarText()
             Dim Text = My.Resources.Label_ReadDisk

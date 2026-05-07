@@ -1137,11 +1137,11 @@ Public Class MainForm
         Dim Width As Integer = Me.Width
         Dim Height As Integer = Me.Height
 
-        If App.Globals.AppSettings.WindowWidth > 0 Then
-            Width = App.Globals.AppSettings.WindowWidth
+        If App.Globals.UserState.WindowWidth > 0 Then
+            Width = App.Globals.UserState.WindowWidth
         End If
-        If App.Globals.AppSettings.WindowHeight > 0 Then
-            Height = App.Globals.AppSettings.WindowHeight
+        If App.Globals.UserState.WindowHeight > 0 Then
+            Height = App.Globals.UserState.WindowHeight
         End If
 
         Width = Math.Min(Width, WorkingArea.Width)
@@ -1252,7 +1252,7 @@ Public Class MainForm
         If Paths Is Nothing OrElse Paths.Length = 0 Then
             Return
         End If
-        Dim Settings = App.Globals.AppSettings
+        Dim Settings = App.Globals.UserState
 
         Dim Existing = Paths _
             .Where(Function(p) Not String.IsNullOrWhiteSpace(p) AndAlso (IO.File.Exists(p) OrElse IO.Directory.Exists(p))) _
@@ -1454,7 +1454,7 @@ Public Class MainForm
     Private Sub RefreshRecentFilesMenu()
         MenuFileRecent.DropDownItems.Clear()
 
-        Dim Settings = App.Globals.AppSettings
+        Dim Settings = App.Globals.UserState
         Dim Files As IReadOnlyList(Of String) = Settings.RecentFiles
         Dim Folders As IReadOnlyList(Of String) = Settings.RecentFolders
 
@@ -2116,8 +2116,8 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
-        App.Globals.AppSettings.WindowWidth = Me.Width
-        App.Globals.AppSettings.WindowHeight = Me.Height
+        App.Globals.UserState.WindowWidth = Me.Width
+        App.Globals.UserState.WindowHeight = Me.Height
     End Sub
 
     Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
@@ -2230,14 +2230,14 @@ Public Class MainForm
         If Not IO.File.Exists(FilePath) Then
             If MsgBox(String.Format(My.Resources.Dialog_RecentFileMissing, FilePath),
                   MsgBoxStyle.YesNo + MsgBoxStyle.Question) = MsgBoxResult.Yes Then
-                App.Globals.AppSettings.RecentFilesRemove(FilePath)
+                App.Globals.UserState.RecentFilesRemove(FilePath)
             End If
             Return
         End If
 
         ProcessFileDrop({FilePath}, True)
 
-        App.Globals.AppSettings.RecentFilesAdd(FilePath)
+        App.Globals.UserState.RecentFilesAdd(FilePath)
     End Sub
 
     Private Sub MenuFileRecent_FolderClick(sender As Object, e As EventArgs)
@@ -2254,18 +2254,18 @@ Public Class MainForm
         If Not IO.Directory.Exists(FolderPath) Then
             If MsgBox(String.Format(My.Resources.Dialog_RecentFolderMissing, FolderPath),
                   MsgBoxStyle.YesNo + MsgBoxStyle.Question) = MsgBoxResult.Yes Then
-                App.Globals.AppSettings.RecentFoldersRemove(FolderPath)
+                App.Globals.UserState.RecentFoldersRemove(FolderPath)
             End If
             Return
         End If
 
         ProcessFileDrop({FolderPath}, True)
 
-        App.Globals.AppSettings.RecentFoldersAdd(FolderPath)
+        App.Globals.UserState.RecentFoldersAdd(FolderPath)
     End Sub
 
     Private Sub MenuFileRecent_ClearRecent_Click(sender As Object, e As EventArgs)
-        App.Globals.AppSettings.RecentClearAll()
+        App.Globals.UserState.RecentClearAll()
     End Sub
 
     Private Sub MenuFileReload_Click(sender As Object, e As EventArgs) Handles MenuFileReload.Click

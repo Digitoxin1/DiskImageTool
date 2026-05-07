@@ -10,6 +10,7 @@ Namespace Settings
         Private _OutputType2 As ReadDiskOutputTypes = ReadDiskOutputTypes.None
         Private _ImageLocation As ReadDiskImageLocations?
         Private _ImageFolder As String
+        Private _RootFolder As String
         Private _SaveLog As Boolean = True
 
         Friend Property DriveId As String
@@ -43,6 +44,18 @@ Namespace Settings
             Set
                 If _ImageFolder <> Value Then
                     _ImageFolder = Value
+                    MarkDirty()
+                End If
+            End Set
+        End Property
+
+        Friend Property RootFolder As String
+            Get
+                Return _RootFolder
+            End Get
+            Set
+                If _RootFolder <> Value Then
+                    _RootFolder = Value
                     MarkDirty()
                 End If
             End Set
@@ -95,6 +108,7 @@ Namespace Settings
             _OutputType2 = ReadValue(dict, "outputType2", _OutputType2)
             _ImageLocation = ReadValue(dict, "imageLocation", _ImageLocation)
             _ImageFolder = ReadValue(dict, "imageFolder", _ImageFolder)
+            _RootFolder = ReadValue(dict, "rootFolder", _RootFolder)
 
             MarkClean()
         End Sub
@@ -115,6 +129,9 @@ Namespace Settings
             End If
             If Not String.IsNullOrEmpty(_ImageFolder) Then
                 result("imageFolder") = _ImageFolder
+            End If
+            If Not String.IsNullOrEmpty(_RootFolder) Then
+                result("rootFolder") = _RootFolder
             End If
 
             Return result

@@ -867,7 +867,7 @@
     <None Include="Resources\images\Import.png" />
     <None Include="Resources\images\ImportFiles.png" />
     <EmbeddedResource Include="Resources\bootsector.xml" />
-    <Content Include="..\..\DiskImageTool_FloppyDB\FloppyDB.xml">
+    <Content Include="..\..\FloppyDB\FloppyDB.xml">
       <Link>FloppyDB.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
