@@ -5,6 +5,7 @@ Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.Bitstream
 Imports System.Text.RegularExpressions
+Imports System.CodeDom
 
 Public Class HexViewRawForm
     Private WithEvents CheckBoxAllTracks As ToolStripCheckBox
@@ -461,7 +462,7 @@ Public Class HexViewRawForm
             InitializeAllTracksCheckBox()
         End If
         InitializeBitOffsetNavigator()
-        InitializeToolstripLabels
+        InitializeToolstripLabels()
         PopulateTracks(_AllTracks)
     End Sub
     Private Sub HighlightRegions()
@@ -1533,7 +1534,19 @@ Public Class HexViewRawForm
     Private Sub AddContextMenuBitEditItems()
         ContextMenuStrip1.Items.Add(New ToolStripSeparator())
 
-        Dim Item As New ToolStripMenuItem("Insert Bits")
+        Dim Item As New ToolStripMenuItem("Rotate All Tracks")
+        AddHandler Item.Click, AddressOf ContextMenuRotateAllTracks_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Normalize First Gap")
+        AddHandler Item.Click, AddressOf ContextMenuNormalizeFirstGap_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Insert Gap")
+        AddHandler Item.Click, AddressOf ContextMenuInsertGap_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Insert Bits")
         AddHandler Item.Click, AddressOf ContextMenuInsertBits_Click
         ContextMenuStrip1.Items.Add(Item)
 
@@ -1544,7 +1557,33 @@ Public Class HexViewRawForm
         Item = New ToolStripMenuItem("Edit Bits")
         AddHandler Item.Click, AddressOf ContextMenuEditBits_Click
         ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Pad All Tracks")
+        AddHandler Item.Click, AddressOf ContextMenuPadAllTracks_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Gap to End")
+        AddHandler Item.Click, AddressOf ContextMenuGapToEnd_Click
+        ContextMenuStrip1.Items.Add(Item)
     End Sub
+
+    Private Function RepeatBitArray(source As BitArray, count As UInteger) As BitArray
+        If count = 0 OrElse source.Length = 0 Then
+            Return New BitArray(0)
+        End If
+
+        Dim result As New BitArray(source.Length * count)
+
+        For repeatIndex As Integer = 0 To count - 1
+            Dim offset As Integer = repeatIndex * source.Length
+
+            For bitIndex As Integer = 0 To source.Length - 1
+                result(offset + bitIndex) = source(bitIndex)
+            Next
+        Next
+
+        Return result
+    End Function
 
     Private Function InsertBits(source As BitArray, index As Integer, bitsToInsert As BitArray) As BitArray
         If index < 0 OrElse index > source.Length Then
@@ -1598,6 +1637,63 @@ Public Class HexViewRawForm
         Return result
     End Function
 
+    Private Sub ContextMenuRotateAllTracks_Click()
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    Dim Offset = MFMGetOffset(MFMTrack.Bitstream)
+                    If Offset > 0 Then
+                        MFMTrack.Bitstream = BitstreamAlign(MFMTrack.Bitstream, Offset)
+                    End If
+                End If
+            Next
+        Next
+
+        For Each Track As TrackData In ComboTrack.Items
+            Track.Offset = -1
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuNormalizeFirstGap_Click()
+        Dim GapBits = New BitArray({True, False, False, True, False, False, True, False, False, True, False, True, False, True, False, False})
+
+        Dim Value = InputBox("Normalize First Gap: ", "Gap Size")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(Value) OrElse Not IsNumeric(Value) OrElse Value <> Int(Value) OrElse Int(Value) < 0 Then
+            Exit Sub
+        End If
+
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    Dim RegionData = MFMGetRegionList(MFMTrack.Bitstream, MFMTrack.TrackType)
+                    Dim GapSize As UShort = RegionData.Gap4A
+                    If GapSize = 0 Then
+                        GapSize = RegionData.Gap1
+                    End If
+                    Dim Diff = CInt(Value) - GapSize
+                    If Diff <> 0 Then
+                        Dim NewGapBits = RepeatBitArray(GapBits, Math.Abs(Diff))
+                        If Diff > 0 Then
+                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, 0, NewGapBits)
+                            MFMTrack.Bitstream.Length = MFMTrack.Bitstream.Length - NewGapBits.Length
+                        Else
+                            MFMTrack.Bitstream = RemoveBits(MFMTrack.Bitstream, 0, NewGapBits.Length)
+                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, MFMTrack.Bitstream.Length, NewGapBits)
+                        End If
+                    End If
+                End If
+            Next
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
     Private Sub ContextMenuEditBits_Click()
         Dim SelectionStart = HexBox1.SelectionStart
 
@@ -1605,6 +1701,7 @@ Public Class HexViewRawForm
 
         Dim Value = InputBox("Edit bits: ", "Edit Bits", Bits)
         Value = Value.Replace(" ", "")
+
         If Not Regex.IsMatch(Value, "^(0|1){16}$") Then
             Exit Sub
         End If
@@ -1616,6 +1713,89 @@ Public Class HexViewRawForm
             _Bitstream.Set(BitIndex + counter, Value.Substring(counter, 1) = 1)
         Next
 
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuGapToEnd_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+
+        For i = bitIndex To MFMTrack.Bitstream.Length - 1
+            Dim b As Boolean = GapBits((i - bitIndex) Mod 16) = "1"
+            MFMTrack.Bitstream.Set(i, b)
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuPadAllTracks_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        Dim value = InputBox("Pad All Tracks: ", "Track Size (Bits)", "")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
+            Exit Sub
+        End If
+
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                Dim PrevLength = MFMTrack.Bitstream.Length
+                PrevLength = Math.Ceiling(PrevLength / 16) * 16
+                MFMTrack.Bitstream.Length = CInt(value)
+                Dim FillLength = MFMTrack.Bitstream.Length - PrevLength
+                For k = 0 To FillLength - 1
+                    Dim b As Boolean = GapBits(k Mod 16) = "1"
+                    MFMTrack.Bitstream.Set(PrevLength + k, b)
+                Next
+            Next
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuInsertGap_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        Dim value = InputBox("Insert gap: ", "Gap Count", "")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
+            Exit Sub
+        End If
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        ' Build a BitArray from the entered bits
+        Dim bitsToInsert As New BitArray(GapBits.Length * CInt(value))
+        For i As Integer = 0 To value - 1
+            For j = 0 To GapBits.Length - 1
+                Dim idx = i * GapBits.Length + j
+                bitsToInsert(idx) = (GapBits(j) = "1")
+            Next
+        Next
+
+        ' Insert into the bitstream
+        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
+
+        ' Push updated bitstream back into the track and refresh UI
         Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
         MFMTrack.Bitstream = _Bitstream
 

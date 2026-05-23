@@ -324,7 +324,7 @@
 
                 RegionInfo.AddBytes(SectorSize)
 
-                If Not RegionSector.Overlaps And SectorSize < SectorLength - MFM_CRC_BYTES Then
+                If Not RegionSector.Overlaps AndAlso SectorLength >= MFM_CRC_BYTES AndAlso SectorSize < SectorLength - MFM_CRC_BYTES Then
                     Dim RegionType As MFMRegionType
 
                     If RegionSector.DataChecksumValid Then
