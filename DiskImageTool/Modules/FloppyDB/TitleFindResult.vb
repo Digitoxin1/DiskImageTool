@@ -9,27 +9,31 @@
         End Property
 
         Public Function GetIntList() As String
-            Return JoinDistinctStrings(Function(d) d.GetInt())
+            Return JoinDistinctStrings(Function(d) d.Int)
         End Function
 
         Public Function GetLanguageList() As String
-            Return JoinDistinctCommaValues(Function(d) d.GetLanguage())
+            Return JoinDistinctCommaValues(Function(d) d.Language)
         End Function
 
         Public Function GetNameList() As String
-            Return JoinDistinctStrings(Function(d) d.GetName(), vbNewLine)
+            Return JoinDistinctStrings(Function(d) d.Name, vbNewLine)
         End Function
 
         Public Function GetPublisherList() As String
-            Return JoinDistinctStrings(Function(d) d.GetPublisher(), vbNewLine)
+            Return JoinDistinctStrings(Function(d) d.Publisher, vbNewLine)
         End Function
 
         Public Function GetRegionList() As String
-            Return JoinDistinctCommaValues(Function(d) d.GetRegion())
+            Return JoinDistinctCommaValues(Function(d) d.Region)
         End Function
 
         Public Function GetSerialList() As String
-            Return JoinDistinctStrings(Function(d) d.GetSerial())
+            Return JoinDistinctStrings(Function(d) d.Serial)
+        End Function
+
+        Public Function GetSeriesList() As String
+            Return JoinDistinctStrings(Function(d) d.Series, vbNewLine)
         End Function
 
         Public Function GetVersionDisplay() As String
@@ -55,9 +59,9 @@
             End If
 
             Dim rows = Matches.Select(Function(d) New With {
-            .Ver = Normalize(d.GetVersion()),
-            .Ser = Normalize(d.GetSerial()),
-            .Int = Normalize(d.GetInt())
+            .Ver = Normalize(d.Version),
+            .Ser = Normalize(d.Serial),
+            .Int = Normalize(d.Int)
         }).
         GroupBy(Function(r) r.Ver & vbNullChar & r.Ser & vbNullChar & r.Int).
         Select(Function(g) g.First()).
@@ -93,10 +97,10 @@
         End Function
 
         Public Function GetVersionList() As String
-            Return JoinDistinctStrings(Function(d) d.GetVersion())
+            Return JoinDistinctStrings(Function(d) d.Version)
         End Function
         Public Function GetYearList() As String
-            Return JoinDistinctStrings(Function(d) d.GetYear())
+            Return JoinDistinctStrings(Function(d) d.Year)
         End Function
 
         Private Shared Function Normalize(s As String) As String
@@ -142,9 +146,9 @@
             Return result
         End Function
         Private Function FormatOne(d As FloppyData) As String
-            Dim ver = Normalize(d.GetVersion())
-            Dim ser = Normalize(d.GetSerial())
-            Dim intl = Normalize(d.GetInt())
+            Dim ver = Normalize(d.Version)
+            Dim ser = Normalize(d.Serial)
+            Dim intl = Normalize(d.Int)
 
             Dim seg As New List(Of String)
             If ver <> "" Then
@@ -168,9 +172,9 @@
             Return String.Join(Separator, DistinctStrings(selector))
         End Function
         Private Function MakeKey(d As FloppyData) As String
-            Dim ver = Normalize(d.GetVersion())
-            Dim ser = Normalize(d.GetSerial())
-            Dim intl = Normalize(d.GetInt())
+            Dim ver = Normalize(d.Version)
+            Dim ser = Normalize(d.Serial)
+            Dim intl = Normalize(d.Int)
 
             Return ver & vbNullChar & ser & vbNullChar & intl
         End Function

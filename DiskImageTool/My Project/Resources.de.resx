@@ -2012,4 +2012,7 @@ Möchten Sie fortfahren?</value>
   <data name="Label_OverwriteExisting" xml:space="preserve">
     <value>Vorhandene Dateien überschreiben</value>
   </data>
+  <data name="SummaryPanel_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
 </root>

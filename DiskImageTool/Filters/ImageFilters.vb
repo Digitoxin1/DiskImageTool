@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.Linq.Expressions
+Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Namespace Filters
@@ -210,21 +211,21 @@ Namespace Filters
                     If TitleData IsNot Nothing Then
                         Image_NotInDatabase = False
                         Image_InDatabase = True
-                        If TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
+                        If TitleData.Status = FloppyDB.FloppyDBStatus.Verified Then
                             Image_Verified = True
                         Else
                             Image_Unverified = True
                         End If
 
                         If App.Globals.AppSettings.Debug Then
-                            If TitleData.GetIsTDC Then
+                            If TitleData.IsTDC Then
                                 Image_InTDC = True
                             Else
                                 Image_NotInTDC = True
                             End If
                             FileData = New FloppyDB.FileNameData(ImageData.FileName, _TitleDB)
 
-                            If TitleData.GetStatus <> FileData.Status Then
+                            If TitleData.Status <> FileData.Status Then
                                 Database_MismatchedStatus = True
                             End If
                         End If
@@ -235,8 +236,10 @@ Namespace Filters
                             Dim FileName = IO.Path.GetFileNameWithoutExtension(ImageData.FileName)
                             Dim FileNameMatch As Boolean = False
                             For Each TitleData In TitleFindResult.Matches
-                                Dim SuggestedFileName = TitleData.GetSuggestedFileName
-                                If SuggestedFileName = FileName Then
+                                Dim SuggestedFileName = TitleData.GetSuggestedFileName(True)
+                                Dim FirstSuggestion = Replace(SuggestedFileName, "{ALT}", "")
+                                Dim SecondSuggestion = Replace(SuggestedFileName, "{ALT}", " (Alt)")
+                                If FileName = FirstSuggestion OrElse FileName = SecondSuggestion Then
                                     FileNameMatch = True
                                     Exit For
                                 End If
@@ -246,8 +249,9 @@ Namespace Filters
                                 Debug.Print("File Name: " & FileName)
                                 For Each TitleData In TitleFindResult.Matches
                                     Dim SuggestedFileName = TitleData.GetSuggestedFileName
-                                    Debug.Print("Suggested File Name: " & SuggestedFileName)
+                                    Debug.Print("Suggested: " & SuggestedFileName)
                                 Next
+                                Debug.Print("MD5: " & Disk.Image.GetMD5Hash)
                             End If
                         End If
                     End If

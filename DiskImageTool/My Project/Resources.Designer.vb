@@ -5786,15 +5786,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Last Access Date added to directory entries.
-        '''</summary>
-        Friend ReadOnly Property Modifications_LastAccessDateAdded() As String
-            Get
-                Return ResourceManager.GetString("Modifications_LastAccessDateAdded", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Boot Sector modified.
         '''</summary>
         Friend ReadOnly Property Modifications_BootSector() As String
@@ -5827,6 +5818,15 @@ Namespace My.Resources
         Friend ReadOnly Property Modifications_FAT() As String
             Get
                 Return ResourceManager.GetString("Modifications_FAT", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Last Access Date added to directory entries.
+        '''</summary>
+        Friend ReadOnly Property Modifications_LastAccessDateAdded() As String
+            Get
+                Return ResourceManager.GetString("Modifications_LastAccessDateAdded", resourceCulture)
             End Get
         End Property
         
@@ -6201,6 +6201,15 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_RPMAdjustment() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_RPMAdjustment", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Series.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_Series() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_Series", resourceCulture)
             End Get
         End Property
         

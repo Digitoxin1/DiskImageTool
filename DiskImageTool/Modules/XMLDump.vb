@@ -583,24 +583,26 @@ Module XMLDump
         For Each Title In Result.Matches
             xw.WriteStartElement("title")
 
-            WriteElementStringIFNotEmpty(xw, "name", Title.GetName)
-            WriteElementStringIFNotEmpty(xw, "variant", Title.GetVariation)
-            WriteElementStringIFNotEmpty(xw, "compilation", Title.GetCompilation)
-            WriteElementStringIFNotEmpty(xw, "publisher", Title.GetPublisher)
-            WriteElementStringIFNotEmpty(xw, "year", Title.GetYear)
-            WriteElementStringIFNotEmpty(xw, "os", Title.GetOperatingSystem)
-            WriteElementStringIFNotEmpty(xw, "region", Title.GetRegion)
-            WriteElementStringIFNotEmpty(xw, "language", Title.GetLanguage)
-            WriteElementStringIFNotEmpty(xw, "version", Title.GetVersion)
-            WriteElementStringIFNotEmpty(xw, "disk", Title.GetDisk)
-            WriteElementStringIFNotEmpty(xw, "protection", Title.GetCopyProtection)
+            WriteElementStringIFNotEmpty(xw, "name", Title.Name)
+            WriteElementStringIFNotEmpty(xw, "variant", Title.Variation)
+            WriteElementStringIFNotEmpty(xw, "compilation", Title.Compilation)
+            WriteElementStringIFNotEmpty(xw, "publisher", Title.Publisher)
+            WriteElementStringIFNotEmpty(xw, "series", Title.Series)
+            WriteElementStringIFNotEmpty(xw, "year", Title.Year)
+            WriteElementStringIFNotEmpty(xw, "os", Title.OperatingSystem)
+            WriteElementStringIFNotEmpty(xw, "region", Title.Region)
+            WriteElementStringIFNotEmpty(xw, "language", Title.Language)
+            WriteElementStringIFNotEmpty(xw, "version", Title.Version)
+            WriteElementStringIFNotEmpty(xw, "system", Title.System)
+            WriteElementStringIFNotEmpty(xw, "disk", Title.Disk)
+            WriteElementStringIFNotEmpty(xw, "protection", Title.CopyProtection)
 
-            Dim Status = Title.GetStatus
+            Dim Status = Title.Status
             Dim StatusString As String = ""
             If Status = FloppyDB.FloppyDBStatus.Verified Then
                 StatusString = "Verified"
             ElseIf Status = FloppyDB.FloppyDBStatus.Unverified Then
-                If Title.GetFixed Then
+                If Title.Fixed Then
                     StatusString = "Fixed"
                 Else
                     StatusString = "Unverified"

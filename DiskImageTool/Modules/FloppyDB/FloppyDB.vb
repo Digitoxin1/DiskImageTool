@@ -29,12 +29,6 @@ Namespace FloppyDB
             End Get
         End Property
 
-        Public ReadOnly Property RegionNameCache As Dictionary(Of String, String)
-            Get
-                Return _RegionNameCache
-            End Get
-        End Property
-
         Public ReadOnly Property Languages As IReadOnlyList(Of KeyValuePair(Of String, String))
             Get
                 Return _Languages
@@ -50,6 +44,12 @@ Namespace FloppyDB
         Public ReadOnly Property MainPath As String
             Get
                 Return _MainPath
+            End Get
+        End Property
+
+        Public ReadOnly Property RegionNameCache As Dictionary(Of String, String)
+            Get
+                Return _RegionNameCache
             End Get
         End Property
 
@@ -179,7 +179,7 @@ Namespace FloppyDB
         Public Function IsVerifiedImage(Disk As Disk) As Boolean
             Dim Result = TitleFind(Disk)
             If Result.Primary IsNot Nothing Then
-                If Result.Primary.GetStatus = FloppyDBStatus.Verified Then
+                If Result.Primary.Status = FloppyDBStatus.Verified Then
                     Return True
                 End If
             End If
@@ -269,6 +269,7 @@ Namespace FloppyDB
         Public Function SortLanguageCodes(codesCsv As String) As String
             Return SortCodes(codesCsv, _Languages)
         End Function
+
         Public Function SortRegionCodes(codesCsv As String) As String
             Return SortCodes(codesCsv, _Regions)
         End Function
@@ -298,14 +299,6 @@ Namespace FloppyDB
 
             If _TitleDictionary.TryGetValue(MD5, List) Then
                 Return List
-            End If
-
-            Return Nothing
-        End Function
-
-        Private Shared Function GetAttr(node As Xml.XmlElement, name As String) As String
-            If node.HasAttribute(name) Then
-                Return node.GetAttribute(name)
             End If
 
             Return Nothing
@@ -436,46 +429,6 @@ Namespace FloppyDB
             Return Data
         End Function
 
-        Private Function GetTitleData(Node As Xml.XmlElement, Parent As FloppyData) As FloppyData
-            Dim TitleData As New FloppyData With {
-            .Owner = Me,
-            .Parent = Parent,
-            .Name = GetAttr(Node, "name"),
-            .Variation = GetAttr(Node, "variation"),
-            .Compilation = GetAttr(Node, "compilation"),
-            .Year = GetAttr(Node, "year"),
-            .Version = GetAttr(Node, "version"),
-            .Int = GetAttr(Node, "int"),
-            .Serial = GetAttr(Node, "serial"),
-            .Disk = GetAttr(Node, "disk"),
-            .Publisher = GetAttr(Node, "publisher"),
-            .Region = GetAttr(Node, "region"),
-            .Language = GetAttr(Node, "language"),
-            .CopyProtection = GetAttr(Node, "cp"),
-            .OperatingSystem = GetAttr(Node, "os"),
-            .MobyGamesId = GetAttr(Node, "mobyGamesId")
-        }
-
-            If Node.HasAttribute("media") Then
-                TitleData.MediaString = Node.GetAttribute("media")
-                TitleData.Media = FloppyDiskFormatGet(TitleData.MediaString)
-            End If
-
-            If Node.HasAttribute("status") Then
-                TitleData.Status = GetFloppyDBStatus(Node.GetAttribute("status"))
-            End If
-
-            If Node.HasAttribute("tdc") Then
-                TitleData.IsTDC = (Node.GetAttribute("tdc") = "1")
-            End If
-
-            If Node.HasAttribute("fixed") Then
-                TitleData.Fixed = (Node.GetAttribute("fixed") = "1")
-            End If
-
-            Return TitleData
-        End Function
-
         Private Function GetVersion(XMLDoc As Xml.XmlDocument) As String
             Return If(XMLDoc.SelectSingleNode("/root/@version")?.Value, "")
         End Function
@@ -573,7 +526,7 @@ Namespace FloppyDB
             ParseLookupList(XMLDoc, "/root/regions/region", _Regions)
         End Sub
 
-        Private Function ParseNode(Node As Xml.XmlNode, ParentData As FloppyData) As Integer
+        Private Function ParseNode(Node As Xml.XmlNode, Inherited As FloppyData) As Integer
             Dim Elem = TryCast(Node, Xml.XmlElement)
 
             If Elem Is Nothing Then
@@ -581,33 +534,25 @@ Namespace FloppyDB
             End If
 
             Dim Count As Integer = 0
-            Dim FloppyData = GetTitleData(Elem, ParentData)
+            Dim Merged As New FloppyData(Me, Inherited, Elem)
 
-            If Elem.Name = "media" Then
-                Dim mediaDiskCount As Integer = 0
-                For Each ChildNode As Xml.XmlNode In Elem.ChildNodes
-                    Dim childElem = TryCast(ChildNode, Xml.XmlElement)
-                    If childElem IsNot Nothing AndAlso childElem.Name = "disk" Then
-                        mediaDiskCount += 1
-                    End If
-                Next
-                FloppyData.DiskCount = mediaDiskCount
-
-            ElseIf Elem.Name = "disk" Then
+            If Elem.Name = "disk" Then
                 Dim md5 = Elem.GetAttribute("md5")
                 If md5 <> "" Then
-                    AddMd5Mapping(md5, FloppyData)
+                    AddMd5Mapping(md5, Merged)
                     Count += 1
                 End If
 
                 Dim md5Alt = Elem.GetAttribute("md5_alt")
                 If md5Alt <> "" Then
-                    AddMd5Mapping(md5Alt, FloppyData)
+                    AddMd5Mapping(md5Alt, Merged)
                 End If
+
+                Return Count
             End If
 
             For Each ChildNode As Xml.XmlNode In Elem.ChildNodes
-                Count += ParseNode(ChildNode, FloppyData)
+                Count += ParseNode(ChildNode, Merged)
             Next
 
             Return Count

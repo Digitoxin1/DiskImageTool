@@ -2012,4 +2012,7 @@ Souhaitez-vous continuer ?</value>
   <data name="Label_OverwriteExisting" xml:space="preserve">
     <value>Écraser les fichiers existants</value>
   </data>
+  <data name="SummaryPanel_Series" xml:space="preserve">
+    <value>Série</value>
+  </data>
 </root>

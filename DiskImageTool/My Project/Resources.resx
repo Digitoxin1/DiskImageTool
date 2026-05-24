@@ -2264,4 +2264,7 @@ Do you wish to continue?</value>
   <data name="Label_OverwriteExisting" xml:space="preserve">
     <value>Overwrite existing files</value>
   </data>
+  <data name="SummaryPanel_Series" xml:space="preserve">
+    <value>Series</value>
+  </data>
 </root>

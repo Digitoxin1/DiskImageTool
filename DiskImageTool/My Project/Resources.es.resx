@@ -2012,4 +2012,7 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Label_OverwriteExisting" xml:space="preserve">
     <value>Sobrescribir archivos existentes</value>
   </data>
+  <data name="SummaryPanel_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
 </root>

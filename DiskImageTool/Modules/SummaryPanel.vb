@@ -257,7 +257,9 @@ Public Class SummaryPanel
         TitleRows.Add("Variation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Variant, False, False))
         TitleRows.Add("Compilation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Compilation, True, False))
         TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True, False))
+        TitleRows.Add("Series", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Series, True, False))
         TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False, False))
+        TitleRows.Add("System", New SummaryRow(ListViewSummary.Font, My.Resources.Label_System, False, False))
         TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False, False))
         TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False, False))
         TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, True, False))
@@ -728,8 +730,12 @@ Public Class SummaryPanel
 
         Dim Row = Function(key As String) DirectCast(TitleRows(key), SummaryRow)
 
-        Dim DiskCount = TitleData.GetDiskCount
-        Dim DiskName = TitleData.GetDisk
+        Dim DiskCount = TitleData.DiskCount
+        Dim DiskName = TitleData.Disk
+
+        If Left(DiskName.ToLower(), 5) = "disk " Then
+            DiskName = Mid(DiskName, 6)
+        End If
 
         If DiskName.Length > 0 AndAlso DiskCount > 0 Then
             If IsNumeric(DiskName) Then
@@ -739,13 +745,13 @@ Public Class SummaryPanel
             End If
         End If
 
-        Dim Status = TitleData.GetStatus
+        Dim Status = TitleData.Status
         Dim ForeColor As Color
         If Status = FloppyDB.FloppyDBStatus.Verified Then
             ForeColor = Color.Green
         ElseIf Status = FloppyDB.FloppyDBStatus.Modified Then
             ForeColor = Color.Red
-        ElseIf TitleData.GetFixed Then
+        ElseIf TitleData.Fixed Then
             ForeColor = Color.Blue
         Else
             ForeColor = Color.Black
@@ -754,22 +760,24 @@ Public Class SummaryPanel
         With Row("Name")
             .Value = Result.GetNameList
             .ForeColor = ForeColor
-            .MobyGamesId = TitleData.GetMobyGamesId
+            .MobyGamesId = TitleData.MobyGamesId
         End With
-        Row("Variation").Value = TitleData.GetVariation
-        Row("Compilation").Value = TitleData.GetCompilation
+        Row("Variation").Value = TitleData.Variation
+        Row("Compilation").Value = TitleData.Compilation
         Row("Publisher").Value = Result.GetPublisherList
+        Row("Series").Value = Result.GetSeriesList
         Row("Year").Value = Result.GetYearList
-        Row("OperatingSystem").Value = TitleData.GetOperatingSystem
+        Row("System").Value = TitleData.System
+        Row("OperatingSystem").Value = TitleData.OperatingSystem
         Row("Region").Value = Result.GetRegionList
         Row("Language").Value = Result.GetLanguageList
         Row("Version").Value = Result.GetVersionDisplay
         Row("Disk").Value = DiskName
-        Row("CopyProtection").Value = TitleData.GetCopyProtection
+        Row("CopyProtection").Value = TitleData.CopyProtection
 
         If App.AppSettings.Debug Then
             With Row("TDC")
-                .Value = If(TitleData.GetIsTDC, My.Resources.Label_Yes, "")
+                .Value = If(TitleData.IsTDC, My.Resources.Label_Yes, "")
                 .ForeColor = Color.Green
             End With
         End If

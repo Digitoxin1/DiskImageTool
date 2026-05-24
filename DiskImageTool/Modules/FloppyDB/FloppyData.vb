@@ -1,229 +1,411 @@
-﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+﻿Imports System.IO.Compression
+Imports System.Text.RegularExpressions
+Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace FloppyDB
     Public Class FloppyData
+        Private ReadOnly _Compilation As String
+        Private ReadOnly _CopyProtection As String
+        Private ReadOnly _Disk As String
+        Private ReadOnly _DiskCount As Integer?
+        Private ReadOnly _Fixed As Boolean?
+        Private ReadOnly _Int As String
+        Private ReadOnly _IsTDC As Boolean?
+        Private ReadOnly _Language As String
+        Private ReadOnly _Media As FloppyDiskFormat?
+        Private ReadOnly _MediaString As String
+        Private ReadOnly _MobyGamesId As String
+        Private ReadOnly _Name As String
+        Private ReadOnly _OperatingSystem As String
+        Private ReadOnly _Owner As FloppyDB
+        Private ReadOnly _Publisher As String
+        Private ReadOnly _Region As String
+        Private ReadOnly _Serial As String
+        Private ReadOnly _Status As FloppyDBStatus?
+        Private ReadOnly _Series As String
+        Private ReadOnly _System As String
+        Private ReadOnly _Variation As String
+        Private ReadOnly _Version As String
+        Private ReadOnly _Year As String
+
         Private ReadOnly Prefixes = {"The", "A", "An"}
+        Private ReadOnly DefLang As New Dictionary(Of String, String) From {
+            {"FR", "Fr"},
+            {"DE", "De"},
+            {"ES", "Es"},
+            {"IT", "It"}
+        }
+        Private ReadOnly OSAbbrev As New Dictionary(Of String, String) From {
+            {"Windows 3.1", "Win3.1"},
+            {"Windows 2.1", "Win2.1"},
+            {"MS-DOS", ""},
+            {"PC Booter", ""}
+        }
 
-        Public Property Compilation As String = Nothing
-        Public Property CopyProtection As String = Nothing
-        Public Property Disk As String = Nothing
-        Public Property DiskCount As Integer? = Nothing
-        Public Property Fixed As Boolean? = Nothing
-        Public Property Int As String = Nothing
-        Public Property IsTDC As Boolean? = Nothing
-        Public Property Language As String = Nothing
-        Public Property Media As FloppyDiskFormat? = Nothing
-        Public Property MediaString As String
-        Public Property MobyGamesId As String = Nothing
-        Public Property Name As String = Nothing
-        Public Property OperatingSystem As String = Nothing
-        Public Property Owner As FloppyDB = Nothing
-        Public Property Parent As FloppyData = Nothing
-        Public Property Publisher As String = Nothing
-        Public Property Region As String = Nothing
-        Public Property Serial As String = Nothing
-        Public Property Status As FloppyDBStatus? = Nothing
-        Public Property Variation As String = Nothing
-        Public Property Version As String = Nothing
-        Public Property Year As String = Nothing
+        Friend Sub New(Owner As FloppyDB, Inherited As FloppyData, Node As Xml.XmlElement)
+            _Owner = Owner
 
-        Public Function GetCompilation() As String
-            Return ResolveString(Me, Function(d) d.Compilation)
-        End Function
-
-        Public Function GetCopyProtection() As String
-            Return ResolveString(Me, Function(d) d.CopyProtection)
-        End Function
-
-        Public Function GetDisk() As String
-            Return ResolveString(Me, Function(d) d.Disk)
-        End Function
-
-        Public Function GetDiskCount() As Integer
-            Return ResolveNullable(Of Integer)(Me, Function(d) d.DiskCount, 0)
-        End Function
-
-        Public Function GetFixed() As Boolean
-            Return ResolveBoolean(Me, Function(d) d.Fixed)
-        End Function
-
-        Public Function GetInt() As String
-            Return ResolveString(Me, Function(d) d.Int)
-        End Function
-
-        Public Function GetIsTDC() As Boolean
-            Return ResolveBoolean(Me, Function(d) d.IsTDC)
-        End Function
-
-        Public Function GetLanguage() As String
-            Dim raw = GetLanguageCodes()
-            If Owner Is Nothing Then
-                Return If(raw, "")
+            If Inherited IsNot Nothing Then
+                _Compilation = Inherited._Compilation
+                _CopyProtection = Inherited._CopyProtection
+                _Disk = Inherited._Disk
+                _DiskCount = Inherited._DiskCount
+                _Fixed = Inherited._Fixed
+                _Int = Inherited._Int
+                _IsTDC = Inherited._IsTDC
+                _Language = Inherited._Language
+                _Media = Inherited._Media
+                _MediaString = Inherited._MediaString
+                _MobyGamesId = Inherited._MobyGamesId
+                _Name = Inherited._Name
+                _OperatingSystem = Inherited._OperatingSystem
+                _Publisher = Inherited._Publisher
+                _Region = Inherited._Region
+                _Serial = Inherited._Serial
+                _Status = Inherited._Status
+                _Series = Inherited._Series
+                _System = Inherited._System
+                _Variation = Inherited._Variation
+                _Version = Inherited._Version
+                _Year = Inherited._Year
             End If
-            Return ResolveCodeList(raw, Owner.Languages, Owner.LanguageNameCache)
-        End Function
 
-        Public Function GetLanguageCodes() As String
-            Return ResolveString(Me, Function(d) d.Language)
-        End Function
+            If Node IsNot Nothing Then
+                If Node.HasAttribute("name") Then _Name = Node.GetAttribute("name")
+                If Node.HasAttribute("variation") Then _Variation = Node.GetAttribute("variation")
+                If Node.HasAttribute("compilation") Then _Compilation = Node.GetAttribute("compilation")
+                If Node.HasAttribute("year") Then _Year = Node.GetAttribute("year")
+                If Node.HasAttribute("version") Then _Version = Node.GetAttribute("version")
+                If Node.HasAttribute("int") Then _Int = Node.GetAttribute("int")
+                If Node.HasAttribute("serial") Then _Serial = Node.GetAttribute("serial")
+                If Node.HasAttribute("disk") Then _Disk = Node.GetAttribute("disk")
+                If Node.HasAttribute("publisher") Then _Publisher = Node.GetAttribute("publisher")
+                If Node.HasAttribute("region") Then _Region = Node.GetAttribute("region")
+                If Node.HasAttribute("language") Then _Language = Node.GetAttribute("language")
+                If Node.HasAttribute("cp") Then _CopyProtection = Node.GetAttribute("cp")
+                If Node.HasAttribute("os") Then _OperatingSystem = Node.GetAttribute("os")
+                If Node.HasAttribute("mobyGamesId") Then _MobyGamesId = Node.GetAttribute("mobyGamesId")
+                If Node.HasAttribute("system") Then _System = Node.GetAttribute("system")
+                If Node.HasAttribute("series") Then _Series = Node.GetAttribute("series")
 
-        Public Function GetMedia() As FloppyDiskFormat
-            Return ResolveNullable(Of FloppyDiskFormat)(Me, Function(d) d.Media, FloppyDiskFormat.FloppyUnknown)
-        End Function
+                If Node.HasAttribute("media") Then
+                    _MediaString = Node.GetAttribute("media")
+                    _Media = FloppyDiskFormatGet(_MediaString)
+                End If
 
-        Public Function GetMediaString() As String
-            Return ResolveString(Me, Function(d) d.MediaString)
-        End Function
+                If Node.HasAttribute("status") Then _Status = GetFloppyDBStatus(Node.GetAttribute("status"))
+                If Node.HasAttribute("tdc") Then _IsTDC = (Node.GetAttribute("tdc") = "1")
+                If Node.HasAttribute("fixed") Then _Fixed = (Node.GetAttribute("fixed") = "1")
 
-        Public Function GetMobyGamesId() As String
-            Return ResolveString(Me, Function(d) d.MobyGamesId)
-        End Function
-
-        Public Function GetName() As String
-            Return ResolveString(Me, Function(d) d.Name)
-        End Function
-
-        Public Function GetOperatingSystem() As String
-            Return ResolveString(Me, Function(d) d.OperatingSystem, "MS-DOS")
-        End Function
-
-        Public Function GetPublisher() As String
-            Return ResolveString(Me, Function(d) d.Publisher)
-        End Function
-
-        Public Function GetRegion() As String
-            Dim raw = GetRegionCodes()
-            If Owner Is Nothing Then
-                Return If(raw, "")
+                If Node.Name = "media" Then
+                    Dim mediaDiskCount As Integer = 0
+                    For Each childNode As Xml.XmlNode In Node.ChildNodes
+                        Dim childElem = TryCast(childNode, Xml.XmlElement)
+                        If childElem IsNot Nothing AndAlso childElem.Name = "disk" Then
+                            mediaDiskCount += 1
+                        End If
+                    Next
+                    _DiskCount = mediaDiskCount
+                End If
             End If
-            Return ResolveCodeList(raw, Owner.Regions, Owner.RegionNameCache)
-        End Function
+        End Sub
 
-        Public Function GetRegionCodes() As String
-            Return ResolveString(Me, Function(d) d.Region)
-        End Function
+        Public ReadOnly Property Compilation As String
+            Get
+                Return If(_Compilation, "")
+            End Get
+        End Property
 
-        Public Function GetSerial() As String
-            Return ResolveString(Me, Function(d) d.Serial)
-        End Function
+        Public ReadOnly Property CopyProtection As String
+            Get
+                Return If(_CopyProtection, "")
+            End Get
+        End Property
 
-        Public Function GetStatus() As FloppyDBStatus
-            Return ResolveNullable(Of FloppyDBStatus)(Me, Function(d) d.Status, FloppyDBStatus.Unverified)
-        End Function
+        Public ReadOnly Property Disk As String
+            Get
+                Return If(_Disk, "")
+            End Get
+        End Property
 
-        Public Function GetSuggestedFileName() As String
+        Public ReadOnly Property DiskCount As Integer
+            Get
+                Return If(_DiskCount, 0)
+            End Get
+        End Property
+
+        Public ReadOnly Property Fixed As Boolean
+            Get
+                Return If(_Fixed, False)
+            End Get
+        End Property
+
+        Public ReadOnly Property Int As String
+            Get
+                Return If(_Int, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property IsTDC As Boolean
+            Get
+                Return If(_IsTDC, False)
+            End Get
+        End Property
+
+        Public ReadOnly Property Language As String
+            Get
+                If _Owner Is Nothing Then Return If(_Language, "")
+                Return ResolveCodeList(If(_Language, ""), _Owner.Languages, _Owner.LanguageNameCache)
+            End Get
+        End Property
+
+        Public ReadOnly Property LanguageCodes As String
+            Get
+                Return If(_Language, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Media As FloppyDiskFormat
+            Get
+                Return If(_Media, FloppyDiskFormat.FloppyUnknown)
+            End Get
+        End Property
+
+        Public ReadOnly Property MediaString As String
+            Get
+                Return If(_MediaString, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property MobyGamesId As String
+            Get
+                Return If(_MobyGamesId, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Name As String
+            Get
+                Return If(_Name, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property OperatingSystem As String
+            Get
+                Return If(_OperatingSystem, "MS-DOS")
+            End Get
+        End Property
+
+        Public ReadOnly Property Owner As FloppyDB
+            Get
+                Return _Owner
+            End Get
+        End Property
+        Public ReadOnly Property Publisher As String
+            Get
+                Return If(_Publisher, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Region As String
+            Get
+                If _Owner Is Nothing Then Return If(_Region, "")
+                Return ResolveCodeList(If(_Region, ""), _Owner.Regions, _Owner.RegionNameCache)
+            End Get
+        End Property
+
+        Public ReadOnly Property RegionCodes As String
+            Get
+                Return If(_Region, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Serial As String
+            Get
+                Return If(_Serial, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Status As FloppyDBStatus
+            Get
+                Return If(_Status, FloppyDBStatus.Unverified)
+            End Get
+        End Property
+
+        Public ReadOnly Property Series As String
+            Get
+                Return If(_Series, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property System As String
+            Get
+                Return If(_System, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Variation As String
+            Get
+                Return If(_Variation, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Version As String
+            Get
+                Return If(_Version, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property Year As String
+            Get
+                Return If(_Year, "")
+            End Get
+        End Property
+
+        Public Function GetSuggestedFileName(Optional IncludeAltToken As Boolean = False) As String
             Dim fileName As String
 
-            Dim name = GetName()
-            Dim variation = GetVariation()
-            Dim year = GetYear()
-            Dim publisher = GetPublisher()
-            Dim media = GetMediaString()
-            Dim version = GetVersion()
-            Dim serial = GetSerial()
-            Dim int = GetInt()
-            Dim status = GetStatus()
-            Dim region = GetRegion()
-            Dim languageCodes = GetLanguageCodes()
-            Dim disk = GetDisk()
-            Dim fixed = GetFixed()
-            Dim os = GetOperatingSystem()
-            Dim cp = GetCopyProtection()
+            fileName = SafeString(MoveLeadingPrefix(Me.Name, Prefixes))
 
-            fileName = SafeString(MoveLeadingPrefix(name, prefixes))
-
-            If Not String.IsNullOrEmpty(variation) Then
-                fileName &= " (" & SafeString(variation) & ")"
+            If Not String.IsNullOrEmpty(Me.Variation) Then
+                fileName &= " (" & SafeString(Me.Variation) & ")"
             End If
 
-            If Not String.IsNullOrEmpty(year) Then
-                fileName &= " (" & year & ")"
+            If Not String.IsNullOrEmpty(Me.Year) Then
+                fileName &= " (" & Me.Year & ")"
+            End If
+
+            If Not String.IsNullOrEmpty(Me.System) Then
+                fileName &= " (" & SafeString(Me.System) & ")"
             End If
 
             Dim versionList As New List(Of String)
-            If Not String.IsNullOrEmpty(version) Then
-                If IsNumeric(Left(version, 1)) Then
-                    versionList.Add("v" & version)
+            If Not String.IsNullOrEmpty(Me.Version) Then
+                If IsRevision(Me.Version) Then
+                    versionList.Add(SafeString(Me.Version))
                 Else
-                    versionList.Add(SafeString(version))
+                    versionList.Add("v" & Me.Version)
                 End If
             End If
-            If Not String.IsNullOrEmpty(serial) Then
-                versionList.Add("Serial " & serial)
+            If Not String.IsNullOrEmpty(Me.Serial) Then
+                versionList.Add("Serial " & Me.Serial)
             End If
-            If Not String.IsNullOrEmpty(int) Then
-                versionList.Add("Int. " & int)
+            If Not String.IsNullOrEmpty(Me.Int) Then
+                versionList.Add("Int. " & Me.Int)
             End If
 
             If versionList.Count > 0 Then
                 fileName &= " (" & String.Join(", ", versionList) & ")"
             End If
 
-            If Not String.IsNullOrEmpty(os) AndAlso os <> "MS-DOS" AndAlso os <> "PC Booter" Then
-                If os = "Windows 3.1" Then
-                    os = "Win3.1"
-                End If
-                fileName &= " (" & SafeString(os) & ")"
-            End If
+            Dim TitleOs = Me.OperatingSystem
 
-            If Not String.IsNullOrEmpty(region) Then
-                If region <> "USA" Then
-                    region = Replace(region, "United Kingdom", "UK")
-                    fileName &= " (" & region & ")"
+            If Not String.IsNullOrEmpty(TitleOs) Then
+                Dim abbrev As String = Nothing
+                If OSAbbrev.TryGetValue(TitleOs, abbrev) Then
+                    TitleOs = abbrev
                 End If
             End If
 
-            If Not String.IsNullOrEmpty(languageCodes) Then
-                fileName &= " (" & Owner.SortLanguageCodes(languageCodes) & ")"
+            If Not String.IsNullOrEmpty(TitleOs) Then
+                fileName &= " (" & SafeString(TitleOs) & ")"
             End If
 
-            If Not String.IsNullOrEmpty(publisher) Then
-                fileName &= " (" & SafeString(publisher) & ")"
+            If IncludeAltToken Then
+                fileName &= "{ALT}"
             End If
 
-            If Not String.IsNullOrEmpty(media) Then
-                fileName &= " (" & media & ")"
+            Dim LanguageCodes = Me.LanguageCodes
+
+            If Not String.IsNullOrEmpty(Me.RegionCodes) Then
+                Dim LangFound As Boolean = False
+
+                If String.IsNullOrEmpty(LanguageCodes) Then
+                    LangFound = DefLang.TryGetValue(Me.RegionCodes, LanguageCodes)
+                End If
+
+                If Not LangFound Then
+                    If Me.RegionCodes <> "US" Then
+                        Dim TitleRegion = Replace(Me.Region, "United Kingdom", "UK")
+                        fileName &= " (" & TitleRegion & ")"
+                    End If
+                End If
             End If
 
-            If os = "PC Booter" Then
+            If String.IsNullOrEmpty(Me.RegionCodes) OrElse Me.RegionCodes = "US" Then
+                If LanguageCodes = "En" Then
+                    LanguageCodes = ""
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(LanguageCodes) Then
+                fileName &= " (" & _Owner.SortLanguageCodes(LanguageCodes) & ")"
+            End If
+
+            If Not String.IsNullOrEmpty(Me.Publisher) Then
+                fileName &= " (" & SafeString(Me.Publisher) & ")"
+            End If
+
+            If Not String.IsNullOrEmpty(Me.Series) Then
+                fileName &= " (" & SafeString(Me.Series) & ")"
+            End If
+
+            If Not String.IsNullOrEmpty(Me.MediaString) Then
+                fileName &= " (" & Me.MediaString & ")"
+            End If
+
+            If Me.OperatingSystem = "PC Booter" Then
                 fileName &= " (Booter)"
             End If
 
-            If Not String.IsNullOrEmpty(disk) Then
-                If IsNumeric(Left(disk, 1)) OrElse disk.Length = 1 Then
-                    disk = "Disk " & disk
+            Dim TitleDisk = Me.Disk
+
+            If Not String.IsNullOrEmpty(TitleDisk) Then
+                Dim parts As String() = TitleDisk.Split({"&"c, "+"c}, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim()).ToArray()
+                Dim allValid As Boolean = parts.All(Function(p) IsIntegerOrSingleCharacter(p))
+
+                If allValid Then
+                    TitleDisk = "Disk " & TitleDisk
                 End If
-                fileName &= " (" & SafeString(disk) & ")"
+                fileName &= " (" & SafeString(TitleDisk) & ")"
             End If
 
-            If cp.Length > 0 Then
+            If Me.CopyProtection.Length > 0 Then
                 fileName &= " [cp]"
             End If
 
-            If status = FloppyDBStatus.Verified Then
+            If Me.Status = FloppyDBStatus.Verified Then
                 fileName &= " [!]"
-            ElseIf status = FloppyDBStatus.Modified Then
+            ElseIf Me.Status = FloppyDBStatus.Modified Then
                 fileName &= " [M]"
-            ElseIf fixed Then
+            ElseIf Me.Fixed Then
                 fileName &= " [F]"
             End If
 
             Return fileName
         End Function
 
-        Public Function GetVariation() As String
-            Return ResolveString(Me, Function(d) d.Variation)
+        Private Shared Function IsRevision(value As String) As Boolean
+            If value Is Nothing Then Return False
+
+            Return Regex.IsMatch(value, "^(?:Rev\..*|Rel\..*|r\d+)$", RegexOptions.IgnoreCase)
         End Function
 
-        Public Function GetVersion() As String
-            Return ResolveString(Me, Function(d) d.Version)
+        Private Shared Function IsIntegerOrSingleCharacter(value As String) As Boolean
+            If String.IsNullOrWhiteSpace(value) Then
+                Return False
+            End If
+
+            value = value.Trim()
+
+            Dim n As Integer
+            If Integer.TryParse(value, n) Then
+                Return True
+            End If
+
+            Return value.Length = 1
         End Function
 
-        Public Function GetYear() As String
-            Return ResolveString(Me, Function(d) d.Year)
-        End Function
-
-        Private Function MoveLeadingPrefix(value As String, prefixes As IEnumerable(Of String)) As String
+        Private Shared Function MoveLeadingPrefix(value As String, prefixes As IEnumerable(Of String)) As String
             If String.IsNullOrWhiteSpace(value) Then Return value
             If prefixes Is Nothing Then Return value
 
@@ -255,11 +437,7 @@ Namespace FloppyDB
             Return value
         End Function
 
-        Private Shared Function ResolveBoolean(Start As FloppyData, Selector As Func(Of FloppyData, Boolean?), Optional DefaultValue As Boolean = False) As Boolean
-            Return ResolveNullable(Start, Selector, DefaultValue)
-        End Function
-
-        Private Shared Function ResolveCodeList(codeCsv As String, lookup As List(Of KeyValuePair(Of String, String)), cache As Dictionary(Of String, String)) As String
+        Private Shared Function ResolveCodeList(codeCsv As String, lookup As IReadOnlyList(Of KeyValuePair(Of String, String)), cache As Dictionary(Of String, String)) As String
             If String.IsNullOrWhiteSpace(codeCsv) Then
                 Return ""
             End If
@@ -298,39 +476,7 @@ Namespace FloppyDB
             Return result
         End Function
 
-        Private Shared Function ResolveNullable(Of T As Structure)(Start As FloppyData, Selector As Func(Of FloppyData, Nullable(Of T)), DefaultValue As T) As T
-            Dim Current = Start
-
-            Do While Current IsNot Nothing
-                Dim Value = Selector(Current)
-
-                If Value.HasValue Then
-                    Return Value.Value
-                End If
-
-                Current = Current.Parent
-            Loop
-
-            Return DefaultValue
-        End Function
-
-        Private Shared Function ResolveString(Start As FloppyData, Selector As Func(Of FloppyData, String), Optional DefaultValue As String = "") As String
-            Dim Current = Start
-
-            Do While Current IsNot Nothing
-                Dim Value = Selector(Current)
-
-                If Value IsNot Nothing Then
-                    Return Value
-                End If
-
-                Current = Current.Parent
-            Loop
-
-            Return DefaultValue
-        End Function
-
-        Private Function SafeString(s As String) As String
+        Private Shared Function SafeString(s As String) As String
             s = Replace(s, ":", " -")
             s = Replace(s, "/", "-")
 
