@@ -48,7 +48,7 @@ Public Class SummaryPanel
         ListViewSummary.Items.Clear()
     End Sub
 
-    Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
+    Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB.FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
@@ -779,7 +779,7 @@ Public Class SummaryPanel
         PopulateGroup(Group, TitleRows)
     End Sub
 
-    Private Sub PopulateMain(Disk As Disk, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
+    Private Sub PopulateMain(Disk As Disk, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB.FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
         Dim TitleFound As Boolean = False
 
         If Not Preview AndAlso TitleDB IsNot Nothing AndAlso App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then

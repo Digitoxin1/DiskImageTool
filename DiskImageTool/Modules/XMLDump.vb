@@ -6,7 +6,7 @@ Imports DiskImageTool.DiskImage
 Module XMLDump
     Private Const NULL_CHAR As Char = "�"
 
-    Public Sub BuildImageNode(xw As XmlWriter, Disk As Disk, ImageData As ImageData, BootStrapDB As BootstrapDB, TitleDB As FloppyDB)
+    Public Sub BuildImageNode(xw As XmlWriter, Disk As Disk, ImageData As ImageData, BootStrapDB As BootstrapDB, TitleDB As FloppyDB.FloppyDB)
         xw.WriteStartElement("image")
 
         xw.WriteAttributeString("name", ImageData.FileName)
@@ -30,7 +30,7 @@ Module XMLDump
         xw.WriteEndElement()
     End Sub
 
-    Public Function BuildXMLDump(Image As DiskImageContainer, BootStrapDB As BootstrapDB, TitleDB As FloppyDB) As String
+    Public Function BuildXMLDump(Image As DiskImageContainer, BootStrapDB As BootstrapDB, TitleDB As FloppyDB.FloppyDB) As String
         Dim settings As New XmlWriterSettings With {
             .Indent = True,
             .Encoding = New System.Text.UTF8Encoding(False),
@@ -555,7 +555,7 @@ Module XMLDump
         xw.WriteEndElement()
     End Sub
 
-    Private Sub BuildSummaryNode(xw As XmlWriter, Disk As Disk, BootStrapDB As BootstrapDB, TitleDB As FloppyDB, MD5 As String)
+    Private Sub BuildSummaryNode(xw As XmlWriter, Disk As Disk, BootStrapDB As BootstrapDB, TitleDB As FloppyDB.FloppyDB, MD5 As String)
         xw.WriteStartElement("summary")
 
         If TitleDB IsNot Nothing AndAlso TitleDB.TitleCount > 0 Then

@@ -4,7 +4,7 @@
         Public ReadOnly AppSettings As Settings.AppSettings = Settings.AppSettings.Load()
         Public ReadOnly UserState As Settings.UserState = Settings.UserState.Load()
         Public ReadOnly BootstrapDB As New BootstrapDB
-        Public ReadOnly TitleDB As New FloppyDB
+        Public ReadOnly TitleDB As New FloppyDB.FloppyDB
 
         Public Function CurrentFormInstance() As Form
             Dim forms = Application.OpenForms

@@ -11,12 +11,12 @@ Namespace Filters
         Private ReadOnly _SubFilterDiskType As ComboFilter
         Private ReadOnly _SubFilterOEMName As ComboFilter
         Private ReadOnly _TextSearch As ToolStripTextBox
-        Private ReadOnly _TitleDB As FloppyDB
+        Private ReadOnly _TitleDB As FloppyDB.FloppyDB
         Private _disposed As Boolean = False
         Private _EnableWriteSpliceFilter As Boolean = False
         Private _ExportUnknownImages As Boolean = False
         Private _SuppressEvent As Boolean = False
-        Public Sub New(ContextMenuFilters As ContextMenuStrip, OEMNameCombo As ToolStripComboBox, DiskTypeCombo As ToolStripComboBox, TextSearch As ToolStripTextBox, BootstrapDB As BootstrapDB, TitleDB As FloppyDB)
+        Public Sub New(ContextMenuFilters As ContextMenuStrip, OEMNameCombo As ToolStripComboBox, DiskTypeCombo As ToolStripComboBox, TextSearch As ToolStripTextBox, BootstrapDB As BootstrapDB, TitleDB As FloppyDB.FloppyDB)
             MyBase.New(ContextMenuFilters)
             _SubFilterDiskType = New ComboFilter(DiskTypeCombo)
             _SubFilterOEMName = New ComboFilter(OEMNameCombo)
@@ -215,15 +215,39 @@ Namespace Filters
                         Else
                             Image_Unverified = True
                         End If
+
                         If App.Globals.AppSettings.Debug Then
                             If TitleData.GetIsTDC Then
                                 Image_InTDC = True
                             Else
                                 Image_NotInTDC = True
                             End If
-                            FileData = New FloppyDB.FileNameData(ImageData.FileName)
+                            FileData = New FloppyDB.FileNameData(ImageData.FileName, _TitleDB)
+
                             If TitleData.GetStatus <> FileData.Status Then
                                 Database_MismatchedStatus = True
+                            End If
+                        End If
+                    End If
+
+                    If App.Globals.AppSettings.Debug Then
+                        If TitleFindResult.Matches IsNot Nothing Then
+                            Dim FileName = IO.Path.GetFileNameWithoutExtension(ImageData.FileName)
+                            Dim FileNameMatch As Boolean = False
+                            For Each TitleData In TitleFindResult.Matches
+                                Dim SuggestedFileName = TitleData.GetSuggestedFileName
+                                If SuggestedFileName = FileName Then
+                                    FileNameMatch = True
+                                    Exit For
+                                End If
+                            Next
+                            If Not FileNameMatch Then
+                                Debug.Print("")
+                                Debug.Print("File Name: " & FileName)
+                                For Each TitleData In TitleFindResult.Matches
+                                    Dim SuggestedFileName = TitleData.GetSuggestedFileName
+                                    Debug.Print("Suggested File Name: " & SuggestedFileName)
+                                Next
                             End If
                         End If
                     End If
@@ -270,7 +294,7 @@ Namespace Filters
                             TitleFindResult = _TitleDB.TitleFind(Disk)
                         End If
                         If FileData Is Nothing Then
-                            FileData = New FloppyDB.FileNameData(ImageData.FileName)
+                            FileData = New FloppyDB.FileNameData(ImageData.FileName, _TitleDB)
                         End If
                         Dim Media = FloppyDiskFormatGetName(Disk.BPB, True)
                         _TitleDB.AddTitle(FileData, Media, TitleFindResult.MD5)

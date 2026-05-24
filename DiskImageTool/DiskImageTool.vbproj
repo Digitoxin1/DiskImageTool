@@ -244,6 +244,10 @@
     <Compile Include="Lib\VistaFolderPicker.vb" />
     <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Modules\FileIO.vb" />
+    <Compile Include="Modules\FloppyDB\Enums.vb" />
+    <Compile Include="Modules\FloppyDB\FileNameData.vb" />
+    <Compile Include="Modules\FloppyDB\FloppyData.vb" />
+    <Compile Include="Modules\FloppyDB\TitleFindResult.vb" />
     <Compile Include="Modules\XMLDump.vb" />
     <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
@@ -576,7 +580,7 @@
     <Compile Include="Testing\ImageCompare.vb" />
     <Compile Include="Lib\ListViewHeader.vb" />
     <Compile Include="Lib\MyBitConverter.vb" />
-    <Compile Include="Modules\FloppyDB.vb" />
+    <Compile Include="Modules\FloppyDB\FloppyDB.vb" />
     <Compile Include="Modules\Updater.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
