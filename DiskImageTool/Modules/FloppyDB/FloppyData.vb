@@ -479,6 +479,8 @@ Namespace FloppyDB
         Private Shared Function SafeString(s As String) As String
             s = Replace(s, ":", " -")
             s = Replace(s, "/", "-")
+            s = Replace(s, "?", "")
+            s = Replace(s, """", "'")
 
             Return s
         End Function
