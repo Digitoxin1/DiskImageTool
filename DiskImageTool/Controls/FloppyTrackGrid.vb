@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.Drawing.Text
+Imports System.Net.Http.Headers
 Imports System.Windows.Forms.VisualStyles
 
 Public Class FloppyTrackGrid
@@ -300,6 +301,7 @@ Public Class FloppyTrackGrid
         For TrackIndex = 0 To _TrackCount - 1
             ResetCellInternal(TrackIndex)
         Next
+        Me.Refresh()
     End Sub
 
     Public Sub ResetCell(TrackIndex As Integer)

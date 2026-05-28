@@ -77,6 +77,8 @@ Namespace Flux.Greaseweazle
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
         Private _NumericRevsNoEvent As Boolean = False
+        Private _OutputDiskParams As FloppyDiskParams?
+        Private _OutputDriveOption As DriveOption
         Private _OutputDoubleStep As Boolean = False
         Private _SelectedDriveOption As DriveOption
         Private _TempFilePath As String = ""
@@ -479,6 +481,8 @@ Namespace Flux.Greaseweazle
             _TempFilePath = ""
             _TempFilePath2 = ""
             _OutputDoubleStep = False
+            _OutputDiskParams = Nothing
+            _OutputDriveOption = Nothing
             _FileReprocessMode = False
         End Sub
 
@@ -972,6 +976,8 @@ Namespace Flux.Greaseweazle
 
             _TempFilePath = Response.FilePath
             _TempFilePath2 = Response.FilePath2
+            _OutputDiskParams = DiskParams
+            _OutputDriveOption = _SelectedDriveOption
             _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
 
             InitLogFilePath(If(Response.LogFilePath, ""))
@@ -1156,7 +1162,7 @@ Namespace Flux.Greaseweazle
             ButtonConvert.Enabled = CanConvert
             ButtonConvert.Visible = IsFluxOutput
 
-            Dim NonImageFormat As Boolean = Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage
+            Dim NonImageFormat As Boolean = Not _OutputDiskParams.HasValue OrElse _OutputDiskParams.Value.IsNonImage
             Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso _KryofluxAvailable
 
             ButtonVerify.Enabled = CanVerify

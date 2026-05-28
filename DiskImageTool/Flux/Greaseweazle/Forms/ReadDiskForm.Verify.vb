@@ -61,7 +61,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim DiskParams = SelectedDiskParams
+            Dim DiskParams = _OutputDiskParams
 
             If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
                 Exit Sub
@@ -73,15 +73,19 @@ Namespace Flux.Greaseweazle
 
             Dim TrackCount As Integer
 
-            If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
+            If _OutputDriveOption Is Nothing OrElse _OutputDriveOption.Type = FloppyDriveType.DriveUnknown Then
                 TrackCount = If(DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
             Else
-                TrackCount = _SelectedDriveOption.Tracks
+                TrackCount = _OutputDriveOption.Tracks
+            End If
+
+            If _OutputDoubleStep Then
+                TrackCount = CInt(Math.Ceiling(TrackCount / 2))
             End If
 
             Dim Args As (Arguments As String, SingleSide As Boolean)
             Try
-                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, _OutputDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, False, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 Exit Sub

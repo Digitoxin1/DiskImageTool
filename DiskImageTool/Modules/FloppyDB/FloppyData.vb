@@ -1,5 +1,4 @@
-﻿Imports System.IO.Compression
-Imports System.Text.RegularExpressions
+﻿Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace FloppyDB
