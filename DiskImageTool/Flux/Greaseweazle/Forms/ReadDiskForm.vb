@@ -423,11 +423,19 @@ Namespace Flux.Greaseweazle
             Return FloppyType = _SelectedDriveOption.Type
         End Function
 
+        Private Function CheckRootFolder() As Boolean
+            If String.IsNullOrEmpty(RootFolderInput) Then
+                MsgBox(My.Resources.Dialog_SelectRootFolder, MsgBoxStyle.Exclamation)
+                ButtonRootBrowse.Focus()
+                Return False
+            End If
+
+            Return True
+        End Function
+
         Private Function CheckFileNameEntered(CheckImageFile As Boolean) As Boolean
             If IsFluxOutput Then
-                If String.IsNullOrEmpty(RootFolderInput) Then
-                    MsgBox(My.Resources.Dialog_SelectRootFolder, MsgBoxStyle.Exclamation)
-                    ButtonRootBrowse.Focus()
+                If Not CheckRootFolder() Then
                     Return False
                 End If
 
@@ -1676,6 +1684,10 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
+            If IsFluxOutput AndAlso Not CheckRootFolder() Then
+                Exit Sub
+            End If
+
             If CanRefine Then
                 If Not ConfirmDiscardSecondaryImageForReprocess() Then
                     Exit Sub
@@ -1688,6 +1700,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonRefine_Click(sender As Object, e As EventArgs) Handles ButtonRefine.Click
+            If IsFluxOutput AndAlso Not CheckRootFolder() Then
+                Exit Sub
+            End If
+
             RefineFromRaw()
         End Sub
 
