@@ -269,6 +269,23 @@ Namespace FloppyDB
                 fileName &= " (" & SafeString(Me.Variation) & ")"
             End If
 
+            Dim TitleOs = Me.OperatingSystem
+
+            If Not String.IsNullOrEmpty(TitleOs) Then
+                Dim abbrev As String = Nothing
+                If OSAbbrev.TryGetValue(TitleOs, abbrev) Then
+                    TitleOs = abbrev
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(TitleOs) Then
+                fileName &= " (" & SafeString(TitleOs) & ")"
+            End If
+
+            If Me.OperatingSystem = "PC Booter" Then
+                fileName &= " (Booter)"
+            End If
+
             If Not String.IsNullOrEmpty(Me.Year) Then
                 fileName &= " (" & Me.Year & ")"
             End If
@@ -294,19 +311,6 @@ Namespace FloppyDB
 
             If versionList.Count > 0 Then
                 fileName &= " (" & String.Join(", ", versionList) & ")"
-            End If
-
-            Dim TitleOs = Me.OperatingSystem
-
-            If Not String.IsNullOrEmpty(TitleOs) Then
-                Dim abbrev As String = Nothing
-                If OSAbbrev.TryGetValue(TitleOs, abbrev) Then
-                    TitleOs = abbrev
-                End If
-            End If
-
-            If Not String.IsNullOrEmpty(TitleOs) Then
-                fileName &= " (" & SafeString(TitleOs) & ")"
             End If
 
             If IncludeAltToken Then
@@ -350,10 +354,6 @@ Namespace FloppyDB
 
             If Not String.IsNullOrEmpty(Me.MediaString) Then
                 fileName &= " (" & Me.MediaString & ")"
-            End If
-
-            If Me.OperatingSystem = "PC Booter" Then
-                fileName &= " (Booter)"
             End If
 
             Dim TitleDisk = Me.Disk
