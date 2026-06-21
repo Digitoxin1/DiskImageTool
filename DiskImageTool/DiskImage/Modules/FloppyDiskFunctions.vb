@@ -4,137 +4,112 @@
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyUnknown,
                 New FloppyDiskBPBParams(0, &HF0, 0, 0, 0, 0, 0, 0, 0, 0),
-                GapsStandard,
                 "",
                 FloppyDriveType.DriveUnknown
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy160,
                 New FloppyDiskBPBParams(512, &HFE, 2, 1, 1, 64, 320, 1, 1, 8),
-                GapsStandard,
                 ".160",
                 FloppyDriveType.Drive525DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy180,
                 New FloppyDiskBPBParams(512, &HFC, 2, 1, 1, 64, 360, 1, 2, 9),
-                GapsStandard,
                 ".180",
                 FloppyDriveType.Drive525DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy320,
                 New FloppyDiskBPBParams(512, &HFF, 2, 2, 1, 112, 640, 2, 1, 8),
-                GapsStandard,
                 ".320",
                 FloppyDriveType.Drive525DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy360,
                 New FloppyDiskBPBParams(512, &HFD, 2, 2, 1, 112, 720, 2, 2, 9),
-                GapsStandard,
                 ".360",
                 FloppyDriveType.Drive525DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy720,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 112, 1440, 2, 3, 9),
-                GapsStandard,
                 ".720",
                 FloppyDriveType.Drive35DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy1200,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 224, 2400, 1, 7, 15),
-                Gaps1200,
                 ".120",
                 FloppyDriveType.Drive525HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy1440,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 224, 2880, 1, 9, 18),
-                Gaps1440,
                 ".144",
                 FloppyDriveType.Drive35HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy2880,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 240, 5760, 2, 9, 36),
-                Gaps2880,
                 ".288",
                 FloppyDriveType.Drive35ExtraHighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyDMF1024,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 3360, 2, 5, 21),
-                GapsDmf,
                 ".dmf",
                 FloppyDriveType.Drive35HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyDMF2048,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 3360, 4, 3, 21),
-                GapsDmf,
                 ".dmf",
                 FloppyDriveType.Drive35HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyProCopy,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 2880, 2, 5, 18),
-                GapsProCopy,
                 "",
                 FloppyDriveType.Drive35HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDF35,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 224, 3680, 1, 11, 23),
-                GapsStandard,
                 ".xdf",
                 FloppyDriveType.Drive35HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDF525,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 224, 3040, 1, 9, 19),
-                GapsStandard,
                 ".xdf",
                 FloppyDriveType.Drive525HighDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDFMicro,
                 New FloppyDiskBPBParams(512, &HF9, 2, 1, 1, 16, 8, 1, 1, 8),
-                GapsStandard,
                 ".xdf",
                 FloppyDriveType.DriveUnknown
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyTandy2000,
                 New FloppyDiskBPBParams(512, &HED, 2, 2, 1, 112, 1440, 4, 2, 9),
-                GapsStandard,
                 "",
                 FloppyDriveType.Drive525DoubleDensity
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyNoBPB,
                 New FloppyDiskBPBParams(0, &HF0, 0, 0, 0, 0, 0, 0, 0, 0),
-                GapsStandard,
                 "",
                 FloppyDriveType.DriveUnknown
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy2HD,
                 New FloppyDiskBPBParams(1024, &HFE, 2, 2, 1, 192, 1232, 1, 2, 8),
-                GapsStandard,
                 ".hdm",
                 FloppyDriveType.Drive35HighDensity
             )
         }
-
-        Private ReadOnly Gaps1200 As New FloppyDiskGaps(80, 50, 22, 84)
-        Private ReadOnly Gaps1440 As New FloppyDiskGaps(80, 50, 22, 108)
-        Private ReadOnly Gaps2880 As New FloppyDiskGaps(80, 50, 41, 84)
-        Private ReadOnly GapsDmf As New FloppyDiskGaps(0, 108, 22, 8)
-        Private ReadOnly GapsProCopy As New FloppyDiskGaps(80, 50, 22, 100)
-        Private ReadOnly GapsStandard As New FloppyDiskGaps(80, 50, 22, 80)
 
         Public Enum FloppyDiskFormat As Byte
             FloppyUnknown = 0
@@ -563,6 +538,7 @@
 
             Return True
         End Function
+
         Public Function IsFATArea(Disk As Disk, Sector As UInteger) As Boolean
             Dim NumberOfFATs As Byte
 
@@ -577,6 +553,23 @@
 
 
             Return Sector >= Start And Sector < Start + Length
+        End Function
+
+        Private Function GetGaps(DiskFormat As FloppyDiskFormat) As FloppyDiskGaps
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200
+                    Return New FloppyDiskGaps(80, 50, 22, 84)
+                Case FloppyDiskFormat.Floppy1440
+                    Return New FloppyDiskGaps(80, 50, 22, 108)
+                Case FloppyDiskFormat.Floppy2880
+                    Return New FloppyDiskGaps(80, 50, 41, 84)
+                Case FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyDMF2048
+                    Return New FloppyDiskGaps(0, 108, 22, 8)
+                Case FloppyDiskFormat.FloppyProCopy
+                    Return New FloppyDiskGaps(80, 50, 22, 100)
+                Case Else
+                    Return New FloppyDiskGaps(80, 50, 22, 80)
+            End Select
         End Function
 
         Public Structure FloppyDiskBPBParams
@@ -667,10 +660,10 @@
         End Structure
 
         Public Structure FloppyDiskParams
-            Public Sub New(Format As FloppyDiskFormat, BPBParams As FloppyDiskBPBParams, Gaps As FloppyDiskGaps, FileExtension As String, DriveType As FloppyDriveType)
+            Public Sub New(Format As FloppyDiskFormat, BPBParams As FloppyDiskBPBParams, FileExtension As String, DriveType As FloppyDriveType)
                 Me.Format = Format
                 Me.BPBParams = BPBParams
-                Me.Gaps = Gaps
+                Me.Gaps = GetGaps(Format)
                 Me.FileExtension = FileExtension
                 Me.DriveType = DriveType
                 Me.Detected = False
