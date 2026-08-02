@@ -4759,6 +4759,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to TGOD.
+        '''</summary>
+        Friend ReadOnly Property Label_TGOD() As String
+            Get
+                Return ResourceManager.GetString("Label_TGOD", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Time.
         '''</summary>
         Friend ReadOnly Property Label_Time() As String

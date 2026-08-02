@@ -2267,4 +2267,8 @@ Do you wish to continue?</value>
   <data name="SummaryPanel_Series" xml:space="preserve">
     <value>Series</value>
   </data>
+  <data name="Label_TGOD" xml:space="preserve">
+    <value>TGOD</value>
+    <comment>@Invariant</comment>
+  </data>
 </root>

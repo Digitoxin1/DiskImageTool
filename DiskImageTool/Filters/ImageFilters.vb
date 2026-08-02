@@ -168,6 +168,7 @@ Namespace Filters
             Dim Image_Unverified As Boolean = False
             Dim Image_InTDC As Boolean = False
             Dim Image_NotInTDC As Boolean = False
+            Dim Image_InTGOD As Boolean = False
             Dim Disk_NOBPB As Boolean = False
             Dim Disk_NoBootLoader As Boolean = False
             Dim Disk_CustomBootLoader As Boolean = False
@@ -223,6 +224,11 @@ Namespace Filters
                             Else
                                 Image_NotInTDC = True
                             End If
+
+                            If TitleData.TGOD <> "" Then
+                                Image_InTGOD = True
+                            End If
+
                             FileData = New FloppyDB.FileNameData(ImageData.FileName, _TitleDB)
 
                             If TitleData.Status <> FileData.Status Then
@@ -272,6 +278,7 @@ Namespace Filters
                 If App.Globals.AppSettings.Debug Then
                     FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_InTDC, Image_InTDC)
                     FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_NotInTDC, Image_NotInTDC)
+                    FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_InTGOD, Image_InTGOD)
                 End If
             End If
 

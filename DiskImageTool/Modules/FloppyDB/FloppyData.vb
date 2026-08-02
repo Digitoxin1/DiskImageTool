@@ -23,11 +23,12 @@ Namespace FloppyDB
         Private ReadOnly _Status As FloppyDBStatus?
         Private ReadOnly _Series As String
         Private ReadOnly _System As String
+        Private ReadOnly _TGOD As String
         Private ReadOnly _Variation As String
         Private ReadOnly _Version As String
         Private ReadOnly _Year As String
 
-        Private ReadOnly Prefixes = {"The", "A", "An"}
+        Private ReadOnly Prefixes As IEnumerable(Of String) = {"The", "A", "An"}
         Private ReadOnly DefLang As New Dictionary(Of String, String) From {
             {"FR", "Fr"},
             {"DE", "De"},
@@ -38,7 +39,7 @@ Namespace FloppyDB
             {"Windows 3.1", "Win3.1"},
             {"Windows 2.1", "Win2.1"},
             {"MS-DOS", ""},
-            {"PC Booter", ""}
+            {"PC Booter", "Booter"}
         }
 
         Friend Sub New(Owner As FloppyDB, Inherited As FloppyData, Node As Xml.XmlElement)
@@ -64,6 +65,7 @@ Namespace FloppyDB
                 _Status = Inherited._Status
                 _Series = Inherited._Series
                 _System = Inherited._System
+                _TGOD = Inherited._TGOD
                 _Variation = Inherited._Variation
                 _Version = Inherited._Version
                 _Year = Inherited._Year
@@ -86,6 +88,7 @@ Namespace FloppyDB
                 If Node.HasAttribute("mobyGamesId") Then _MobyGamesId = Node.GetAttribute("mobyGamesId")
                 If Node.HasAttribute("system") Then _System = Node.GetAttribute("system")
                 If Node.HasAttribute("series") Then _Series = Node.GetAttribute("series")
+                If Node.HasAttribute("tgod") Then _TGOD = Node.GetAttribute("tgod")
 
                 If Node.HasAttribute("media") Then
                     _MediaString = Node.GetAttribute("media")
@@ -242,6 +245,12 @@ Namespace FloppyDB
             End Get
         End Property
 
+        Public ReadOnly Property TGOD As String
+            Get
+                Return If(_TGOD, "")
+            End Get
+        End Property
+
         Public ReadOnly Property Variation As String
             Get
                 Return If(_Variation, "")
@@ -269,6 +278,10 @@ Namespace FloppyDB
                 fileName &= " (" & SafeString(Me.Variation) & ")"
             End If
 
+            If Not String.IsNullOrEmpty(Me.System) Then
+                fileName &= " (" & SafeString(Me.System) & ")"
+            End If
+
             Dim TitleOs = Me.OperatingSystem
 
             If Not String.IsNullOrEmpty(TitleOs) Then
@@ -282,16 +295,8 @@ Namespace FloppyDB
                 fileName &= " (" & SafeString(TitleOs) & ")"
             End If
 
-            If Me.OperatingSystem = "PC Booter" Then
-                fileName &= " (Booter)"
-            End If
-
             If Not String.IsNullOrEmpty(Me.Year) Then
                 fileName &= " (" & Me.Year & ")"
-            End If
-
-            If Not String.IsNullOrEmpty(Me.System) Then
-                fileName &= " (" & SafeString(Me.System) & ")"
             End If
 
             Dim versionList As New List(Of String)

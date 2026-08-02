@@ -30,10 +30,6 @@ Public Class SummaryPanel
         Dim Item = ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
         Item.Name = "CopyValue"
 
-        Item = ContextMenuCopy.Items.Add("")
-        Item.Name = "MobyGames"
-        Item.Image = My.Resources.MobyGames
-
         Me.ListViewSummary.ContextMenuStrip = ContextMenuCopy
     End Sub
 
@@ -267,6 +263,7 @@ Public Class SummaryPanel
         TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, True, False))
         TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True, True))
         TitleRows.Add("TDC", New SummaryRow(ListViewSummary.Font, My.Resources.Label_TDC, True, False))
+        TitleRows.Add("TGOD", New SummaryRow(ListViewSummary.Font, My.Resources.Label_TGOD, True, False))
     End Sub
 
     Private Sub PopulateError(InvalidImage As Boolean)
@@ -315,6 +312,12 @@ Public Class SummaryPanel
                         Dim Metadata = TryCast(Item.Tag, SummaryMetadata)
                         If Metadata IsNot Nothing Then
                             Metadata.MobyGamesId = SummaryRow.MobyGamesId
+                        End If
+                    End If
+                    If SummaryRow.TGOD <> "" Then
+                        Dim Metadata = TryCast(Item.Tag, SummaryMetadata)
+                        If Metadata IsNot Nothing Then
+                            Metadata.TGOD = SummaryRow.TGOD
                         End If
                     End If
                 End If
@@ -780,6 +783,10 @@ Public Class SummaryPanel
                 .Value = If(TitleData.IsTDC, My.Resources.Label_Yes, "")
                 .ForeColor = Color.Green
             End With
+            With Row("TGOD")
+                .Value = TitleData.TGOD.Replace(",", ", ")
+                .TGOD = TitleData.TGOD
+            End With
         End If
 
         Dim Group = ListViewSummary.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
@@ -843,6 +850,9 @@ Public Class SummaryPanel
             ElseIf e.ClickedItem.Name = "MobyGames" Then
                 Dim URL = CombineUri(My.Settings.MobyGamesURL, "game", Uri.EscapeDataString(Metadata.MobyGamesId))
                 Process.Start(New ProcessStartInfo With {.FileName = URL.ToString, .UseShellExecute = True})
+            ElseIf e.ClickedItem.Name.Substring(0, 4) = "TGOD" Then
+                Dim URL = "https://www.goodolddays.net/en/diskimages/?id=" & e.ClickedItem.Tag.ToString()
+                Process.Start(New ProcessStartInfo With {.FileName = URL, .UseShellExecute = True})
             End If
         End If
     End Sub
@@ -853,11 +863,40 @@ Public Class SummaryPanel
         If Metadata IsNot Nothing Then
             Dim CM As ContextMenuStrip = sender
             CM.Items("CopyValue").Text = String.Format(My.Resources.Menu_CopyValueByName, Metadata.Text)
-            CM.Items("MobyGames").Visible = Metadata.MobyGamesId <> ""
-            If Metadata.MobyGamesId <> "" Then
-                CM.Items("MobyGames").Text = My.Resources.Label_ViewMobyGames
+
+            If Metadata.MobyGamesId = "" Then
+                If CM.Items.IndexOfKey("MobyGames") >= 0 Then
+                    CM.Items.RemoveByKey("MobyGames")
+                End If
             Else
-                CM.Items("MobyGames").Text = ""
+                If CM.Items.IndexOfKey("MobyGames") < 0 Then
+                    Dim Item = CM.Items.Add(My.Resources.Label_ViewMobyGames, My.Resources.MobyGames)
+                    Item.Name = "MobyGames"
+                End If
+            End If
+
+            If App.Globals.AppSettings.Debug Then
+                For i As Integer = 4 To 0 Step -1
+                    Dim key As String = "TGOD" & i.ToString()
+                    If CM.Items.IndexOfKey(key) >= 0 Then
+                        CM.Items.RemoveByKey(key)
+                    End If
+                Next
+
+                If Metadata.TGOD <> "" Then
+                    Dim i As Integer = 0
+                    Dim TGODList = Metadata.TGOD.Split(",")
+                    For Each TGOD In TGODList
+                        Dim key As String = "TGOD" & i.ToString()
+                        Dim Item = CM.Items.Add("View ID " & TGOD & " on goodolddays.net")
+                        Item.Name = key
+                        Item.Tag = TGOD
+                        i += 1
+                        If i > 4 Then
+                            Exit For
+                        End If
+                    Next
+                End If
             End If
         Else
             e.Cancel = True
@@ -924,11 +963,13 @@ Public Class SummaryPanel
         Public Property Value As String = ""
         Public Property WrapText As Boolean
         Public Property MobyGamesId As String = ""
+        Public Property TGOD As String = ""
     End Class
 
     Public Class SummaryMetadata
         Public Property Text As String
         Public Property Value As String
         Public Property MobyGamesId As String = ""
+        Public Property TGOD As String = ""
     End Class
 End Class

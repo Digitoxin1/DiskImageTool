@@ -33,6 +33,7 @@
         Image_Unverified
         Image_InTDC
         Image_NotInTDC
+        Image_InTGOD
         Database_MismatchedStatus
     End Enum
 

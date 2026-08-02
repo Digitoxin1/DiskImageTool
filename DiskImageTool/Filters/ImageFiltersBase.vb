@@ -259,6 +259,8 @@
                     Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_InTDC
                 Case FilterTypes.Image_NotInTDC
                     Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_NotInTDC
+                Case FilterTypes.Image_InTGOD
+                    Caption = My.Resources.Label_Image & " - On TGOD"
                 Case FilterTypes.Database_MismatchedStatus
                     Caption = My.Resources.Filter_Database_MismatchedStatus
                 Case Else
