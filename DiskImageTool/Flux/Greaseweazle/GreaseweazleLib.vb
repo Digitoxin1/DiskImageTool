@@ -46,12 +46,14 @@ Namespace Flux.Greaseweazle
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
         End Sub
 
-        Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
+        Public Function BuildRanges(values As HashSet(Of UShort), Optional DoubleStep As Boolean = False) As List(Of (StartTrack As UShort, EndTrack As UShort))
             Dim result As New List(Of (UShort, UShort))()
 
             If values Is Nothing OrElse values.Count = 0 Then
                 Return result
             End If
+
+            Dim Multiplier As UShort = If(DoubleStep, 2US, 1US)
 
             ' Sort the values first
             Dim sorted = values.OrderBy(Function(v) v).ToList()
@@ -67,7 +69,7 @@ Namespace Flux.Greaseweazle
                     rangeEnd = v
                 Else
                     ' push previous range
-                    result.Add((rangeStart, rangeEnd))
+                    result.Add((CUShort(rangeStart * Multiplier), CUShort(rangeEnd * Multiplier)))
                     ' start new range
                     rangeStart = v
                     rangeEnd = v
@@ -75,7 +77,7 @@ Namespace Flux.Greaseweazle
             Next
 
             ' add final range
-            result.Add((rangeStart, rangeEnd))
+            result.Add((CUShort(rangeStart * Multiplier), CUShort(rangeEnd * Multiplier)))
 
             Return result
         End Function

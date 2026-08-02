@@ -29,6 +29,8 @@ Namespace Flux.Greaseweazle
         Friend Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
 
+        Public Property DestinationTrackMode As Boolean = False
+
         Public ReadOnly Property TrackFound As Boolean Implements ITrackStatus.TrackFound
             Get
                 Return True
@@ -419,7 +421,7 @@ Namespace Flux.Greaseweazle
                 .Tooltip = BuildTooltip(_CurrentStatusInfo)
             End With
 
-            If DoubleStep Then
+            If DoubleStep AndAlso Not DestinationTrackMode Then
                 StatusData.Track *= 2
             End If
 

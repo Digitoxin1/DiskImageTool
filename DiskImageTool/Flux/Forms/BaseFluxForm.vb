@@ -241,11 +241,11 @@ Namespace Flux
             End Select
         End Function
 
-        Protected Function GetSelectedTrackRanges() As List(Of (StartTrack As UShort, EndTrack As UShort))
+        Protected Function GetSelectedTrackRanges(Optional DoubleStep As Boolean = False) As List(Of (StartTrack As UShort, EndTrack As UShort))
             Dim Selected As New HashSet(Of UShort)(TS0.SelectedTracks)
             Selected.UnionWith(TS1.SelectedTracks)
 
-            Dim Ranges = BuildRanges(Selected)
+            Dim Ranges = BuildRanges(Selected, DoubleStep)
 
             Return Ranges
         End Function

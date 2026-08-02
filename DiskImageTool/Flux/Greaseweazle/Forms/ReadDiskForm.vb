@@ -105,7 +105,9 @@ Namespace Flux.Greaseweazle
             ReadCmd = Engine.Read
 
             _UserState = App.UserState.Flux
-            _Status = New TrackStatus()
+            _Status = New TrackStatus With {
+                .DestinationTrackMode = True
+            }
             TrackStatus = _Status
 
             _KryofluxAvailable = KryofluxAvailable
@@ -247,6 +249,7 @@ Namespace Flux.Greaseweazle
                 TextBoxRootFolder.Text = If(value, String.Empty).Trim()
             End Set
         End Property
+
         Private ReadOnly Property SelectedDeviceState As Settings.UserStateFluxReadDevice
             Get
                 Return _UserState.Read.Device(IDevice.FluxDevice.Greaseweazle)
@@ -1283,7 +1286,6 @@ Namespace Flux.Greaseweazle
 
             SetTitleBarText()
         End Sub
-
         Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
             Dim DiskParams = SelectedDiskParams
 
@@ -1295,8 +1297,9 @@ Namespace Flux.Greaseweazle
             Dim Doublestep = ReadDiskHelpers.UseDoubleStep(CurrentOption.Type, DiskParams.Value.Format)
 
             If PrevDoubleStep <> Doublestep Then
-                Dim State = GetState(PrevDoubleStep)
-                SetState(State, Doublestep)
+                ResetTrackGrid(False)
+                'Dim State = GetState(PrevDoubleStep)
+                'SetState(State, Doublestep)
             End If
         End Sub
 
@@ -1323,16 +1326,16 @@ Namespace Flux.Greaseweazle
             Dim Heads As TrackHeads? = Nothing
             Dim AppendLog As Boolean = False
 
+            _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
+
             If HasSelectedTracks Then
-                TrackRanges = GetSelectedTrackRanges()
+                TrackRanges = GetSelectedTrackRanges(_OutputDoubleStep)
                 Heads = GetSelectedTrackHeads()
 
                 GridResetSelectedCells()
 
                 AppendLog = True
             End If
-
-            _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
 
             InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), Append:=AppendLog)
 
@@ -1367,6 +1370,7 @@ Namespace Flux.Greaseweazle
                 SideCount = DiskParams.Value.BPBParams.NumberOfHeads
                 FormatDriveType = DiskParams.Value.DriveType
             End If
+
             Dim TrackCount As UShort
 
             If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
@@ -1377,6 +1381,12 @@ Namespace Flux.Greaseweazle
 
             If _SelectedDriveOption IsNot Nothing Then
                 TrackCount = Math.Max(TrackCount, _SelectedDriveOption.Tracks)
+            End If
+
+            If DiskParams.HasValue AndAlso _SelectedDriveOption IsNot Nothing Then
+                If ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format) Then
+                    TrackCount \= 2
+                End If
             End If
 
             GridReset(TrackCount, SideCount, Nothing, ResetSelected)

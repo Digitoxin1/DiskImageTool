@@ -138,7 +138,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function CheckKeepProcessing() As Boolean
-            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (RetriesAllowed() AndAlso _CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
+            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (ContinueAllowed() AndAlso _CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
 
             If KeepProcessing Then
                 KeepProcessing = TrackStatus.CanKeepProcessing
@@ -397,10 +397,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshVerifyButtonState()
-            Dim AllowRetries = RetriesAllowed()
-
-            _CheckBoxContinue.Enabled = IsIdle AndAlso AllowRetries
-            _NumericRetries.Enabled = IsIdle AndAlso AllowRetries
+            _CheckBoxContinue.Enabled = IsIdle AndAlso ContinueAllowed()
+            _NumericRetries.Enabled = IsIdle AndAlso RetriesAllowed()
         End Sub
 
         Private Sub ResetCheckBoxSelect()
@@ -433,7 +431,11 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function RetriesAllowed() As Boolean
-            Return Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage AndAlso Not CheckBoxSelect.Checked
+            Return Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage
+        End Function
+
+        Private Function ContinueAllowed() As Boolean
+            Return RetriesAllowed() AndAlso Not CheckBoxSelect.Checked
         End Function
 
         Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
