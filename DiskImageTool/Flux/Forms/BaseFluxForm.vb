@@ -116,11 +116,11 @@ Namespace Flux
 
         Friend Function GetSelectedTrackHeads() As TrackHeads
             If TS0.IsChecked AndAlso TS1.IsChecked Then
-                Return TrackHeads.both
+                Return TrackHeads.Both
             ElseIf TS0.IsChecked Then
-                Return TrackHeads.head0
+                Return TrackHeads.Head0
             Else
-                Return TrackHeads.head1
+                Return TrackHeads.Head1
             End If
         End Function
 

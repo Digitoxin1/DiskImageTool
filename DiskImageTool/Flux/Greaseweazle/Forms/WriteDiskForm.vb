@@ -463,7 +463,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub WriteDisk(FilePath As String)
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
-            Dim Heads As TrackHeads = TrackHeads.both
+            Dim Heads As TrackHeads = TrackHeads.Both
 
             If CheckBoxSelect.Checked Then
                 TrackRanges = GetSelectedTrackRanges()

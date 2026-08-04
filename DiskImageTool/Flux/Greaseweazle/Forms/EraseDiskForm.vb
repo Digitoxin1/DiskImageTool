@@ -100,7 +100,7 @@ Namespace Flux.Greaseweazle
             Else
                 Dim LastTrack As UShort = CUShort(Math.Max(0, CInt(Opt.Tracks) - 1))
                 TrackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {(0, LastTrack)}
-                Heads = TrackHeads.both
+                Heads = TrackHeads.Both
             End If
 
             Dim TrackSet = BuildUserSpec(TrackRanges, Heads)

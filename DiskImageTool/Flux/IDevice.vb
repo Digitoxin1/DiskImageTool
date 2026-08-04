@@ -11,7 +11,7 @@
         ReadOnly Property RequiresImageFormat As Boolean
         ReadOnly Property Settings As ISettings
         ReadOnly Property TrackStatus As ITrackStatus
-        Function InputTypeSupported(fileType As InputFileTypeEnum) As Boolean
-        Function OutputTypeSupported(fileType As ImageImportOutputTypes) As Boolean
+        Function InputTypeSupported(fileType As FluxFileTypeEnum) As Boolean
+        Function OutputTypeSupported(fileType As FluxFileTypeEnum) As Boolean
     End Interface
 End Namespace

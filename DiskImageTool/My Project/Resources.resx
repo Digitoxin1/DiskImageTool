@@ -2274,4 +2274,13 @@ Do you wish to continue?</value>
   <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
     <value>File does not appear to be a supported {0} {1} image.</value>
   </data>
+  <data name="FloppyImageType_SCPImage" xml:space="preserve">
+    <value>SuperCard Pro Image</value>
+  </data>
+  <data name="FloppyImageType_A2RImage" xml:space="preserve">
+    <value>Applesauce FDC Image</value>
+  </data>
+  <data name="FloppyImageType_RAWImage" xml:space="preserve">
+    <value>Raw Flux Set</value>
+  </data>
 </root>

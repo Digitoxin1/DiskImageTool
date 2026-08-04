@@ -61,7 +61,7 @@
             Dim Response As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads, [Continue] As Boolean)
 
             Response.Ranges = New List(Of (StartTrack As UShort, EndTrack As UShort))
-            Response.Heads = TrackHeads.both
+            Response.Heads = TrackHeads.Both
             Response.[Continue] = False
 
             Return Response

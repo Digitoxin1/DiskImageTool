@@ -2018,4 +2018,13 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
     <value>El archivo no parece ser una imagen {0} {1} compatible.</value>
   </data>
+  <data name="FloppyImageType_SCPImage" xml:space="preserve">
+    <value>Imagen SuperCard Pro</value>
+  </data>
+  <data name="FloppyImageType_A2RImage" xml:space="preserve">
+    <value>Imagen Applesauce FDC</value>
+  </data>
+  <data name="FloppyImageType_RAWImage" xml:space="preserve">
+    <value>Conjunto de flujo sin procesar</value>
+  </data>
 </root>

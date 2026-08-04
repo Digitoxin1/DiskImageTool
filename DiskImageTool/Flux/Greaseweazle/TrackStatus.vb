@@ -221,7 +221,7 @@ Namespace Flux.Greaseweazle
 
             If _Range Is Nothing Then
                 Response.Continue = False
-                Response.Heads = TrackHeads.both
+                Response.Heads = TrackHeads.Both
 
             ElseIf _CurrentStatusInfo.Side < _Range.HeadEnd Then
                 Response.Continue = True
@@ -230,7 +230,7 @@ Namespace Flux.Greaseweazle
 
             Else
                 Response.Continue = False
-                Response.Heads = TrackHeads.both
+                Response.Heads = TrackHeads.Both
                 Response.Ranges.Add((_CurrentStatusInfo.Track + 1, _Range.TrackEnd))
             End If
 
@@ -254,8 +254,8 @@ Namespace Flux.Greaseweazle
                 If R.EndTrack > TrackEnd Then TrackEnd = R.EndTrack
             Next
 
-            Dim HeadStart As Integer = If(heads = TrackHeads.head1, 1, 0)
-            Dim HeadEnd As Integer = If(heads = TrackHeads.head0, 0, 1)
+            Dim HeadStart As Integer = If(heads = TrackHeads.Head1, 1, 0)
+            Dim HeadEnd As Integer = If(heads = TrackHeads.Head0, 0, 1)
 
             _Range = New TrackRange With {
                 .Action = "Writing",

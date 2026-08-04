@@ -185,23 +185,24 @@ Namespace Flux
         Private Function BuildConvertOptions(inputFilePath As String,
                                                      outputFilePath As String,
                                                      diskParams As FloppyDiskParams,
-                                                     outputType As ImageImportOutputTypes,
+                                                     outputType As FluxFileTypeEnum,
                                                      doubleStep As Boolean) As ConvertOptions
 
-            If Not diskParams.IsStandard Then
-                outputType = ImageImportOutputTypes.HFE
+            If Not diskParams.IsStandard And outputType = FluxFileTypeEnum.SectorImage Then
+                outputType = FluxFileTypeEnum.HFE
             End If
 
             Dim Format As String = Nothing
             Dim AdjustSpeed As Double? = Nothing
             Dim BitRateKbps As Integer? = Nothing
 
-            If outputType <> ImageImportOutputTypes.HFE Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
-                Format = GreaseweazleImageFormatString(ImageFormat)
-            Else
+            If outputType = FluxFileTypeEnum.HFE Then
                 BitRateKbps = CInt(diskParams.BitRateKbps)
                 AdjustSpeed = 60.0 / diskParams.RPM
+
+            ElseIf outputType = FluxFileTypeEnum.SectorImage Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
+                Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
             Dim OutputFileWithOpts As String = outputFilePath
@@ -227,8 +228,8 @@ Namespace Flux
 
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
-            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.SCP)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.A2R)
 
             For Each path In paths
                 If IsValidFluxImport(path, AllowSCP, AllowA2R).Result Then
@@ -299,7 +300,7 @@ Namespace Flux
         Private Function GenerateCommandLine(InputFilePath As String,
                                                      OutputFilePath As String,
                                                      Device As IDevice.FluxDevice,
-                                                     OutputType As ImageImportOutputTypes,
+                                                     OutputType As FluxFileTypeEnum,
                                                      DiskParams As FloppyDiskParams?) As (Arguments As String, Suffix As String)
 
             Dim Response As (Arguments As String, Suffix As String)
@@ -359,23 +360,12 @@ Namespace Flux
             RefreshButtonState()
         End Sub
 
-        Private Function GetInputFileType() As InputFileTypeEnum
+        Private Function GetInputFileType() As FluxFileTypeEnum
             If String.IsNullOrEmpty(_InputFilePath) Then
-                Return InputFileTypeEnum.none
+                Return FluxFileTypeEnum.None
             End If
 
-            Dim Ext = IO.Path.GetExtension(_InputFilePath).ToLower()
-
-            Select Case Ext
-                Case ".scp"
-                    Return InputFileTypeEnum.scp
-                Case ".a2r"
-                    Return InputFileTypeEnum.a2r
-                Case ".raw"
-                    Return InputFileTypeEnum.raw
-                Case Else
-                    Return InputFileTypeEnum.sectorImage
-            End Select
+            Return FluxFileTypeFromExtension(IO.Path.GetExtension(_InputFilePath))
         End Function
 
         Private Function GetNewFileName(FilePath As String) As String
@@ -415,7 +405,7 @@ Namespace Flux
 
             Dim FileType = GetInputFileType()
 
-            If FileType = InputFileTypeEnum.raw AndAlso Mode = Settings.AppSettings.ImageConvertPathMode.ParentOfFlux Then
+            If FileType = FluxFileTypeEnum.RAW AndAlso Mode = Settings.AppSettings.ImageConvertPathMode.ParentOfFlux Then
                 Dim Parent = IO.Path.GetDirectoryName(FluxSetPath)
                 If Not String.IsNullOrEmpty(Parent) Then
                     Return Parent
@@ -803,8 +793,8 @@ Namespace Flux
             End If
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
-            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.SCP)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.A2R)
 
             Dim Response = AnalyzeFluxImage(Filename, AllowSCP, AllowA2R, True)
 
@@ -829,7 +819,7 @@ Namespace Flux
             End If
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.SCP)
 
             Dim FileName As String = SharedLib.OpenFluxImage(AllowSCP)
 
@@ -874,10 +864,10 @@ Namespace Flux
         Private Sub PopulateFileExtensions()
             _ComboExtensionsNoEvent = True
 
-            Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
+            Dim OutputType As FluxFileTypeEnum = ComboOutputType.SelectedValue
 
-            If OutputType <> ImageImportOutputTypes.IMA Then
-                Dim Extension = ImageImportOutputTypeFileExt(OutputType)
+            If OutputType <> FluxFileTypeEnum.SectorImage Then
+                Dim Extension = FluxFileTypeExtension(OutputType)
 
                 Dim items As New List(Of FileExtensionItem) From {
                     New FileExtensionItem(Extension, Nothing)
@@ -934,15 +924,20 @@ Namespace Flux
         Private Sub PopulateOutputTypes()
             _ComboOutputTypeNoEvent = True
 
-            Dim OutputTypes As New List(Of KeyValuePair(Of String, ImageImportOutputTypes))
+            Dim FileType = GetInputFileType()
+            Dim OutputTypes As New List(Of KeyValuePair(Of String, FluxFileTypeEnum))
 
-            For Each OutputType As ImageImportOutputTypes In [Enum].GetValues(GetType(ImageImportOutputTypes))
+            For Each OutputType As FluxFileTypeEnum In [Enum].GetValues(GetType(FluxFileTypeEnum))
+                If FileType = OutputType Then
+                    Continue For
+                End If
+
                 If _SelectedDevice IsNot Nothing AndAlso Not _SelectedDevice.OutputTypeSupported(OutputType) Then
                     Continue For
                 End If
 
-                OutputTypes.Add(New KeyValuePair(Of String, ImageImportOutputTypes)(
-                    ImageImportOutputTypeDescription(OutputType), OutputType)
+                OutputTypes.Add(New KeyValuePair(Of String, FluxFileTypeEnum)(
+                    FluxFileTypeDescription(OutputType), OutputType)
                 )
             Next
 
@@ -966,13 +961,18 @@ Namespace Flux
             End If
 
             Dim Caption As String = TextBoxFileName.Text
+            Dim ImageData As ImageData = Nothing
 
             Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
 
             If HasSelectedOutputFile Then
                 Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
-                Dim ImageData = New ImageData(ImageInfo.FilePath)
+                If Not FileTypeIsFlux(ImageInfo.FileType) Then
+                    ImageData = New ImageData(ImageInfo.FilePath)
+                End If
+            End If
 
+            If ImageData IsNot Nothing Then
                 ImagePreview.Display(ImageData, Caption)
             Else
                 Dim DiskParams = SelectedDiskParams()
@@ -1010,13 +1010,11 @@ Namespace Flux
                 Exit Sub
             End If
 
-            Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
-
-            Dim FileExt = ImageImportOutputTypeFileExt(OutputType)
+            Dim OutputType As FluxFileTypeEnum = ComboOutputType.SelectedValue
 
             ClearProcessedImage()
 
-            Dim FilePath = _OutputImages.SetPendingImage(_SelectedDevice.Device, FileExt)
+            Dim FilePath = _OutputImages.SetPendingImage(_SelectedDevice.Device, OutputType)
 
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
@@ -1098,7 +1096,7 @@ Namespace Flux
         End Function
 
         Private Sub RefreshButtonState()
-            Dim OutputType As ImageImportOutputTypes? = Nothing
+            Dim OutputType As FluxFileTypeEnum? = Nothing
 
             Dim Is525DDStandard As Boolean = False
             Dim IsNonImage As Boolean = True
@@ -1165,7 +1163,7 @@ Namespace Flux
             End If
 
             CheckBoxExtendedLogging.Enabled = SettingsEnabled
-            _CheckBox86FSurfaceData.Enabled = SettingsEnabled AndAlso OutputType.HasValue AndAlso OutputType.Value = ImageImportOutputTypes.F86
+            _CheckBox86FSurfaceData.Enabled = SettingsEnabled AndAlso OutputType.HasValue AndAlso OutputType.Value = FluxFileTypeEnum.F86
 
             If _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv Then
                 _CheckBoxRemaster.Enabled = SettingsEnabled AndAlso _TrackLayoutExists
@@ -1344,7 +1342,7 @@ Namespace Flux
             Me.Text = Text & " - " & DisplayFileName
         End Sub
 
-        Private Sub StartGreaseweazleConvert(inputFilePath As String, outputFilePath As String, diskParams As FloppyDiskParams, outputType As ImageImportOutputTypes, doubleStep As Boolean)
+        Private Sub StartGreaseweazleConvert(inputFilePath As String, outputFilePath As String, diskParams As FloppyDiskParams, outputType As FluxFileTypeEnum, doubleStep As Boolean)
             Dim Opts As ConvertOptions
             Try
                 Opts = BuildConvertOptions(inputFilePath, outputFilePath, diskParams, outputType, doubleStep)
@@ -1541,7 +1539,7 @@ Namespace Flux
             End If
 
             If ComboOutputType.SelectedIndex > -1 Then
-                Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
+                Dim OutputType As FluxFileTypeEnum = ComboOutputType.SelectedValue
                 GetSelectedDeviceState.OutputType = OutputType
             End If
 
@@ -1621,8 +1619,8 @@ Namespace Flux
             End If
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
-            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.SCP)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.A2R)
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
 
             If IsRunning OrElse HasOutputfile Then
@@ -1715,11 +1713,14 @@ Namespace Flux
 #Region "Classes"
         Private Class OutputImageInfo
             Private ReadOnly _FileSource As IDevice.FluxDevice
+            Private ReadOnly _FileType As FluxFileTypeEnum
             Private _FilePath As String
             Private _Keep As Boolean = False
-            Public Sub New(FilePath As String, FileSource As IDevice.FluxDevice)
+
+            Public Sub New(FilePath As String, FileSource As IDevice.FluxDevice, FileType As FluxFileTypeEnum)
                 _FilePath = FilePath
                 _FileSource = FileSource
+                _FileType = FileType
             End Sub
 
             Public ReadOnly Property FilePath As String
@@ -1731,6 +1732,12 @@ Namespace Flux
             Public ReadOnly Property FileSource As IDevice.FluxDevice
                 Get
                     Return _FileSource
+                End Get
+            End Property
+
+            Public ReadOnly Property FileType As FluxFileTypeEnum
+                Get
+                    Return _FileType
                 End Get
             End Property
 
@@ -1837,13 +1844,15 @@ Namespace Flux
                 _LogFiles.Clear()
             End Sub
 
-            Public Function SetPendingImage(FileSource As IDevice.FluxDevice, Extension As String) As String
+            Public Function SetPendingImage(FileSource As IDevice.FluxDevice, OutputType As FluxFileTypeEnum) As String
                 ClearPendingImage()
-                Dim FileName As String = Guid.NewGuid.ToString & Extension
+
+                Dim FileExt = FluxFileTypeExtension(OutputType)
+                Dim FileName As String = Guid.NewGuid.ToString & FileExt
 
                 Dim FilePath = IO.Path.Combine(_TempPath, FileName)
 
-                _PendingImage = New OutputImageInfo(FilePath, FileSource)
+                _PendingImage = New OutputImageInfo(FilePath, FileSource, OutputType)
 
                 Return FilePath
             End Function

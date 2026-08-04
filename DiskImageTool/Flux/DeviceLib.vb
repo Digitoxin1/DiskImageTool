@@ -16,7 +16,7 @@
             End Select
         End Function
 
-        Public Function FluxDeviceGetList(FileType As InputFileTypeEnum) As List(Of IDevice)
+        Public Function FluxDeviceGetList(FileType As FluxFileTypeEnum) As List(Of IDevice)
             Dim list As New List(Of IDevice)
 
             For Each dev As IDevice.FluxDevice In [Enum].GetValues(GetType(IDevice.FluxDevice))

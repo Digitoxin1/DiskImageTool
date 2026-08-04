@@ -2018,4 +2018,13 @@ Möchten Sie fortfahren?</value>
   <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
     <value>Die Datei scheint keine unterstützte {0}-{1}-Image-Datei zu sein.</value>
   </data>
+  <data name="FloppyImageType_SCPImage" xml:space="preserve">
+    <value>SuperCard Pro-Abbild</value>
+  </data>
+  <data name="FloppyImageType_A2RImage" xml:space="preserve">
+    <value>Applesauce FDC-Abbild</value>
+  </data>
+  <data name="FloppyImageType_RAWImage" xml:space="preserve">
+    <value>Roh-Flux-Satz</value>
+  </data>
 </root>

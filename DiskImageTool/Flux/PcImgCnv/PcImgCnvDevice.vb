@@ -4,16 +4,16 @@
 
         Private ReadOnly _TrackStatus As TrackStatus
 
-        Private ReadOnly ValidInputTypes As New List(Of InputFileTypeEnum) From {
-                        InputFileTypeEnum.scp,
-                InputFileTypeEnum.raw
+        Private ReadOnly ValidInputTypes As New List(Of FluxFileTypeEnum) From {
+                FluxFileTypeEnum.SCP,
+                FluxFileTypeEnum.RAW
             }
 
-        Private ReadOnly ValidOutputTypes As New List(Of ImageImportOutputTypes) From {
-                ImageImportOutputTypes.HFE,
-                ImageImportOutputTypes.F86,
-                ImageImportOutputTypes.MFM,
-                ImageImportOutputTypes.TC
+        Private ReadOnly ValidOutputTypes As New List(Of FluxFileTypeEnum) From {
+                FluxFileTypeEnum.HFE,
+                FluxFileTypeEnum.F86,
+                FluxFileTypeEnum.MFM,
+                FluxFileTypeEnum.TC
             }
         Public Sub New()
             _TrackStatus = New TrackStatus()
@@ -61,11 +61,11 @@
             End Get
         End Property
 
-        Friend Function InputTypeSupported(fileType As InputFileTypeEnum) As Boolean Implements IDevice.InputTypeSupported
+        Friend Function InputTypeSupported(fileType As FluxFileTypeEnum) As Boolean Implements IDevice.InputTypeSupported
             Return ValidInputTypes.Contains(fileType)
         End Function
 
-        Friend Function OutputTypeSupported(fileType As ImageImportOutputTypes) As Boolean Implements IDevice.OutputTypeSupported
+        Friend Function OutputTypeSupported(fileType As FluxFileTypeEnum) As Boolean Implements IDevice.OutputTypeSupported
             Return ValidOutputTypes.Contains(fileType)
         End Function
     End Class

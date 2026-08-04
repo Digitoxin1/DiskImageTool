@@ -104,9 +104,9 @@ Namespace Flux.Greaseweazle
             End If
 
             Select Case heads
-                Case TrackHeads.head0
+                Case TrackHeads.Head0
                     spec.Heads.Add(0)
-                Case TrackHeads.head1
+                Case TrackHeads.Head1
                     spec.Heads.Add(1)
                 Case Else
                     spec.Heads.Add(0)
@@ -248,11 +248,11 @@ Namespace Flux.Greaseweazle
             End If
 
             If StartHead = 0 And EndHead = 0 Then
-                Return TrackHeads.head0
+                Return TrackHeads.Head0
             ElseIf StartHead = 1 And EndHead = 1 Then
-                Return TrackHeads.head1
+                Return TrackHeads.Head1
             Else
-                Return TrackHeads.both
+                Return TrackHeads.Both
             End If
         End Function
 

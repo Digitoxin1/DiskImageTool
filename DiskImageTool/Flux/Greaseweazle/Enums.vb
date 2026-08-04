@@ -170,17 +170,6 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
-            Select Case Value
-                Case ImageImportOutputTypes.HFE
-                    Return "HxC HFE Image"
-                Case ImageImportOutputTypes.IMA
-                    Return "Basic Sector Image"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
         Public Function ReadDiskOutputTypeDescription(Value As ReadDiskOutputTypes) As String
             Select Case Value
                 Case ReadDiskOutputTypes.HFE

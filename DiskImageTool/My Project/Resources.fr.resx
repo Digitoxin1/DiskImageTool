@@ -733,7 +733,7 @@
     <value>HxC HFE (v1) Image</value>
   </data>
   <data name="FloppyImageType_IMDImage" xml:space="preserve">
-    <value>ImageDisk Secteur Image</value>
+    <value>ImageDisk Sector Image</value>
   </data>
   <data name="FloppyImageType_MFMImage" xml:space="preserve">
     <value>HxC MFM Image</value>
@@ -2017,5 +2017,14 @@ Souhaitez-vous continuer ?</value>
   </data>
   <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
     <value>Le fichier ne semble pas être une image {0} {1} prise en charge.</value>
+  </data>
+  <data name="FloppyImageType_SCPImage" xml:space="preserve">
+    <value>SuperCard Pro Image</value>
+  </data>
+  <data name="FloppyImageType_A2RImage" xml:space="preserve">
+    <value>Applesauce FDC Image</value>
+  </data>
+  <data name="FloppyImageType_RAWImage" xml:space="preserve">
+    <value>Ensemble de flux brut</value>
   </data>
 </root>

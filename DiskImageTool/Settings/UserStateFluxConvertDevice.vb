@@ -5,7 +5,7 @@ Namespace Settings
     Public Class UserStateFluxConvertDevice
         Inherits SettingsGroup
 
-        Private _OutputType As ImageImportOutputTypes?
+        Private _OutputType As FluxFileTypeEnum?
         Private _SaveLog As Boolean = True
         Private _ExtendedLogs As Boolean? = Nothing
 
@@ -21,7 +21,7 @@ Namespace Settings
             End Set
         End Property
 
-        Friend Property OutputType As ImageImportOutputTypes?
+        Friend Property OutputType As FluxFileTypeEnum?
             Get
                 Return _OutputType
             End Get

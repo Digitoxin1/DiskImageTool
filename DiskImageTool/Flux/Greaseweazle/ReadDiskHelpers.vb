@@ -59,9 +59,9 @@ Namespace Flux.Greaseweazle
 
             If Not heads.HasValue Then
                 If diskParams.Format = FloppyDiskFormat.FloppyUnknown Then
-                    heads = TrackHeads.both
+                    heads = TrackHeads.Both
                 Else
-                    heads = If(diskParams.BPBParams.NumberOfHeads > 1, TrackHeads.both, TrackHeads.head0)
+                    heads = If(diskParams.BPBParams.NumberOfHeads > 1, TrackHeads.Both, TrackHeads.Head0)
                 End If
             End If
 

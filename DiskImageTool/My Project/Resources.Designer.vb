@@ -2153,6 +2153,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Applesauce FDC Image.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_A2RImage() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_A2RImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Basic Sector Image.
         '''</summary>
         Friend ReadOnly Property FloppyImageType_BasicSectorImage() As String
@@ -2212,6 +2221,24 @@ Namespace My.Resources
         Friend ReadOnly Property FloppyImageType_PSIImage() As String
             Get
                 Return ResourceManager.GetString("FloppyImageType_PSIImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Raw Flux Set.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_RAWImage() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_RAWImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to SuperCard Pro Image.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_SCPImage() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_SCPImage", resourceCulture)
             End Get
         End Property
         
