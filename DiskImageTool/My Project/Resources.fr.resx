@@ -1302,8 +1302,8 @@
   <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
     <value>Le fichier ne semble pas faire partie d’un ensemble brut KryoFlux valide.</value>
   </data>
-  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
-    <value>Le fichier ne semble pas être une image .scp valide de SuperCard Pro.</value>
+  <data name="Dialog_InvalidImageFile" xml:space="preserve">
+    <value>Le fichier ne semble pas être une image {1} valide de {0}.</value>
   </data>
   <data name="Label_Bandwidth" xml:space="preserve">
     <value>Bande passante</value>
@@ -2014,5 +2014,8 @@ Souhaitez-vous continuer ?</value>
   </data>
   <data name="SummaryPanel_Series" xml:space="preserve">
     <value>Série</value>
+  </data>
+  <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
+    <value>Le fichier ne semble pas être une image {0} {1} prise en charge.</value>
   </data>
 </root>

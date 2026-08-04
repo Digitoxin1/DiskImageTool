@@ -1302,8 +1302,8 @@
   <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
     <value>El archivo no parece formar parte de un conjunto raw válido de KryoFlux.</value>
   </data>
-  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
-    <value>El archivo no parece ser una imagen .scp válida de SuperCard Pro.</value>
+  <data name="Dialog_InvalidImageFile" xml:space="preserve">
+    <value>El archivo no parece ser una imagen {1} válida de {0}.</value>
   </data>
   <data name="Label_Bandwidth" xml:space="preserve">
     <value>Ancho de banda</value>
@@ -2014,5 +2014,8 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   </data>
   <data name="SummaryPanel_Series" xml:space="preserve">
     <value>Serie</value>
+  </data>
+  <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
+    <value>El archivo no parece ser una imagen {0} {1} compatible.</value>
   </data>
 </root>

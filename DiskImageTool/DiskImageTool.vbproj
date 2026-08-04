@@ -193,6 +193,7 @@
     <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
+    <Compile Include="Flux\A2RLib.vb" />
     <Compile Include="Flux\GeneralSettingsPanel.Designer.vb">
       <DependentUpon>GeneralSettingsPanel.vb</DependentUpon>
     </Compile>

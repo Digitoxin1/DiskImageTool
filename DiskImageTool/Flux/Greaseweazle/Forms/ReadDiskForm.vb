@@ -596,7 +596,7 @@ Namespace Flux.Greaseweazle
             Return MsgBox(msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or vbDefaultButton2) = MsgBoxResult.Ok
         End Function
         Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(_TempFilePath, True, Nothing, True, FluxGetOutputFilePath())
+            Dim Response = ConvertFluxImage(_TempFilePath, Nothing, True, FluxGetOutputFilePath())
 
             If Response.Result = DialogResult.OK Then
                 If Not FinalizeFluxOutput() Then

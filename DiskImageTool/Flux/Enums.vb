@@ -25,6 +25,7 @@
             scp
             raw
             sectorImage
+            a2r
         End Enum
 
         Friend Enum DeviceCapabilities

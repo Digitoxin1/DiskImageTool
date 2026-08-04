@@ -228,9 +228,10 @@ Namespace Flux
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
 
             For Each path In paths
-                If IsValidFluxImport(path, AllowSCP).Result Then
+                If IsValidFluxImport(path, AllowSCP, AllowA2R).Result Then
                     Return True
                 End If
 
@@ -368,6 +369,8 @@ Namespace Flux
             Select Case Ext
                 Case ".scp"
                     Return InputFileTypeEnum.scp
+                Case ".a2r"
+                    Return InputFileTypeEnum.a2r
                 Case ".raw"
                     Return InputFileTypeEnum.raw
                 Case Else
@@ -801,8 +804,10 @@ Namespace Flux
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
 
-            Dim Response = AnalyzeFluxImage(Filename, AllowSCP, True)
+            Dim Response = AnalyzeFluxImage(Filename, AllowSCP, AllowA2R, True)
+
             If Response.Result Then
                 _TrackCount = Response.TrackCount
                 _SideCount = Response.SideCount
@@ -1617,6 +1622,7 @@ Namespace Flux
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.a2r)
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
 
             If IsRunning OrElse HasOutputfile Then
@@ -1634,7 +1640,7 @@ Namespace Flux
 
             Dim firstPath = paths(0)
 
-            Dim Response = IsValidFluxImport(firstPath, AllowSCP)
+            Dim Response = IsValidFluxImport(firstPath, AllowSCP, AllowA2R)
             If Response.Result Then
                 If OpenFluxImage(Response.File) Then
                     InitializeDevice(True)

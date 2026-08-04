@@ -1285,20 +1285,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to File does not appear to be a valid {0} {1} image..
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidImageFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidImageFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to File does not appear to be part of a valid KryoFlux raw set..
         '''</summary>
         Friend ReadOnly Property Dialog_InvalidKryofluxFile() As String
             Get
                 Return ResourceManager.GetString("Dialog_InvalidKryofluxFile", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File does not appear to be a valid SuperCard Pro .scp image..
-        '''</summary>
-        Friend ReadOnly Property Dialog_InvalidSCPFile() As String
-            Get
-                Return ResourceManager.GetString("Dialog_InvalidSCPFile", resourceCulture)
             End Get
         End Property
         
@@ -1560,6 +1560,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_UnsupportedDiskType() As String
             Get
                 Return ResourceManager.GetString("Dialog_UnsupportedDiskType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File does not appear to be a supported {0} {1} image..
+        '''</summary>
+        Friend ReadOnly Property Dialog_UnsupportedImageFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UnsupportedImageFile", resourceCulture)
             End Get
         End Property
         

@@ -10,7 +10,7 @@ Namespace Flux
                 "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             }
 
-        Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean, Optional ReadHeaders As Boolean = False) As FluxSetInfo
+        Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean, AllowA2R As Boolean, Optional ReadHeaders As Boolean = False) As FluxSetInfo
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
 
             Dim Response = New FluxSetInfo(False, 0, 0, "")
@@ -24,7 +24,15 @@ Namespace Flux
             ElseIf AllowSCP AndAlso FileExt = ".scp" Then
                 Response = GetFluxSetInfoSCP(FilePath)
                 If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
+                    Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
+                    MsgBox(String.Format(ResourceString, "SuperCard Pro", ".scp"), MsgBoxStyle.Exclamation)
+                    Return Response
+                End If
+            ElseIf AllowA2R AndAlso FileExt = ".a2r" Then
+                Response = GetFluxSetInfoA2R(FilePath)
+                If Not Response.Result Then
+                    Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
+                    MsgBox(String.Format(ResourceString, "Applesauce FDC 3.x", ".a2r"), MsgBoxStyle.Exclamation)
                     Return Response
                 End If
             Else
@@ -68,7 +76,7 @@ Namespace Flux
             Return CanToggleSequenceAtSelection(tb) OrElse CanToggleSequenceAtCaretAfterToken(tb) OrElse CanToggleSequenceAtCaretAfterNumber(tb)
         End Function
 
-        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "") As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(FilePath As String, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "") As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -76,7 +84,7 @@ Namespace Flux
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP, True)
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, True, True, True)
 
             If Not AnalyzeResponse.Result Then
                 Return (DialogResult.Abort, "", "")
@@ -367,11 +375,11 @@ Namespace Flux
             Return True
         End Function
 
-        Public Function IsValidFluxImport(path As String, allowSCP As Boolean) As (Result As Boolean, File As String)
+        Public Function IsValidFluxImport(path As String, allowSCP As Boolean, allowA2R As Boolean) As (Result As Boolean, File As String)
             If IO.File.Exists(path) Then
                 ' Direct file: only .raw or .scp
                 Dim ext = IO.Path.GetExtension(path).ToLowerInvariant()
-                If ext = ".raw" OrElse (ext = ".scp" AndAlso allowSCP) Then
+                If ext = ".raw" OrElse (ext = ".scp" AndAlso allowSCP) OrElse (ext = ".a2r" AndAlso allowA2R) Then
                     Return (True, path)
                 End If
 
@@ -1079,6 +1087,7 @@ Namespace Flux
                 Me.TrackCount = TrackCount
                 Me.SideCount = SideCount
                 Me.Prefix = Prefix
+                Me.Unsupported = False
                 Me.Headers = New Dictionary(Of TrackSide, Dictionary(Of String, String))
             End Sub
 
@@ -1086,6 +1095,7 @@ Namespace Flux
             Public Property Result As Boolean
             Public Property SideCount As Integer
             Public Property TrackCount As Integer
+            Public Property Unsupported As Boolean
 
             Public Sub AddTrackHeaders(Track As UShort, Side As Byte, Data As Dictionary(Of String, String))
                 Dim ts As New TrackSide(Track, Side)

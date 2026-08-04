@@ -1516,8 +1516,8 @@
   <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
     <value>File does not appear to be part of a valid KryoFlux raw set.</value>
   </data>
-  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
-    <value>File does not appear to be a valid SuperCard Pro .scp image.</value>
+  <data name="Dialog_InvalidImageFile" xml:space="preserve">
+    <value>File does not appear to be a valid {0} {1} image.</value>
   </data>
   <data name="Label_Bandwidth" xml:space="preserve">
     <value>Bandwidth</value>
@@ -2270,5 +2270,8 @@ Do you wish to continue?</value>
   <data name="Label_TGOD" xml:space="preserve">
     <value>TGOD</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
+    <value>File does not appear to be a supported {0} {1} image.</value>
   </data>
 </root>

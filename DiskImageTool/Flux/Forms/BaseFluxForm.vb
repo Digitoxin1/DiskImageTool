@@ -446,13 +446,13 @@ Namespace Flux
             End Try
         End Function
 
-        Protected Sub AppendLogLine(line As String)
+        Protected Sub AppendLogLine(line As String, Optional LogToFile As Boolean = True)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
             End If
             TextBoxConsole.AppendText(line)
 
-            If Not String.IsNullOrEmpty(_LogFilePath) Then
+            If LogToFile AndAlso Not String.IsNullOrEmpty(_LogFilePath) Then
                 Try
                     IO.File.AppendAllText(_LogFilePath, line & Environment.NewLine)
                 Catch ex As Exception

@@ -128,6 +128,65 @@ Namespace Flux.Greaseweazle
             Return If(String.IsNullOrEmpty(Port), Nothing, Port)
         End Function
 
+        Public Function CommandLineFromWriteOptions(opts As WriteOptions) As String
+            Dim sb As New StringBuilder()
+
+            sb.Append("write ")
+
+            If Not String.IsNullOrEmpty(opts.Device) Then
+                sb.Append("--device " & opts.Device & " ")
+            End If
+
+            sb.Append("--drive " & GetIdFromDriveSpec(opts.Drive) & " ")
+            sb.Append("--format " & opts.Format & " ")
+
+            If opts.TrackSet IsNot Nothing Then
+                sb.Append("--tracks " & opts.TrackSet.ToString() & " ")
+            End If
+
+            If opts.PreErase Then
+                sb.Append("--pre-erase ")
+            End If
+
+            If opts.EraseEmpty Then
+                sb.Append("--erase-empty ")
+            End If
+
+            If opts.FakeIndexPeriod.HasValue Then
+                sb.Append("--fake-index " & opts.FakeIndexPeriod.Value & " ")
+            End If
+
+            If opts.HardSectors Then
+                sb.Append("--hard-sectors ")
+            End If
+
+            If opts.NoVerify Then
+                sb.Append("--no-verify ")
+            End If
+
+            If Not opts.NoVerify Then
+                sb.Append("--retries " & opts.Retries & " ")
+            End If
+
+            If Not String.IsNullOrEmpty(opts.Precomp) Then
+                sb.Append("--precomp " & opts.Precomp & " ")
+            End If
+
+            If opts.Reverse Then
+                sb.Append("--reverse ")
+            End If
+
+            If opts.Densel.HasValue Then
+                sb.Append("--densel " & If(opts.Densel.Value, "H", "L") & " ")
+            End If
+
+            If opts.GenTg43 Then
+                sb.Append("--gen-tg43 ")
+            End If
+
+            Return sb.ToString
+        End Function
+
         Public Function ConvertFirstTrack(FilePath As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
@@ -246,6 +305,17 @@ Namespace Flux.Greaseweazle
                     }
                 Case Else
                     Throw New ArgumentException("Unrecognised drive id: " & id)
+            End Select
+        End Function
+
+        Public Function GetIdFromDriveSpec(ds As DriveSpec) As String
+            Select Case ds.Bus
+                Case UsbProtocol.BusType.IBMPC
+                    Return If(ds.UnitId = 0, "A", "B")
+                Case UsbProtocol.BusType.Shugart
+                    Return ds.UnitId.ToString()
+                Case Else
+                    Throw New ArgumentException("Unrecognised drive bus type: " & ds.Bus.ToString())
             End Select
         End Function
 

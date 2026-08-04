@@ -658,7 +658,7 @@ Public Class MainForm
 
     Private Sub FluxConvertImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.ConvertFluxImage(FileName, True, AddressOf ProcessImportedImage, False)
+            Dim Response = Flux.ConvertFluxImage(FileName, AddressOf ProcessImportedImage, False)
             If Response.Result = DialogResult.OK Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
@@ -1214,6 +1214,8 @@ Public Class MainForm
 
         If IO.File.Exists(FilePath) Then
             If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
+                IsFluxIamge = True
+            ElseIf IO.Path.GetExtension(FilePath).ToLower = ".a2r" Then
                 IsFluxIamge = True
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
                 Dim Response = Flux.GetFluxSetInfoRaw(FilePath)

@@ -6,7 +6,8 @@
 
         Private ReadOnly ValidInputTypes As New List(Of InputFileTypeEnum) From {
                 InputFileTypeEnum.scp,
-                InputFileTypeEnum.raw
+                InputFileTypeEnum.raw,
+                InputFileTypeEnum.a2r
             }
 
         Private ReadOnly ValidOutputTypes As New List(Of ImageImportOutputTypes) From {
