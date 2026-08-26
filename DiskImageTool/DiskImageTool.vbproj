@@ -758,6 +758,7 @@
     <EmbeddedResource Include="Resources\HelpStrings.de.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.es.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\HelpStrings.zh-CN.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -772,6 +773,9 @@
     <EmbeddedResource Include="MainForm.fr.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.zh-CN.resx">
+      <DependentUpon>MainForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
@@ -788,6 +792,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.zh-CN.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">

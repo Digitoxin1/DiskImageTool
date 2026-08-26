@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BootSectorForm_AdditionalData" xml:space="preserve">
+    <value>这是引导扇区中的附加数据。
+
+注意：以绿色高亮显示的数据是引导代码。</value>
+  </data>
+  <data name="BootSectorForm_AllowedValues" xml:space="preserve">
+    <value>允许的值：</value>
+  </data>
+  <data name="BootSectorForm_BootSectorSignature" xml:space="preserve">
+    <value>向 BIOS 指示该扇区可执行。</value>
+  </data>
+  <data name="BootSectorForm_BytesPerSector" xml:space="preserve">
+    <value>每个物理扇区的字节数</value>
+  </data>
+  <data name="BootSectorForm_DiskType" xml:space="preserve">
+    <value>根据引导记录中的当前值检测出的磁盘类型。更改此项会将引导记录中的值设为所选磁盘类型的对应值。</value>
+  </data>
+  <data name="BootSectorForm_DriveNumber" xml:space="preserve">
+    <value>中断 13h 驱动器号</value>
+  </data>
+  <data name="BootSectorForm_ExtendedBootSignature" xml:space="preserve">
+    <value>28h\t存在卷序列号
+29h\t存在卷序列号、卷标和文件系统 ID</value>
+  </data>
+  <data name="BootSectorForm_FileSystemType" xml:space="preserve">
+    <value>文件系统 ID 仅供参考</value>
+  </data>
+  <data name="BootSectorForm_FixedDisk" xml:space="preserve">
+    <value>固定磁盘</value>
+  </data>
+  <data name="BootSectorForm_HiddenSectors" xml:space="preserve">
+    <value>分区卷第一个扇区之前的扇区数
+
+注意：所有软盘此值应为 {0}</value>
+  </data>
+  <data name="BootSectorForm_JumpInstruction" xml:space="preserve">
+    <value>此指令指示引导代码的起始位置。</value>
+  </data>
+  <data name="BootSectorForm_NumberOfFATs" xml:space="preserve">
+    <value>卷上文件分配表 (FAT) 的副本数
+
+允许的值：任意非零值
+
+注意：此值通常应设为 {0}。</value>
+  </data>
+  <data name="BootSectorForm_NumberOfHeads" xml:space="preserve">
+    <value>磁盘上的物理磁头数（面数）</value>
+  </data>
+  <data name="BootSectorForm_OEMName" xml:space="preserve">
+    <value>OEM 名称标识符
+
+可由 FAT 实现设为任意所需值
+
+通常用于指示格式化该卷的系统。</value>
+  </data>
+  <data name="BootSectorForm_ReservedSectors" xml:space="preserve">
+    <value>从卷的第一个扇区开始、位于保留区域中的保留扇区数
+
+允许的值：任意非零值
+
+注意：此值通常应设为 {0}。</value>
+  </data>
+  <data name="BootSectorForm_RootDirectoryEntries" xml:space="preserve">
+    <value>根目录中的条目数
+
+允许的值：该值乘以 {0} 应为每扇区字节数的偶数倍</value>
+  </data>
+  <data name="BootSectorForm_SectorCountLarge" xml:space="preserve">
+    <value>大于 {0} 个扇区的 FAT16 卷的总扇区数
+
+注意：所有软盘此值应为 {1}</value>
+  </data>
+  <data name="BootSectorForm_SectorCountSmall" xml:space="preserve">
+    <value>卷中的总扇区数</value>
+  </data>
+  <data name="BootSectorForm_SectorsPerCluster" xml:space="preserve">
+    <value>每簇扇区数</value>
+  </data>
+  <data name="BootSectorForm_SectorsPerFAT" xml:space="preserve">
+    <value>为每份文件分配表 (FAT) 分配的扇区数</value>
+  </data>
+  <data name="BootSectorForm_SectorsPerTrack" xml:space="preserve">
+    <value>磁盘上每磁道的扇区数</value>
+  </data>
+  <data name="BootSectorForm_TypicalValues" xml:space="preserve">
+    <value>典型值：</value>
+  </data>
+  <data name="BootSectorForm_Unused" xml:space="preserve">
+    <value>未使用</value>
+  </data>
+  <data name="BootSectorForm_VolumeLabel" xml:space="preserve">
+    <value>此字段通常与磁盘根目录中 11 字节的卷标一致；若卷标不存在，则值为“{0}”。</value>
+  </data>
+  <data name="BootSectorForm_VolumeSerialNumber" xml:space="preserve">
+    <value>卷序列号是一个 32 位随机数，与卷标一起用于可移动介质跟踪
+
+注意：此 ID 通常由当前日期和时间转换为 32 位值生成</value>
+  </data>
+  <data name="BootSectorForm_VolumeSerialNumberButton" xml:space="preserve">
+    <value>根据用户提供的日期和时间生成新的卷序列号</value>
+  </data>
+  <data name="Greaseweazle_Revs" xml:space="preserve">
+    <value>每磁道读取的转数</value>
+  </data>
+  <data name="Greaseweazle_Retries" xml:space="preserve">
+    <value>遇到读错误时每磁道的最大重试次数。</value>
+  </data>
+  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
+    <value>若所有读取重试均失败，磁头重新寻道的最大次数。</value>
+  </data>
+  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
+    <value>将 Greaseweazle 设备复位为上电默认状态。</value>
+  </data>
+  <data name="Flux_SaveLog" xml:space="preserve">
+    <value>将控制台输出保存到日志文件。</value>
+  </data>
+  <data name="Flux_Detect" xml:space="preserve">
+    <value>通过分析引导扇区，尝试检测所选驱动器中磁盘的格式。</value>
+  </data>
+  <data name="Greaseweazle_Drives" xml:space="preserve">
+    <value>可用软驱。
+
+此列表可在“选项”菜单的
+Greaseweazle 配置中设置。</value>
+  </data>
+  <data name="Flux_Format" xml:space="preserve">
+    <value>所选驱动器中软盘的格式。</value>
+  </data>
+  <data name="Flux_ImageType" xml:space="preserve">
+    <value>读取的主输出类型。
+
+Flux 映像集将原始磁通保存为可稍后重新转换的 .raw 集合。其他类型（.ima、.img、
+.hfe 等）则直接将磁盘解码为扇区映像。
+
+选择 Flux 映像集时，可通过选择输出类型 2，在同一次读取中额外生成一份已解码映像。</value>
+  </data>
+  <data name="Flux_OutputType2" xml:space="preserve">
+    <value>与 Flux 映像集在同一次读取中一并生成的可选第二路输出。
+
+仅当主输出类型为 Flux 映像集时可用。所选类型将从磁盘解码并保存到下方指定位置。</value>
+  </data>
+  <data name="Greaseweazle_ReadFilename" xml:space="preserve">
+    <value>输出文件名。
+
+可将任意数字用尖括号 (&lt; &gt;) 括起以创建文件名模板。例如：Disk &lt;1&gt; of 3。
+
+括号内的数字会在每次后续读取时自动递增。</value>
+  </data>
+  <data name="Greaseweazle_FileExt" xml:space="preserve">
+    <value>输出文件的扩展名。</value>
+  </data>
+  <data name="Greaseweazle_FileExt2" xml:space="preserve">
+    <value>第二路输出的文件扩展名。</value>
+  </data>
+  <data name="Greaseweazle_SaveLog" xml:space="preserve">
+    <value>在 Flux 映像集旁保存日志文件，
+记录本次运行的 Greaseweazle 控制台输出。
+
+日志文件名可在“选项”菜单的
+Greaseweazle 配置中设置。</value>
+  </data>
+  <data name="Flux_Discard" xml:space="preserve">
+    <value>丢弃当前加载的映像或映像集。</value>
+  </data>
+  <data name="Flux_Read" xml:space="preserve">
+    <value>从所选驱动器读取软盘到所选输出类型。
+
+启用“选择磁道”时，仅重新读取下方表格中选中的磁道。</value>
+  </data>
+  <data name="Greaseweazle_RootFolder" xml:space="preserve">
+    <value>Flux 映像集的根文件夹。
+
+默认根文件夹可在“选项”菜单的
+Greaseweazle 配置中设置。</value>
+  </data>
+  <data name="Flux_DoubleStep" xml:space="preserve">
+    <value>在 1.2 MB 驱动器中读取 360 KB 磁盘时，每隔一个磁道跳过一次。</value>
+  </data>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>将当前加载的映像导入 Disk Image Tool。</value>
+  </data>
+  <data name="Flux_ImportClose" xml:space="preserve">
+    <value>导入当前加载的映像并关闭此对话框。</value>
+  </data>
+  <data name="Flux_Save" xml:space="preserve">
+    <value>将当前加载的 Flux 映像集保存到所选目标。</value>
+  </data>
+  <data name="Flux_SaveClose" xml:space="preserve">
+    <value>保存当前加载的 Flux 映像集并关闭此对话框。</value>
+  </data>
+  <data name="Flux_Convert" xml:space="preserve">
+    <value>将当前加载的 Flux 映像集转换为所选映像类型，无需重新读取驱动器。</value>
+  </data>
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>预览所选驱动器中磁盘的内容而不保存映像，或预览当前已加载的映像。
+
+对于尚未读取的磁盘，将读取第一磁道并显示目录列表。</value>
+  </data>
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>打开现有 Flux 映像集 (.raw)，并将其当前状态加载到磁道表格中。
+
+随后进入选择磁道模式，以便针对原始 Flux 集重新读取单个磁道。</value>
+  </data>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>使用 Kryoflux 校验当前加载的 Flux 映像集，无需重新读取驱动器。
+
+各磁道的校验结果显示在上方表格中。</value>
+  </data>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>浏览保存 Flux 映像集的根文件夹。</value>
+  </data>
+  <data name="Flux_ImageLocation" xml:space="preserve">
+    <value>第二映像文件的保存位置。
+
+可选择根文件夹、与 Flux 映像集相同的文件夹，或自定义文件夹。选择“自定义”将启用下方的映像文件夹字段。</value>
+  </data>
+  <data name="Flux_ImageFolder" xml:space="preserve">
+    <value>第二映像文件的自定义目标文件夹，在映像位置设为“自定义”时使用。</value>
+  </data>
+  <data name="Flux_ImageFolderBrowse" xml:space="preserve">
+    <value>浏览保存第二映像文件的文件夹。</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>在当前焦点所在的文件名、文件夹或前缀字段中，用尖括号 (&lt; &gt;) 包裹或取消包裹数字。
+
+括号内的数字会在每次读取后自动递增。</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>启用下方表格中的按磁道选择。
+
+勾选后，下次读取时仅重新读取表格中选中的磁道。</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>根文件夹下用于保存 Flux 映像集的子文件夹。
+
+可将任意数字用尖括号 (&lt; &gt;) 括起以创建文件夹名模板。例如：Disk &lt;1&gt; of 3。
+
+括号内的数字会在每次后续读取时自动递增。</value>
+  </data>
+  <data name="Flux_PrefixName" xml:space="preserve">
+    <value>Flux 映像集中 .raw 磁道文件的文件名前缀（例如 “track” 会生成 track00.0.raw、track00.1.raw 等）。
+
+可将任意数字用尖括号 (&lt; &gt;) 括起以创建前缀模板。例如：side&lt;1&gt;。
+
+括号内的数字会在每次后续读取时自动递增。</value>
+  </data>
+  <data name="Flux_Clean" xml:space="preserve">
+    <value>使用清洗盘清洗所选驱动器仓中软驱的磁头。</value>
+  </data>
+  <data name="Flux_Erase" xml:space="preserve">
+    <value>擦除所选驱动器中的软盘。
+
+启用“选择磁道”时，仅擦除表格中选中的磁道。</value>
+  </data>
+  <data name="Flux_Write" xml:space="preserve">
+    <value>将已加载的映像写入所选驱动器中的软盘。
+
+启用“选择磁道”时，仅写入表格中选中的磁道。</value>
+  </data>
+  <data name="Flux_Process" xml:space="preserve">
+    <value>对当前加载的 Flux 映像集执行转换。
+
+启用“选择磁道”时，仅重新转换表格中选中的磁道。</value>
+  </data>
+  <data name="Greaseweazle_CleanCyls" xml:space="preserve">
+    <value>要清洗的柱面数。
+
+大多数驱动器使用 40（5.25 英寸倍密度）或 80（其他规格）。</value>
+  </data>
+  <data name="Greaseweazle_CleanPasses" xml:space="preserve">
+    <value>清洗遍数。</value>
+  </data>
+  <data name="Greaseweazle_CleanLinger" xml:space="preserve">
+    <value>每一遍中磁头在每个柱面上停留的时间（毫秒）。</value>
+  </data>
+  <data name="Greaseweazle_Hfreq" xml:space="preserve">
+    <value>使用高频信号擦除，而非默认的直流擦除。适用于对普通擦除无响应的介质。</value>
+  </data>
+  <data name="Flux_PreErase" xml:space="preserve">
+    <value>在写入每个磁道之前先将其擦除。
+
+速度较慢，但对磨损或曾经格式化过的介质更可靠。</value>
+  </data>
+  <data name="Flux_EraseEmpty" xml:space="preserve">
+    <value>向不含数据的磁道写入擦除图案，而不是保持原样。</value>
+  </data>
+  <data name="Flux_NoVerify" xml:space="preserve">
+    <value>跳过写入后校验。
+
+更快，但无法检测写入错误。</value>
+  </data>
+  <data name="Flux_ContinueAfterFailure" xml:space="preserve">
+    <value>若某磁道校验失败，继续写入其余磁道，而不是中止本次操作。</value>
+  </data>
+  <data name="Flux_Device" xml:space="preserve">
+    <value>用于解码已加载 Flux 映像集的磁通处理工具（Greaseweazle、Kryoflux 或 PCImgCnv）。</value>
+  </data>
+  <data name="Flux_AutoSaveLog" xml:space="preserve">
+    <value>转换成功时，自动将转换日志与 Flux 映像集保存在一起。</value>
+  </data>
+  <data name="Flux_86FSurfaceData" xml:space="preserve">
+    <value>在 .86F 输出中包含原始磁通表面数据。
+
+仅在使用 PCImgCnv 且输出类型为 .86F 时可用。</value>
+  </data>
+  <data name="Flux_Remaster" xml:space="preserve">
+    <value>使用 PCImgCnv 重新转换时应用已保存的磁道布局。
+
+仅在已生成磁道布局时可用。</value>
+  </data>
+  <data name="Flux_ExtendedLogOutput" xml:space="preserve">
+    <value>在转换日志中记录详细的 Kryoflux 输出（读取与单元解码事件）。</value>
+  </data>
+  <data name="Flux_OpenFile" xml:space="preserve">
+    <value>打开另一个 Flux 映像集或扇区映像进行转换。</value>
+  </data>
+  <data name="Flux_PreviewConvert" xml:space="preserve">
+    <value>预览当前已转换映像的内容。</value>
+  </data>
+  <data name="Flux_TrackLayout" xml:space="preserve">
+    <value>查看 PCImgCnv 在转换过程中生成的逐磁道布局。</value>
+  </data>
+  <data name="Flux_Modifications" xml:space="preserve">
+    <value>查看 PCImgCnv 在转换过程中应用的逐扇区修改。</value>
+  </data>
+  <data name="Flux_OutputSource" xml:space="preserve">
+    <value>当同一 Flux 集已被多个工具处理过时，选择使用哪个工具的输出进行导入。</value>
+  </data>
+  <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
+    <value>允许的值：{0}</value>
+  </data>
+  <data name="BootSectorForm_TypicalValuesInline" xml:space="preserve">
+    <value>典型值：{0}</value>
+  </data>
+  <data name="BootSectorForm_BytesPerSector_Note" xml:space="preserve">
+    <value>注意：所有软盘此值应为 {0}。</value>
+  </data>
+</root>

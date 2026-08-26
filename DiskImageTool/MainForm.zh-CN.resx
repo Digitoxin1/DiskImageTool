@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MenuFileReload.Text" xml:space="preserve">
+    <value>从磁盘重新加载(&amp;R)</value>
+  </data>
+  <data name="MenuFileNewImage.Text" xml:space="preserve">
+    <value>新建映像(&amp;N)</value>
+  </data>
+  <data name="MenuFileExit.Text" xml:space="preserve">
+    <value>退出(&amp;X)</value>
+  </data>
+  <data name="MenuEditRevert.Text" xml:space="preserve">
+    <value>还原更改(&amp;R)</value>
+  </data>
+  <data name="MenuHexFreeClusters.Text" xml:space="preserve">
+    <value>含数据的空闲簇(&amp;C)</value>
+  </data>
+  <data name="MenuHexBadSectors.Text" xml:space="preserve">
+    <value>损坏扇区(&amp;S)</value>
+  </data>
+  <data name="MenuHexLostClusters.Text" xml:space="preserve">
+    <value>丢失簇(&amp;L)</value>
+  </data>
+  <data name="MenuHexOverdumpData.Text" xml:space="preserve">
+    <value>过量转储数据(&amp;O)</value>
+  </data>
+  <data name="MenuHexRawTrackData.Text" xml:space="preserve">
+    <value>原始磁道数据(&amp;R)</value>
+  </data>
+  <data name="MenuHexDisk.Text" xml:space="preserve">
+    <value>整个磁盘(&amp;D)</value>
+  </data>
+  <data name="MainMenuView.Text" xml:space="preserve">
+    <value>十六进制(&amp;H)</value>
+  </data>
+  <data name="MenuToolsWin9xClean.Text" xml:space="preserve">
+    <value>移除 Windows 修改(&amp;W)</value>
+  </data>
+  <data name="MenuToolsClearReservedBytes.Text" xml:space="preserve">
+    <value>清除保留字节(&amp;R)</value>
+  </data>
+  <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
+    <value>重组映像(&amp;R)</value>
+  </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
+    <value>修正映像大小(&amp;S)</value>
+  </data>
+  <data name="MenuToolsRestoreBootSector.Text" xml:space="preserve">
+    <value>从根目录恢复引导扇区(&amp;B)</value>
+  </data>
+  <data name="MenuToolsRemoveBootSector.Text" xml:space="preserve">
+    <value>从根目录移除引导扇区(&amp;B)</value>
+  </data>
+  <data name="MenuToolsWin9xCleanBatch.Text" xml:space="preserve">
+    <value>批量移除 Windows 修改</value>
+  </data>
+  <data name="MainMenuTools.Text" xml:space="preserve">
+    <value>工具(&amp;T)</value>
+  </data>
+  <data name="MenuHelpProjectPage.Text" xml:space="preserve">
+    <value>项目主页(&amp;P)</value>
+  </data>
+  <data name="MenuHelpUpdateCheck.Text" xml:space="preserve">
+    <value>检查更新(&amp;U)</value>
+  </data>
+  <data name="MenuHelpChangeLog.Text" xml:space="preserve">
+    <value>更新日志(&amp;C)</value>
+  </data>
+  <data name="MainMenuDisk.Text" xml:space="preserve">
+    <value>磁盘(&amp;D)</value>
+  </data>
+  <data name="MenuFiltersScanNew.Text" xml:space="preserve">
+    <value>扫描新映像(&amp;N)</value>
+  </data>
+  <data name="MenuFiltersClear.Text" xml:space="preserve">
+    <value>清除筛选</value>
+  </data>
+  <data name="MainMenuFilters.Text" xml:space="preserve">
+    <value>筛选(&amp;I)</value>
+  </data>
+  <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
+    <value>保存时创建备份</value>
+  </data>
+  <data name="MenuOptionsCheckUpdate.Text" xml:space="preserve">
+    <value>启动时检查更新</value>
+  </data>
+  <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
+    <value>使用拖放导入</value>
+  </data>
+  <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
+    <value>显示标题</value>
+  </data>
+  <data name="MainMenuOptions.Text" xml:space="preserve">
+    <value>选项(&amp;O)</value>
+  </data>
+  <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
+    <value>有可用更新</value>
+  </data>
+  <data name="LabelDropMessage.Text" xml:space="preserve">
+    <value>将软盘映像拖放到此处</value>
+  </data>
+  <data name="BtnResetSort.Text" xml:space="preserve">
+    <value>重置排序</value>
+  </data>
+  <data name="btnRetry.Text" xml:space="preserve">
+    <value>重试</value>
+  </data>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>报告(&amp;R)</value>
+  </data>
+  <data name="MainMenuNewInstance.Text" xml:space="preserve">
+    <value>在新实例中打开</value>
+  </data>
+  <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
+    <value>报告带宽(&amp;B)</value>
+  </data>
+  <data name="MenuGreaseweazleWrite.Text" xml:space="preserve">
+    <value>写入磁盘(&amp;W)</value>
+  </data>
+  <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
+    <value>擦除磁盘(&amp;E)</value>
+  </data>
+  <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
+    <value>清洗驱动器(&amp;C)</value>
+  </data>
+  <data name="MenuGreaseweazleInfo.Text" xml:space="preserve">
+    <value>设备信息(&amp;D)</value>
+  </data>
+  <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
+    <value>读取磁盘(&amp;R)</value>
+  </data>
+  <data name="MenuFluxConvert.Text" xml:space="preserve">
+    <value>转换 Flux 映像(&amp;C)</value>
+  </data>
+  <data name="MenuOptionsFlux.Text" xml:space="preserve">
+    <value>Flux 配置(&amp;F)</value>
+  </data>
+  <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
+    <value>生成 tracklayout.txt</value>
+  </data>
+  <data name="MenuHelpDocs.Text" xml:space="preserve">
+    <value>文档(&amp;D)</value>
+  </data>
+  <data name="LabelOpenImages.Text" xml:space="preserve">
+    <value>打开磁盘映像</value>
+  </data>
+  <data name="LabelImportFiles.Text" xml:space="preserve">
+    <value>导入文件</value>
+  </data>
+  <data name="MenuReportsImageAnalysis.Text" xml:space="preserve">
+    <value>映像分析 (XML)</value>
+  </data>
+  <data name="MenuReportsBatchImageAnalysis.Text" xml:space="preserve">
+    <value>批量映像分析 (XML)</value>
+  </data>
+  <data name="MenuFileRecent.Text" xml:space="preserve">
+    <value>最近使用</value>
+  </data>
+</root>

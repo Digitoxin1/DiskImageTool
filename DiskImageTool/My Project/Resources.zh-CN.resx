@@ -1,0 +1,2030 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu_CopyValue" xml:space="preserve">
+    <value>复制值(&amp;C)</value>
+  </data>
+  <data name="Dialog_SaveAll" xml:space="preserve">
+    <value>确定要保存所有已修改的文件吗？</value>
+  </data>
+  <data name="Dialog_CloseAll" xml:space="preserve">
+    <value>确定要关闭所有已打开的文件吗？</value>
+  </data>
+  <data name="Dialog_AdjustImageSize" xml:space="preserve">
+    <value>这是已验证的映像。确定要调整此映像的大小吗？</value>
+  </data>
+  <data name="Dialog_ChangeLogDownloadError" xml:space="preserve">
+    <value>下载更新日志时出错。请稍后重试。</value>
+  </data>
+  <data name="Dialog_ClearReservedBytes" xml:space="preserve">
+    <value>这是已验证的映像。确定要清除此映像中的保留字节吗？</value>
+  </data>
+  <data name="Dialog_DiskSpaceWarning" xml:space="preserve">
+    <value>警告：磁盘空间不足</value>
+  </data>
+  <data name="Dialog_FileDownloadError" xml:space="preserve">
+    <value>下载文件时出错。</value>
+  </data>
+  <data name="Dialog_IncreaseImageSize" xml:space="preserve">
+    <value>映像大小小于检测到的大小。{0}{0}确定要增大映像大小吗？</value>
+  </data>
+  <data name="Dialog_LatestVersion" xml:space="preserve">
+    <value>您正在运行最新版本的 {0}。</value>
+  </data>
+  <data name="Dialog_NewFileName" xml:space="preserve">
+    <value>“{0}”是只读文件。请指定新的文件名。</value>
+  </data>
+  <data name="Dialog_ReplaceFile" xml:space="preserve">
+    <value>{0} 已存在。{1}要替换它吗？</value>
+  </data>
+  <data name="Dialog_SaveFile" xml:space="preserve">
+    <value>保存文件“{0}”？</value>
+  </data>
+  <data name="Dialog_SaveFileError" xml:space="preserve">
+    <value>保存文件“{0}”时出错。</value>
+  </data>
+  <data name="Dialog_SaveNotSupported" xml:space="preserve">
+    <value>不支持保存为此映像类型。</value>
+  </data>
+  <data name="Dialog_TruncateImage" xml:space="preserve">
+    <value>映像的过量转储区域中仍有数据。{0}{0}确定要截断此映像吗？</value>
+  </data>
+  <data name="Dialog_UnsupportedDiskType" xml:space="preserve">
+    <value>不支持的磁盘类型。</value>
+  </data>
+  <data name="Dialog_UpdateError" xml:space="preserve">
+    <value>检查更新时出错。请稍后重试。</value>
+  </data>
+  <data name="Caption_ChangeLog" xml:space="preserve">
+    <value>更新日志</value>
+  </data>
+  <data name="Caption_DeleteFile" xml:space="preserve">
+    <value>删除文件</value>
+  </data>
+  <data name="Caption_DeleteFiles" xml:space="preserve">
+    <value>删除 {0} 个文件</value>
+  </data>
+  <data name="Caption_RemoveFile" xml:space="preserve">
+    <value>移除文件</value>
+  </data>
+  <data name="Caption_RemoveFiles" xml:space="preserve">
+    <value>移除 {0} 个文件</value>
+  </data>
+  <data name="Caption_RescanImages" xml:space="preserve">
+    <value>重新扫描映像</value>
+  </data>
+  <data name="Menu_SaveAs" xml:space="preserve">
+    <value>另存为(&amp;A)</value>
+  </data>
+  <data name="Caption_ScanImages" xml:space="preserve">
+    <value>扫描映像</value>
+  </data>
+  <data name="Debug_BatchProcessTimeTaken" xml:space="preserve">
+    <value>批处理耗时：{0}</value>
+  </data>
+  <data name="Debug_LoadTimeTaken" xml:space="preserve">
+    <value>映像加载耗时：{0}</value>
+  </data>
+  <data name="Debug_ScanTimeTaken" xml:space="preserve">
+    <value>映像扫描耗时：{0}</value>
+  </data>
+  <data name="Dialog_ChangesDiscarded" xml:space="preserve">
+    <value>映像已被其他应用程序修改。{0}{0}更改已被丢弃。</value>
+  </data>
+  <data name="Dialog_CrossLinked" xml:space="preserve">
+    <value>{0} 与以下文件交叉链接：{1}</value>
+  </data>
+  <data name="Dialog_DeleteFile" xml:space="preserve">
+    <value>确定要删除 {0} 吗？</value>
+  </data>
+  <data name="Dialog_DeleteSelectedFiles" xml:space="preserve">
+    <value>确定要删除所选文件吗？</value>
+  </data>
+  <data name="Dialog_FileCurrentlyOpen" xml:space="preserve">
+    <value>{0}{1}{1}此文件当前已在 {2} 中打开。请使用其他文件名重试。</value>
+  </data>
+  <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
+    <value>警告：磁盘空间不足{0}{0}已成功添加 {1} / {2} 个文件</value>
+  </data>
+  <data name="Dialog_RemoveFile" xml:space="preserve">
+    <value>确定要移除 {0} 吗？</value>
+  </data>
+  <data name="Dialog_RemoveSelectedFiles" xml:space="preserve">
+    <value>确定要移除所选文件吗？</value>
+  </data>
+  <data name="Dialog_RestructureImage" xml:space="preserve">
+    <value>这是已验证的映像。确定要重组此映像吗？</value>
+  </data>
+  <data name="Dialog_SuccessfulCleanCountPlural" xml:space="preserve">
+    <value>已清理 {0} 个映像。</value>
+  </data>
+  <data name="Dialog_SuccessfulCleanCountSingular" xml:space="preserve">
+    <value>已清理 {0} 个映像。</value>
+  </data>
+  <data name="Dialog_SuccessfulExportPlural" xml:space="preserve">
+    <value>已成功导出 {0} / {1} 个文件。</value>
+  </data>
+  <data name="Dialog_SuccessfulExportSingular" xml:space="preserve">
+    <value>已成功导出 {0} / {1} 个文件。</value>
+  </data>
+  <data name="Dialog_UpdateAvailable" xml:space="preserve">
+    <value>{0} {1} 可用。</value>
+  </data>
+  <data name="Dialog_UpdateDownload" xml:space="preserve">
+    <value>{0}{0}现在要下载吗？</value>
+  </data>
+  <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
+    <value>{0}{0}更新内容{0}{1}{0}{2}{0}</value>
+  </data>
+  <data name="Dialog_Win9xClean" xml:space="preserve">
+    <value>这是已验证的映像。确定要移除此映像中的 Windows 修改吗？</value>
+  </data>
+  <data name="Dialog_Win9xCleanBatch" xml:space="preserve">
+    <value>这将还原 OEM 名称，并从未验证的已加载映像中移除所有创建日期和上次访问日期。{0}{0}要继续吗？</value>
+  </data>
+  <data name="FileType_ZipArchive" xml:space="preserve">
+    <value>Zip 压缩包</value>
+  </data>
+  <data name="Label_AdditionalData" xml:space="preserve">
+    <value>附加数据</value>
+  </data>
+  <data name="Label_BootSector" xml:space="preserve">
+    <value>引导扇区</value>
+  </data>
+  <data name="Label_Compressed" xml:space="preserve">
+    <value>已压缩</value>
+  </data>
+  <data name="Label_Entries" xml:space="preserve">
+    <value>{0} 个条目</value>
+  </data>
+  <data name="Label_Entry" xml:space="preserve">
+    <value>{0} 个条目</value>
+  </data>
+  <data name="Label_FileCountPlural" xml:space="preserve">
+    <value>{0} 个文件</value>
+  </data>
+  <data name="Label_FileCountSingular" xml:space="preserve">
+    <value>{0} 个文件</value>
+  </data>
+  <data name="Label_FilteredImageCountPlural" xml:space="preserve">
+    <value>{0} / {1} 个映像</value>
+  </data>
+  <data name="Label_FilteredImageCountSingular" xml:space="preserve">
+    <value>{0} / {1} 个映像</value>
+  </data>
+  <data name="Label_ImageCountPlural" xml:space="preserve">
+    <value>{0} 个映像</value>
+  </data>
+  <data name="Label_ImageCountSingular" xml:space="preserve">
+    <value>{0} 个映像</value>
+  </data>
+  <data name="Label_Invalid" xml:space="preserve">
+    <value>无效</value>
+  </data>
+  <data name="Label_ModifiedImageCountPlural" xml:space="preserve">
+    <value>已修改 {0} 个映像</value>
+  </data>
+  <data name="Label_ModifiedImageCountSingular" xml:space="preserve">
+    <value>已修改 {0} 个映像</value>
+  </data>
+  <data name="Label_NoFiles" xml:space="preserve">
+    <value>没有文件</value>
+  </data>
+  <data name="Label_ReadOnly" xml:space="preserve">
+    <value>只读</value>
+  </data>
+  <data name="Label_Root" xml:space="preserve">
+    <value>根目录</value>
+  </data>
+  <data name="Label_Sector" xml:space="preserve">
+    <value>扇区</value>
+  </data>
+  <data name="Label_SelectedFileCountPlural" xml:space="preserve">
+    <value>已选择 {0} / {1} 个文件</value>
+  </data>
+  <data name="Label_SelectedFileCountSingular" xml:space="preserve">
+    <value>已选择 {0} / {1} 个文件</value>
+  </data>
+  <data name="Label_Track" xml:space="preserve">
+    <value>磁道</value>
+  </data>
+  <data name="Menu_CopyValueByName" xml:space="preserve">
+    <value>复制 {0}(&amp;C)</value>
+  </data>
+  <data name="Menu_DeletedDirectory" xml:space="preserve">
+    <value>已删除的目录(&amp;D)</value>
+  </data>
+  <data name="Menu_DeletedFile" xml:space="preserve">
+    <value>已删除的文件(&amp;F)</value>
+  </data>
+  <data name="Menu_DeleteDirectory" xml:space="preserve">
+    <value>删除目录(&amp;D)</value>
+  </data>
+  <data name="Menu_DeleteFile" xml:space="preserve">
+    <value>删除文件(&amp;D)</value>
+  </data>
+  <data name="Menu_DeleteSelected" xml:space="preserve">
+    <value>删除所选文件(&amp;D)</value>
+  </data>
+  <data name="Label_Directory" xml:space="preserve">
+    <value>目录</value>
+  </data>
+  <data name="Menu_Directory2" xml:space="preserve">
+    <value>目录(&amp;D)</value>
+  </data>
+  <data name="Menu_ExportFile" xml:space="preserve">
+    <value>导出文件(&amp;E)</value>
+  </data>
+  <data name="Menu_ExportSelected" xml:space="preserve">
+    <value>导出所选文件(&amp;E)</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>文件(&amp;F)</value>
+  </data>
+  <data name="Menu_PadImageSize" xml:space="preserve">
+    <value>填充映像大小(&amp;P)</value>
+  </data>
+  <data name="Menu_RemoveDeletedDirectory" xml:space="preserve">
+    <value>移除已删除的目录(&amp;R)</value>
+  </data>
+  <data name="Menu_RemoveDeletedFile" xml:space="preserve">
+    <value>移除已删除的文件(&amp;R)</value>
+  </data>
+  <data name="Menu_RemoveDirectory" xml:space="preserve">
+    <value>移除目录(&amp;R)</value>
+  </data>
+  <data name="Menu_RemoveFile" xml:space="preserve">
+    <value>移除文件(&amp;R)</value>
+  </data>
+  <data name="Menu_RemoveSelected" xml:space="preserve">
+    <value>移除所选文件(&amp;R)</value>
+  </data>
+  <data name="Menu_RootDirectory" xml:space="preserve">
+    <value>根目录(&amp;D)</value>
+  </data>
+  <data name="Menu_TruncateImage" xml:space="preserve">
+    <value>截断映像(&amp;T)</value>
+  </data>
+  <data name="Menu_UndeleteDirectory" xml:space="preserve">
+    <value>恢复目录(&amp;U)</value>
+  </data>
+  <data name="Menu_UndeleteFile" xml:space="preserve">
+    <value>恢复文件(&amp;U)</value>
+  </data>
+  <data name="Menu_ViewDeletedDirectory" xml:space="preserve">
+    <value>查看已删除的目录(&amp;V)</value>
+  </data>
+  <data name="Menu_ViewDeletedFile" xml:space="preserve">
+    <value>查看已删除的文件(&amp;V)</value>
+  </data>
+  <data name="Menu_ViewDeletedFileAsText" xml:space="preserve">
+    <value>以文本查看已删除的文件(&amp;F)</value>
+  </data>
+  <data name="Menu_ViewDirectory" xml:space="preserve">
+    <value>查看目录(&amp;V)</value>
+  </data>
+  <data name="Menu_ViewDirectoryAlt" xml:space="preserve">
+    <value>查看目录(&amp;I)</value>
+  </data>
+  <data name="Menu_ViewFile" xml:space="preserve">
+    <value>查看文件(&amp;V)</value>
+  </data>
+  <data name="Menu_ViewFileAsText" xml:space="preserve">
+    <value>以文本查看文件(&amp;F)</value>
+  </data>
+  <data name="Menu_ViewParentDirectory" xml:space="preserve">
+    <value>查看上级目录(&amp;I)</value>
+  </data>
+  <data name="Menu_ViewRootDirectory" xml:space="preserve">
+    <value>查看根目录(&amp;I)</value>
+  </data>
+  <data name="Dialog_Abort" xml:space="preserve">
+    <value>确定要中止吗？</value>
+  </data>
+  <data name="Dialog_CommitChanges" xml:space="preserve">
+    <value>此磁盘映像已有更改。{0}{0}关闭此窗口前要提交这些更改吗？</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
+    <value>警告：驱动器 {0} 中的磁盘非空。{1}{1}如果继续，磁盘将被覆盖。{1}{1}要继续吗？</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
+    <value>警告：驱动器 {0} 中的磁盘非空，且格式为 {1}。{2}{2}您要写入的映像是 {3} 映像。{2}{2}如果继续，磁盘将被覆盖，并可能无法读取。{2}{2}要继续吗？</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
+    <value>警告：驱动器 {0} 中的磁盘非空，但无法确定格式类型。{1}{1}您要写入的映像是 {2} 映像。{1}{1}如果继续，磁盘将被覆盖，并可能无法读取。{1}{1}要继续吗？</value>
+  </data>
+  <data name="Dialog_DiskWriteError" xml:space="preserve">
+    <value>错误：当前无法写入该驱动器。</value>
+  </data>
+  <data name="Dialog_DiskWrittenSuccessfully" xml:space="preserve">
+    <value>磁盘已成功写入。{0}{0}请立即从驱动器中取出磁盘并写保护。{0}{0}警告：如果继续而不写保护磁盘，关闭此窗口后操作系统可能立即修改磁盘。</value>
+  </data>
+  <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
+    <value>软驱 {0} 未就绪。{1}{1}请确认驱动器 {0} 中已插入已格式化的磁盘。</value>
+  </data>
+  <data name="Dialog_SaveFileError2" xml:space="preserve">
+    <value>尝试保存文件时出错。</value>
+  </data>
+  <data name="Dialog_SearchNotFound" xml:space="preserve">
+    <value>找不到“{0}”</value>
+  </data>
+  <data name="Label_FAT" xml:space="preserve">
+    <value>文件分配表</value>
+  </data>
+  <data name="Caption_HexEditor" xml:space="preserve">
+    <value>十六进制编辑器</value>
+  </data>
+  <data name="Caption_RawTrackData" xml:space="preserve">
+    <value>原始磁道数据</value>
+  </data>
+  <data name="Caption_ValidClusters" xml:space="preserve">
+    <value>有效簇</value>
+  </data>
+  <data name="Dialog_DiskTypeWarning" xml:space="preserve">
+    <value>警告：无法确定软盘类型。</value>
+  </data>
+  <data name="Dialog_InvalidCharacters" xml:space="preserve">
+    <value>文件名不能包含以下任何字符</value>
+  </data>
+  <data name="Dialog_InvalidSearchString" xml:space="preserve">
+    <value>无效的搜索字符串</value>
+  </data>
+  <data name="FileType_All" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
+  <data name="FileType_Text" xml:space="preserve">
+    <value>文本文件</value>
+  </data>
+  <data name="Label_BadSector" xml:space="preserve">
+    <value>损坏扇区</value>
+  </data>
+  <data name="Label_CircularChain" xml:space="preserve">
+    <value>循环链</value>
+  </data>
+  <data name="Label_CrossLinked" xml:space="preserve">
+    <value>交叉链接</value>
+  </data>
+  <data name="Label_FileDrop" xml:space="preserve">
+    <value>将文件和文件夹拖放到此处</value>
+  </data>
+  <data name="Label_InvalidAllocation" xml:space="preserve">
+    <value>无效分配</value>
+  </data>
+  <data name="Label_InvalidCluster" xml:space="preserve">
+    <value>无效簇</value>
+  </data>
+  <data name="Label_LostCluster" xml:space="preserve">
+    <value>丢失簇</value>
+  </data>
+  <data name="Label_BootStrapSignature" xml:space="preserve">
+    <value>引导扇区签名</value>
+  </data>
+  <data name="Label_DriveNumber" xml:space="preserve">
+    <value>驱动器号</value>
+  </data>
+  <data name="Label_ExtendedBootSignature" xml:space="preserve">
+    <value>扩展引导签名</value>
+  </data>
+  <data name="Label_FileSystemType" xml:space="preserve">
+    <value>文件系统 ID</value>
+  </data>
+  <data name="BootSector_JmpBoot" xml:space="preserve">
+    <value>引导跳转</value>
+  </data>
+  <data name="Label_OEMName" xml:space="preserve">
+    <value>OEM 名称</value>
+  </data>
+  <data name="Label_VolumeSerialNumber" xml:space="preserve">
+    <value>卷序列号</value>
+  </data>
+  <data name="Label_RootEntryCount" xml:space="preserve">
+    <value>根目录条目数</value>
+  </data>
+  <data name="Label_BytesPerSector" xml:space="preserve">
+    <value>每扇区字节数</value>
+  </data>
+  <data name="Label_HiddenSectors" xml:space="preserve">
+    <value>隐藏扇区</value>
+  </data>
+  <data name="Label_NumberOfFATs" xml:space="preserve">
+    <value>FAT 数量</value>
+  </data>
+  <data name="Label_NumberOfHeads" xml:space="preserve">
+    <value>磁头数</value>
+  </data>
+  <data name="Label_ReservedSectorCount" xml:space="preserve">
+    <value>保留扇区</value>
+  </data>
+  <data name="Label_SectorCountSmall" xml:space="preserve">
+    <value>总扇区数</value>
+  </data>
+  <data name="Label_SectorsPerCluster" xml:space="preserve">
+    <value>每簇扇区数</value>
+  </data>
+  <data name="Label_SectorsPerFAT" xml:space="preserve">
+    <value>每 FAT 扇区数</value>
+  </data>
+  <data name="Label_SectorsPerTrack" xml:space="preserve">
+    <value>每磁道扇区数</value>
+  </data>
+  <data name="DataInspector_Error_Binary" xml:space="preserve">
+    <value>请输入有效的 8 位二进制值</value>
+  </data>
+  <data name="DataInspector_Error_DOSDate" xml:space="preserve">
+    <value>请输入 1980-01-01 至 2107-12-31 之间的有效日期</value>
+  </data>
+  <data name="DataInspector_Error_DOSDateTime" xml:space="preserve">
+    <value>请输入 1980-01-01 至 2107-12-31 之间的有效日期和时间</value>
+  </data>
+  <data name="DataInspector_Error_DOSTime" xml:space="preserve">
+    <value>请输入有效的时间</value>
+  </data>
+  <data name="DataInspector_Error_Integer" xml:space="preserve">
+    <value>请输入 {0} 到 {1} 之间的有效整数</value>
+  </data>
+  <data name="DataInspector_Label_Binary" xml:space="preserve">
+    <value>二进制（8 位）</value>
+  </data>
+  <data name="DataInspector_Label_Bitstream" xml:space="preserve">
+    <value>比特流</value>
+  </data>
+  <data name="DataInspector_Label_DOSDate" xml:space="preserve">
+    <value>DOS 日期</value>
+  </data>
+  <data name="DataInspector_Label_DOSDateTime" xml:space="preserve">
+    <value>DOS 时间与日期</value>
+  </data>
+  <data name="DataInspector_Label_DOSTime" xml:space="preserve">
+    <value>DOS 时间</value>
+  </data>
+  <data name="Label_WeakBits" xml:space="preserve">
+    <value>弱位</value>
+  </data>
+  <data name="Dialog_CheckImageSize" xml:space="preserve">
+    <value>此位置没有可用数据。请检查映像大小。</value>
+  </data>
+  <data name="Dialog_Image_NonCompatibleSectors" xml:space="preserve">
+    <value>此映像有一个或多个磁道与该映像类型不兼容。</value>
+  </data>
+  <data name="Dialog_Image_NonStandardTracks" xml:space="preserve">
+    <value>此映像有一个或多个磁道的扇区布局非标准。{0}{0}保存为此映像类型时将会丢失数据。{0}{0}要继续吗？</value>
+  </data>
+  <data name="Dialog_Image_SurfaceData" xml:space="preserve">
+    <value>此映像包含可能用于防复制保护的附加表面数据。{0}{0}保存为此映像类型时这些数据将会丢失。{0}{0}要继续吗？</value>
+  </data>
+  <data name="DirectoryEntryLFN_Attributes" xml:space="preserve">
+    <value>LFN 属性</value>
+  </data>
+  <data name="DirectoryEntryLFN_Checksum" xml:space="preserve">
+    <value>LFN 校验和</value>
+  </data>
+  <data name="DirectoryEntryLFN_FilePart" xml:space="preserve">
+    <value>LFN 名称 {0}</value>
+  </data>
+  <data name="DirectoryEntryLFN_Sequence" xml:space="preserve">
+    <value>LFN 序号</value>
+  </data>
+  <data name="DirectoryEntryLFN_StartingCluster" xml:space="preserve">
+    <value>LFN 起始簇</value>
+  </data>
+  <data name="DirectoryEntryLFN_Type" xml:space="preserve">
+    <value>LFN 类型</value>
+  </data>
+  <data name="Label_Attributes" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="DirectoryEntry_CreationDate" xml:space="preserve">
+    <value>创建日期</value>
+  </data>
+  <data name="DirectoryEntry_CreationMillisecond" xml:space="preserve">
+    <value>创建时间十分之一秒</value>
+  </data>
+  <data name="DirectoryEntry_CreationTime" xml:space="preserve">
+    <value>创建时间</value>
+  </data>
+  <data name="DirectoryEntry_Extension" xml:space="preserve">
+    <value>扩展名</value>
+  </data>
+  <data name="DirectoryEntry_LastAccessDate" xml:space="preserve">
+    <value>上次访问日期</value>
+  </data>
+  <data name="DirectoryEntry_LastWriteDate" xml:space="preserve">
+    <value>上次写入日期</value>
+  </data>
+  <data name="DirectoryEntry_LastWriteTime" xml:space="preserve">
+    <value>上次写入时间</value>
+  </data>
+  <data name="DirectoryEntry_ReservedForFAT32" xml:space="preserve">
+    <value>为 FAT32 保留</value>
+  </data>
+  <data name="DirectoryEntry_ReservedForWinNT" xml:space="preserve">
+    <value>为 Windows NT 保留</value>
+  </data>
+  <data name="DirectoryEntry_StartingCluster" xml:space="preserve">
+    <value>起始簇</value>
+  </data>
+  <data name="FileType_AdvancedSectorImage" xml:space="preserve">
+    <value>高级扇区映像</value>
+  </data>
+  <data name="FileType_AllDiskImages" xml:space="preserve">
+    <value>所有软盘映像</value>
+  </data>
+  <data name="FileType_BitstreamImage" xml:space="preserve">
+    <value>比特流映像</value>
+  </data>
+  <data name="FileType_FloppyDiskImage" xml:space="preserve">
+    <value>软盘映像</value>
+  </data>
+  <data name="FileType_IMZ" xml:space="preserve">
+    <value>WinImage 压缩磁盘映像</value>
+  </data>
+  <data name="FileType_VFD" xml:space="preserve">
+    <value>虚拟软盘</value>
+  </data>
+  <data name="Filter_AllItems" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
+    <value>数据库 - 状态不匹配</value>
+  </data>
+  <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
+    <value>含数据的空闲簇</value>
+  </data>
+  <data name="Filter_Disk_MismatchedImageSize" xml:space="preserve">
+    <value>映像大小不匹配</value>
+  </data>
+  <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
+    <value>介质描述符不匹配</value>
+  </data>
+  <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
+    <value>未知格式</value>
+  </data>
+  <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
+    <value>链接错误</value>
+  </data>
+  <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
+    <value>FAT 不匹配</value>
+  </data>
+  <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
+    <value>目录含附加数据</value>
+  </data>
+  <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
+    <value>目录含引导扇区</value>
+  </data>
+  <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
+    <value>含创建日期</value>
+  </data>
+  <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
+    <value>含上次访问日期</value>
+  </data>
+  <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
+    <value>含长文件名</value>
+  </data>
+  <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
+    <value>含已设置的保留字节</value>
+  </data>
+  <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
+    <value>无效目录条目</value>
+  </data>
+  <data name="Filter_Image_InDatabase" xml:space="preserve">
+    <value>在数据库中</value>
+  </data>
+  <data name="Filter_Image_NotInDatabase" xml:space="preserve">
+    <value>不在数据库中</value>
+  </data>
+  <data name="Label_Unverified" xml:space="preserve">
+    <value>未验证</value>
+  </data>
+  <data name="Label_Verified" xml:space="preserve">
+    <value>已验证</value>
+  </data>
+  <data name="Label_Verify" xml:space="preserve">
+    <value>校验</value>
+  </data>
+  <data name="Filter_ModifiedFiles" xml:space="preserve">
+    <value>已修改的文件</value>
+  </data>
+  <data name="Filter_OEMName_Windows9x" xml:space="preserve">
+    <value>Windows 9x</value>
+  </data>
+  <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
+    <value>基本扇区映像</value>
+  </data>
+  <data name="FloppyImageType_D86FImage" xml:space="preserve">
+    <value>86Box 86F 映像</value>
+  </data>
+  <data name="FloppyImageType_HFEImage" xml:space="preserve">
+    <value>HxC HFE (v1) 映像</value>
+  </data>
+  <data name="FloppyImageType_IMDImage" xml:space="preserve">
+    <value>ImageDisk 扇区映像</value>
+  </data>
+  <data name="FloppyImageType_MFMImage" xml:space="preserve">
+    <value>HxC MFM 映像</value>
+  </data>
+  <data name="FloppyImageType_PRIImage" xml:space="preserve">
+    <value>PCE 比特流映像</value>
+  </data>
+  <data name="FloppyImageType_PSIImage" xml:space="preserve">
+    <value>PCE 扇区映像</value>
+  </data>
+  <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
+    <value>Transcopy 映像</value>
+  </data>
+  <data name="HexView_DeletedDirectory" xml:space="preserve">
+    <value>已删除的目录</value>
+  </data>
+  <data name="HexView_DeletedFile" xml:space="preserve">
+    <value>已删除的文件</value>
+  </data>
+  <data name="Label_LostClusters" xml:space="preserve">
+    <value>丢失簇</value>
+  </data>
+  <data name="Label_Bytes" xml:space="preserve">
+    <value>字节</value>
+  </data>
+  <data name="Label_Floppy" xml:space="preserve">
+    <value>{0} 软盘</value>
+  </data>
+  <data name="Label_Mismatched" xml:space="preserve">
+    <value>不匹配</value>
+  </data>
+  <data name="Label_No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="Label_Variable" xml:space="preserve">
+    <value>可变</value>
+  </data>
+  <data name="Label_Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="SummaryPanel_AltOEMName" xml:space="preserve">
+    <value>备用 OEM 名称</value>
+  </data>
+  <data name="SummaryPanel_Bitrate" xml:space="preserve">
+    <value>比特率</value>
+  </data>
+  <data name="Label_BootRecord" xml:space="preserve">
+    <value>引导记录</value>
+  </data>
+  <data name="Label_Bootstrap" xml:space="preserve">
+    <value>引导程序</value>
+  </data>
+  <data name="SummaryPanel_Company" xml:space="preserve">
+    <value>公司</value>
+  </data>
+  <data name="SummaryPanel_CompatibilityImage" xml:space="preserve">
+    <value>兼容映像</value>
+  </data>
+  <data name="SummaryPanel_Compilation" xml:space="preserve">
+    <value>合集</value>
+  </data>
+  <data name="SummaryPanel_CopyProtection" xml:space="preserve">
+    <value>防复制保护</value>
+  </data>
+  <data name="Label_CustomBootLoader" xml:space="preserve">
+    <value>自定义引导加载程序</value>
+  </data>
+  <data name="Label_CustomFormat" xml:space="preserve">
+    <value>自定义格式</value>
+  </data>
+  <data name="SummaryPanel_Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="SummaryPanel_DiskType" xml:space="preserve">
+    <value>磁盘类型</value>
+  </data>
+  <data name="SummaryPanel_Error" xml:space="preserve">
+    <value>加载文件出错</value>
+  </data>
+  <data name="Label_FATShort" xml:space="preserve">
+    <value>FAT</value>
+  </data>
+  <data name="Label_FileSystem" xml:space="preserve">
+    <value>文件系统</value>
+  </data>
+  <data name="SummaryPanel_FreeSpace" xml:space="preserve">
+    <value>可用空间</value>
+  </data>
+  <data name="SummaryPanel_Heads" xml:space="preserve">
+    <value>磁头</value>
+  </data>
+  <data name="SummaryPanel_ImageSize" xml:space="preserve">
+    <value>映像大小</value>
+  </data>
+  <data name="Label_ImageType" xml:space="preserve">
+    <value>映像类型</value>
+  </data>
+  <data name="SummaryPanel_InvalidFormat" xml:space="preserve">
+    <value>无效的映像格式</value>
+  </data>
+  <data name="Label_Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Label_MediaDescriptor" xml:space="preserve">
+    <value>介质描述符</value>
+  </data>
+  <data name="SummaryPanel_NewestDate" xml:space="preserve">
+    <value>最新日期</value>
+  </data>
+  <data name="Label_NoBootLoader" xml:space="preserve">
+    <value>无引导加载程序</value>
+  </data>
+  <data name="Label_NoBPB" xml:space="preserve">
+    <value>无 BPB</value>
+  </data>
+  <data name="SummaryPanel_NonStandardTracks" xml:space="preserve">
+    <value>非标准磁道</value>
+  </data>
+  <data name="SummaryPanel_Note" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="SummaryPanel_OldestDate" xml:space="preserve">
+    <value>最早日期</value>
+  </data>
+  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
+    <value>操作系统</value>
+  </data>
+  <data name="SummaryPanel_Publisher" xml:space="preserve">
+    <value>发行商</value>
+  </data>
+  <data name="Label_Region" xml:space="preserve">
+    <value>地区</value>
+  </data>
+  <data name="SummaryPanel_ReservedClusters" xml:space="preserve">
+    <value>保留簇</value>
+  </data>
+  <data name="SummaryPanel_RPM" xml:space="preserve">
+    <value>转速</value>
+  </data>
+  <data name="SummaryPanel_RPMAdjustment" xml:space="preserve">
+    <value>转速调整</value>
+  </data>
+  <data name="SummaryPanel_SlowDown" xml:space="preserve">
+    <value>减速</value>
+  </data>
+  <data name="SummaryPanel_SpeedUp" xml:space="preserve">
+    <value>加速</value>
+  </data>
+  <data name="SummaryPanel_SurfaceData" xml:space="preserve">
+    <value>含表面数据</value>
+  </data>
+  <data name="SummaryPanel_Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="SummaryPanel_TotalSpace" xml:space="preserve">
+    <value>总空间</value>
+  </data>
+  <data name="Label_Tracks" xml:space="preserve">
+    <value>磁道</value>
+  </data>
+  <data name="SummaryPanel_Variant" xml:space="preserve">
+    <value>变体</value>
+  </data>
+  <data name="SummaryPanel_VolumeDate" xml:space="preserve">
+    <value>卷日期</value>
+  </data>
+  <data name="SummaryPanel_WeakBits" xml:space="preserve">
+    <value>含弱位</value>
+  </data>
+  <data name="SummaryPanel_XDFChecksum" xml:space="preserve">
+    <value>XDF 校验和</value>
+  </data>
+  <data name="SummaryPanel_Year" xml:space="preserve">
+    <value>年份</value>
+  </data>
+  <data name="Caption_CleanImages" xml:space="preserve">
+    <value>清理映像</value>
+  </data>
+  <data name="Dialog_FileBlankWarning" xml:space="preserve">
+    <value>文件名不能为空。</value>
+  </data>
+  <data name="Dialog_FileExists" xml:space="preserve">
+    <value>此目录中已存在同名文件。</value>
+  </data>
+  <data name="Label_FileSizeExpanded" xml:space="preserve">
+    <value>文件大小将扩展为</value>
+  </data>
+  <data name="Label_FileSizePadded" xml:space="preserve">
+    <value>文件大小将填充为</value>
+  </data>
+  <data name="Label_FileSizeReduced" xml:space="preserve">
+    <value>文件大小将缩小为</value>
+  </data>
+  <data name="Label_FileSizeSet" xml:space="preserve">
+    <value>文件大小将设为</value>
+  </data>
+  <data name="Label_FileSizeTruncated" xml:space="preserve">
+    <value>文件大小将截断为</value>
+  </data>
+  <data name="Label_FillFreeSpace" xml:space="preserve">
+    <value>用以下内容填充空闲空间</value>
+  </data>
+  <data name="Label_NotEnoughSpace" xml:space="preserve">
+    <value>磁盘可用空间不足</value>
+  </data>
+  <data name="Label_PadFile" xml:space="preserve">
+    <value>用以下内容填充文件</value>
+  </data>
+  <data name="Label_Processing" xml:space="preserve">
+    <value>正在处理</value>
+  </data>
+  <data name="Label_Scanning" xml:space="preserve">
+    <value>正在扫描</value>
+  </data>
+  <data name="Bitstream_AddressChecksum" xml:space="preserve">
+    <value>地址校验和</value>
+  </data>
+  <data name="Bitstream_DAM" xml:space="preserve">
+    <value>数据地址标记</value>
+  </data>
+  <data name="Bitstream_DAMSync" xml:space="preserve">
+    <value>数据场同步</value>
+  </data>
+  <data name="Bitstream_DataChecksum" xml:space="preserve">
+    <value>数据校验和</value>
+  </data>
+  <data name="Bitstream_Gap" xml:space="preserve">
+    <value>间隙</value>
+  </data>
+  <data name="Bitstream_IAM" xml:space="preserve">
+    <value>索引地址标记</value>
+  </data>
+  <data name="Bitstream_IAMSync" xml:space="preserve">
+    <value>索引场同步</value>
+  </data>
+  <data name="Bitstream_IDAM" xml:space="preserve">
+    <value>ID 地址标记</value>
+  </data>
+  <data name="Bitstream_IDAMChecksum" xml:space="preserve">
+    <value>ID 区校验和</value>
+  </data>
+  <data name="Bitstream_IDAMSync" xml:space="preserve">
+    <value>ID 场同步</value>
+  </data>
+  <data name="Bitstream_IDArea" xml:space="preserve">
+    <value>ID 区</value>
+  </data>
+  <data name="Bitstream_Overflow" xml:space="preserve">
+    <value>溢出</value>
+  </data>
+  <data name="Bitstream_Overlaps" xml:space="preserve">
+    <value>重叠</value>
+  </data>
+  <data name="Bitstream_WriteSplice" xml:space="preserve">
+    <value>写入拼接</value>
+  </data>
+  <data name="Caption_ScanFiles" xml:space="preserve">
+    <value>扫描文件</value>
+  </data>
+  <data name="Label_AllTracks" xml:space="preserve">
+    <value>所有磁道</value>
+  </data>
+  <data name="Label_BitOffset" xml:space="preserve">
+    <value>位偏移</value>
+  </data>
+  <data name="Label_Bits" xml:space="preserve">
+    <value>位</value>
+  </data>
+  <data name="Label_BlockHex" xml:space="preserve">
+    <value>块(h)</value>
+  </data>
+  <data name="Label_ByteAligned" xml:space="preserve">
+    <value>字节对齐</value>
+  </data>
+  <data name="Label_Deleted" xml:space="preserve">
+    <value>已删除</value>
+  </data>
+  <data name="Label_Encoding" xml:space="preserve">
+    <value>编码</value>
+  </data>
+  <data name="Label_Files" xml:space="preserve">
+    <value>个文件</value>
+  </data>
+  <data name="Label_Gap" xml:space="preserve">
+    <value>间隙</value>
+  </data>
+  <data name="Label_ImagesLoaded" xml:space="preserve">
+    <value>已加载 {0} 个映像</value>
+  </data>
+  <data name="Label_LengthHex" xml:space="preserve">
+    <value>长度(h)</value>
+  </data>
+  <data name="Label_Missing" xml:space="preserve">
+    <value>缺失</value>
+  </data>
+  <data name="Label_Normal" xml:space="preserve">
+    <value>正常</value>
+  </data>
+  <data name="Label_OffsetHex" xml:space="preserve">
+    <value>偏移(h)</value>
+  </data>
+  <data name="Label_SectorId" xml:space="preserve">
+    <value>扇区 ID</value>
+  </data>
+  <data name="Label_Side" xml:space="preserve">
+    <value>面</value>
+  </data>
+  <data name="Label_Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <data name="Label_Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="Label_Valid" xml:space="preserve">
+    <value>有效</value>
+  </data>
+  <data name="Label_SyncFATs" xml:space="preserve">
+    <value>同步 FAT</value>
+  </data>
+  <data name="Menu_SelectSector" xml:space="preserve">
+    <value>选择扇区(&amp;S)</value>
+  </data>
+  <data name="Menu_SelectTrack" xml:space="preserve">
+    <value>选择磁道(&amp;R)</value>
+  </data>
+  <data name="Label_Disk" xml:space="preserve">
+    <value>磁盘</value>
+  </data>
+  <data name="Dialog_FloppyError_Formatting" xml:space="preserve">
+    <value>格式化磁道 {0}、面 {1} 时出错。</value>
+  </data>
+  <data name="Dialog_FloppyError_Reading" xml:space="preserve">
+    <value>读取磁道 {0}、面 {1} 时出错。</value>
+  </data>
+  <data name="Dialog_FloppyError_Sector" xml:space="preserve">
+    <value>读取磁道 {1}、面 {2} 中的 {0} 个扇区时出错。</value>
+  </data>
+  <data name="Dialog_FloppyError_Sectors" xml:space="preserve">
+    <value>读取磁道 {1}、面 {2} 中的 {0} 个扇区时出错。</value>
+  </data>
+  <data name="Dialog_FloppyError_Verifying" xml:space="preserve">
+    <value>校验磁道 {0}、面 {1} 时出错。</value>
+  </data>
+  <data name="Dialog_FloppyError_Writing" xml:space="preserve">
+    <value>写入磁道 {0}、面 {1} 时出错。</value>
+  </data>
+  <data name="Label_Abort" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Label_Aborted" xml:space="preserve">
+    <value>已中止</value>
+  </data>
+  <data name="Label_BadSectors" xml:space="preserve">
+    <value>损坏扇区</value>
+  </data>
+  <data name="Menu_Close" xml:space="preserve">
+    <value>关闭(&amp;C)</value>
+  </data>
+  <data name="Label_Complete" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Label_Detected" xml:space="preserve">
+    <value>已检测</value>
+  </data>
+  <data name="Label_Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Label_Bad" xml:space="preserve">
+    <value>损坏</value>
+  </data>
+  <data name="Label_Free" xml:space="preserve">
+    <value>空闲</value>
+  </data>
+  <data name="Label_Last" xml:space="preserve">
+    <value>末簇</value>
+  </data>
+  <data name="Label_FATType_Next" xml:space="preserve">
+    <value>下一簇</value>
+  </data>
+  <data name="Label_Reserved" xml:space="preserve">
+    <value>保留</value>
+  </data>
+  <data name="Label_File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="Label_Formatting" xml:space="preserve">
+    <value>正在格式化</value>
+  </data>
+  <data name="Label_Reading" xml:space="preserve">
+    <value>正在读取</value>
+  </data>
+  <data name="Label_Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="Label_Unformatted" xml:space="preserve">
+    <value>未格式化</value>
+  </data>
+  <data name="Label_Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="Label_Verifying" xml:space="preserve">
+    <value>正在校验</value>
+  </data>
+  <data name="Label_Writing" xml:space="preserve">
+    <value>正在写入</value>
+  </data>
+  <data name="Menu_FATEdit_Bad" xml:space="preserve">
+    <value>损坏(&amp;B)</value>
+  </data>
+  <data name="Menu_FATEdit_Free" xml:space="preserve">
+    <value>空闲(&amp;F)</value>
+  </data>
+  <data name="Menu_FATEdit_Last" xml:space="preserve">
+    <value>末簇(&amp;L)</value>
+  </data>
+  <data name="Menu_FATEdit_Reserved" xml:space="preserve">
+    <value>保留(&amp;R)</value>
+  </data>
+  <data name="Menu_FATEdit_ViewHexEditor" xml:space="preserve">
+    <value>在十六进制编辑器中查看(&amp;V)</value>
+  </data>
+  <data name="Label_About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="Label_Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="Menu_Ok" xml:space="preserve">
+    <value>确定(&amp;O)</value>
+  </data>
+  <data name="Button_Add" xml:space="preserve">
+    <value>添加(&amp;A)</value>
+  </data>
+  <data name="Menu_Update" xml:space="preserve">
+    <value>更新(&amp;U)</value>
+  </data>
+  <data name="Menu_FileProperties" xml:space="preserve">
+    <value>文件属性(&amp;P)</value>
+  </data>
+  <data name="Caption_NewDirectory" xml:space="preserve">
+    <value>新建目录</value>
+  </data>
+  <data name="Label_DirectoryName" xml:space="preserve">
+    <value>目录名</value>
+  </data>
+  <data name="Label_FileName" xml:space="preserve">
+    <value>文件名</value>
+  </data>
+  <data name="Label_FilesSelected" xml:space="preserve">
+    <value>已选文件</value>
+  </data>
+  <data name="Label_MultipleFiles" xml:space="preserve">
+    <value>多个文件</value>
+  </data>
+  <data name="Label_VolumeLabel" xml:space="preserve">
+    <value>卷标</value>
+  </data>
+  <data name="Dialog_LanguageSettings" xml:space="preserve">
+    <value>语言设置将在重新启动应用程序后生效。</value>
+  </data>
+  <data name="Menu_SystemDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="Menu_ExportUnknown" xml:space="preserve">
+    <value>扫描时导出未知映像</value>
+  </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Label_New" xml:space="preserve">
+    <value>新建</value>
+  </data>
+  <data name="DataInspector_Label_Area" xml:space="preserve">
+    <value>区域</value>
+  </data>
+  <data name="Label_DataArea" xml:space="preserve">
+    <value>数据区</value>
+  </data>
+  <data name="Label_DiskFormat" xml:space="preserve">
+    <value>磁盘格式</value>
+  </data>
+  <data name="SummaryPanel_TrackStep" xml:space="preserve">
+    <value>磁道步进</value>
+  </data>
+  <data name="Label_WriteSplices" xml:space="preserve">
+    <value>写入拼接</value>
+  </data>
+  <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
+    <value>含写入拼接</value>
+  </data>
+  <data name="Label_SizeId" xml:space="preserve">
+    <value>大小 ID</value>
+  </data>
+  <data name="FilePanel_Attributes" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="Label_Created" xml:space="preserve">
+    <value>创建时间</value>
+  </data>
+  <data name="FilePanel_Extension" xml:space="preserve">
+    <value>扩展名</value>
+  </data>
+  <data name="Label_LastAccessed" xml:space="preserve">
+    <value>上次访问</value>
+  </data>
+  <data name="Label_LastWritten" xml:space="preserve">
+    <value>上次写入</value>
+  </data>
+  <data name="FilePanel_LFN" xml:space="preserve">
+    <value>长文件名</value>
+  </data>
+  <data name="Label_Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Menu_EditFileProperties" xml:space="preserve">
+    <value>编辑文件属性(&amp;P)</value>
+  </data>
+  <data name="Menu_ReplaceFile" xml:space="preserve">
+    <value>替换文件(&amp;R)</value>
+  </data>
+  <data name="Menu_ViewCrosslinked" xml:space="preserve">
+    <value>查看交叉链接的文件(&amp;C)</value>
+  </data>
+  <data name="Menu_ImportFiles" xml:space="preserve">
+    <value>导入文件(&amp;I)</value>
+  </data>
+  <data name="Menu_ImportFilesHere" xml:space="preserve">
+    <value>在此处导入文件(&amp;I)</value>
+  </data>
+  <data name="Menu_NewDirectory" xml:space="preserve">
+    <value>新建目录(&amp;N)</value>
+  </data>
+  <data name="Menu_NewDirectoryHere" xml:space="preserve">
+    <value>在此处新建目录(&amp;N)</value>
+  </data>
+  <data name="Menu_FixFileSize" xml:space="preserve">
+    <value>修正文件大小(&amp;S)</value>
+  </data>
+  <data name="Dialog_OpenFileError" xml:space="preserve">
+    <value>打开文件“{0}”时出错。</value>
+  </data>
+  <data name="Label_DriveType" xml:space="preserve">
+    <value>驱动器 {0} 类型</value>
+  </data>
+  <data name="Dialog_InvalidSelection" xml:space="preserve">
+    <value>无效选择</value>
+  </data>
+  <data name="Dialog_PleaseSelect" xml:space="preserve">
+    <value>请选择一个 {0} 文件。</value>
+  </data>
+  <data name="Dialog_TempPathError" xml:space="preserve">
+    <value>初始化临时路径时出错。</value>
+  </data>
+  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
+    <value>选择 Greaseweazle 可执行文件</value>
+  </data>
+  <data name="Label_Process" xml:space="preserve">
+    <value>处理</value>
+  </data>
+  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
+    <value>应用程序路径无效。</value>
+  </data>
+  <data name="Dialog_InvalidFileType" xml:space="preserve">
+    <value>无效的文件类型</value>
+  </data>
+  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
+    <value>该文件似乎不是有效 KryoFlux raw 集合的一部分。</value>
+  </data>
+  <data name="Dialog_InvalidImageFile" xml:space="preserve">
+    <value>该文件似乎不是有效的 {0} {1} 映像。</value>
+  </data>
+  <data name="Label_Bandwidth" xml:space="preserve">
+    <value>带宽</value>
+  </data>
+  <data name="Label_Info" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Label_Failed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="Label_UnexpectedSector" xml:space="preserve">
+    <value>意外扇区</value>
+  </data>
+  <data name="Label_UnexpectedSectors" xml:space="preserve">
+    <value>意外扇区</value>
+  </data>
+  <data name="Label_DoubleStep" xml:space="preserve">
+    <value>倍步进</value>
+  </data>
+  <data name="Label_ImageFormat" xml:space="preserve">
+    <value>映像格式</value>
+  </data>
+  <data name="Label_Import" xml:space="preserve">
+    <value>导入(&amp;I)</value>
+  </data>
+  <data name="Label_OutputType" xml:space="preserve">
+    <value>输出类型</value>
+  </data>
+  <data name="Label_ContinueAfterFailure" xml:space="preserve">
+    <value>失败后继续</value>
+  </data>
+  <data name="Label_Drive" xml:space="preserve">
+    <value>驱动器</value>
+  </data>
+  <data name="Label_EraseEmpty" xml:space="preserve">
+    <value>擦除空磁道</value>
+  </data>
+  <data name="Label_Erasing" xml:space="preserve">
+    <value>正在擦除</value>
+  </data>
+  <data name="Label_NoVerify" xml:space="preserve">
+    <value>不校验</value>
+  </data>
+  <data name="Label_PleaseSelect" xml:space="preserve">
+    <value>请选择</value>
+  </data>
+  <data name="Label_PreErase" xml:space="preserve">
+    <value>预擦除</value>
+  </data>
+  <data name="Label_Retries" xml:space="preserve">
+    <value>重试次数</value>
+  </data>
+  <data name="Label_Retrying" xml:space="preserve">
+    <value>正在重试</value>
+  </data>
+  <data name="Label_Write" xml:space="preserve">
+    <value>写入</value>
+  </data>
+  <data name="Label_WriteDisk" xml:space="preserve">
+    <value>写入磁盘</value>
+  </data>
+  <data name="Dialog_ConfirmWrite" xml:space="preserve">
+    <value>此操作将覆盖驱动器 {1} 中磁盘上的所有数据。{0}{0}现有内容将永久丢失。{0}{0}要继续吗？</value>
+  </data>
+  <data name="Dialog_ImageFormatWarning" xml:space="preserve">
+    <value>警告：映像格式与当前所选驱动器不兼容。{0}{0}仍要继续吗？</value>
+  </data>
+  <data name="Message_ImageFormatWarning" xml:space="preserve">
+    <value>警告：映像格式不兼容</value>
+  </data>
+  <data name="FileType_SectorImage" xml:space="preserve">
+    <value>扇区映像</value>
+  </data>
+  <data name="Label_Format" xml:space="preserve">
+    <value>格式</value>
+  </data>
+  <data name="Label_Reset" xml:space="preserve">
+    <value>设备复位</value>
+  </data>
+  <data name="Dialog_GreaseweazleReset" xml:space="preserve">
+    <value>已向 Greaseweazle 设备发送复位命令。</value>
+  </data>
+  <data name="Label_EraseDisk" xml:space="preserve">
+    <value>擦除磁盘</value>
+  </data>
+  <data name="Label_Hfreq" xml:space="preserve">
+    <value>高频信号</value>
+  </data>
+  <data name="Label_Revs" xml:space="preserve">
+    <value>转数</value>
+  </data>
+  <data name="Label_SelectTracks" xml:space="preserve">
+    <value>选择磁道</value>
+  </data>
+  <data name="Label_Erase" xml:space="preserve">
+    <value>擦除</value>
+  </data>
+  <data name="Label_CleanDisk" xml:space="preserve">
+    <value>清洗磁盘</value>
+  </data>
+  <data name="Label_Clean" xml:space="preserve">
+    <value>清洗</value>
+  </data>
+  <data name="Label_Cylinders" xml:space="preserve">
+    <value>柱面</value>
+  </data>
+  <data name="Label_Linger" xml:space="preserve">
+    <value>停留</value>
+  </data>
+  <data name="Label_Passes" xml:space="preserve">
+    <value>遍数</value>
+  </data>
+  <data name="Dialog_ConfirmCancel" xml:space="preserve">
+    <value>当前有操作正在进行。要取消吗？</value>
+  </data>
+  <data name="Label_Read" xml:space="preserve">
+    <value>读取</value>
+  </data>
+  <data name="Label_ReadDisk" xml:space="preserve">
+    <value>读取磁盘</value>
+  </data>
+  <data name="Label_Detect" xml:space="preserve">
+    <value>检测</value>
+  </data>
+  <data name="Label_NoDrivesFound" xml:space="preserve">
+    <value>未找到驱动器</value>
+  </data>
+  <data name="Label_SeekRetries" xml:space="preserve">
+    <value>寻道重试</value>
+  </data>
+  <data name="Label_InvalidFilename" xml:space="preserve">
+    <value>无效的文件名</value>
+  </data>
+  <data name="Dialog_InvalidFilename" xml:space="preserve">
+    <value>请输入有效的文件名（不含路径和无效字符）。</value>
+  </data>
+  <data name="Label_Modified" xml:space="preserve">
+    <value>已修改</value>
+  </data>
+  <data name="Label_Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Label_Sectors" xml:space="preserve">
+    <value>扇区</value>
+  </data>
+  <data name="Label_Flags" xml:space="preserve">
+    <value>标志</value>
+  </data>
+  <data name="Kryoflux_Flag_B" xml:space="preserve">
+    <value>扇区超出范围</value>
+  </data>
+  <data name="Kryoflux_Flag_C" xml:space="preserve">
+    <value>无法校验数据校验和</value>
+  </data>
+  <data name="Kryoflux_Flag_E" xml:space="preserve">
+    <value>发现非标准滑移标记</value>
+  </data>
+  <data name="Kryoflux_Flag_H" xml:space="preserve">
+    <value>发现额外头数据</value>
+  </data>
+  <data name="Kryoflux_Flag_I" xml:space="preserve">
+    <value>非标准格式类型/块 ID</value>
+  </data>
+  <data name="Kryoflux_Flag_L" xml:space="preserve">
+    <value>非标准扇区长度</value>
+  </data>
+  <data name="Kryoflux_Flag_N" xml:space="preserve">
+    <value>扇区已忽略</value>
+  </data>
+  <data name="Kryoflux_Flag_P" xml:space="preserve">
+    <value>检测到特殊保护</value>
+  </data>
+  <data name="Kryoflux_Flag_S" xml:space="preserve">
+    <value>面号不匹配</value>
+  </data>
+  <data name="Kryoflux_Flag_T" xml:space="preserve">
+    <value>磁道号不匹配</value>
+  </data>
+  <data name="Kryoflux_Flag_X" xml:space="preserve">
+    <value>扇区被截断</value>
+  </data>
+  <data name="Kryoflux_Flag_Z" xml:space="preserve">
+    <value>非法扇区偏移</value>
+  </data>
+  <data name="Menu_Cancel" xml:space="preserve">
+    <value>取消(&amp;C)</value>
+  </data>
+  <data name="Menu_Open" xml:space="preserve">
+    <value>打开(&amp;O)</value>
+  </data>
+  <data name="Label_ImportClose" xml:space="preserve">
+    <value>导入并关闭</value>
+  </data>
+  <data name="Label_Browse" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="Label_RootFolder" xml:space="preserve">
+    <value>根文件夹</value>
+  </data>
+  <data name="Label_FolderName" xml:space="preserve">
+    <value>文件夹名</value>
+  </data>
+  <data name="Label_Discard" xml:space="preserve">
+    <value>丢弃</value>
+  </data>
+  <data name="Label_SaveLog" xml:space="preserve">
+    <value>保存日志</value>
+  </data>
+  <data name="Dialog_ParentFolderCreationError" xml:space="preserve">
+    <value>错误：无法创建父文件夹。</value>
+  </data>
+  <data name="Dialog_ImageSetExists" xml:space="preserve">
+    <value>以下位置已存在 Flux 映像集：
+
+“{0}”
+
+要覆盖吗？</value>
+  </data>
+  <data name="Label_Device" xml:space="preserve">
+    <value>设备</value>
+  </data>
+  <data name="Label_BadSectorIds" xml:space="preserve">
+    <value>损坏扇区 ID</value>
+  </data>
+  <data name="Caption_ConvertFluxImage" xml:space="preserve">
+    <value>转换 Flux 映像</value>
+  </data>
+  <data name="Label_Convert" xml:space="preserve">
+    <value>转换</value>
+  </data>
+  <data name="Menu_Save" xml:space="preserve">
+    <value>保存(&amp;S)</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>保存并关闭</value>
+  </data>
+  <data name="Dialog_EnterFileName" xml:space="preserve">
+    <value>请输入文件名。</value>
+  </data>
+  <data name="Dialog_EnterFolderName" xml:space="preserve">
+    <value>请输入文件夹名。</value>
+  </data>
+  <data name="Dialog_SelectRootFolder" xml:space="preserve">
+    <value>请选择根文件夹。</value>
+  </data>
+  <data name="Label_AutoSaveLog" xml:space="preserve">
+    <value>自动保存日志</value>
+  </data>
+  <data name="Label_ReProcess" xml:space="preserve">
+    <value>重新处理</value>
+  </data>
+  <data name="Label_ExtendedLogOutput" xml:space="preserve">
+    <value>扩展日志输出</value>
+  </data>
+  <data name="Label_Remaster" xml:space="preserve">
+    <value>再制</value>
+  </data>
+  <data name="Menu_BootSector" xml:space="preserve">
+    <value>引导扇区(&amp;B)</value>
+  </data>
+  <data name="Menu_SaveAll" xml:space="preserve">
+    <value>全部保存</value>
+  </data>
+  <data name="Menu_WriteDiskInDrive" xml:space="preserve">
+    <value>写入驱动器 {0} 中的磁盘(&amp;W)</value>
+  </data>
+  <data name="Menu_CloseAll" xml:space="preserve">
+    <value>全部关闭</value>
+  </data>
+  <data name="Menu_FAT" xml:space="preserve">
+    <value>文件分配表(&amp;A)</value>
+  </data>
+  <data name="Label_Image" xml:space="preserve">
+    <value>映像</value>
+  </data>
+  <data name="Menu_No" xml:space="preserve">
+    <value>否(&amp;N)</value>
+  </data>
+  <data name="Menu_ReadDiskInDrive" xml:space="preserve">
+    <value>读取驱动器 {0} 中的磁盘(&amp;R)</value>
+  </data>
+  <data name="Menu_Redo" xml:space="preserve">
+    <value>重做(&amp;R)</value>
+  </data>
+  <data name="Menu_Undo" xml:space="preserve">
+    <value>撤销(&amp;U)</value>
+  </data>
+  <data name="Menu_Yes" xml:space="preserve">
+    <value>是(&amp;Y)</value>
+  </data>
+  <data name="Label_ApplicationPath" xml:space="preserve">
+    <value>应用程序路径</value>
+  </data>
+  <data name="Menu_Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Menu_CopyHex" xml:space="preserve">
+    <value>复制十六进制(&amp;H)</value>
+  </data>
+  <data name="Menu_CopyText" xml:space="preserve">
+    <value>复制文本(&amp;T)</value>
+  </data>
+  <data name="Menu_CopyHexFormatted" xml:space="preserve">
+    <value>复制格式化十六进制(&amp;F)</value>
+  </data>
+  <data name="Label_SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="Menu_SelectAll" xml:space="preserve">
+    <value>全选(&amp;A)</value>
+  </data>
+  <data name="Label_Options" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="Label_NTExtensions" xml:space="preserve">
+    <value>NT 扩展</value>
+  </data>
+  <data name="Label_LogFilename" xml:space="preserve">
+    <value>日志文件名</value>
+  </data>
+  <data name="Label_ImportFiles" xml:space="preserve">
+    <value>导入文件</value>
+  </data>
+  <data name="Label_Find" xml:space="preserve">
+    <value>查找</value>
+  </data>
+  <data name="Label_FindNext" xml:space="preserve">
+    <value>查找下一个</value>
+  </data>
+  <data name="Label_FillSelectionWith" xml:space="preserve">
+    <value>用 {0} 填充所选内容</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>编辑(&amp;E)</value>
+  </data>
+  <data name="Label_ConsoleOutput" xml:space="preserve">
+    <value>控制台输出</value>
+  </data>
+  <data name="Caption_FluxConfiguration" xml:space="preserve">
+    <value>Flux 配置</value>
+  </data>
+  <data name="Label_StripLogPath" xml:space="preserve">
+    <value>从日志中去除路径</value>
+  </data>
+  <data name="Label_DefaultRevs" xml:space="preserve">
+    <value>默认转数</value>
+  </data>
+  <data name="Label_DriveInterface" xml:space="preserve">
+    <value>驱动器接口</value>
+  </data>
+  <data name="Label_Port" xml:space="preserve">
+    <value>端口</value>
+  </data>
+  <data name="Label_FillSectorsWith" xml:space="preserve">
+    <value>用以下内容填充扇区</value>
+  </data>
+  <data name="Label_KeepData" xml:space="preserve">
+    <value>保留数据</value>
+  </data>
+  <data name="Label_SynchronizeFATs" xml:space="preserve">
+    <value>同步 FAT</value>
+  </data>
+  <data name="Menu_SelectData" xml:space="preserve">
+    <value>选择数据(&amp;D)</value>
+  </data>
+  <data name="Menu_SelectRegion" xml:space="preserve">
+    <value>选择区域(&amp;R)</value>
+  </data>
+  <data name="Label_SectorCountLarge" xml:space="preserve">
+    <value>总扇区数（大）</value>
+  </data>
+  <data name="Label_ExtendedParameterBlock" xml:space="preserve">
+    <value>扩展参数块</value>
+  </data>
+  <data name="Label_ExtendedParameterBlockMsg" xml:space="preserve">
+    <value>此引导扇区的扩展参数块中似乎存有数据。这通常表示该磁盘未定义扩展属性块。</value>
+  </data>
+  <data name="Label_JumpInstruction" xml:space="preserve">
+    <value>跳转指令</value>
+  </data>
+  <data name="Label_RootDirectoryEntries" xml:space="preserve">
+    <value>根目录条目</value>
+  </data>
+  <data name="Label_ChooseDiskType" xml:space="preserve">
+    <value>选择磁盘类型</value>
+  </data>
+  <data name="Label_FloppyDiskType" xml:space="preserve">
+    <value>软盘类型</value>
+  </data>
+  <data name="Label_DiskWriteOptions" xml:space="preserve">
+    <value>磁盘写入选项</value>
+  </data>
+  <data name="Label_FormatDisk" xml:space="preserve">
+    <value>格式化磁盘</value>
+  </data>
+  <data name="Label_VerifyWrites" xml:space="preserve">
+    <value>校验写入</value>
+  </data>
+  <data name="Menu_NoToAll" xml:space="preserve">
+    <value>全部否(&amp;O)</value>
+  </data>
+  <data name="Menu_YesToAll" xml:space="preserve">
+    <value>全部是(&amp;A)</value>
+  </data>
+  <data name="Caption_EnterFirstCharacter" xml:space="preserve">
+    <value>请输入首字符：</value>
+  </data>
+  <data name="Label_UndeleteFile" xml:space="preserve">
+    <value>恢复文件</value>
+  </data>
+  <data name="Label_NewDiskImage" xml:space="preserve">
+    <value>新建磁盘映像</value>
+  </data>
+  <data name="Label_SpecialFormats" xml:space="preserve">
+    <value>特殊格式</value>
+  </data>
+  <data name="Label_StandardFormats" xml:space="preserve">
+    <value>标准格式</value>
+  </data>
+  <data name="Menu_PasteOver" xml:space="preserve">
+    <value>粘贴覆盖(&amp;P)</value>
+  </data>
+  <data name="Label_Commit" xml:space="preserve">
+    <value>提交</value>
+  </data>
+  <data name="Label_CommitChanges" xml:space="preserve">
+    <value>提交更改</value>
+  </data>
+  <data name="Label_Display" xml:space="preserve">
+    <value>显示</value>
+  </data>
+  <data name="Label_FillSelection" xml:space="preserve">
+    <value>填充所选内容</value>
+  </data>
+  <data name="Label_Checksum" xml:space="preserve">
+    <value>校验和</value>
+  </data>
+  <data name="Label_Data" xml:space="preserve">
+    <value>数据</value>
+  </data>
+  <data name="Menu_AdjustBitOffset" xml:space="preserve">
+    <value>调整位偏移(&amp;O)</value>
+  </data>
+  <data name="Menu_CopyEncoded" xml:space="preserve">
+    <value>复制已编码数据</value>
+  </data>
+  <data name="Label_Archive" xml:space="preserve">
+    <value>存档</value>
+  </data>
+  <data name="Label_FileDates" xml:space="preserve">
+    <value>文件日期</value>
+  </data>
+  <data name="Label_FileProperties" xml:space="preserve">
+    <value>文件属性</value>
+  </data>
+  <data name="Label_Hidden" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
+  <data name="Label_Long" xml:space="preserve">
+    <value>长文件名</value>
+  </data>
+  <data name="Label_System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+  <data name="Caption_MultipleFilesSelected" xml:space="preserve">
+    <value>（已选择多个文件）</value>
+  </data>
+  <data name="Label_CaseSensitive" xml:space="preserve">
+    <value>区分大小写</value>
+  </data>
+  <data name="Label_Hex" xml:space="preserve">
+    <value>十六进制</value>
+  </data>
+  <data name="Label_SearchFor" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Label_Text" xml:space="preserve">
+    <value>文本</value>
+  </data>
+  <data name="Label_BytesFree" xml:space="preserve">
+    <value>可用字节</value>
+  </data>
+  <data name="Label_BytesRequired" xml:space="preserve">
+    <value>所需字节</value>
+  </data>
+  <data name="Label_CreatedDate" xml:space="preserve">
+    <value>创建日期</value>
+  </data>
+  <data name="Label_Disabled" xml:space="preserve">
+    <value>已禁用</value>
+  </data>
+  <data name="Label_LastAccessedDate" xml:space="preserve">
+    <value>上次访问日期</value>
+  </data>
+  <data name="Label_LongFileNames" xml:space="preserve">
+    <value>长文件名</value>
+  </data>
+  <data name="Label_SizeOnDisk" xml:space="preserve">
+    <value>占用空间</value>
+  </data>
+  <data name="Caption_GenerateVolumeSerialNumber" xml:space="preserve">
+    <value>生成卷序列号</value>
+  </data>
+  <data name="Label_Date" xml:space="preserve">
+    <value>日期</value>
+  </data>
+  <data name="Label_Milliseconds" xml:space="preserve">
+    <value>毫秒</value>
+  </data>
+  <data name="Label_Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Caption_FileNameSetTo" xml:space="preserve">
+    <value>文件名将设为</value>
+  </data>
+  <data name="Caption_LastWrittenDateSetTo" xml:space="preserve">
+    <value>上次写入日期将设为</value>
+  </data>
+  <data name="Label_NewFile" xml:space="preserve">
+    <value>新文件</value>
+  </data>
+  <data name="Label_OriginalFile" xml:space="preserve">
+    <value>原始文件</value>
+  </data>
+  <data name="Label_Replace" xml:space="preserve">
+    <value>替换</value>
+  </data>
+  <data name="Label_ReplaceFile" xml:space="preserve">
+    <value>替换文件</value>
+  </data>
+  <data name="Label_AboutApp" xml:space="preserve">
+    <value>关于 {0}</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateAvailable" xml:space="preserve">
+    <value>有可用的数据库更新。</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
+    <value>数据库已成功更新。</value>
+  </data>
+  <data name="Label_Source" xml:space="preserve">
+    <value>来源</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateError" xml:space="preserve">
+    <value>保存数据库更新时出错。</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateWarning" xml:space="preserve">
+    <value>无法将“{0}”保存到“{1}”。{3}{3}“{0}”已改为保存到“{2}”。</value>
+  </data>
+  <data name="Label_Database" xml:space="preserve">
+    <value>数据库</value>
+  </data>
+  <data name="Label_Modifications" xml:space="preserve">
+    <value>修改</value>
+  </data>
+  <data name="Label_Details" xml:space="preserve">
+    <value>详细信息</value>
+  </data>
+  <data name="Modifications_LastAccessDateAdded" xml:space="preserve">
+    <value>已向目录条目添加上次访问日期</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>引导扇区已修改</value>
+  </data>
+  <data name="Modifications_BootSectorCopy" xml:space="preserve">
+    <value>根目录末尾有一份引导扇区副本</value>
+  </data>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>已向目录条目添加创建日期</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} 已修改</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>OEM 名称已修改</value>
+  </data>
+  <data name="Label_Preview" xml:space="preserve">
+    <value>预览</value>
+  </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>映像预览</value>
+  </data>
+  <data name="Dialog_ImagePreviewFail" xml:space="preserve">
+    <value>错误：无法预览映像。</value>
+  </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Caption_Settings_ConvertedImages" xml:space="preserve">
+    <value>转换映像的默认保存位置</value>
+  </data>
+  <data name="Radio_Settings_ConvertLastUsed" xml:space="preserve">
+    <value>上次使用的输出文件夹</value>
+  </data>
+  <data name="Radio_Settings_ConvertParentFolder" xml:space="preserve">
+    <value>Flux 集的父文件夹</value>
+  </data>
+  <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
+    <value>与 Flux 集相同的文件夹</value>
+  </data>
+  <data name="Dialog_DetectFormatError" xml:space="preserve">
+    <value>错误：无法检测映像格式。</value>
+  </data>
+  <data name="FloppyImageType_TD0Image" xml:space="preserve">
+    <value>TeleDisk 扇区映像</value>
+  </data>
+  <data name="Label_ImportIntoDirectory" xml:space="preserve">
+    <value>导入到目录</value>
+  </data>
+  <data name="Label_BatchImageAnalysis" xml:space="preserve">
+    <value>批量映像分析</value>
+  </data>
+  <data name="Label_ErrorSavingXMLReport" xml:space="preserve">
+    <value>保存 XML 报告时出错</value>
+  </data>
+  <data name="Label_ImageAnalysis" xml:space="preserve">
+    <value>映像分析</value>
+  </data>
+  <data name="Label_Prefix" xml:space="preserve">
+    <value>前缀</value>
+  </data>
+  <data name="Label_ToggleSequence" xml:space="preserve">
+    <value>切换序号标记</value>
+  </data>
+  <data name="Label_ViewMobyGames" xml:space="preserve">
+    <value>在 MobyGames 上查看</value>
+  </data>
+  <data name="Message_SaveFluxSetError" xml:space="preserve">
+    <value>无法保存 Flux 集。</value>
+  </data>
+  <data name="Label_Refine" xml:space="preserve">
+    <value>精修</value>
+  </data>
+  <data name="Label_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Dialog_ImageFileExists" xml:space="preserve">
+    <value>以下位置已存在映像文件：
+
+“{0}”
+
+要覆盖吗？</value>
+  </data>
+  <data name="Dialog_ImageSetAndFileExist" xml:space="preserve">
+    <value>以下内容已存在：
+
+Flux 映像集：“{0}”
+映像文件：“{1}”
+
+要覆盖吗？</value>
+  </data>
+  <data name="Dialog_SelectImageFolder" xml:space="preserve">
+    <value>请选择映像文件夹。</value>
+  </data>
+  <data name="Label_FluxFolder" xml:space="preserve">
+    <value>Flux 文件夹</value>
+  </data>
+  <data name="Label_Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>映像文件夹</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>映像位置</value>
+  </data>
+  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
+    <value>重新转储所选磁道将丢弃第二映像文件。
+
+重新转储完成后，可使用“转换”从 Flux 集重新生成。
+
+要继续吗？</value>
+  </data>
+  <data name="Label_EntriesFree" xml:space="preserve">
+    <value>可用条目</value>
+  </data>
+  <data name="Label_EntriesRequired" xml:space="preserve">
+    <value>所需条目</value>
+  </data>
+  <data name="Menu_NoRecentFiles" xml:space="preserve">
+    <value>（空）</value>
+  </data>
+  <data name="Menu_ClearRecent" xml:space="preserve">
+    <value>清除最近记录</value>
+  </data>
+  <data name="Dialog_RecentFileMissing" xml:space="preserve">
+    <value>文件“{0}”已不存在。要从最近文件中移除吗？</value>
+  </data>
+  <data name="Dialog_RecentFolderMissing" xml:space="preserve">
+    <value>文件夹“{0}”已不存在。要从最近文件夹中移除吗？</value>
+  </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Action_Merge" xml:space="preserve">
+    <value>合并</value>
+  </data>
+  <data name="Action_Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
+  <data name="Action_Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="Action_Skip" xml:space="preserve">
+    <value>跳过</value>
+  </data>
+  <data name="Label_OverwriteExisting" xml:space="preserve">
+    <value>覆盖现有文件</value>
+  </data>
+  <data name="SummaryPanel_Series" xml:space="preserve">
+    <value>系列</value>
+  </data>
+  <data name="Dialog_UnsupportedImageFile" xml:space="preserve">
+    <value>该文件似乎不是受支持的 {0} {1} 映像。</value>
+  </data>
+  <data name="FloppyImageType_SCPImage" xml:space="preserve">
+    <value>SuperCard Pro 映像</value>
+  </data>
+  <data name="FloppyImageType_A2RImage" xml:space="preserve">
+    <value>Applesauce FDC 映像</value>
+  </data>
+  <data name="FloppyImageType_RAWImage" xml:space="preserve">
+    <value>原始 Flux 集</value>
+  </data>
+</root>
