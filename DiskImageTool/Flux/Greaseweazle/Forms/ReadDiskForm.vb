@@ -71,6 +71,7 @@ Namespace Flux.Greaseweazle
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboImageLocationNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
+        Private _TextChangeNoEvent As Boolean = False
         Private _FileReprocessMode As Boolean = False
         Private _LastFluxOutput As Boolean? = Nothing
         Private _LastSequenceTextBox As TextBoxBase
@@ -635,9 +636,16 @@ Namespace Flux.Greaseweazle
             If _LastSequenceTextBox Is Nothing Then
                 Exit Sub
             End If
+
+            _TextChangeNoEvent = True
+
             ToggleNumberTokenAtCaretOrSelection(_LastSequenceTextBox)
+
             UpdateSequenceButtonState()
+            FileNameChangePostProcess()
             _LastSequenceTextBox.Focus()
+
+            _TextChangeNoEvent = False
         End Sub
 
         Private Sub FileNameChangePostProcess()
@@ -1969,6 +1977,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub TextBoxFileName_TextChanged(sender As Object, e As EventArgs) Handles TextBoxFileName.TextChanged, TextBoxPrefixName.TextChanged, TextBoxFolderName.TextChanged
+            If _TextChangeNoEvent Then
+                Exit Sub
+            End If
+
             UpdateSequenceButtonState()
             FileNameChangePostProcess()
         End Sub
