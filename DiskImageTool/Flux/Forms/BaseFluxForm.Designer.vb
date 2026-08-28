@@ -22,6 +22,8 @@
             Me.PanelMain = New System.Windows.Forms.Panel()
             Me.PanelInner = New System.Windows.Forms.Panel()
             Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
+            Me.PanelConsoleHeader = New System.Windows.Forms.Panel()
+            Me.CheckSaveLog = New System.Windows.Forms.CheckBox()
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
@@ -38,6 +40,7 @@
             Me.PanelButtonsLeft.SuspendLayout()
             Me.PanelMain.SuspendLayout()
             Me.PanelInner.SuspendLayout()
+            Me.PanelConsoleHeader.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
             Me.SuspendLayout()
             '
@@ -47,7 +50,7 @@
             Me.PanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelBottom.Controls.Add(Me.PanelBottomInner)
             Me.PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-            Me.PanelBottom.Location = New System.Drawing.Point(0, 419)
+            Me.PanelBottom.Location = New System.Drawing.Point(0, 424)
             Me.PanelBottom.Name = "PanelBottom"
             Me.PanelBottom.Size = New System.Drawing.Size(767, 43)
             Me.PanelBottom.TabIndex = 1
@@ -158,13 +161,13 @@
             Me.PanelMain.AutoSize = True
             Me.PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelMain.Controls.Add(Me.PanelInner)
-            Me.PanelMain.Controls.Add(Me.LabelConsoleOutput)
+            Me.PanelMain.Controls.Add(Me.PanelConsoleHeader)
             Me.PanelMain.Controls.Add(Me.TextBoxConsole)
             Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelMain.Location = New System.Drawing.Point(0, 0)
             Me.PanelMain.Name = "PanelMain"
             Me.PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
-            Me.PanelMain.Size = New System.Drawing.Size(767, 419)
+            Me.PanelMain.Size = New System.Drawing.Size(767, 424)
             Me.PanelMain.TabIndex = 0
             '
             'PanelInner
@@ -175,7 +178,7 @@
             Me.PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelInner.Location = New System.Drawing.Point(18, 18)
             Me.PanelInner.Name = "PanelInner"
-            Me.PanelInner.Size = New System.Drawing.Size(731, 259)
+            Me.PanelInner.Size = New System.Drawing.Size(731, 262)
             Me.PanelInner.TabIndex = 0
             '
             'TableLayoutPanelMain
@@ -196,16 +199,37 @@
             Me.TableLayoutPanelMain.Size = New System.Drawing.Size(20, 20)
             Me.TableLayoutPanelMain.TabIndex = 0
             '
+            'PanelConsoleHeader
+            '
+            Me.PanelConsoleHeader.Controls.Add(Me.CheckSaveLog)
+            Me.PanelConsoleHeader.Controls.Add(Me.LabelConsoleOutput)
+            Me.PanelConsoleHeader.Dock = System.Windows.Forms.DockStyle.Bottom
+            Me.PanelConsoleHeader.Location = New System.Drawing.Point(18, 280)
+            Me.PanelConsoleHeader.Name = "PanelConsoleHeader"
+            Me.PanelConsoleHeader.Padding = New System.Windows.Forms.Padding(0, 0, 0, 3)
+            Me.PanelConsoleHeader.Size = New System.Drawing.Size(731, 18)
+            Me.PanelConsoleHeader.TabIndex = 1
+            '
+            'CheckSaveLog
+            '
+            Me.CheckSaveLog.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Me.CheckSaveLog.AutoSize = True
+            Me.CheckSaveLog.Location = New System.Drawing.Point(607, 0)
+            Me.CheckSaveLog.Name = "CheckSaveLog"
+            Me.CheckSaveLog.Size = New System.Drawing.Size(105, 17)
+            Me.CheckSaveLog.TabIndex = 1
+            Me.CheckSaveLog.Text = "{Auto Save Log}"
+            Me.CheckSaveLog.UseVisualStyleBackColor = True
+            Me.CheckSaveLog.Visible = False
+            '
             'LabelConsoleOutput
             '
             Me.LabelConsoleOutput.AutoSize = True
-            Me.LabelConsoleOutput.Dock = System.Windows.Forms.DockStyle.Bottom
-            Me.LabelConsoleOutput.Location = New System.Drawing.Point(18, 277)
+            Me.LabelConsoleOutput.Location = New System.Drawing.Point(0, 1)
             Me.LabelConsoleOutput.Margin = New System.Windows.Forms.Padding(3)
             Me.LabelConsoleOutput.Name = "LabelConsoleOutput"
-            Me.LabelConsoleOutput.Padding = New System.Windows.Forms.Padding(0, 0, 0, 3)
-            Me.LabelConsoleOutput.Size = New System.Drawing.Size(88, 16)
-            Me.LabelConsoleOutput.TabIndex = 1
+            Me.LabelConsoleOutput.Size = New System.Drawing.Size(88, 13)
+            Me.LabelConsoleOutput.TabIndex = 0
             Me.LabelConsoleOutput.Text = "{Console Output}"
             '
             'TextBoxConsole
@@ -214,7 +238,7 @@
             Me.TextBoxConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
             Me.TextBoxConsole.Dock = System.Windows.Forms.DockStyle.Bottom
             Me.TextBoxConsole.Font = New System.Drawing.Font("Consolas", 9.0!)
-            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 293)
+            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 298)
             Me.TextBoxConsole.Multiline = True
             Me.TextBoxConsole.Name = "TextBoxConsole"
             Me.TextBoxConsole.ReadOnly = True
@@ -225,7 +249,7 @@
             'StatusStripBottom
             '
             Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.ToolStripProgress, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
-            Me.StatusStripBottom.Location = New System.Drawing.Point(0, 462)
+            Me.StatusStripBottom.Location = New System.Drawing.Point(0, 467)
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.Size = New System.Drawing.Size(767, 24)
             Me.StatusStripBottom.SizingGrip = False
@@ -294,7 +318,7 @@
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
             Me.AutoSize = True
             Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.ClientSize = New System.Drawing.Size(767, 486)
+            Me.ClientSize = New System.Drawing.Size(767, 491)
             Me.Controls.Add(Me.PanelMain)
             Me.Controls.Add(Me.PanelBottom)
             Me.Controls.Add(Me.StatusStripBottom)
@@ -317,6 +341,8 @@
             Me.PanelMain.PerformLayout()
             Me.PanelInner.ResumeLayout(False)
             Me.PanelInner.PerformLayout()
+            Me.PanelConsoleHeader.ResumeLayout(False)
+            Me.PanelConsoleHeader.PerformLayout()
             Me.StatusStripBottom.ResumeLayout(False)
             Me.StatusStripBottom.PerformLayout()
             Me.ResumeLayout(False)
@@ -337,12 +363,14 @@
         Friend WithEvents ButtonSaveLog As Button
         Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
         Friend WithEvents PanelButtonsRight As FlowLayoutPanel
-        Friend WithEvents LabelConsoleOutput As Label
         Friend WithEvents PanelBottom As Panel
         Friend WithEvents PanelBottomInner As TableLayoutPanel
         Friend WithEvents PanelMain As Panel
         Friend WithEvents PanelInner As Panel
         Friend WithEvents StatusDevice As ToolStripStatusLabel
         Friend WithEvents ToolStripProgress As ToolStripProgressBar
+        Friend WithEvents PanelConsoleHeader As Panel
+        Friend WithEvents LabelConsoleOutput As Label
+        Friend WithEvents CheckSaveLog As CheckBox
     End Class
 End Namespace

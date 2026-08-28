@@ -70,13 +70,6 @@
                 .DropDownStyle = ComboBoxStyle.DropDownList
             }
 
-            CheckBoxSaveLog = New CheckBox With {
-                .Text = My.Resources.Label_SaveLog,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
             With TableLayoutPanelMain
                 .Controls.Add(_LabelDrive, 0, Row)
                 .Controls.AddWithSpan(ComboDrives, 1, Row, 2)
@@ -84,8 +77,6 @@
                 .Controls.Add(_LabelOutputType, 3, Row)
                 .Controls.AddWithSpan(ComboOutputType, 4, Row, 4)
                 .Controls.Add(ComboExtensions, 8, Row)
-
-                .Controls.AddWithSpan(CheckBoxSaveLog, 9, Row, 2)
             End With
         End Sub
 
@@ -459,7 +450,7 @@
             SetHelpString(My.Resources.HelpStrings.Flux_ImageType, _LabelOutputType, ComboOutputType)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_ReadFilename, _LabelFileName, TextBoxFileName)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt, ComboExtensions)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SaveLog, CheckBoxSaveLog)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SaveLog, CheckSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
             SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonRead)
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)

@@ -21,7 +21,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonToggleSequence As Button
         Private WithEvents ButtonToggleSequence2 As Button
         Private WithEvents ButtonVerify As Button
-        Private WithEvents CheckBoxSaveLog As CheckBox
         Private WithEvents ComboDrives As ComboBox
         Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboExtensions2 As ComboBox
@@ -119,6 +118,7 @@ Namespace Flux.Greaseweazle
 
             Me.HelpButton = True
             Me.Text = My.Resources.Label_ReadDisk
+            CheckSaveLog.Visible = True
 
             InitializeHelp()
 
@@ -141,7 +141,7 @@ Namespace Flux.Greaseweazle
             _NumericRetries.Value = DEFAULT_RETRIES
             _NumericSeekRetries.Value = DEFAULT_SEEK_RETRIES
 
-            CheckBoxSaveLog.Checked = SelectedDeviceState.SaveLog
+            CheckSaveLog.Checked = SelectedDeviceState.SaveLog
 
             ButtonToggleSequence.Enabled = False
             ButtonToggleSequence2.Enabled = False
@@ -820,7 +820,7 @@ Namespace Flux.Greaseweazle
                     Response.FilePath = ""
                 End Try
 
-                If CheckBoxSaveLog.Checked Then
+                If CheckSaveLog.Checked Then
                     Response.LogFilePath = IO.Path.Combine(Pathname, Settings.LogFileName)
                 End If
 
@@ -1178,7 +1178,7 @@ Namespace Flux.Greaseweazle
 
             ClearOutputType2()
 
-            InitLogFilePath(If(CheckBoxSaveLog.Checked, IO.Path.Combine(TempFolder, Settings.LogFileName), ""))
+            InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(TempFolder, Settings.LogFileName), ""))
 
             Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
         End Sub
@@ -1615,8 +1615,8 @@ Namespace Flux.Greaseweazle
             ButtonRootBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
             'ButtonImageFolderBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
-            CheckBoxSaveLog.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
-            CheckBoxSaveLog.Visible = IsFluxOutput
+            CheckSaveLog.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            CheckSaveLog.Visible = IsFluxOutput
         End Sub
 
         Private Sub UpdateSequenceButtonState()
@@ -1778,12 +1778,12 @@ Namespace Flux.Greaseweazle
             VerifyImage()
         End Sub
 
-        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
+        Private Sub CheckSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckSaveLog.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub
             End If
 
-            SelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
+            SelectedDeviceState.SaveLog = CheckSaveLog.Checked
         End Sub
 
         Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged

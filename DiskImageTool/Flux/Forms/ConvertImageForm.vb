@@ -21,7 +21,6 @@ Namespace Flux
         Private WithEvents ButtonTrackLayout As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxExtendedLogging As CheckBox
-        Private WithEvents CheckBoxSaveLog As CheckBox
         Private WithEvents ComboDevices As ComboBox
         Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
@@ -71,6 +70,7 @@ Namespace Flux
             }
 
             ButtonReset.Visible = False
+            CheckSaveLog.Visible = True
 
             ConvertCmd = Engine.Convert
 
@@ -430,7 +430,7 @@ Namespace Flux
 
             TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
 
-            If CheckBoxSaveLog.Checked Then
+            If CheckSaveLog.Checked Then
                 AutoSaveLogFile()
             End If
             _OutputImages.StorePendingImage(GetState)
@@ -509,20 +509,12 @@ Namespace Flux
                 .Visible = False
             }
 
-            CheckBoxSaveLog = New CheckBox With {
-                .Text = My.Resources.Label_AutoSaveLog,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
             With TableLayoutPanelMain
                 .Controls.Add(_LabelDevice, 0, Row)
                 .Controls.Add(ComboDevices, 1, Row)
                 .Controls.AddWithSpan(CheckBoxExtendedLogging, 2, Row, 2)
                 .Controls.Add(_CheckBoxRemaster, 2, Row)
                 .Controls.AddWithSpan(_CheckBox86FSurfaceData, 3, Row, 2)
-                .Controls.AddWithSpan(CheckBoxSaveLog, 5, Row, 2)
             End With
         End Sub
 
@@ -680,7 +672,7 @@ Namespace Flux
                 _GwStatus = Nothing
             End If
 
-            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
+            CheckSaveLog.Checked = GetSelectedDeviceState.SaveLog
             CheckBoxExtendedLogging.Checked = GetSelectedDeviceState.ExtendedLogs.GetValueOrDefault(False)
 
             InitializeImage(Repopulate)
@@ -740,7 +732,7 @@ Namespace Flux
 
         Private Sub InitializeHelp()
             SetHelpString(My.Resources.HelpStrings.Flux_Device, _LabelDevice, ComboDevices)
-            SetHelpString(My.Resources.HelpStrings.Flux_AutoSaveLog, CheckBoxSaveLog)
+            SetHelpString(My.Resources.HelpStrings.Flux_AutoSaveLog, CheckSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_86FSurfaceData, _CheckBox86FSurfaceData)
             SetHelpString(My.Resources.HelpStrings.Flux_Remaster, _CheckBoxRemaster)
             SetHelpString(My.Resources.HelpStrings.Flux_ExtendedLogOutput, CheckBoxExtendedLogging)
@@ -1171,7 +1163,7 @@ Namespace Flux
                 _CheckBoxRemaster.Enabled = False
             End If
 
-            CheckBoxSaveLog.Enabled = SettingsEnabled
+            CheckSaveLog.Enabled = SettingsEnabled
 
             _LabelOutputSource.Visible = _OutputImages.Images.Count > 1
             ComboOutputSource.Visible = _OutputImages.Images.Count > 1
@@ -1462,7 +1454,7 @@ Namespace Flux
             GetSelectedDeviceState.ExtendedLogs = CheckBoxExtendedLogging.Checked
         End Sub
 
-        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
+        Private Sub CheckSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckSaveLog.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub
             End If
@@ -1471,7 +1463,7 @@ Namespace Flux
                 Exit Sub
             End If
 
-            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
+            GetSelectedDeviceState.SaveLog = CheckSaveLog.Checked
         End Sub
 
         Private Sub ComboDevices_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDevices.SelectedIndexChanged

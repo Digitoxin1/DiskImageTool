@@ -43,7 +43,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function GetVerifyLogPath() As String
-            If Not CheckBoxSaveLog.Checked Then
+            If Not CheckSaveLog.Checked Then
                 Return ""
             End If
 

@@ -532,6 +532,7 @@ Namespace Flux
             ButtonSaveLog.Text = My.Resources.Label_SaveLog
             ButtonReset.Text = My.Resources.Label_Reset
             LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
+            CheckSaveLog.Text = My.Resources.Label_AutoSaveLog
 
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
         End Sub
