@@ -32,12 +32,14 @@ Namespace Flux.Greaseweazle
             Dim FileName2WithOpts As String = ""
 
             If outputType = ReadDiskOutputTypes.HFE Then
-                AdjustSpeed = 60.0 / diskParams.RPM
+                If doubleStep Then
+                    AdjustSpeed = 60.0 / diskParams.RPM
+                End If
                 Raw = True
                 FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
-                If diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
+                If doubleStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
                     AdjustSpeed = 60.0 / diskParams.RPM
                 End If
                 Raw = True

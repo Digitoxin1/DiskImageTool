@@ -198,7 +198,9 @@ Namespace Flux
 
             If outputType = FluxFileTypeEnum.HFE Then
                 BitRateKbps = CInt(diskParams.BitRateKbps)
-                AdjustSpeed = 60.0 / diskParams.RPM
+                If doubleStep Then
+                    AdjustSpeed = 60.0 / diskParams.RPM
+                End If
 
             ElseIf outputType = FluxFileTypeEnum.SectorImage Then
                 Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
