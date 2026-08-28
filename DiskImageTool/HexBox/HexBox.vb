@@ -1130,6 +1130,11 @@ Namespace Hb.Windows.Forms
         Private _recLineInfo As Rectangle
 
         ''' <summary>
+        ''' Contains the sector info label bounds
+        ''' </summary>
+        Private _recSectorInfo As Rectangle
+
+        ''' <summary>
         ''' Contains the string view bounds
         ''' </summary>
         Private _recStringView As Rectangle
@@ -1267,6 +1272,12 @@ Namespace Hb.Windows.Forms
         Public Event BytesPerLineChanged As EventHandler
 
         ''' <summary>
+        ''' Occurs, when the value of BytesPerSector property has changed.
+        ''' </summary>
+        <Description("Occurs, when the value of BytesPerSector property has changed.")>
+        Public Event BytesPerSectorChanged As EventHandler
+
+        ''' <summary>
         ''' Occurs, when the CharSize property has changed
         ''' </summary>
         <Description("Occurs, when the CharSize property has changed")>
@@ -1307,6 +1318,12 @@ Namespace Hb.Windows.Forms
         ''' </summary>
         <Description("Occurs, when the value of GroupSeparatorVisibleChanged property has changed.")>
         Public Event GroupSeparatorVisibleChanged As EventHandler
+
+        ''' <summary>
+        ''' Occurs, when a sector separator label is being formatted.
+        ''' </summary>
+        <Description("Occurs, when a sector separator label is being formatted.")>
+        Public Event FormatSectorLabel As FormatSectorLabelEventHandler
 
         ''' <summary>
         ''' Occurs, when the value of ColumnWidth property has changed.
@@ -1379,6 +1396,12 @@ Namespace Hb.Windows.Forms
         Public Event SelectionStartChanged As EventHandler
 
         ''' <summary>
+        ''' Occurs, when the value of SectorSeparatorVisible property has changed.
+        ''' </summary>
+        <Description("Occurs, when the value of SectorSeparatorVisible property has changed.")>
+        Public Event SectorSeparatorVisibleChanged As EventHandler
+
+        ''' <summary>
         ''' Occurs, when the value of StringViewVisible property has changed.
         ''' </summary>
         <Description("Occurs, when the value of StringViewVisible property has changed.")>
@@ -1408,6 +1431,8 @@ Namespace Hb.Windows.Forms
 
         Public Delegate Sub ByteChangeEventHandler(source As Object, e As ByteChangedArgs)
 
+        Public Delegate Sub FormatSectorLabelEventHandler(source As Object, e As FormatSectorLabelEventArgs)
+
         Public Class ByteChangedArgs
             Inherits EventArgs
             Public Sub New(Index As Long, PrevValue As Byte, Value As Byte)
@@ -1418,6 +1443,17 @@ Namespace Hb.Windows.Forms
             Public Property Index As Long
             Public Property PrevValue As Byte
             Public Property Value As Byte
+        End Class
+
+        Public Class FormatSectorLabelEventArgs
+            Inherits EventArgs
+            Public Sub New(offset As Long, sector As Long)
+                Me.Offset = offset
+                Me.Sector = sector
+            End Sub
+            Public ReadOnly Property Offset As Long
+            Public ReadOnly Property Sector As Long
+            Public Property Text As String
         End Class
 #End Region
 
@@ -2354,6 +2390,7 @@ Namespace Hb.Windows.Forms
             End If
             If _columnInfoVisible Then PaintHeaderRow(e.Graphics)
             If _groupSeparatorVisible Then PaintColumnSeparator(e.Graphics)
+            If _sectorSeparatorVisible Then PaintSectorSeparator(e.Graphics)
 
             RaiseEvent AfterPaint(Me, e)
         End Sub
@@ -2446,6 +2483,40 @@ Namespace Hb.Windows.Forms
 
                 col += GroupSize
             End While
+        End Sub
+
+        Private Sub PaintSectorSeparator(g As Graphics)
+            If _bytesPerSector <= 0 OrElse _iHexMaxHBytes <= 0 OrElse _iHexMaxVBytes <= 0 Then Return
+
+            Dim lastByte As Long = If(_byteProvider Is Nothing, -1, _byteProvider.Length - 1)
+
+            Using pen As New Pen(InfoTextColor, 1)
+                Using brush As New SolidBrush(InfoTextColor)
+                    For row = 0 To _iHexMaxVBytes - 2
+                        Dim byteIndex As Long = _startByte + CLng(row) * _iHexMaxHBytes
+                        If byteIndex > lastByte Then Exit For
+
+                        Dim offset As Long = _lineInfoOffset + byteIndex
+                        If offset Mod _bytesPerSector <> 0 Then Continue For
+
+                        Dim vPos As Single = _recHex.Y + row * _charSize.Height
+                        If row > 0 Then
+                            g.DrawLine(pen, _recContent.X, vPos, _recContent.Right, vPos)
+                        End If
+
+                        Dim sector As Long = offset \ _bytesPerSector
+                        Dim args As New FormatSectorLabelEventArgs(offset, sector) With {
+                            .Text = sector.ToString()
+                        }
+                        OnFormatSectorLabel(args)
+
+                        If Not String.IsNullOrEmpty(args.Text) AndAlso _recSectorInfo.Width > 0 Then
+                            Dim r As New Rectangle(_recSectorInfo.X, CInt(vPos), _recSectorInfo.Width, CInt(_charSize.Height))
+                            g.DrawString(args.Text, Font, brush, r, StringFormat.GenericDefault)
+                        End If
+                    Next
+                End Using
+            End Using
         End Sub
 
         Private Sub PaintCurrentByteSign(g As Graphics, rec As Rectangle)
@@ -2837,6 +2908,21 @@ Namespace Hb.Windows.Forms
                 _recStringView = Rectangle.Empty
             End If
 
+            If _sectorSeparatorVisible Then
+                Dim gap As Integer = Math.Max(0, Fix(_charSize.Width * 3) - 8)
+                Dim width As Integer = Fix(_charSize.Width * 8)
+                Dim x As Integer
+                If _stringViewVisible Then
+                    x = _recStringView.X + _recStringView.Width + gap
+                Else
+                    x = _recHex.X + _recHex.Width + gap
+                End If
+                _recSectorInfo = New Rectangle(x, _recHex.Y, width, _recHex.Height)
+                requiredWidth += gap + width
+            Else
+                _recSectorInfo = Rectangle.Empty
+            End If
+
             Me.RequiredWidth = requiredWidth
 
             Dim vmax As Integer = Math.Floor(_recHex.Height / CDbl(_charSize.Height))
@@ -2930,6 +3016,8 @@ Namespace Hb.Windows.Forms
         Private _byteProvider As Forms.IByteProvider
 
         Private _bytesPerLine As Integer = 16
+
+        Private _bytesPerSector As Integer = 512
 
         Private _charSize As SizeF
 
@@ -3166,6 +3254,27 @@ Namespace Hb.Windows.Forms
                 OnGroupSizeChanged(EventArgs.Empty)
 
                 UpdateRectanglePositioning()
+                Invalidate()
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the number of bytes in a sector. Used to show the sector separator line (if SectorSeparatorVisible is true)
+        ''' </summary>
+        ''' <remarks>
+        ''' SectorSeparatorVisible property must set to true
+        ''' </remarks>
+        <DefaultValue(512), Category("Hex"), Description("Gets or sets the byte-count between sector separators (if visible).")>
+        Public Property BytesPerSector As Integer
+            Get
+                Return _bytesPerSector
+            End Get
+            Set(value As Integer)
+                If value <= 0 OrElse _bytesPerSector = value Then Return
+
+                _bytesPerSector = value
+                OnBytesPerSectorChanged(EventArgs.Empty)
+
                 Invalidate()
             End Set
         End Property
@@ -3532,6 +3641,8 @@ Namespace Hb.Windows.Forms
 
         Private _lineInfoVisible As Boolean = False
 
+        Private _sectorSeparatorVisible As Boolean = False
+
         Private _shadowSelectionVisible As Boolean = True
 
         Private _stringViewVisible As Boolean
@@ -3570,6 +3681,25 @@ Namespace Hb.Windows.Forms
 
                 _groupSeparatorVisible = value
                 OnGroupSeparatorVisibleChanged(EventArgs.Empty)
+
+                UpdateRectanglePositioning()
+                Invalidate()
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the visibility of the sector separator.
+        ''' </summary>
+        <DefaultValue(False), Category("HexBoxVisibility"), Description("Gets or sets the visibility of a separator horizontal line after every sector.")>
+        Public Property SectorSeparatorVisible As Boolean
+            Get
+                Return _sectorSeparatorVisible
+            End Get
+            Set(value As Boolean)
+                If _sectorSeparatorVisible = value Then Return
+
+                _sectorSeparatorVisible = value
+                OnSectorSeparatorVisibleChanged(EventArgs.Empty)
 
                 UpdateRectanglePositioning()
                 Invalidate()
@@ -3691,6 +3821,22 @@ Namespace Hb.Windows.Forms
         ''' <paramname="e">An EventArgs that contains the event data.</param>
         Protected Overridable Sub OnBytesPerLineChanged(e As EventArgs)
             RaiseEvent BytesPerLineChanged(Me, e)
+        End Sub
+
+        ''' <summary>
+        ''' Raises the BytesPerSectorChanged event.
+        ''' </summary>
+        ''' <paramname="e">An EventArgs that contains the event data.</param>
+        Protected Overridable Sub OnBytesPerSectorChanged(e As EventArgs)
+            RaiseEvent BytesPerSectorChanged(Me, e)
+        End Sub
+
+        ''' <summary>
+        ''' Raises the FormatSectorLabel event.
+        ''' </summary>
+        ''' <paramname="e">A FormatSectorLabelEventArgs that contains the event data.</param>
+        Protected Overridable Sub OnFormatSectorLabel(e As FormatSectorLabelEventArgs)
+            RaiseEvent FormatSectorLabel(Me, e)
         End Sub
 
         ''' <summary>
@@ -3887,6 +4033,14 @@ Namespace Hb.Windows.Forms
         ''' <paramname="e">An EventArgs that contains the event data.</param>
         Protected Overridable Sub OnSelectionStartChanged(e As EventArgs)
             RaiseEvent SelectionStartChanged(Me, e)
+        End Sub
+
+        ''' <summary>
+        ''' Raises the SectorSeparatorVisibleChanged event.
+        ''' </summary>
+        ''' <paramname="e">An EventArgs that contains the event data.</param>
+        Protected Overridable Sub OnSectorSeparatorVisibleChanged(e As EventArgs)
+            RaiseEvent SectorSeparatorVisibleChanged(Me, e)
         End Sub
 
         ''' <summary>

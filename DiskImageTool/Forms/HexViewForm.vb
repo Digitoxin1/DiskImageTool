@@ -61,6 +61,8 @@ Public Class HexViewForm
             End If
         End If
 
+        HexBox1.BytesPerSector = _BPB.BytesPerSector
+        HexBox1.SectorSeparatorVisible = True
         HexBox1.ReadOnly = False
 
         SetControlSize()
@@ -1475,36 +1477,17 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub HexBox1_AfterPaint(sender As Object, e As PaintEventArgs) Handles HexBox1.AfterPaint
-        Const LeftPos As Integer = 630
-        Dim RowHeight As Integer = HexBox1.Font.Height
-        Dim TopPos As Integer = RowHeight + 5
-        Dim LineCount = HexBox1.VerticalByteCount
-        Dim StartOffset = HexBox1.LineInfoOffset + HexBox1.StartByte
-        Dim Offset As Long
+    Private Sub HexBox1_FormatSectorLabel(sender As Object, e As HexBox.FormatSectorLabelEventArgs) Handles HexBox1.FormatSectorLabel
+        If _BPB.IsValid Then
+            Dim Sector = CUInt(e.Sector)
+            Dim Track = _BPB.SectorToTrack(Sector)
+            Dim Side = _BPB.SectorToSide(Sector)
+            Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
 
-        For Counter = 0 To LineCount - 2
-            Offset = StartOffset + Counter * HexBox1.BytesPerLine
-            If Offset Mod _BPB.BytesPerSector = 0 Then
-                Dim vPos = TopPos + Counter * RowHeight
-                If Counter > 0 Then
-                    e.Graphics.DrawLine(Pens.DarkGray, 0, vPos, e.ClipRectangle.Width, vPos)
-                End If
-
-                Dim Sector = _BPB.OffsetToSector(Offset)
-
-                Dim r As New Rectangle(LeftPos, vPos, 64, RowHeight)
-                If _BPB.IsValid Then
-                    Dim Track = _BPB.SectorToTrack(Sector)
-                    Dim Side = _BPB.SectorToSide(Sector)
-                    Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
-
-                    e.Graphics.DrawString(Track & "." & Side & "-" & SectorId, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
-                Else
-                    e.Graphics.DrawString(Sector, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
-                End If
-            End If
-        Next
+            e.Text = Track & "." & Side & "-" & SectorId
+        Else
+            e.Text = e.Sector.ToString()
+        End If
     End Sub
 
     Private Sub HexViewForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
