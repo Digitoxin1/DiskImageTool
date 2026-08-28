@@ -651,7 +651,7 @@ Public Class MainForm
     End Function
 
     Private Sub FluxConvertImage()
-        Dim FileName As String = Flux.OpenFluxImage(True)
+        Dim FileName As String = Flux.OpenFluxImage(True, True)
 
         FluxConvertImage(FileName)
     End Sub

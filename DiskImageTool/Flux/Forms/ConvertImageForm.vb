@@ -814,8 +814,9 @@ Namespace Flux
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.SCP)
+            Dim AllowA2R As Boolean = SelectedDevice.InputTypeSupported(FluxFileTypeEnum.A2R)
 
-            Dim FileName As String = SharedLib.OpenFluxImage(AllowSCP)
+            Dim FileName As String = SharedLib.OpenFluxImage(AllowSCP, AllowA2R)
 
             If FileName <> "" Then
                 Return OpenFluxImage(FileName)

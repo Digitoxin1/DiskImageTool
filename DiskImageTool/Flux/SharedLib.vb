@@ -393,7 +393,7 @@ Namespace Flux
             Return (False, "")
         End Function
 
-        Public Function OpenFluxImage(AllowSCP As Boolean) As String
+        Public Function OpenFluxImage(AllowSCP As Boolean, AllowA2R As Boolean) As String
             Using dlg As New OpenFileDialog With {
                 .Title = "Open Flux Image",
                 .FilterIndex = 1,
@@ -401,8 +401,28 @@ Namespace Flux
                 .AddExtension = True,
                 .Multiselect = False
             }
-                If AllowSCP Then
-                    dlg.Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|KryoFlux RAW (*.raw)|*.raw|SuperCard Pro (*.scp)|*.scp"
+                If AllowSCP OrElse AllowA2R Then
+                    Dim ExtList As String = "*.raw"
+                    If AllowSCP Then
+                        ExtList &= ";*.scp"
+                    End If
+                    If AllowA2R Then
+                        ExtList &= ";*.a2r"
+                    End If
+
+                    Dim Filter As String = "Flux dumps (" & ExtList & ")|" & ExtList
+
+                    Filter &= "|KryoFlux RAW (*.raw)|*.raw"
+
+                    If AllowSCP Then
+                        Filter &= "|SuperCard Pro (*.scp)|*.scp"
+                    End If
+
+                    If AllowA2R Then
+                        Filter &= "|Applesauce FDC 3.x (*.a2r)|*.a2r"
+                    End If
+
+                    dlg.Filter = Filter
                 Else
                     dlg.Filter = "KryoFlux RAW (*.raw)|*.raw"
                 End If

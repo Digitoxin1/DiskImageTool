@@ -1094,7 +1094,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub RefineFromRaw()
-            Dim SourceFile = OpenFluxImage(False)
+            Dim SourceFile = OpenFluxImage(False, False)
 
             If String.IsNullOrEmpty(SourceFile) Then
                 Exit Sub
