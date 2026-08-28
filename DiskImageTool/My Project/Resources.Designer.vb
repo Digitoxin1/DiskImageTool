@@ -881,6 +881,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to A custom format was detected..
+        '''</summary>
+        Friend ReadOnly Property Dialog_CustomFormatDetected() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CustomFormatDetected", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to A Database update is available..
         '''</summary>
         Friend ReadOnly Property Dialog_DatabaseUpdateAvailable() As String

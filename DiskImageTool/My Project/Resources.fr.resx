@@ -1906,6 +1906,9 @@ Voulez-vous écraser ?</value>
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Erreur : Impossible de détecter le format de l’image.</value>
   </data>
+  <data name="Dialog_CustomFormatDetected" xml:space="preserve">
+    <value>Un format personnalisé a été détecté.</value>
+  </data>
   <data name="FloppyImageType_TD0Image" xml:space="preserve">
     <value>TeleDisk Sector Image</value>
   </data>

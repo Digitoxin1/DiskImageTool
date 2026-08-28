@@ -1906,6 +1906,9 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>错误：无法检测映像格式。</value>
   </data>
+  <data name="Dialog_CustomFormatDetected" xml:space="preserve">
+    <value>检测到自定义格式。</value>
+  </data>
   <data name="FloppyImageType_TD0Image" xml:space="preserve">
     <value>TeleDisk 扇区映像</value>
   </data>

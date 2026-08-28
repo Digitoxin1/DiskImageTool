@@ -1906,6 +1906,9 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Error: No se pudo detectar el formato de la imagen.</value>
   </data>
+  <data name="Dialog_CustomFormatDetected" xml:space="preserve">
+    <value>Se detectó un formato personalizado.</value>
+  </data>
   <data name="FloppyImageType_TD0Image" xml:space="preserve">
     <value>Imagen de sectores de TeleDisk</value>
   </data>

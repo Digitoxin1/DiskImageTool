@@ -632,6 +632,32 @@ Namespace Flux.Greaseweazle
             SharedLib.PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, True, Doublestep)
         End Sub
 
+        Private Function EnsureFormatDetected() As Boolean
+            If SelectedDiskParams.HasValue Then
+                Return True
+            End If
+
+            DoFormatDetection()
+
+            Dim DiskParams = SelectedDiskParams
+            If Not DiskParams.HasValue Then
+                MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
+                Return False
+            End If
+
+            If DiskParams.Value.Format = FloppyDiskFormat.FloppyUnknown Then
+                MsgBox(My.Resources.Dialog_CustomFormatDetected, MsgBoxStyle.Information)
+                Return False
+            End If
+
+            If DiskParams.Value.IsNonImage Then
+                MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
+                Return False
+            End If
+
+            Return True
+        End Function
+
         Private Sub DoToggleSequence()
             If _LastSequenceTextBox Is Nothing Then
                 Exit Sub
@@ -956,6 +982,10 @@ Namespace Flux.Greaseweazle
                 ImagePreview.Display(ImageData, Caption)
 
             Else
+                If Not EnsureFormatDetected() Then
+                    Exit Sub
+                End If
+
                 Dim DiskParams = SelectedDiskParams
                 If Not DiskParams.HasValue OrElse Not HasOptionId Then
                     Exit Sub
@@ -1193,7 +1223,7 @@ Namespace Flux.Greaseweazle
 
             ButtonCancel.Text = If(IsRunning OrElse HasOutputFile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
-            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
+            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
 
             ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
 
@@ -1269,11 +1299,10 @@ Namespace Flux.Greaseweazle
                 ButtonRead.Text = My.Resources.Label_Abort
                 ButtonRead.Enabled = True
             Else
-                Dim DiskParams = SelectedDiskParams
                 Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
 
                 ButtonRead.Text = My.Resources.Label_Read
-                ButtonRead.Enabled = HasOptionId AndAlso DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
+                ButtonRead.Enabled = HasOptionId AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
@@ -1608,6 +1637,10 @@ Namespace Flux.Greaseweazle
 
         Private Sub ButtonDetect_Click(sender As Object, e As EventArgs) Handles ButtonDetect.Click
             DoFormatDetection()
+
+            If Not SelectedDiskParams.HasValue Then
+                MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
+            End If
         End Sub
 
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
@@ -1713,6 +1746,10 @@ Namespace Flux.Greaseweazle
 
                 ReprocessImage()
             Else
+                If Not EnsureFormatDetected() Then
+                    Exit Sub
+                End If
+
                 ProcessImage()
             End If
         End Sub
