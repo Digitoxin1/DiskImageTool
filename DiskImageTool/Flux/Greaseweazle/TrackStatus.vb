@@ -114,6 +114,11 @@ Namespace Flux.Greaseweazle
         Public Sub OnReadTrackProcessed(args As TrackProcessedEventArgs, doubleStep As Boolean)
             Dim StatusInfo = GetStatusInfo(args.Track)
 
+            If args.Outcome = TrackDecodeOutcome.OutOfRange Then
+                StatusInfo.OutOfRange = True
+                StatusInfo.OutOfRangeFormat = If(args.FormatName, "")
+            End If
+
             If args.SeekRetry > 0 AndAlso args.Retry > 0 Then
                 StatusInfo.Retries += 1
             End If
@@ -367,7 +372,7 @@ Namespace Flux.Greaseweazle
                     Return (Color.Black, Color.Red)
                 Case TrackStatusEnum.Success
                     If StatusInfo.OutOfRange Then
-                        Return (Color.Black, Color.FromArgb(225, 225, 225))
+                        Return (Color.Black, Color.FromArgb(240, 240, 240))
                     Else
                         Return (Color.Black, Color.LightGreen)
                     End If
