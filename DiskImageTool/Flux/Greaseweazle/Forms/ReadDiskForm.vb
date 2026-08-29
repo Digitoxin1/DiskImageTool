@@ -756,7 +756,13 @@ Namespace Flux.Greaseweazle
 
             Dim ImageLocation = SelectedImageLocation.Value
 
-            Dim Extension = IO.Path.GetExtension(_TempFilePath2)
+            Dim Extension As String
+            If ComboExtensions2.SelectedIndex > -1 Then
+                Dim Item As FileExtensionItem = ComboExtensions2.SelectedValue
+                Extension = Item.Extension
+            Else
+                Extension = IO.Path.GetExtension(_TempFilePath2)
+            End If
             Dim FileName = ReadDiskHelpers.GetOutputFolderName(FolderNameInput) & Extension
             Dim PathName As String
 
@@ -1199,7 +1205,7 @@ Namespace Flux.Greaseweazle
             ComboOutputType.Enabled = CanChangeSettings AndAlso ComboOutputType.Items.Count > 1
             ComboOutputType2.Enabled = CanChangeSettings AndAlso ComboOutputType2.Items.Count > 1
 
-            ComboExtensions2.Enabled = CanChangeSettings AndAlso ComboExtensions2.Items.Count > 1
+            ComboExtensions2.Enabled = ComboExtensions2.Items.Count > 1
 
             NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
             _NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
@@ -1274,8 +1280,12 @@ Namespace Flux.Greaseweazle
             InitializeHelpImportButtons(IsFluxOutput)
         End Sub
 
-        Private Sub RefreshPreferredExensions()
-            Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+        Private Sub RefreshPreferredExensions(Combo As ComboBox)
+            If Combo.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
+            Dim Item As FileExtensionItem = Combo.SelectedValue
 
             If Not Item.Format.HasValue Then
                 Exit Sub
@@ -1786,7 +1796,7 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.SaveLog = CheckSaveLog.Checked
         End Sub
 
-        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
+        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged, ComboExtensions2.SelectedIndexChanged
             If Not _Initialized Then
                 Exit Sub
             End If
@@ -1795,8 +1805,11 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            RefreshPreferredExensions()
-            RefreshTitleBarText()
+            RefreshPreferredExensions(DirectCast(sender, ComboBox))
+
+            If sender Is ComboExtensions Then
+                RefreshTitleBarText()
+            End If
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDrives.SelectedIndexChanged
