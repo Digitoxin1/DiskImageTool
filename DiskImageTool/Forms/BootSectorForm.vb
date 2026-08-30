@@ -523,6 +523,12 @@ Public Class BootSectorForm
         RefreshVolumeLabel()
         RefreshFileSystemType()
     End Sub
+
+    Protected Overrides Sub OnHelpRequested(hlpevent As HelpEventArgs)
+        MyBase.OnHelpRequested(hlpevent)
+        TryShowHelpAtPoint(Me, _HelpProvider1, hlpevent)
+    End Sub
+
     Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
         For Each Control In ControlArray
             _HelpProvider1.SetHelpString(Control, HelpString.Replace("\t", vbTab))

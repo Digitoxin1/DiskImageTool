@@ -82,6 +82,35 @@
         Return Control.Tag
     End Function
 
+    Public Function TryShowHelpAtPoint(Owner As Form, Provider As HelpProvider, hlpevent As HelpEventArgs) As Boolean
+        If hlpevent.Handled OrElse Owner Is Nothing OrElse Provider Is Nothing Then
+            Return False
+        End If
+
+        Dim Target = FindControlAtPoint(Owner, Owner.PointToClient(hlpevent.MousePos))
+
+        While Target IsNot Nothing
+            Dim HelpString = Provider.GetHelpString(Target)
+            If Not String.IsNullOrEmpty(HelpString) Then
+                Help.ShowPopup(Owner, HelpString, hlpevent.MousePos)
+                hlpevent.Handled = True
+                Return True
+            End If
+            Target = Target.Parent
+        End While
+
+        Return False
+    End Function
+
+    Private Function FindControlAtPoint(Container As Control, ClientPt As Point) As Control
+        Dim Child = Container.GetChildAtPoint(ClientPt, GetChildAtPointSkip.Invisible)
+        If Child Is Nothing Then
+            Return Container
+        End If
+
+        Return FindControlAtPoint(Child, Child.PointToClient(Container.PointToScreen(ClientPt)))
+    End Function
+
     Public Class FormControlData
 
         Public Sub New(Value As String)

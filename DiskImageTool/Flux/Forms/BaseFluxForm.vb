@@ -340,6 +340,11 @@ Namespace Flux
             ' Default: do nothing
         End Sub
 
+        Protected Overrides Sub OnHelpRequested(hlpevent As HelpEventArgs)
+            MyBase.OnHelpRequested(hlpevent)
+            TryShowHelpAtPoint(Me, _HelpProvider, hlpevent)
+        End Sub
+
         Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
             If (Process IsNot Nothing AndAlso Process.IsRunning) OrElse (Runner IsNot Nothing AndAlso Runner.IsRunning) Then
                 If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
