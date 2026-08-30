@@ -1167,6 +1167,8 @@ Namespace Flux.Greaseweazle
             End If
 
             _TempFilePath = IO.Path.Combine(TempFolder, ReadDiskHelpers.FluxGetFirstTrackFileName(Info.Prefix))
+            _OutputDiskParams = DiskParams
+            _OutputDriveOption = _SelectedDriveOption
             _OutputDoubleStep = _SelectedDriveOption IsNot Nothing AndAlso ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DetectedFormat)
 
             TrackStatus = _Status
@@ -1384,7 +1386,7 @@ Namespace Flux.Greaseweazle
                 AppendLog = True
             End If
 
-            InitLogFilePath(IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), Append:=AppendLog)
+            InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
 
             StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None)
         End Sub
