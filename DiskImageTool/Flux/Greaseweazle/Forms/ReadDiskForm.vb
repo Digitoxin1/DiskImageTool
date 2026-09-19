@@ -1177,7 +1177,8 @@ Namespace Flux.Greaseweazle
 
             Dim Opts As ConvertOptions
             Try
-                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, _OutputDoubleStep)
+                Dim ConvertDoubleStep = _OutputDoubleStep AndAlso Info.TrackCount > 79
+                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, ConvertDoubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1335,6 +1336,7 @@ Namespace Flux.Greaseweazle
 
             SetTitleBarText()
         End Sub
+
         Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
             Dim DiskParams = SelectedDiskParams
 
@@ -1455,15 +1457,21 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
         Private Sub SelectDriveForRefine(detectedFormat As FloppyDiskFormat)
+            If detectedFormat <> FloppyDiskFormat.FloppyUnknown AndAlso HasOptionId Then
+                Dim CurrentParams = FloppyDiskFormatGetParams(detectedFormat)
+                If Not CurrentParams.IsNonImage Then
+                    Dim CompatibleType = GreaseweazleFindCompatibleDriveType(CurrentParams, _SelectedDriveOption.Type)
+                    If CompatibleType = _SelectedDriveOption.Type Then
+                        Return
+                    End If
+                End If
+            End If
+
             Dim TargetType As FloppyDriveType = FloppyDriveType.DriveUnknown
 
             If detectedFormat <> FloppyDiskFormat.FloppyUnknown Then
                 Dim DiskParams = FloppyDiskFormatGetParams(detectedFormat)
                 TargetType = GreaseweazleFindCompatibleDriveType(DiskParams, Settings.AvailableDriveTypes)
-            End If
-
-            If TargetType <> FloppyDriveType.DriveUnknown AndAlso HasOptionId AndAlso _SelectedDriveOption.Type = TargetType Then
-                Return
             End If
 
             Dim TargetOpt As DriveOption = Nothing
@@ -1478,6 +1486,7 @@ Namespace Flux.Greaseweazle
                 If FirstOpt Is Nothing Then
                     FirstOpt = Opt
                 End If
+
                 If TargetOpt Is Nothing AndAlso TargetType <> FloppyDriveType.DriveUnknown AndAlso Opt.Type = TargetType Then
                     TargetOpt = Opt
                 End If
@@ -1584,6 +1593,18 @@ Namespace Flux.Greaseweazle
             End Try
 
             Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
+        End Sub
+
+        Private Sub SyncOutputDoubleStep()
+            Dim DiskParams = SelectedDiskParams
+
+            If _SelectedDriveOption Is Nothing OrElse Not DiskParams.HasValue Then
+                _OutputDoubleStep = False
+            Else
+                _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
+            End If
+
+            _OutputDriveOption = _SelectedDriveOption
         End Sub
 
         Private Sub ToggleImageLocationControls()
@@ -1822,11 +1843,18 @@ Namespace Flux.Greaseweazle
             Dim PrevOption = _SelectedDriveOption
             _SelectedDriveOption = ComboDrives.SelectedValue
 
+            If HasOutputFile AndAlso PrevOption IsNot Nothing AndAlso _SelectedDriveOption IsNot Nothing Then
+                _SelectedDriveOption.SelectedFormat = PrevOption.SelectedFormat
+                _SelectedDriveOption.DetectedFormat = PrevOption.DetectedFormat
+            End If
+
+            PopulateImageFormats()
+
             If Not HasOutputFile Then
-                PopulateImageFormats()
                 ResetTrackGrid()
             Else
                 RefreshTrackState(PrevOption, _SelectedDriveOption)
+                SyncOutputDoubleStep()
             End If
 
             RefreshFormState()

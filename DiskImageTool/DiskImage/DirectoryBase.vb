@@ -143,7 +143,7 @@
                     If Counter <> SkipIndex Then
                         Dim File = _DirectoryEntries.Item(Counter)
                         If Not File.IsDeleted And (IncludeVolumeNames Or Not File.IsVolumeName) And (IncludeDirectories Or Not File.IsDirectory) Then
-                            If File.GetFullFileName = Filename Then
+                            If String.Equals(File.GetFullFileName, Filename, StringComparison.OrdinalIgnoreCase) Then
                                 Return Counter
                             End If
                         End If
