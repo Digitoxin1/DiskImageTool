@@ -71,7 +71,8 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim TrackCount As Integer
+            Dim TrackCount As Integer = GetGridTrackCount()
+            Dim DtcDoubleStep = _OutputLayout.PhysicalEvenFiles
 
             If _OutputDriveOption Is Nothing OrElse _OutputDriveOption.Type = FloppyDriveType.DriveUnknown Then
                 TrackCount = If(DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
