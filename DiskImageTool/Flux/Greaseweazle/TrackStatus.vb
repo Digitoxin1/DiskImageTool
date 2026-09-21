@@ -30,6 +30,7 @@ Namespace Flux.Greaseweazle
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
 
         Public Property DestinationTrackMode As Boolean = False
+        Public Property PhysicalEvenReadMode As Boolean = False
 
         Public ReadOnly Property TrackFound As Boolean Implements ITrackStatus.TrackFound
             Get
@@ -157,8 +158,12 @@ Namespace Flux.Greaseweazle
             For Each StatusInfo In _StatusCollection.Values
                 If StatusInfo.BadSectorList.Count > 0 Then
                     Dim Tooltip = BuildTooltip(StatusInfo)
+                    Dim Track = StatusInfo.Track
+                    If PhysicalEvenReadMode Then
+                        Track \= 2
+                    End If
 
-                    RaiseEvent UpdateGridTooltip(StatusInfo.Track, StatusInfo.Side, Tooltip)
+                    RaiseEvent UpdateGridTooltip(Track, StatusInfo.Side, Tooltip)
                 End If
             Next
         End Sub
@@ -426,7 +431,9 @@ Namespace Flux.Greaseweazle
                 .Tooltip = BuildTooltip(_CurrentStatusInfo)
             End With
 
-            If DoubleStep AndAlso Not DestinationTrackMode Then
+            If PhysicalEvenReadMode Then
+                StatusData.Track \= 2
+            ElseIf DoubleStep AndAlso Not DestinationTrackMode Then
                 StatusData.Track *= 2
             End If
 

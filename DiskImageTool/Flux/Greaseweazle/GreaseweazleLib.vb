@@ -82,7 +82,7 @@ Namespace Flux.Greaseweazle
             Return result
         End Function
 
-        Public Function BuildUserSpec(ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), heads As TrackHeads, Optional doubleStep As Boolean = False, Optional divide As Boolean = False) As TrackSetSpec
+        Public Function BuildUserSpec(ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), heads As TrackHeads, Optional doubleStep As Boolean = False, Optional divide As Boolean = False, Optional evenCylindersOnly As Boolean = False) As TrackSetSpec
             Dim spec As New TrackSetSpec()
 
             If ranges IsNot Nothing Then
@@ -95,6 +95,9 @@ Namespace Flux.Greaseweazle
                         EndTrack \= 2
                     End If
                     For c As Integer = StartTrack To EndTrack
+                        If evenCylindersOnly AndAlso c Mod 2 <> 0 Then
+                            Continue For
+                        End If
                         If seen.Add(c) Then
                             spec.Cyls.Add(c)
                         End If

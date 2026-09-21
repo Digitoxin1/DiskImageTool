@@ -6349,6 +6349,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Write Protected.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_WriteProtected() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_WriteProtected", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to XDF Checksum.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_XDFChecksum() As String

@@ -2030,4 +2030,7 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>Conjunto de flujo sin procesar</value>
   </data>
+  <data name="SummaryPanel_WriteProtected" xml:space="preserve">
+    <value>Protegido contra escritura</value>
+  </data>
 </root>

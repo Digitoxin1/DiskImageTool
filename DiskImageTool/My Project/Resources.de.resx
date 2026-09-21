@@ -2030,4 +2030,7 @@ Möchten Sie fortfahren?</value>
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>Roh-Flux-Satz</value>
   </data>
+  <data name="SummaryPanel_WriteProtected" xml:space="preserve">
+    <value>Schreibgeschützt</value>
+  </data>
 </root>

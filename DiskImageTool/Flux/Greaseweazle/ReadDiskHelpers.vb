@@ -17,14 +17,16 @@ Namespace Flux.Greaseweazle
                                           seekRetries As Integer,
                                           revs As Integer,
                                           filePath2 As String,
-                                          outputType2 As ReadDiskOutputTypes) As ReadOptions
+                                          outputType2 As ReadDiskOutputTypes,
+                                          Optional physicalEvenFiles As Boolean = False) As ReadOptions
 
             Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
             Dim Format As String = Nothing
             Dim Raw As Boolean = False
             Dim AdjustSpeed As Double? = Nothing
+            Dim HardwareStep = doubleStep AndAlso Not physicalEvenFiles
 
-            If outputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None Then
+            If Not physicalEvenFiles AndAlso (outputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None) Then
                 Format = GreaseweazleImageFormatString(ImageFormat)
             End If
 
@@ -32,14 +34,14 @@ Namespace Flux.Greaseweazle
             Dim FileName2WithOpts As String = ""
 
             If outputType = ReadDiskOutputTypes.HFE Then
-                If doubleStep Then
+                If HardwareStep Then
                     AdjustSpeed = 60.0 / diskParams.RPM
                 End If
                 Raw = True
                 FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
-                If doubleStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
+                If HardwareStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
                     AdjustSpeed = 60.0 / diskParams.RPM
                 End If
                 Raw = True
@@ -54,9 +56,16 @@ Namespace Flux.Greaseweazle
             End If
 
             If trackRanges Is Nothing Then
-                trackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
-                    (0, CUShort(Math.Max(0, opt.Tracks - 1)))
-                }
+                If physicalEvenFiles Then
+                    Dim LastEven = CUShort(Math.Max(0, ((CInt(opt.Tracks) - 1) \ 2) * 2))
+                    trackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
+                        (0US, LastEven)
+                    }
+                Else
+                    trackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
+                        (0, CUShort(Math.Max(0, opt.Tracks - 1)))
+                    }
+                End If
             End If
 
             If Not heads.HasValue Then
@@ -67,7 +76,7 @@ Namespace Flux.Greaseweazle
                 End If
             End If
 
-            Dim TrackSet = BuildUserSpec(trackRanges, heads, doubleStep, True)
+            Dim TrackSet = BuildUserSpec(trackRanges, heads, HardwareStep, Not physicalEvenFiles, physicalEvenFiles)
 
             Dim Drive = MakeDriveSpec(opt.Id)
 
@@ -117,6 +126,46 @@ Namespace Flux.Greaseweazle
             End If
 
             Return (True, False)
+        End Function
+
+        Friend Shared Function DetectFluxLayout(DriveType As FloppyDriveType, Format As FloppyDiskFormat, DriveTracks As UShort, Optional FluxTrackCount As Integer = 0) As FluxLayout
+            Dim Hw = UseDoubleStep(DriveType, Format)
+            Dim Physical = Hw AndAlso FluxTrackCount > 79
+            Dim Tracks = DriveTracks
+
+            If Tracks = 0 Then
+                Tracks = If(DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
+            End If
+
+            Dim Logical = Tracks
+            If Hw Then
+                Logical = CUShort(Tracks \ 2US)
+            End If
+
+            Return New FluxLayout With {
+                .HardwareDoubleStep = Hw AndAlso Not Physical,
+                .ConvertDoubleStep = Physical,
+                .PhysicalEvenFiles = Physical,
+                .LogicalTrackCount = Logical
+            }
+        End Function
+
+        Friend Shared Function DriveCompatibleWith(Format As FloppyDiskFormat, DriveType As FloppyDriveType) As Boolean
+            If DriveType = FloppyDriveType.DriveUnknown Then
+                Return True
+            End If
+
+            If Format = FloppyDiskFormat.FloppyUnknown Then
+                Return True
+            End If
+
+            Dim DiskParams = FloppyDiskFormatGetParams(Format)
+
+            If DiskParams.IsNonImage Then
+                Return True
+            End If
+
+            Return GreaseweazleFindCompatibleDriveType(DiskParams, DriveType) = DriveType
         End Function
 
         Friend Shared Function FinalizeFluxTempFolder(tempFolderPath As String, destinationFolderPath As String, Optional prefix As String = "") As Boolean
@@ -243,4 +292,16 @@ Namespace Flux.Greaseweazle
             Return ImageParams.IsStandard AndAlso ImageParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DriveType = FloppyDriveType.Drive525HighDensity
         End Function
     End Class
+
+    Friend Structure FluxLayout
+        Public ConvertDoubleStep As Boolean
+        Public HardwareDoubleStep As Boolean
+        Public LogicalTrackCount As UShort
+        Public PhysicalEvenFiles As Boolean
+        Public ReadOnly Property DisplayDoubleStep As Boolean
+            Get
+                Return HardwareDoubleStep Or ConvertDoubleStep
+            End Get
+        End Property
+    End Structure
 End Namespace

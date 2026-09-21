@@ -637,9 +637,15 @@ Public Class SummaryPanel
                     End If
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_RPMAdjustment, Value)
                 End If
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_WriteProtected, If(Image.WriteProtect, My.Resources.Label_Yes, My.Resources.Label_No))
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_SurfaceData, If(Image.HasSurfaceData, My.Resources.Label_Yes, My.Resources.Label_No))
 
-            ElseIf Disk.Image.HasWeakBitsSupport Then
+            ElseIf Disk.Image.ImageType = FloppyImageType.HFEImage Then
+                Dim Image As ImageFormats.HFE.HFEImage = DirectCast(Disk.Image, ImageFormats.HFE.HFEFloppyImage).Image
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_WriteProtected, If(Not Image.WriteAllowed, My.Resources.Label_Yes, My.Resources.Label_No))
+            End If
+
+            If Disk.Image.HasWeakBitsSupport Then
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_WeakBits, If(Disk.Image.HasWeakBits, My.Resources.Label_Yes, My.Resources.Label_No))
             End If
 

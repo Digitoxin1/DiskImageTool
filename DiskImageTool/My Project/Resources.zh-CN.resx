@@ -2030,4 +2030,7 @@ Flux 映像集：“{0}”
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>原始 Flux 集</value>
   </data>
+  <data name="SummaryPanel_WriteProtected" xml:space="preserve">
+    <value>写保护</value>
+  </data>
 </root>

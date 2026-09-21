@@ -79,7 +79,7 @@ Namespace Flux.Greaseweazle
         Private _NumericRevsNoEvent As Boolean = False
         Private _OutputDiskParams As FloppyDiskParams?
         Private _OutputDriveOption As DriveOption
-        Private _OutputDoubleStep As Boolean = False
+        Private _OutputLayout As FluxLayout
         Private _SelectedDriveOption As DriveOption
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
@@ -356,7 +356,7 @@ Namespace Flux.Greaseweazle
                     Finished = True
                     If TrackStatus.TrackFound Then
                         Completed = True
-                        TrackStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
+                        TrackStatus.UpdateTrackStatusComplete(_OutputLayout.DisplayDoubleStep)
                     Else
                         TrackStatus.UpdateTrackStatusError()
                     End If
@@ -411,20 +411,69 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Function CheckCompatibility() As Boolean
-            Dim DiskParams = SelectedDiskParams
+        Private Sub ApplyOutputSession(diskParams As FloppyDiskParams?, drive As DriveOption, layout As FluxLayout)
+            _OutputDiskParams = diskParams
+            _OutputDriveOption = drive
+            _OutputLayout = layout
+        End Sub
 
-            If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
-                Return True
+        Private Function CheckCompatibility() As Boolean
+            Dim DriveType = If(_SelectedDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _SelectedDriveOption.Type)
+
+            If HasOutputFile AndAlso _OutputLayout.PhysicalEvenFiles AndAlso DriveType <> FloppyDriveType.Drive525HighDensity Then
+                Return False
             End If
+
+            Dim DiskParams = SelectedDiskParams
+            Dim Format = If(DiskParams.HasValue, DiskParams.Value.Format, FloppyDiskFormat.FloppyUnknown)
+
+            Return ReadDiskHelpers.DriveCompatibleWith(Format, DriveType)
+        End Function
+
+        Private Function CurrentUseDoubleStep() As Boolean
+            If _SelectedDriveOption Is Nothing Then
+                Return False
+            End If
+
+            Dim DiskParams = SelectedDiskParams
+            If Not DiskParams.HasValue Then
+                Return False
+            End If
+
+            Return ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
+        End Function
+
+        Private Function GetGridTrackCount() As UShort
+            If HasOutputFile AndAlso _OutputLayout.LogicalTrackCount > 0 Then
+                Return _OutputLayout.LogicalTrackCount
+            End If
+
+            Dim DiskParams = SelectedDiskParams
+            Dim FormatDriveType As FloppyDriveType
 
             If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
-                Return True
+                FormatDriveType = FloppyDriveType.DriveUnknown
+            Else
+                FormatDriveType = DiskParams.Value.DriveType
             End If
 
-            Dim FloppyType = GreaseweazleFindCompatibleDriveType(DiskParams.Value, _SelectedDriveOption.Type)
+            Dim TrackCount As UShort
 
-            Return FloppyType = _SelectedDriveOption.Type
+            If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
+                TrackCount = If(FormatDriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
+            Else
+                TrackCount = _SelectedDriveOption.Tracks
+            End If
+
+            If _SelectedDriveOption IsNot Nothing Then
+                TrackCount = Math.Max(TrackCount, _SelectedDriveOption.Tracks)
+            End If
+
+            If CurrentUseDoubleStep() Then
+                TrackCount \= 2
+            End If
+
+            Return TrackCount
         End Function
 
         Private Function CheckRootFolder() As Boolean
@@ -492,9 +541,9 @@ Namespace Flux.Greaseweazle
 
             _TempFilePath = ""
             _TempFilePath2 = ""
-            _OutputDoubleStep = False
             _OutputDiskParams = Nothing
             _OutputDriveOption = Nothing
+            _OutputLayout = New FluxLayout()
             _FileReprocessMode = False
         End Sub
 
@@ -1031,13 +1080,13 @@ Namespace Flux.Greaseweazle
 
             _TempFilePath = Response.FilePath
             _TempFilePath2 = Response.FilePath2
-            _OutputDiskParams = DiskParams
-            _OutputDriveOption = _SelectedDriveOption
-            _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
+
+            Dim Layout = ReadDiskHelpers.DetectFluxLayout(_SelectedDriveOption.Type, DiskParams.Value.Format, _SelectedDriveOption.Tracks, 0)
+            ApplyOutputSession(DiskParams, _SelectedDriveOption, Layout)
 
             InitLogFilePath(If(Response.LogFilePath, ""))
 
-            StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2)
+            StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, Layout.HardwareDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2, Layout.PhysicalEvenFiles)
         End Sub
 
         Private Sub ProcessImport(OutputFile As String, NewFileName As String)
@@ -1167,18 +1216,20 @@ Namespace Flux.Greaseweazle
             End If
 
             _TempFilePath = IO.Path.Combine(TempFolder, ReadDiskHelpers.FluxGetFirstTrackFileName(Info.Prefix))
-            _OutputDiskParams = DiskParams
-            _OutputDriveOption = _SelectedDriveOption
-            _OutputDoubleStep = _SelectedDriveOption IsNot Nothing AndAlso ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DetectedFormat)
+
+            Dim DriveType = If(_SelectedDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _SelectedDriveOption.Type)
+            Dim DriveTracks As UShort = If(_SelectedDriveOption Is Nothing, 0US, CUShort(_SelectedDriveOption.Tracks))
+            Dim Layout = ReadDiskHelpers.DetectFluxLayout(DriveType, DetectedFormat, DriveTracks, Info.TrackCount)
+            ApplyOutputSession(DiskParams, _SelectedDriveOption, Layout)
 
             TrackStatus = _Status
             TrackStatus.Clear()
+            _Status.PhysicalEvenReadMode = False
             ResetTrackGrid()
 
             Dim Opts As ConvertOptions
             Try
-                Dim ConvertDoubleStep = _OutputDoubleStep AndAlso Info.TrackCount > 79
-                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, ConvertDoubleStep)
+                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, Layout.ConvertDoubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1315,7 +1366,8 @@ Namespace Flux.Greaseweazle
                 Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
 
                 ButtonRead.Text = My.Resources.Label_Read
-                ButtonRead.Enabled = HasOptionId AndAlso (Not HasOutputFile OrElse TracksSelected)
+                Dim PhysicalEvenBlocked = HasOutputFile AndAlso _OutputLayout.PhysicalEvenFiles AndAlso Not CheckCompatibility()
+                ButtonRead.Enabled = HasOptionId AndAlso Not PhysicalEvenBlocked AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
@@ -1337,17 +1389,8 @@ Namespace Flux.Greaseweazle
             SetTitleBarText()
         End Sub
 
-        Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
-            Dim DiskParams = SelectedDiskParams
-
-            If Not DiskParams.HasValue Then
-                Exit Sub
-            End If
-
-            Dim PrevDoubleStep = ReadDiskHelpers.UseDoubleStep(PrevOption.Type, DiskParams.Value.Format)
-            Dim Doublestep = ReadDiskHelpers.UseDoubleStep(CurrentOption.Type, DiskParams.Value.Format)
-
-            If PrevDoubleStep <> Doublestep Then
+        Private Sub RefreshTrackState(PrevDoubleStep As Boolean)
+            If PrevDoubleStep <> _OutputLayout.DisplayDoubleStep Then
                 ResetTrackGrid(False)
                 'Dim State = GetState(PrevDoubleStep)
                 'SetState(State, Doublestep)
@@ -1377,10 +1420,8 @@ Namespace Flux.Greaseweazle
             Dim Heads As TrackHeads? = Nothing
             Dim AppendLog As Boolean = False
 
-            _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
-
             If HasSelectedTracks Then
-                TrackRanges = GetSelectedTrackRanges(_OutputDoubleStep)
+                TrackRanges = GetSelectedTrackRanges(_OutputLayout.DisplayDoubleStep)
                 Heads = GetSelectedTrackHeads()
 
                 GridResetSelectedCells()
@@ -1390,7 +1431,7 @@ Namespace Flux.Greaseweazle
 
             InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
 
-            StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None)
+            StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
         End Sub
 
         Private Sub ResetOutputTypes(Optional OutputType As ReadDiskOutputTypes? = Nothing)
@@ -1412,35 +1453,14 @@ Namespace Flux.Greaseweazle
             Dim DiskParams = SelectedDiskParams
 
             Dim SideCount As Byte
-            Dim FormatDriveType As FloppyDriveType
 
             If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
                 SideCount = 2
-                FormatDriveType = FloppyDriveType.DriveUnknown
             Else
                 SideCount = DiskParams.Value.BPBParams.NumberOfHeads
-                FormatDriveType = DiskParams.Value.DriveType
             End If
 
-            Dim TrackCount As UShort
-
-            If _SelectedDriveOption Is Nothing OrElse _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
-                TrackCount = If(FormatDriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
-            Else
-                TrackCount = _SelectedDriveOption.Tracks
-            End If
-
-            If _SelectedDriveOption IsNot Nothing Then
-                TrackCount = Math.Max(TrackCount, _SelectedDriveOption.Tracks)
-            End If
-
-            If DiskParams.HasValue AndAlso _SelectedDriveOption IsNot Nothing Then
-                If ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format) Then
-                    TrackCount \= 2
-                End If
-            End If
-
-            GridReset(TrackCount, SideCount, Nothing, ResetSelected)
+            GridReset(GetGridTrackCount(), SideCount, Nothing, ResetSelected)
         End Sub
 
         Private Sub RootFolderBrowse()
@@ -1458,12 +1478,8 @@ Namespace Flux.Greaseweazle
         End Sub
         Private Sub SelectDriveForRefine(detectedFormat As FloppyDiskFormat)
             If detectedFormat <> FloppyDiskFormat.FloppyUnknown AndAlso HasOptionId Then
-                Dim CurrentParams = FloppyDiskFormatGetParams(detectedFormat)
-                If Not CurrentParams.IsNonImage Then
-                    Dim CompatibleType = GreaseweazleFindCompatibleDriveType(CurrentParams, _SelectedDriveOption.Type)
-                    If CompatibleType = _SelectedDriveOption.Type Then
-                        Return
-                    End If
+                If ReadDiskHelpers.DriveCompatibleWith(detectedFormat, _SelectedDriveOption.Type) Then
+                    Return
                 End If
             End If
 
@@ -1570,7 +1586,10 @@ Namespace Flux.Greaseweazle
                                  trackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)),
                                  heads As TrackHeads?,
                                  filePath2 As String,
-                                 outputType2 As ReadDiskOutputTypes)
+                                 outputType2 As ReadDiskOutputTypes,
+                                 Optional physicalEvenFiles As Boolean = False)
+
+            _Status.PhysicalEvenReadMode = physicalEvenFiles
 
             Dim Opts As ReadOptions
             Try
@@ -1585,7 +1604,8 @@ Namespace Flux.Greaseweazle
                                         CInt(_NumericSeekRetries.Value),
                                         CInt(NumericRevs.Value),
                                         filePath2,
-                                        outputType2)
+                                        outputType2,
+                                        physicalEvenFiles)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1595,16 +1615,49 @@ Namespace Flux.Greaseweazle
             Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
         End Sub
 
-        Private Sub SyncOutputDoubleStep()
+        Private Sub SyncOutputLayout()
             Dim DiskParams = SelectedDiskParams
+            _OutputDriveOption = _SelectedDriveOption
 
-            If _SelectedDriveOption Is Nothing OrElse Not DiskParams.HasValue Then
-                _OutputDoubleStep = False
-            Else
-                _OutputDoubleStep = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format)
+            If DiskParams.HasValue Then
+                _OutputDiskParams = DiskParams
             End If
 
-            _OutputDriveOption = _SelectedDriveOption
+            Dim Physical = _OutputLayout.PhysicalEvenFiles
+            Dim Convert = _OutputLayout.ConvertDoubleStep OrElse Physical
+            Dim Hw = False
+            Dim Logical As UShort = _OutputLayout.LogicalTrackCount
+
+            If _SelectedDriveOption IsNot Nothing AndAlso DiskParams.HasValue Then
+                Hw = ReadDiskHelpers.UseDoubleStep(_SelectedDriveOption.Type, DiskParams.Value.Format) AndAlso Not Physical
+
+                Dim Tracks As UShort
+                If _SelectedDriveOption.Type = FloppyDriveType.DriveUnknown Then
+                    Tracks = If(DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
+                Else
+                    Tracks = _SelectedDriveOption.Tracks
+                End If
+
+                If Physical Then
+                    If Logical = 0 Then
+                        Logical = CUShort(Tracks \ 2US)
+                    End If
+                ElseIf Hw Then
+                    Logical = CUShort(Tracks \ 2US)
+                Else
+                    Logical = Tracks
+                End If
+            ElseIf Not Physical Then
+                Hw = False
+                Convert = False
+            End If
+
+            _OutputLayout = New FluxLayout With {
+                .HardwareDoubleStep = Hw,
+                .ConvertDoubleStep = Convert,
+                .PhysicalEvenFiles = Physical,
+                .LogicalTrackCount = Logical
+            }
         End Sub
 
         Private Sub ToggleImageLocationControls()
@@ -1853,8 +1906,9 @@ Namespace Flux.Greaseweazle
             If Not HasOutputFile Then
                 ResetTrackGrid()
             Else
-                RefreshTrackState(PrevOption, _SelectedDriveOption)
-                SyncOutputDoubleStep()
+                Dim PrevDoubleStep = _OutputLayout.DisplayDoubleStep
+                SyncOutputLayout()
+                RefreshTrackState(PrevDoubleStep)
             End If
 
             RefreshFormState()
@@ -1872,6 +1926,8 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
+            Dim PrevDoubleStep = _OutputLayout.DisplayDoubleStep
+
             If Not String.IsNullOrEmpty(_SelectedDriveOption?.Id) Then
                 _SelectedDriveOption.SelectedFormat = SelectedDiskFormat
             End If
@@ -1885,7 +1941,8 @@ Namespace Flux.Greaseweazle
             If Not HasOutputFile Then
                 ResetTrackGrid()
             Else
-                RefreshTrackState(_SelectedDriveOption, _SelectedDriveOption)
+                SyncOutputLayout()
+                RefreshTrackState(PrevDoubleStep)
             End If
 
             RefreshFormState()
@@ -1960,13 +2017,13 @@ Namespace Flux.Greaseweazle
         Private Sub ConvertCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ConvertCmd.TrackProcessed
             Runner.EmitOutputLine(FormatConvertTrackProcessedLine(e))
 
-            Runner.PostToUi(Sub() _Status.OnConvertTrackProcessed(e, _OutputDoubleStep))
+            Runner.PostToUi(Sub() _Status.OnConvertTrackProcessed(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ConvertCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ConvertCmd.UnexpectedSectorIgnored
             Runner.EmitOutputLine(FormatConvertUnexpectedSectorLine(e))
 
-            Runner.PostToUi(Sub() _Status.OnConvertUnexpectedSector(e, _OutputDoubleStep))
+            Runner.PostToUi(Sub() _Status.OnConvertUnexpectedSector(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub NumericRevs_ValueChanged(sender As Object, e As EventArgs) Handles NumericRevs.ValueChanged
@@ -2005,19 +2062,19 @@ Namespace Flux.Greaseweazle
         Private Sub ReadCmd_TrackGaveUp(sender As Object, e As ReadTrackGaveUpEventArgs) Handles ReadCmd.TrackGaveUp
             Runner.EmitOutputLine(FormatReadTrackGaveUpLine(e))
 
-            Runner.PostToUi(Sub() _Status.OnReadTrackGaveUp(e, _OutputDoubleStep))
+            Runner.PostToUi(Sub() _Status.OnReadTrackGaveUp(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ReadCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ReadCmd.TrackProcessed
             Runner.EmitOutputLine(FormatReadTrackProcessedLine(e))
 
-            Runner.PostToUi(Sub() _Status.OnReadTrackProcessed(e, _OutputDoubleStep))
+            Runner.PostToUi(Sub() _Status.OnReadTrackProcessed(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ReadCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ReadCmd.UnexpectedSectorIgnored
             Runner.EmitOutputLine(FormatReadUnexpectedSectorLine(e))
 
-            Runner.PostToUi(Sub() _Status.OnReadUnexpectedSector(e, _OutputDoubleStep))
+            Runner.PostToUi(Sub() _Status.OnReadUnexpectedSector(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ReadDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged

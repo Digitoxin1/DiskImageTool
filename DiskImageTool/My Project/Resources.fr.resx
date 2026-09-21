@@ -2030,4 +2030,7 @@ Souhaitez-vous continuer ?</value>
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>Ensemble de flux brut</value>
   </data>
+  <data name="SummaryPanel_WriteProtected" xml:space="preserve">
+    <value>Protégé en écriture</value>
+  </data>
 </root>

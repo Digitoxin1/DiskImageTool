@@ -74,19 +74,13 @@ Namespace Flux.Greaseweazle
             Dim TrackCount As Integer = GetGridTrackCount()
             Dim DtcDoubleStep = _OutputLayout.PhysicalEvenFiles
 
-            If _OutputDriveOption Is Nothing OrElse _OutputDriveOption.Type = FloppyDriveType.DriveUnknown Then
-                TrackCount = If(DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
-            Else
-                TrackCount = _OutputDriveOption.Tracks
-            End If
-
-            If _OutputDoubleStep Then
-                TrackCount = CInt(Math.Ceiling(TrackCount / 2))
+            If DtcDoubleStep Then
+                TrackCount *= 2
             End If
 
             Dim Args As (Arguments As String, SingleSide As Boolean)
             Try
-                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, False, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 Exit Sub
@@ -109,7 +103,7 @@ Namespace Flux.Greaseweazle
 #Region "Events"
         Private Sub Process_DataReceived(Data As String) Handles Process.OutputDataReceived, Process.ErrorDataReceived
             AppendLogLine(Data)
-            _KryofluxStatus.ProcessOutputLineRead(Data, _OutputDoubleStep)
+            _KryofluxStatus.ProcessOutputLineRead(Data, _OutputLayout.DisplayDoubleStep)
         End Sub
 
         Private Sub Process_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
@@ -119,7 +113,7 @@ Namespace Flux.Greaseweazle
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If _KryofluxStatus.TrackFound Then
-                        _KryofluxStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
+                        _KryofluxStatus.UpdateTrackStatusComplete(_OutputLayout.DisplayDoubleStep)
                     Else
                         _KryofluxStatus.UpdateTrackStatusError()
                     End If
