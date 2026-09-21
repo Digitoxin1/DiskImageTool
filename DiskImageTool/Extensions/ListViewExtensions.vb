@@ -8,10 +8,18 @@ Module ListViewExtensions
     Private Const HDM_FIRST As Integer = &H1200
     Private Const HDM_GETITEM As Integer = HDM_FIRST + 11
     Private Const HDM_SETITEM As Integer = HDM_FIRST + 12
+    Private Const LVHT_EX_GROUP_COLLAPSE As Integer = &H40000000
     Private Const LVHT_EX_GROUP_HEADER As Integer = &H10000000
     Private Const LVM_FIRST As Integer = &H1000
+    Private Const LVM_GETGROUPINFO As Integer = LVM_FIRST + 149
     Private Const LVM_GETHEADER As Integer = LVM_FIRST + 31
     Private Const LVM_HITTEST As Integer = &H1000 + 18
+    Private Const LVM_SETGROUPINFO As Integer = LVM_FIRST + 147
+    Private Const LVGF_STATE As Integer = &H4
+    Private Const LVGS_COLLAPSED As Integer = &H1
+    Private Const LVGS_COLLAPSIBLE As Integer = &H8
+    Private Const LVGS_FOCUSED As Integer = &H10
+    Private Const LVGS_SELECTED As Integer = &H20
     Private Const SB_HORZ As Integer = 0
     Private Const SB_VERT As Integer = 1
     Private Const WS_HSCROLL As Integer = &H100000
@@ -175,6 +183,15 @@ Module ListViewExtensions
 
     <Extension()>
     Public Function GetGroupAtPoint(ListViewControl As ListView, pt As Point) As ListViewGroup
+        Return GetGroupAtPoint(ListViewControl, pt, LVHT_EX_GROUP_HEADER)
+    End Function
+
+    <Extension()>
+    Public Function GetGroupExpanderAtPoint(ListViewControl As ListView, pt As Point) As ListViewGroup
+        Return GetGroupAtPoint(ListViewControl, pt, LVHT_EX_GROUP_COLLAPSE)
+    End Function
+
+    Private Function GetGroupAtPoint(ListViewControl As ListView, pt As Point, requiredFlag As Integer) As ListViewGroup
         Dim Response As ListViewGroup = Nothing
 
         Dim ht As New LVHITTESTINFO() With {
@@ -182,7 +199,7 @@ Module ListViewExtensions
             .pt_y = pt.Y
         }
         Dim Id = SendMessage(ListViewControl.Handle, LVM_HITTEST, -1, ht)
-        If Id <> -1 AndAlso (ht.flags And LVHT_EX_GROUP_HEADER) = 0 Then
+        If Id <> -1 AndAlso (ht.flags And requiredFlag) = 0 Then
             Id = -1
         End If
 
@@ -203,6 +220,93 @@ Module ListViewExtensions
         Return GetScrollPos(ListViewControl.Handle, SB_VERT)
 
     End Function
+
+    <Extension()>
+    Public Function IsGroupCollapsed(listViewControl As ListView, Group As ListViewGroup) As Boolean
+        Dim Id = ExtractID(Group)
+        If Id < 0 Then
+            Return False
+        End If
+
+        Dim lvGroup As New LVGROUP With {
+            .cbSize = Marshal.SizeOf(GetType(LVGROUP)),
+            .mask = LVGF_STATE,
+            .iGroupId = Id,
+            .stateMask = LVGS_COLLAPSED
+        }
+
+        SendMessage(listViewControl.Handle, LVM_GETGROUPINFO, Id, lvGroup)
+
+        Return (lvGroup.state And LVGS_COLLAPSED) <> 0
+    End Function
+
+    <Extension()>
+    Public Function GetFocusedGroup(listViewControl As ListView) As ListViewGroup
+        For Each Group As ListViewGroup In listViewControl.Groups
+            Dim Id = ExtractID(Group)
+            If Id < 0 Then
+                Continue For
+            End If
+
+            Dim lvGroup As New LVGROUP With {
+                .cbSize = Marshal.SizeOf(GetType(LVGROUP)),
+                .mask = LVGF_STATE,
+                .iGroupId = Id,
+                .stateMask = LVGS_FOCUSED Or LVGS_SELECTED
+            }
+
+            SendMessage(listViewControl.Handle, LVM_GETGROUPINFO, Id, lvGroup)
+
+            If (lvGroup.state And (LVGS_FOCUSED Or LVGS_SELECTED)) <> 0 Then
+                Return Group
+            End If
+        Next
+
+        Return Nothing
+    End Function
+
+    <Extension()>
+    Public Sub SetGroupCollapsed(listViewControl As ListView, Group As ListViewGroup, collapsed As Boolean)
+        Dim Id = ExtractID(Group)
+        If Id < 0 Then
+            Exit Sub
+        End If
+
+        Dim State As Integer = LVGS_COLLAPSIBLE
+        If collapsed Then
+            State = State Or LVGS_COLLAPSED
+        End If
+
+        Dim lvGroup As New LVGROUP With {
+            .cbSize = Marshal.SizeOf(GetType(LVGROUP)),
+            .mask = LVGF_STATE,
+            .iGroupId = Id,
+            .stateMask = LVGS_COLLAPSIBLE Or LVGS_COLLAPSED,
+            .state = State
+        }
+
+        SendMessage(listViewControl.Handle, LVM_SETGROUPINFO, Id, lvGroup)
+    End Sub
+
+    <Extension()>
+    Public Sub SetGroupsCollapsible(listViewControl As ListView)
+        For Each Group As ListViewGroup In listViewControl.Groups
+            Dim Id = ExtractID(Group)
+            If Id < 0 Then
+                Continue For
+            End If
+
+            Dim lvGroup As New LVGROUP With {
+                .cbSize = Marshal.SizeOf(GetType(LVGROUP)),
+                .mask = LVGF_STATE,
+                .iGroupId = Id,
+                .stateMask = LVGS_COLLAPSIBLE,
+                .state = LVGS_COLLAPSIBLE
+            }
+
+            SendMessage(listViewControl.Handle, LVM_SETGROUPINFO, Id, lvGroup)
+        Next
+    End Sub
 
     <Extension()>
     Public Function IsHorizontalScrollBarVisible(ListViewControl As ListView) As Boolean
@@ -269,6 +373,10 @@ Module ListViewExtensions
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Private Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As Integer, ByRef lParam As LVGROUP) As Integer
+    End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Private Function SetScrollPos(hWnd As IntPtr, nBar As Integer, nPos As Integer, bRedraw As Boolean) As Integer
     End Function
     <StructLayout(LayoutKind.Sequential)>
@@ -300,6 +408,34 @@ Module ListViewExtensions
             SortDown = &H200    ' HDF_SORTDOWN
             SortUp = &H400      ' HDF_SORTUP
         End Enum
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)>
+    Private Structure LVGROUP
+        Public cbSize As Integer
+        Public mask As Integer
+        Public pszHeader As IntPtr
+        Public cchHeader As Integer
+        Public pszFooter As IntPtr
+        Public cchFooter As Integer
+        Public iGroupId As Integer
+        Public stateMask As Integer
+        Public state As Integer
+        Public uAlign As Integer
+        Public pszSubtitle As IntPtr
+        Public cchSubtitle As Integer
+        Public pszTask As IntPtr
+        Public cchTask As Integer
+        Public pszDescriptionTop As IntPtr
+        Public cchDescriptionTop As Integer
+        Public pszDescriptionBottom As IntPtr
+        Public cchDescriptionBottom As Integer
+        Public iTitleImage As Integer
+        Public iExtendedImage As Integer
+        Public iFirstItem As Integer
+        Public cItems As Integer
+        Public pszSubsetTitle As IntPtr
+        Public cchSubsetTitle As Integer
     End Structure
 
     <StructLayout(LayoutKind.Sequential)>

@@ -17,6 +17,8 @@ Public Class SummaryPanel
     Private Const GROUP_TITLE As String = "Title"
     Private Const NULL_CHAR As Char = "�"
     Private Column_Width_Value As Integer = 0
+    Private ReadOnly CollapsedGroups As New HashSet(Of String)
+    Private GroupDblClickFilter As ListViewGroupDblClickFilter
     Private TitleRows As OrderedDictionary = Nothing
 
     Public Sub New(ListViewSummary As ListView)
@@ -46,6 +48,8 @@ Public Class SummaryPanel
 
     Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB.FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
         With ListViewSummary
+            SnapshotCollapsedGroups()
+
             .BeginUpdate()
             .Items.Clear()
             .Groups.Clear()
@@ -65,6 +69,7 @@ Public Class SummaryPanel
                 .TabStop = False
             End If
 
+            ApplyCollapsedGroups()
             .EndUpdate()
             .Refresh()
         End With
@@ -241,7 +246,38 @@ Public Class SummaryPanel
             Column_Width_Value = .ClientSize.Width - COLUMN_WIDTH_NAME - SystemInformation.VerticalScrollBarWidth
             .Columns.Add("", Column_Width_Value, HorizontalAlignment.Left)
         End With
+
+        GroupDblClickFilter = New ListViewGroupDblClickFilter(ListViewSummary)
     End Sub
+
+    Private Sub SnapshotCollapsedGroups()
+        If ListViewSummary.Groups.Count = 0 Then
+            Exit Sub
+        End If
+
+        For Each Group As ListViewGroup In ListViewSummary.Groups
+            If String.IsNullOrEmpty(Group.Name) Then
+                Continue For
+            End If
+
+            If ListViewSummary.IsGroupCollapsed(Group) Then
+                CollapsedGroups.Add(Group.Name)
+            Else
+                CollapsedGroups.Remove(Group.Name)
+            End If
+        Next
+    End Sub
+
+    Private Sub ApplyCollapsedGroups()
+        ListViewSummary.SetGroupsCollapsible()
+
+        For Each Group As ListViewGroup In ListViewSummary.Groups
+            If CollapsedGroups.Contains(Group.Name) Then
+                ListViewSummary.SetGroupCollapsed(Group, True)
+            End If
+        Next
+    End Sub
+
     Private Sub InitializeTitleRows()
         If TitleRows Is Nothing Then
             TitleRows = New OrderedDictionary
@@ -938,6 +974,47 @@ Public Class SummaryPanel
         e.Item.Selected = False
     End Sub
 
+    Private Sub ListView_KeyDown(sender As Object, e As KeyEventArgs) Handles ListViewSummary.KeyDown
+        If e.KeyCode <> Keys.Left AndAlso e.KeyCode <> Keys.Right Then
+            Exit Sub
+        End If
+
+        Dim Group = ListViewSummary.GetFocusedGroup()
+        If Group Is Nothing Then
+            Exit Sub
+        End If
+
+        SetGroupCollapsedState(Group, e.KeyCode = Keys.Left)
+        e.Handled = True
+    End Sub
+
+    Private Sub ListView_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewSummary.MouseUp
+        If e.Button <> MouseButtons.Left OrElse e.Clicks <> 1 Then
+            Exit Sub
+        End If
+
+        Dim Group = ListViewSummary.GetGroupExpanderAtPoint(e.Location)
+        If Group Is Nothing Then
+            Exit Sub
+        End If
+
+        SetGroupCollapsedState(Group, Not ListViewSummary.IsGroupCollapsed(Group))
+    End Sub
+
+    Private Sub SetGroupCollapsedState(Group As ListViewGroup, Collapsed As Boolean)
+        ListViewSummary.SetGroupCollapsed(Group, Collapsed)
+
+        If String.IsNullOrEmpty(Group.Name) Then
+            Exit Sub
+        End If
+
+        If Collapsed Then
+            CollapsedGroups.Add(Group.Name)
+        Else
+            CollapsedGroups.Remove(Group.Name)
+        End If
+    End Sub
+
 
     'Private Sub ListView_Resize(sender As Object, e As EventArgs) Handles ListView.Resize
     '    If ListView.Columns.Count < 2 Then
@@ -977,5 +1054,43 @@ Public Class SummaryPanel
         Public Property Value As String
         Public Property MobyGamesId As String = ""
         Public Property TGOD As String = ""
+    End Class
+
+    Private Class ListViewGroupDblClickFilter
+        Inherits NativeWindow
+
+        Private Const WM_LBUTTONDBLCLK As Integer = &H203
+        Private ReadOnly ListViewControl As ListView
+
+        Public Sub New(ListViewControl As ListView)
+            Me.ListViewControl = ListViewControl
+
+            AddHandler ListViewControl.HandleCreated, AddressOf ListView_HandleCreated
+            AddHandler ListViewControl.HandleDestroyed, AddressOf ListView_HandleDestroyed
+
+            If ListViewControl.IsHandleCreated Then
+                AssignHandle(ListViewControl.Handle)
+            End If
+        End Sub
+
+        Protected Overrides Sub WndProc(ByRef m As Message)
+            If m.Msg = WM_LBUTTONDBLCLK Then
+                Dim LParam = m.LParam.ToInt32()
+                Dim Pt As New Point(CShort(LParam And &HFFFF), CShort((LParam >> 16) And &HFFFF))
+                If ListViewControl.GetGroupAtPoint(Pt) IsNot Nothing Then
+                    Exit Sub
+                End If
+            End If
+
+            MyBase.WndProc(m)
+        End Sub
+
+        Private Sub ListView_HandleCreated(sender As Object, e As EventArgs)
+            AssignHandle(ListViewControl.Handle)
+        End Sub
+
+        Private Sub ListView_HandleDestroyed(sender As Object, e As EventArgs)
+            ReleaseHandle()
+        End Sub
     End Class
 End Class
