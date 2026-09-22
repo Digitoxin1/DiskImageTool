@@ -2037,27 +2037,30 @@ Souhaitez-vous continuer ?</value>
     <value>Protégé en écriture</value>
   </data>
   <data name="Menu_InsertRegionBytes" xml:space="preserve">
-    <value>Insert {0} Bytes</value>
+    <value>Insérer {0} octets</value>
   </data>
   <data name="Menu_DeleteRegionBytes" xml:space="preserve">
-    <value>Delete {0} Bytes</value>
+    <value>Supprimer {0} octets</value>
   </data>
   <data name="Label_NULL" xml:space="preserve">
     <value>NULL</value>
   </data>
   <data name="Dialog_ByteCount" xml:space="preserve">
-    <value>Number of bytes:</value>
+    <value>Nombre d'octets :</value>
   </data>
   <data name="Caption_ByteCount" xml:space="preserve">
-    <value>Byte Count</value>
+    <value>Nombre d'octets</value>
   </data>
   <data name="Menu_InsertBytes" xml:space="preserve">
-    <value>Insert Bytes</value>
+    <value>Insérer des octets</value>
   </data>
   <data name="Menu_DeleteSelectedBytes" xml:space="preserve">
-    <value>Delete Selected Bytes</value>
+    <value>Supprimer les octets sélectionnés</value>
+  </data>
+  <data name="Menu_RemoveSplice" xml:space="preserve">
+    <value>Retirer l'épissure</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
-    <value>Other</value>
+    <value>Autre</value>
   </data>
 </root>

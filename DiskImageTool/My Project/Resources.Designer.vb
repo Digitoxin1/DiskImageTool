@@ -5642,6 +5642,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Remove Splice.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveSplice() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveSplice", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Replace File.
         '''</summary>
         Friend ReadOnly Property Menu_ReplaceFile() As String

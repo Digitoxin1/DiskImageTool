@@ -2037,27 +2037,30 @@ Möchten Sie fortfahren?</value>
     <value>Schreibgeschützt</value>
   </data>
   <data name="Menu_InsertRegionBytes" xml:space="preserve">
-    <value>Insert {0} Bytes</value>
+    <value>{0} Bytes einfügen</value>
   </data>
   <data name="Menu_DeleteRegionBytes" xml:space="preserve">
-    <value>Delete {0} Bytes</value>
+    <value>{0} Bytes löschen</value>
   </data>
   <data name="Label_NULL" xml:space="preserve">
     <value>NULL</value>
   </data>
   <data name="Dialog_ByteCount" xml:space="preserve">
-    <value>Number of bytes:</value>
+    <value>Anzahl der Bytes:</value>
   </data>
   <data name="Caption_ByteCount" xml:space="preserve">
-    <value>Byte Count</value>
+    <value>Byteanzahl</value>
   </data>
   <data name="Menu_InsertBytes" xml:space="preserve">
-    <value>Insert Bytes</value>
+    <value>Bytes einfügen</value>
   </data>
   <data name="Menu_DeleteSelectedBytes" xml:space="preserve">
-    <value>Delete Selected Bytes</value>
+    <value>Ausgewählte Bytes löschen</value>
+  </data>
+  <data name="Menu_RemoveSplice" xml:space="preserve">
+    <value>Spleiß entfernen</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
-    <value>Other</value>
+    <value>Andere</value>
   </data>
 </root>

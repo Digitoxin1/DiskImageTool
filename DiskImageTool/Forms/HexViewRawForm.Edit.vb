@@ -383,6 +383,79 @@ Partial Public Class HexViewRawForm
         BtnDeleteGapBytes.Enabled = Visible AndAlso HexBox1.SelectionLength > 0
     End Sub
 
+    Private Function TryGetRemoveSplice(ByRef BitIndex As Integer, ByRef BitCount As Integer) As Boolean
+        BitIndex = -1
+        BitCount = 0
+
+        If _TrackType <> BitstreamTrackType.MFM Then
+            Return False
+        End If
+
+        If _CurrentTrackData Is Nothing OrElse _RegionMap Is Nothing OrElse _RegionData Is Nothing OrElse _Bitstream Is Nothing Then
+            Return False
+        End If
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        If SelectionStart < 0 OrElse SelectionStart > _RegionMap.Length - 1 Then
+            Return False
+        End If
+
+        Dim Region = _RegionMap(SelectionStart)
+        If Region Is Nothing Then
+            Return False
+        End If
+
+        Dim ByteOffset = SelectionStart - Region.StartIndex
+        If ByteOffset < 0 OrElse ByteOffset > 1 Then
+            Return False
+        End If
+
+        If CULng(SelectionStart) >= CULng(Region.StartIndex) + Region.Length Then
+            Return False
+        End If
+
+        Dim TrackOffset = CUInt(_CurrentTrackData.Offset)
+        If Region.BitOffset = TrackOffset Then
+            Return False
+        End If
+
+        Dim Previous As BitstreamRegion = Nothing
+        Dim Found = False
+        For Each Item In _RegionData.Regions
+            If Item Is Region Then
+                Found = True
+                Exit For
+            End If
+            Previous = Item
+        Next
+
+        If Not Found OrElse Previous Is Nothing Then
+            Return False
+        End If
+
+        If Previous.BitOffset <> TrackOffset Then
+            Return False
+        End If
+
+        BitCount = (CInt(Region.BitOffset) - CInt(Previous.BitOffset) + 16) Mod 16
+        If BitCount < 1 OrElse BitCount > 15 Then
+            Return False
+        End If
+
+        BitIndex = CInt(Region.StartIndex * 16 + _CurrentTrackData.Offset)
+        If BitIndex < 0 OrElse BitIndex + BitCount > _Bitstream.Length Then
+            Return False
+        End If
+
+        Return True
+    End Function
+
+    Private Sub RefreshRemoveSpliceMenuItem()
+        Dim BitIndex As Integer
+        Dim BitCount As Integer
+        BtnRemoveSplice.Enabled = TryGetRemoveSplice(BitIndex, BitCount)
+    End Sub
+
     Private Function GetCaretBitIndex() As Integer
         If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing Then
             Return -1
@@ -468,6 +541,28 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim BitCount = Count * 16
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim Removed = CopyBits(_Bitstream, BitIndex, BitCount)
+
+        _Bitstream = RemoveBits(_Bitstream, BitIndex, BitCount)
+        ApplyMFMSpliceClocks(BitIndex, 0)
+        PushSplice(RawUndoKind.RemoveBits, BitIndex, Removed, SelectionStart, SelectionLength)
+        ReloadFromWorkingBitstream()
+        HexBox1.Select(SelectionStart, 0)
+    End Sub
+
+    ''' <summary>
+    ''' Removes 1–15 extra splice bits at the start of the current unaligned region so its
+    ''' bit offset matches the previous aligned region.
+    ''' </summary>
+    Private Sub RemoveSplice()
+        Dim BitIndex As Integer
+        Dim BitCount As Integer
+        If Not TryGetRemoveSplice(BitIndex, BitCount) Then
+            Exit Sub
+        End If
+
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
         Dim Removed = CopyBits(_Bitstream, BitIndex, BitCount)
@@ -802,6 +897,10 @@ Partial Public Class HexViewRawForm
 
     Private Sub BtnDeleteGapBytes_Click(sender As Object, e As EventArgs) Handles BtnDeleteGapBytes.Click
         DeleteGapOrNullBytes()
+    End Sub
+
+    Private Sub BtnRemoveSplice_Click(sender As Object, e As EventArgs) Handles BtnRemoveSplice.Click
+        RemoveSplice()
     End Sub
 
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
