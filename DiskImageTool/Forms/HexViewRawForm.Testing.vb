@@ -383,14 +383,11 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
-    ''' Returns the sector whose data area contains the given hex byte index and can be
-    ''' edited (Debug only, MFM track, valid non-overlapping data checksum), otherwise Nothing.
+    ''' Returns the region at the given hex byte index if it can be edited (Debug only, MFM
+    ''' track, current bit offset): a gap, a valid non-overlapping ID field, or a valid
+    ''' non-overlapping data area.
     ''' </summary>
-    Private Function GetEditableSector(Index As Long) As BitstreamRegionSector
-        If Not App.AppSettings.Debug Then
-            Return Nothing
-        End If
-
+    Private Function GetEditableRegion(Index As Long) As BitstreamRegion
         If _TrackType <> BitstreamTrackType.MFM Then
             Return Nothing
         End If
@@ -404,16 +401,84 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim Region = _RegionMap(Index)
-        If Region Is Nothing OrElse Region.RegionType <> MFMRegionType.DataArea Then
+        If Region Is Nothing Then
             Return Nothing
+        End If
+
+        If _CurrentTrackData Is Nothing OrElse Region.BitOffset <> _CurrentTrackData.Offset Then
+            Return Nothing
+        End If
+
+        If IsGapRegion(Region.RegionType) Then
+            Return Region
+        End If
+
+        If IsNullRegion(Region.RegionType) Then
+            Return Region
         End If
 
         Dim Sector = Region.Sector
-        If Sector Is Nothing OrElse Not Sector.DataChecksumValid OrElse Sector.Overlaps Then
+        If Sector Is Nothing OrElse Sector.Overlaps Then
             Return Nothing
         End If
 
-        Return Sector
+        If IsIDAreaRegion(Region.RegionType) Then
+            If Sector.IDAMChecksumValid Then
+                Return Region
+            End If
+            Return Nothing
+        End If
+
+        If Region.RegionType = MFMRegionType.DataArea AndAlso Sector.DataChecksumValid Then
+            Return Region
+        End If
+
+        Return Nothing
+    End Function
+
+    Private Function IsGapRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.Gap1, MFMRegionType.Gap2, MFMRegionType.Gap3, MFMRegionType.Gap4A, MFMRegionType.Gap4B
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    Private Function IsNullRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.DAMNulls, MFMRegionType.IDAMNulls, MFMRegionType.IAMNulls
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    Private Function IsIDAreaRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.IDArea, MFMRegionType.IDAreaCylinder, MFMRegionType.IDAreaHead, MFMRegionType.IDAreaSectorId, MFMRegionType.IDAreaSizeId
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    ''' <summary>
+    ''' Hex-view index of the first ID-field byte (cylinder) for this ID-area region.
+    ''' Sector.StartIndex cannot be used here: it includes IDAM nulls and is not the hex
+    ''' index of the C/H/R/N field.
+    ''' </summary>
+    Private Function GetIDAreaStartIndex(Region As BitstreamRegion) As Long
+        Select Case Region.RegionType
+            Case MFMRegionType.IDAreaHead
+                Return Region.StartIndex - 1
+            Case MFMRegionType.IDAreaSectorId
+                Return Region.StartIndex - 2
+            Case MFMRegionType.IDAreaSizeId
+                Return Region.StartIndex - 3
+            Case Else
+                Return Region.StartIndex
+        End Select
     End Function
 
     ''' <summary>
@@ -445,8 +510,8 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
-        Dim Sector = GetEditableSector(e.Index)
-        If Sector Is Nothing Then
+        Dim Region = GetEditableRegion(e.Index)
+        If Region Is Nothing Then
             Exit Sub
         End If
 
@@ -458,34 +523,50 @@ Partial Public Class HexViewRawForm
             New RawHexChange(e.Index, {e.PrevValue}, HexBox1.SelectionStart, HexBox1.SelectionLength)
         }
 
-        ' Re-encode the edited data byte into the working-clone bitstream
+        ' Re-encode the edited byte into the working-clone bitstream
         ' (the decoded value is already in _Data via the shared provider).
         Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
         WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
 
-        ' Recompute the data CRC over the decoded [A1 A1 A1, FB, data...] bytes.
-        Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
-        Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
-        Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
-        Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+        If IsIDAreaRegion(Region.RegionType) Then
+            Dim IdStart = GetIDAreaStartIndex(Region)
+            Dim IdBit = AdjustBitIndex(IdStart * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(IdBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = IdStart + MFM_IDAREA_BYTES
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
 
-        ' Overwrite the two checksum bytes so the sector stays checksum-valid.
-        Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
-        ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
-        ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
-        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
-        WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
-
-        ' Reflect the recomputed checksum bytes in the display (and _Data via the shared provider).
-        _IgnoreEvent = True
-        HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
-        HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
-        _IgnoreEvent = False
+        ElseIf Region.RegionType = MFMRegionType.DataArea Then
+            Dim Sector = Region.Sector
+            Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+        End If
 
         PushChanges(ChangeList)
 
         ' Bit-inspector now reflects the staged clone.
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+    End Sub
+
+    ''' <summary>
+    ''' Writes two recomputed checksum bytes into the working-clone bitstream and the decoded
+    ''' display, and records them on the undo list.
+    ''' </summary>
+    Private Sub StageChecksumBytes(ChangeList As List(Of RawHexChange), Cs1 As Long, CsBytes() As Byte, Offset As Integer, Length As Integer)
+        ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+        ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
+
+        _IgnoreEvent = True
+        HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
+        HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
+        _IgnoreEvent = False
     End Sub
 
     Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged

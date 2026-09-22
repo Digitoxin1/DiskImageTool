@@ -976,7 +976,7 @@ Partial Public Class HexViewRawForm
 
         BtnCopyEncoded.Enabled = HexBox1.CanCopy
 
-        HexBox1.ReadOnly = (GetEditableSector(HexBox1.SelectionStart) Is Nothing)
+        HexBox1.ReadOnly = (GetEditableRegion(HexBox1.SelectionStart) Is Nothing)
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
