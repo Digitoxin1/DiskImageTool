@@ -63,9 +63,9 @@ Partial Public Class HexViewRawForm
 
         Me.Text = My.Resources.Caption_RawTrackData
 
-        If App.AppSettings.Debug Then
-            AddContextMenuBitEditItems()
-        End If
+        'If App.AppSettings.Debug Then
+        'AddContextMenuBitEditItems()
+        'End If
     End Sub
 
     Public Shared Function Display(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean) As Boolean
