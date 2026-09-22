@@ -32,6 +32,7 @@ Partial Class HexViewForm
         Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripStatusGap As System.Windows.Forms.ToolStripStatusLabel
         Dim ToolStripStatusLabel1 As System.Windows.Forms.ToolStripStatusLabel
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewForm))
         Me.ToolStripStatusTranslated = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripMain = New System.Windows.Forms.ToolStrip()
         Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
@@ -51,6 +52,7 @@ Partial Class HexViewForm
         Me.CmbGroups = New System.Windows.Forms.ToolStripComboBox()
         Me.LblGroups = New System.Windows.Forms.ToolStripLabel()
         Me.ToolStripBtnSelectTrack = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripButton1 = New System.Windows.Forms.ToolStripButton()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRedo = New System.Windows.Forms.ToolStripMenuItem()
@@ -158,12 +160,13 @@ Partial Class HexViewForm
         'ToolStripMain
         '
         Me.ToolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, ToolStripSeparator7, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, ToolStripSeparator4, Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnDelete, Me.ToolStripBtnFillF6, ToolStripSeparator6, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectSector, Me.CmbGroups, Me.LblGroups, Me.ToolStripBtnSelectTrack})
+        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, ToolStripSeparator7, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, ToolStripSeparator4, Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnDelete, Me.ToolStripBtnFillF6, ToolStripSeparator6, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectSector, Me.CmbGroups, Me.LblGroups, Me.ToolStripBtnSelectTrack, Me.ToolStripButton1})
         Me.ToolStripMain.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripMain.Name = "ToolStripMain"
         Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
         Me.ToolStripMain.Size = New System.Drawing.Size(1014, 25)
         Me.ToolStripMain.TabIndex = 0
+        Me.ToolStripMain.TabStop = True
         '
         'ToolStripBtnCommit
         '
@@ -300,6 +303,15 @@ Partial Class HexViewForm
         Me.ToolStripBtnSelectTrack.Size = New System.Drawing.Size(63, 22)
         Me.ToolStripBtnSelectTrack.Text = "{Track}"
         Me.ToolStripBtnSelectTrack.ToolTipText = "{Track}"
+        '
+        'ToolStripButton1
+        '
+        Me.ToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
+        Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton1.Name = "ToolStripButton1"
+        Me.ToolStripButton1.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton1.Text = "ToolStripButton1"
         '
         'ContextMenuStrip1
         '
@@ -658,4 +670,5 @@ Partial Class HexViewForm
     Friend WithEvents ToolStripStatusTrackSector As ToolStripStatusLabel
     Friend WithEvents BtnFill As ToolStripMenuItem
     Friend WithEvents ToolStripStatusTranslated As ToolStripStatusLabel
+    Friend WithEvents ToolStripButton1 As ToolStripButton
 End Class

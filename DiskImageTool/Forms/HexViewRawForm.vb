@@ -51,6 +51,8 @@ Partial Public Class HexViewRawForm
         ' Add any initialization after the InitializeComponent() call.
         LocalizeForm()
 
+        ToolStripEdit.Renderer = New FlatToolStripRenderer()
+
         _ToolTip = New TwoColumnToolTip()
         _FloppyImage = Disk.Image
         _SectorsPerTrack = Disk.DiskParams.BPBParams.SectorsPerTrack
@@ -112,6 +114,10 @@ Partial Public Class HexViewRawForm
         ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
         ToolStripBtnSelectSector.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectSector)
         ToolStripStatusChecksumText.Text = My.Resources.Label_Checksum & ":"
+        ToolStripBtnCommit.Text = My.Resources.Label_Commit
+        ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
+        ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
+        ToolStripBtnUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>
@@ -1394,7 +1400,7 @@ Partial Public Class HexViewRawForm
                 End If
 
                 If _TopSector Is Sector Then
-                    e.Graphics.DrawRectangle(SelectedPen, LeftPos - 1, TopPos - 1, SECTOR_WIDTH + 2, SECTOR_HEIGHT + 2)
+                    e.Graphics.DrawRectangle(SelectedPen, LeftPos + 1, TopPos + 1, SECTOR_WIDTH - 1, SECTOR_HEIGHT - 1)
                 Else
                     e.Graphics.DrawRectangle(SystemPens.WindowFrame, LeftPos, TopPos, SECTOR_WIDTH, SECTOR_HEIGHT)
                 End If
@@ -1412,7 +1418,7 @@ Partial Public Class HexViewRawForm
                 e.Graphics.DrawString(Value, SectorFont, SystemBrushes.WindowText, LeftPos + (SECTOR_WIDTH - TextSize.Width) / 2, TopPos + (SECTOR_HEIGHT - TextSize.Height) / 2)
 
                 LeftPos += SECTOR_WIDTH + PADDING_COLS
-                If LeftPos + SECTOR_WIDTH > PanelSectors.Width - PanelSectors.Padding.Right Then
+                If LeftPos + SECTOR_WIDTH > PanelSectors.Width - PanelSectors.Padding.Right - 1 Then
                     LeftPos = PanelSectors.Padding.Left
                     TopPos = TopPos + SECTOR_HEIGHT + PADDING_ROWS
                 End If
@@ -1484,6 +1490,10 @@ Partial Public Class HexViewRawForm
             _ToolTip.SetToolTip(PanelSectors, TooltipText)
         End If
     End Sub
+
+    Private Sub HexViewRawForm_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        Me.ActiveControl = HexBox1
+    End Sub
 #End Region
 
 #Region "Helpers"
@@ -1504,6 +1514,18 @@ Partial Public Class HexViewRawForm
         Public Overrides Function ToString() As String
             Return Track & "." & Side
         End Function
+    End Class
+
+    Private Class FlatToolStripRenderer
+        Inherits ToolStripProfessionalRenderer
+
+        Protected Overrides Sub OnRenderToolStripBackground(e As ToolStripRenderEventArgs)
+            e.Graphics.Clear(e.ToolStrip.BackColor)
+        End Sub
+
+        Protected Overrides Sub OnRenderToolStripBorder(e As ToolStripRenderEventArgs)
+            ' Do not draw the ToolStrip border
+        End Sub
     End Class
 #End Region
 

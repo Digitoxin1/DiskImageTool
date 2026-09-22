@@ -1565,6 +1565,10 @@ Public Class HexViewForm
         HexBox1.Focus()
     End Sub
 
+    Private Sub HexViewForm_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        Me.ActiveControl = HexBox1
+    End Sub
+
     'Private Sub GroupBoxByteOrder_Resize(sender As Object, e As EventArgs) Handles GroupBoxByteOrder.Resize
     '    RadioButtonBigEndien.Left = GroupBoxByteOrder.Width / 2
     'End Sub

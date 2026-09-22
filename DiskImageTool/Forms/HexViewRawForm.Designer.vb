@@ -26,6 +26,8 @@ Partial Class HexViewRawForm
         Dim ToolStripStatusGap As System.Windows.Forms.ToolStripStatusLabel
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
+        Dim PanelEdit As System.Windows.Forms.Panel
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewRawForm))
         Me.ToolStripStatusExactBitCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.DataGridDataInspector = New System.Windows.Forms.DataGridView()
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -70,17 +72,27 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnAdjustOffset = New System.Windows.Forms.ToolStripButton()
         Me.PanelMain = New System.Windows.Forms.Panel()
         Me.PanelSpacer = New System.Windows.Forms.Panel()
+        Me.PanelTop = New System.Windows.Forms.Panel()
+        Me.ToolStripEdit = New System.Windows.Forms.ToolStrip()
+        Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnUndo = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnRedo = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         Me.PanelSectors = New DiskImageTool.SelectablePanel()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
+        PanelEdit = New System.Windows.Forms.Panel()
         CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.StatusStripBottom.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ToolStripMain.SuspendLayout()
         Me.PanelMain.SuspendLayout()
+        Me.PanelTop.SuspendLayout()
+        PanelEdit.SuspendLayout()
+        Me.ToolStripEdit.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStripStatusGap
@@ -411,6 +423,7 @@ Partial Class HexViewRawForm
         Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
         Me.ToolStripMain.Size = New System.Drawing.Size(944, 25)
         Me.ToolStripMain.TabIndex = 0
+        Me.ToolStripMain.TabStop = True
         '
         'ToolStripBtnSelectRegion
         '
@@ -469,6 +482,75 @@ Partial Class HexViewRawForm
         Me.PanelSpacer.Size = New System.Drawing.Size(6, 491)
         Me.PanelSpacer.TabIndex = 1
         '
+        'PanelTop
+        '
+        Me.PanelTop.AutoSize = True
+        Me.PanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.PanelTop.Controls.Add(Me.PanelSectors)
+        Me.PanelTop.Controls.Add(PanelEdit)
+        Me.PanelTop.Dock = System.Windows.Forms.DockStyle.Top
+        Me.PanelTop.Location = New System.Drawing.Point(0, 25)
+        Me.PanelTop.Name = "PanelTop"
+        Me.PanelTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
+        Me.PanelTop.Size = New System.Drawing.Size(944, 25)
+        Me.PanelTop.TabIndex = 1
+        '
+        'PanelEdit
+        '
+        PanelEdit.AutoSize = True
+        PanelEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        PanelEdit.Controls.Add(Me.ToolStripEdit)
+        PanelEdit.Dock = System.Windows.Forms.DockStyle.Left
+        PanelEdit.Location = New System.Drawing.Point(12, 0)
+        PanelEdit.Name = "PanelEdit"
+        PanelEdit.Size = New System.Drawing.Size(149, 25)
+        PanelEdit.TabIndex = 0
+        '
+        'ToolStripEdit
+        '
+        Me.ToolStripEdit.CanOverflow = False
+        Me.ToolStripEdit.Dock = System.Windows.Forms.DockStyle.None
+        Me.ToolStripEdit.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
+        Me.ToolStripEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, Me.ToolStripSeparator3})
+        Me.ToolStripEdit.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
+        Me.ToolStripEdit.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStripEdit.Name = "ToolStripEdit"
+        Me.ToolStripEdit.Size = New System.Drawing.Size(149, 25)
+        Me.ToolStripEdit.TabIndex = 0
+        Me.ToolStripEdit.TabStop = True
+        Me.ToolStripEdit.Text = "ToolStrip1"
+        '
+        'ToolStripBtnCommit
+        '
+        Me.ToolStripBtnCommit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripBtnCommit.Image = CType(resources.GetObject("ToolStripBtnCommit.Image"), System.Drawing.Image)
+        Me.ToolStripBtnCommit.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnCommit.Name = "ToolStripBtnCommit"
+        Me.ToolStripBtnCommit.Size = New System.Drawing.Size(63, 22)
+        Me.ToolStripBtnCommit.Text = "{Commit}"
+        Me.ToolStripBtnCommit.ToolTipText = "{Commit Changes}"
+        '
+        'ToolStripBtnUndo
+        '
+        Me.ToolStripBtnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
+        Me.ToolStripBtnUndo.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnUndo.Name = "ToolStripBtnUndo"
+        Me.ToolStripBtnUndo.Size = New System.Drawing.Size(23, 22)
+        '
+        'ToolStripBtnRedo
+        '
+        Me.ToolStripBtnRedo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
+        Me.ToolStripBtnRedo.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnRedo.Name = "ToolStripBtnRedo"
+        Me.ToolStripBtnRedo.Size = New System.Drawing.Size(23, 22)
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(6, 25)
+        '
         'HexBox1
         '
         '
@@ -502,10 +584,10 @@ Partial Class HexViewRawForm
         'PanelSectors
         '
         Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Top
-        Me.PanelSectors.Location = New System.Drawing.Point(0, 25)
+        Me.PanelSectors.Location = New System.Drawing.Point(161, 0)
         Me.PanelSectors.Name = "PanelSectors"
-        Me.PanelSectors.Padding = New System.Windows.Forms.Padding(12, 4, 12, 4)
-        Me.PanelSectors.Size = New System.Drawing.Size(944, 25)
+        Me.PanelSectors.Padding = New System.Windows.Forms.Padding(2, 4, 0, 4)
+        Me.PanelSectors.Size = New System.Drawing.Size(771, 25)
         Me.PanelSectors.TabIndex = 1
         Me.PanelSectors.TabStop = True
         '
@@ -515,7 +597,7 @@ Partial Class HexViewRawForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(944, 573)
         Me.Controls.Add(Me.PanelMain)
-        Me.Controls.Add(Me.PanelSectors)
+        Me.Controls.Add(Me.PanelTop)
         Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStripBottom)
         Me.KeyPreview = True
@@ -535,6 +617,12 @@ Partial Class HexViewRawForm
         Me.ToolStripMain.ResumeLayout(False)
         Me.ToolStripMain.PerformLayout()
         Me.PanelMain.ResumeLayout(False)
+        Me.PanelTop.ResumeLayout(False)
+        Me.PanelTop.PerformLayout()
+        PanelEdit.ResumeLayout(False)
+        PanelEdit.PerformLayout()
+        Me.ToolStripEdit.ResumeLayout(False)
+        Me.ToolStripEdit.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -586,4 +674,10 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripStatusExactBitCount As ToolStripStatusLabel
     Friend WithEvents PanelMain As Panel
     Friend WithEvents PanelSpacer As Panel
+    Friend WithEvents PanelTop As Panel
+    Friend WithEvents ToolStripEdit As ToolStrip
+    Friend WithEvents ToolStripBtnCommit As ToolStripButton
+    Friend WithEvents ToolStripBtnUndo As ToolStripButton
+    Friend WithEvents ToolStripBtnRedo As ToolStripButton
+    Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
 End Class
