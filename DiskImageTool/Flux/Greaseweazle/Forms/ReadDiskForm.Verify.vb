@@ -1,6 +1,4 @@
-﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
-
-Namespace Flux.Greaseweazle
+﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private ReadOnly _KryofluxStatus As Kryoflux.TrackStatus
 
