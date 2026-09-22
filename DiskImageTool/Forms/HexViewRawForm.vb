@@ -36,6 +36,7 @@ Partial Public Class HexViewRawForm
     Private _Track As UShort
     Private _TrackType As BitstreamTrackType
     Private _WeakBitRegions As List(Of HighlightRange)
+    Private Const WM_CLIPBOARDUPDATE As Integer = &H31D
 
     Public Sub New(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
         ' This call is required by the designer.
@@ -74,6 +75,14 @@ Partial Public Class HexViewRawForm
         End Using
     End Function
 
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        If m.Msg = WM_CLIPBOARDUPDATE Then
+            RefreshPasteButton()
+        End If
+
+        MyBase.WndProc(m)
+    End Sub
+
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
         BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
@@ -83,6 +92,7 @@ Partial Public Class HexViewRawForm
         BtnCopyValue.Text = My.Resources.Menu_CopyValue
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FindNext
+        BtnPaste.Text = My.Resources.Menu_PasteOver
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
         BtnSelectData.Text = My.Resources.Menu_SelectData
         BtnSelectRegion.Text = My.Resources.Menu_SelectRegion
@@ -93,6 +103,7 @@ Partial Public Class HexViewRawForm
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
+        ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
         ToolStripBtnFind.Text = My.Resources.Label_Find
         ToolStripBtnFindNext.Text = My.Resources.Label_FindNext
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
@@ -112,6 +123,10 @@ Partial Public Class HexViewRawForm
 
     <DllImport("user32.dll", SetLastError:=True)>
     Private Shared Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Private Shared Function RemoveClipboardFormatListener(hwnd As IntPtr) As Boolean
     End Function
     Private Sub ChangeOffset(Offset As UInteger)
         If _CurrentTrackData IsNot Nothing AndAlso _CurrentTrackData.Offset <> Offset Then
@@ -740,8 +755,7 @@ Partial Public Class HexViewRawForm
         ComboTrack.Items.Clear()
         For i = 0 To _FloppyImage.TrackCount - 1
             For j = 0 To _FloppyImage.SideCount - 1
-                Dim TrackIndex = i * _FloppyImage.SideCount + j
-                If AllTracks OrElse (_FloppyImage.NonStandardTracks.Contains(TrackIndex) Or _FloppyImage.AdditionalTracks.Contains(TrackIndex)) Then
+                If IsTrackListed(i, j, AllTracks) Then
                     Dim TrackData As New TrackData With {
                         .Track = i,
                         .Side = j,
@@ -761,6 +775,15 @@ Partial Public Class HexViewRawForm
         ComboTrack.SelectedIndex = SelectedIndex
     End Sub
 
+    Private Function IsTrackListed(Track As UShort, Side As Byte, AllTracks As Boolean) As Boolean
+        If AllTracks Then
+            Return True
+        End If
+
+        Dim TrackIndex = Track * _FloppyImage.SideCount + Side
+        Return _FloppyImage.NonStandardTracks.Contains(TrackIndex) OrElse _FloppyImage.AdditionalTracks.Contains(TrackIndex)
+    End Function
+
     Private Sub ProcessKeyPress(e As KeyEventArgs)
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
@@ -769,6 +792,11 @@ Partial Public Class HexViewRawForm
                 Else
                     CopyHex(HexBox1, False)
                 End If
+            End If
+            e.SuppressKeyPress = True
+        ElseIf e.Control And e.KeyCode = Keys.V Then
+            If ClipboardHasHex() Then
+                PasteHex()
             End If
             e.SuppressKeyPress = True
         End If
@@ -921,6 +949,8 @@ Partial Public Class HexViewRawForm
         BtnCopyEncoded.Enabled = HexBox1.CanCopy
 
         HexBox1.ReadOnly = (GetEditableRegion(HexBox1.SelectionStart) Is Nothing)
+
+        RefreshPasteButton()
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
@@ -1233,7 +1263,23 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
-        PopulateTracks(CheckBoxAllTracks.Checked)
+        Dim AllTracks = CheckBoxAllTracks.Checked
+        Dim TrackWouldChange = Not IsTrackListed(_Track, _Side, AllTracks)
+
+        If TrackWouldChange AndAlso Not ConfirmCommitOrDiscard() Then
+            _IgnoreEvent = True
+            CheckBoxAllTracks.Checked = Not AllTracks
+            _IgnoreEvent = False
+            Exit Sub
+        End If
+
+        _IgnoreEvent = True
+        PopulateTracks(AllTracks)
+        _IgnoreEvent = False
+
+        If TrackWouldChange AndAlso ComboTrack.SelectedItem IsNot Nothing Then
+            LoadTrack(ComboTrack.SelectedItem, False, False)
+        End If
     End Sub
 
     Private Sub ComboTrack_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboTrack.SelectedIndexChanged

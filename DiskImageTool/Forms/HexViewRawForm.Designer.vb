@@ -76,10 +76,12 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnAdjustOffset = New System.Windows.Forms.ToolStripButton()
         Me.PanelMain = New System.Windows.Forms.Panel()
         Me.PanelSpacer = New System.Windows.Forms.Panel()
-        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         Me.TableLayoutPanelTop = New System.Windows.Forms.TableLayoutPanel()
-        Me.PanelSectors = New DiskImageTool.SelectablePanel()
         Me.CheckBoxAllTracks = New System.Windows.Forms.CheckBox()
+        Me.ToolStripBtnPaste = New System.Windows.Forms.ToolStripButton()
+        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
+        Me.PanelSectors = New DiskImageTool.SelectablePanel()
+        Me.BtnPaste = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -306,9 +308,9 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 264)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 308)
         '
         'BtnCopyHex
         '
@@ -460,7 +462,7 @@ Partial Class HexViewRawForm
         'ToolStripMain
         '
         Me.ToolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectRegion, Me.ToolStripBtnSelectSector, Me.ToolStripBtnSelectData, Me.ToolStripBtnAdjustOffset})
+        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectRegion, Me.ToolStripBtnSelectSector, Me.ToolStripBtnSelectData, Me.ToolStripBtnAdjustOffset})
         Me.ToolStripMain.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripMain.Name = "ToolStripMain"
         Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
@@ -525,6 +527,46 @@ Partial Class HexViewRawForm
         Me.PanelSpacer.Size = New System.Drawing.Size(6, 491)
         Me.PanelSpacer.TabIndex = 1
         '
+        'TableLayoutPanelTop
+        '
+        Me.TableLayoutPanelTop.AutoSize = True
+        Me.TableLayoutPanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.TableLayoutPanelTop.ColumnCount = 3
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelTop.Controls.Add(Me.ToolStripEdit, 0, 0)
+        Me.TableLayoutPanelTop.Controls.Add(Me.PanelSectors, 1, 0)
+        Me.TableLayoutPanelTop.Controls.Add(Me.CheckBoxAllTracks, 2, 0)
+        Me.TableLayoutPanelTop.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TableLayoutPanelTop.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
+        Me.TableLayoutPanelTop.Location = New System.Drawing.Point(0, 25)
+        Me.TableLayoutPanelTop.Name = "TableLayoutPanelTop"
+        Me.TableLayoutPanelTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
+        Me.TableLayoutPanelTop.RowCount = 1
+        Me.TableLayoutPanelTop.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanelTop.Size = New System.Drawing.Size(944, 25)
+        Me.TableLayoutPanelTop.TabIndex = 1
+        '
+        'CheckBoxAllTracks
+        '
+        Me.CheckBoxAllTracks.AutoSize = True
+        Me.CheckBoxAllTracks.Location = New System.Drawing.Point(844, 3)
+        Me.CheckBoxAllTracks.Name = "CheckBoxAllTracks"
+        Me.CheckBoxAllTracks.Padding = New System.Windows.Forms.Padding(4, 2, 0, 0)
+        Me.CheckBoxAllTracks.Size = New System.Drawing.Size(85, 19)
+        Me.CheckBoxAllTracks.TabIndex = 2
+        Me.CheckBoxAllTracks.Text = "{All Tracks}"
+        Me.CheckBoxAllTracks.UseVisualStyleBackColor = True
+        '
+        'ToolStripBtnPaste
+        '
+        Me.ToolStripBtnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnPaste.Image = Global.DiskImageTool.My.Resources.Resources.PasteReplace
+        Me.ToolStripBtnPaste.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnPaste.Name = "ToolStripBtnPaste"
+        Me.ToolStripBtnPaste.Size = New System.Drawing.Size(23, 22)
+        '
         'HexBox1
         '
         '
@@ -555,27 +597,6 @@ Partial Class HexViewRawForm
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
         '
-        'TableLayoutPanelTop
-        '
-        Me.TableLayoutPanelTop.AutoSize = True
-        Me.TableLayoutPanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.TableLayoutPanelTop.ColumnCount = 3
-        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanelTop.Controls.Add(Me.ToolStripEdit, 0, 0)
-        Me.TableLayoutPanelTop.Controls.Add(Me.PanelSectors, 1, 0)
-        Me.TableLayoutPanelTop.Controls.Add(Me.CheckBoxAllTracks, 2, 0)
-        Me.TableLayoutPanelTop.Dock = System.Windows.Forms.DockStyle.Top
-        Me.TableLayoutPanelTop.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
-        Me.TableLayoutPanelTop.Location = New System.Drawing.Point(0, 25)
-        Me.TableLayoutPanelTop.Name = "TableLayoutPanelTop"
-        Me.TableLayoutPanelTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
-        Me.TableLayoutPanelTop.RowCount = 1
-        Me.TableLayoutPanelTop.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelTop.Size = New System.Drawing.Size(944, 25)
-        Me.TableLayoutPanelTop.TabIndex = 1
-        '
         'PanelSectors
         '
         Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Fill
@@ -587,16 +608,13 @@ Partial Class HexViewRawForm
         Me.PanelSectors.TabIndex = 1
         Me.PanelSectors.TabStop = True
         '
-        'CheckBoxAllTracks
+        'BtnPaste
         '
-        Me.CheckBoxAllTracks.AutoSize = True
-        Me.CheckBoxAllTracks.Location = New System.Drawing.Point(844, 3)
-        Me.CheckBoxAllTracks.Name = "CheckBoxAllTracks"
-        Me.CheckBoxAllTracks.Padding = New System.Windows.Forms.Padding(4, 2, 0, 0)
-        Me.CheckBoxAllTracks.Size = New System.Drawing.Size(85, 19)
-        Me.CheckBoxAllTracks.TabIndex = 2
-        Me.CheckBoxAllTracks.Text = "{All Tracks}"
-        Me.CheckBoxAllTracks.UseVisualStyleBackColor = True
+        Me.BtnPaste.Image = Global.DiskImageTool.My.Resources.Resources.PasteReplace
+        Me.BtnPaste.Name = "BtnPaste"
+        Me.BtnPaste.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
+        Me.BtnPaste.Size = New System.Drawing.Size(265, 22)
+        Me.BtnPaste.Text = "{&Paste Over}"
         '
         'HexViewRawForm
         '
@@ -686,4 +704,6 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
     Friend WithEvents TableLayoutPanelTop As TableLayoutPanel
     Friend WithEvents CheckBoxAllTracks As CheckBox
+    Friend WithEvents ToolStripBtnPaste As ToolStripButton
+    Friend WithEvents BtnPaste As ToolStripMenuItem
 End Class

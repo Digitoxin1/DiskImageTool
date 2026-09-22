@@ -563,12 +563,110 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
+    ''' Overwrites the editable region at the caret with clipboard hex, truncated at the
+    ''' region end, as a single undo step with one CRC refresh.
+    ''' </summary>
+    Private Sub PasteHex()
+        Dim HexBytes = ConvertHexToBytes(Clipboard.GetText)
+        If HexBytes Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim Offset = HexBox1.SelectionStart
+        Dim Region = GetEditableRegion(Offset)
+        If Region Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim MaxLength = CInt(Region.StartIndex + Region.Length - Offset)
+        If MaxLength <= 0 Then
+            Exit Sub
+        End If
+
+        Dim Length = HexBytes.Length
+        If Length > MaxLength Then
+            Length = MaxLength
+        End If
+        If Offset + Length > HexBox1.ByteProvider.Length Then
+            Length = CInt(HexBox1.ByteProvider.Length - Offset)
+        End If
+        If Length <= 0 Then
+            Exit Sub
+        End If
+
+        Dim Original(Length - 1) As Byte
+        Dim Modified = False
+
+        _IgnoreEvent = True
+        Try
+            For i = 0 To Length - 1
+                Dim Index = CInt(Offset + i)
+                Original(i) = _Data(Index)
+                If Original(i) <> HexBytes(i) Then
+                    HexBox1.ByteProvider.WriteByte(Index, HexBytes(i))
+                    ReEncodeByte(Index)
+                    Modified = True
+                End If
+            Next
+
+            If Modified Then
+                Dim ChangeList As New List(Of RawHexChange) From {
+                    New RawHexChange(CInt(Offset), Original, Offset, Length)
+                }
+                StageRegionChecksum(ChangeList, Region)
+                PushChanges(ChangeList)
+            End If
+        Finally
+            _IgnoreEvent = False
+        End Try
+
+        If Modified Then
+            HexBox1.SelectionLength = Length
+            HexBox1.Invalidate()
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+        End If
+    End Sub
+
+    ''' <summary>
     ''' Enables/disables the undo, redo, and commit toolbar buttons based on the stack state.
     ''' </summary>
     Private Sub RefreshUndoButtons()
         ToolStripBtnUndo.Enabled = _Changes.Count > 0
         ToolStripBtnRedo.Enabled = _RedoChanges.Count > 0
         ToolStripBtnCommit.Enabled = _Changes.Count > 0
+    End Sub
+
+    Private Sub RefreshPasteButton()
+        Dim Enabled = ClipboardHasHex() AndAlso GetEditableRegion(HexBox1.SelectionStart) IsNot Nothing
+        BtnPaste.Enabled = Enabled
+        ToolStripBtnPaste.Enabled = Enabled
+    End Sub
+
+    ''' <summary>
+    ''' Recalculates ID or data CRC for the edited region and stages the checksum bytes.
+    ''' </summary>
+    Private Sub StageRegionChecksum(ChangeList As List(Of RawHexChange), Region As BitstreamRegion)
+        Dim Offset = _CurrentTrackData.Offset
+        Dim Length = _Bitstream.Length
+
+        If IsIDAreaRegion(Region.RegionType) Then
+            Dim IdStart = GetIDAreaStartIndex(Region)
+            Dim IdBit = AdjustBitIndex(IdStart * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(IdBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = IdStart + MFM_IDAREA_BYTES
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+        ElseIf Region.RegionType = MFMRegionType.DataArea Then
+            Dim Sector = Region.Sector
+            Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+        End If
     End Sub
 
     ''' <summary>
@@ -581,10 +679,11 @@ Partial Public Class HexViewRawForm
         WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
         WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
 
+        Dim RestoreIgnore = _IgnoreEvent
         _IgnoreEvent = True
         HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
         HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
-        _IgnoreEvent = False
+        _IgnoreEvent = RestoreIgnore
     End Sub
 
     ''' <summary>
@@ -636,24 +735,7 @@ Partial Public Class HexViewRawForm
         Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
         WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
 
-        If IsIDAreaRegion(Region.RegionType) Then
-            Dim IdStart = GetIDAreaStartIndex(Region)
-            Dim IdBit = AdjustBitIndex(IdStart * 16 + Offset, Length)
-            Dim SyncBit = AdjustBitIndex(IdBit - MFM_SYNC_MARK_BYTES * 16, Length)
-            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES)
-            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
-            Dim Cs1 = IdStart + MFM_IDAREA_BYTES
-            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
-
-        ElseIf Region.RegionType = MFMRegionType.DataArea Then
-            Dim Sector = Region.Sector
-            Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
-            Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
-            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
-            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
-            Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
-            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
-        End If
+        StageRegionChecksum(ChangeList, Region)
 
         PushChanges(ChangeList)
 
@@ -700,22 +782,30 @@ Partial Public Class HexViewRawForm
     End Sub
 
     Private Sub HexViewRawForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-        If _Changes.Count = 0 Then
-            Exit Sub
+        If _Changes.Count > 0 Then
+            Dim Msg = String.Format(My.Resources.Dialog_CommitChanges, Environment.NewLine)
+            Dim Response = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3)
+
+            If Response = MsgBoxResult.Cancel Then
+                e.Cancel = True
+                Exit Sub
+            ElseIf Response = MsgBoxResult.Yes Then
+                ApplyStagedChanges()
+            End If
         End If
 
-        Dim Msg = String.Format(My.Resources.Dialog_CommitChanges, Environment.NewLine)
-        Dim Response = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3)
-
-        If Response = MsgBoxResult.Cancel Then
-            e.Cancel = True
-        ElseIf Response = MsgBoxResult.Yes Then
-            ApplyStagedChanges()
-        End If
+        RemoveClipboardFormatListener(Me.Handle)
     End Sub
 
     Private Sub InitEditingButtons() Handles Me.Load
         RefreshUndoButtons()
+        RefreshPasteButton()
+    End Sub
+
+    Private Sub BtnPaste_Click(sender As Object, e As EventArgs) Handles BtnPaste.Click, ToolStripBtnPaste.Click
+        If ClipboardHasHex() Then
+            PasteHex()
+        End If
     End Sub
 
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
