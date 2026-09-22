@@ -420,6 +420,9 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>Changes have been made to this disk image.{0}{0}Do you wish to commit these changes before closing this window?</value>
   </data>
+  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
+    <value>Changes have been made to this track.{0}{0}Do you wish to commit these changes before changing tracks?</value>
+  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?</value>
   </data>

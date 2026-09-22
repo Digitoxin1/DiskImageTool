@@ -854,6 +854,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Changes have been made to this track.{0}{0}Do you wish to commit these changes before changing tracks?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_CommitChangesTrack() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CommitChangesTrack", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to An operation is currently in progress. Do you wish to cancel?.
         '''</summary>
         Friend ReadOnly Property Dialog_ConfirmCancel() As String

@@ -748,7 +748,8 @@ Partial Public Class HexViewRawForm
             _IgnoreEvent = True
             NumericBitOffset.Value = TrackData.Offset
             _IgnoreEvent = False
-            _Bitstream = MFMTrack.Bitstream
+            ' Work on a clone so data-area edits are staged; the live track is only updated on Commit.
+            _Bitstream = CType(MFMTrack.Bitstream.Clone(), BitArray)
             _SurfaceData = MFMTrack.SurfaceData
             _WeakBitRegions = GetWeakBitRegions(MFMTrack.Bitstream, TrackData.Offset)
 
@@ -1228,6 +1229,13 @@ Partial Public Class HexViewRawForm
 
     Private Sub ComboTrack_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboTrack.SelectedIndexChanged
         If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        If Not ConfirmCommitOrDiscard() Then
+            _IgnoreEvent = True
+            ComboTrack.SelectedItem = _CurrentTrackData
+            _IgnoreEvent = False
             Exit Sub
         End If
 

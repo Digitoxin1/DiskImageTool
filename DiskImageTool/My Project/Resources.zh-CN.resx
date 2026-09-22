@@ -420,6 +420,9 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>此磁盘映像已有更改。{0}{0}关闭此窗口前要提交这些更改吗？</value>
   </data>
+  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
+    <value>此磁道已有更改。{0}{0}切换磁道前要提交这些更改吗？</value>
+  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>警告：驱动器 {0} 中的磁盘非空。{1}{1}如果继续，磁盘将被覆盖。{1}{1}要继续吗？</value>
   </data>

@@ -6,6 +6,8 @@ Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.HexView
 
 Partial Public Class HexViewRawForm
+    Private ReadOnly _Changes As New Stack(Of List(Of RawHexChange))
+    Private ReadOnly _RedoChanges As New Stack(Of List(Of RawHexChange))
     Private ReadOnly _UpdatedTracks As New HashSet(Of Point)
     Private _TracksUpdated As Boolean = False
 
@@ -442,7 +444,13 @@ Partial Public Class HexViewRawForm
         Dim Offset = _CurrentTrackData.Offset
         Dim Length = _Bitstream.Length
 
-        ' Re-encode the edited data byte (the decoded value is already in _Data via the shared provider).
+        ' Record the original bytes affected by this edit so it can be undone.
+        Dim ChangeList As New List(Of RawHexChange) From {
+            New RawHexChange(e.Index, {e.PrevValue}, HexBox1.SelectionStart, HexBox1.SelectionLength)
+        }
+
+        ' Re-encode the edited data byte into the working-clone bitstream
+        ' (the decoded value is already in _Data via the shared provider).
         Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
         WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
 
@@ -454,6 +462,8 @@ Partial Public Class HexViewRawForm
 
         ' Overwrite the two checksum bytes so the sector stays checksum-valid.
         Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
+        ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+        ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
         WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
         WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
 
@@ -463,14 +473,168 @@ Partial Public Class HexViewRawForm
         HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
         _IgnoreEvent = False
 
-        ' Remember this track so it can be re-synced into the decoded model on close.
-        _UpdatedTracks.Add(New Point(_Track, _Side))
+        PushChanges(ChangeList)
 
+        ' Bit-inspector now reflects the staged clone.
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
     End Sub
 
     Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged
         HexBox1.InsertActive = False
+    End Sub
+
+    ''' <summary>
+    ''' Re-encodes the byte at the given _Data index into the working-clone bitstream so the
+    ''' clone (and the bit-inspector) stays consistent with the decoded data buffer.
+    ''' </summary>
+    Private Sub ReEncodeByte(Index As Integer)
+        Dim Offset = _CurrentTrackData.Offset
+        Dim Length = _Bitstream.Length
+
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Index * 16 + Offset, Length), _Data(Index))
+    End Sub
+
+    ''' <summary>
+    ''' Pushes an edit onto the undo stack, clears the redo stack, and refreshes the buttons.
+    ''' </summary>
+    Private Sub PushChanges(ChangeList As List(Of RawHexChange))
+        _Changes.Push(ChangeList)
+        _RedoChanges.Clear()
+        RefreshUndoButtons()
+    End Sub
+
+    ''' <summary>
+    ''' Applies one undo/redo step: restores the stored bytes into _Data, re-encodes them into
+    ''' the working-clone bitstream, and records the inverse on the destination stack.
+    ''' </summary>
+    Private Sub PopChange(Source As Stack(Of List(Of RawHexChange)), Destination As Stack(Of List(Of RawHexChange)))
+        If Source.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim ChangeList = Source.Pop()
+        Dim DestinationList As New List(Of RawHexChange)
+
+        _IgnoreEvent = True
+        For Each Change In ChangeList
+            ' Capture the current value so the operation can be reversed.
+            DestinationList.Add(New RawHexChange(Change.Index, {_Data(Change.Index)}, Change.SelectionStart, Change.SelectionLength))
+
+            ' Restore the stored bytes into the decoded display and the working-clone bitstream.
+            For Counter = 0 To Change.Data.Length - 1
+                HexBox1.ByteProvider.WriteByte(Change.Index + Counter, Change.Data(Counter))
+                ReEncodeByte(Change.Index + Counter)
+            Next
+        Next
+        _IgnoreEvent = False
+
+        Destination.Push(DestinationList)
+
+        ' Restore the selection recorded with the first change in the list.
+        HexBox1.Select(ChangeList(0).SelectionStart, ChangeList(0).SelectionLength)
+
+        RefreshUndoButtons()
+        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+        DataInspectorRefresh(True)
+    End Sub
+
+    ''' <summary>
+    ''' Enables/disables the undo, redo, and commit toolbar buttons based on the stack state.
+    ''' </summary>
+    Private Sub RefreshUndoButtons()
+        ToolStripBtnUndo.Enabled = _Changes.Count > 0
+        ToolStripBtnRedo.Enabled = _RedoChanges.Count > 0
+        ToolStripBtnCommit.Enabled = _Changes.Count > 0
+    End Sub
+
+    ''' <summary>
+    ''' Commits the staged edits by assigning the working-clone bitstream to the live track,
+    ''' marking the track for re-sync on close, and clearing the undo/redo stacks.
+    ''' </summary>
+    Private Sub ApplyStagedChanges()
+        Dim BitstreamImage = _FloppyImage.BitstreamImage
+        Dim BT = BitstreamImage.GetTrack(CUShort(_Track * BitstreamImage.TrackStep), CByte(_Side))
+        If BT IsNot Nothing Then
+            BT.Bitstream = _Bitstream
+        End If
+
+        _UpdatedTracks.Add(New Point(_Track, _Side))
+
+        _Changes.Clear()
+        _RedoChanges.Clear()
+        RefreshUndoButtons()
+    End Sub
+
+    ''' <summary>
+    ''' Commits staged edits to the in-memory track and reloads so all derived displays reflect
+    ''' the committed bitstream. Optionally closes the form afterwards.
+    ''' </summary>
+    Private Sub CommitChanges(CloseAfterCommit As Boolean)
+        If _Changes.Count > 0 Then
+            ApplyStagedChanges()
+            LoadTrack(_CurrentTrackData, True, True)
+        End If
+
+        If CloseAfterCommit Then
+            Me.Close()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' When uncommitted edits exist, prompts to commit, discard, or cancel. Returns False only
+    ''' when the user cancels (so the caller can abort navigation/close).
+    ''' </summary>
+    Private Function ConfirmCommitOrDiscard() As Boolean
+        If _Changes.Count = 0 Then
+            Return True
+        End If
+
+        Dim Msg = String.Format(My.Resources.Dialog_CommitChangesTrack, Environment.NewLine)
+        Dim Response = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3)
+
+        If Response = MsgBoxResult.Cancel Then
+            Return False
+        ElseIf Response = MsgBoxResult.Yes Then
+            ApplyStagedChanges()
+        Else
+            ' Discard: drop the staged edits (the working clone is abandoned on the next LoadTrack).
+            _Changes.Clear()
+            _RedoChanges.Clear()
+            RefreshUndoButtons()
+        End If
+
+        Return True
+    End Function
+
+    Private Sub InitEditingButtons() Handles Me.Load
+        RefreshUndoButtons()
+    End Sub
+
+    Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
+        CommitChanges(False)
+    End Sub
+
+    Private Sub ToolStripBtnUndo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnUndo.Click
+        PopChange(_Changes, _RedoChanges)
+    End Sub
+
+    Private Sub ToolStripBtnRedo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnRedo.Click
+        PopChange(_RedoChanges, _Changes)
+    End Sub
+
+    Private Sub HexViewRawForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        If _Changes.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim Msg = String.Format(My.Resources.Dialog_CommitChanges, Environment.NewLine)
+        Dim Response = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3)
+
+        If Response = MsgBoxResult.Cancel Then
+            e.Cancel = True
+        ElseIf Response = MsgBoxResult.Yes Then
+            ApplyStagedChanges()
+        End If
     End Sub
 
     ''' <summary>
@@ -531,6 +695,24 @@ Partial Public Class HexViewRawForm
             _Bytes(index) = value
             RaiseEvent Changed(Me, EventArgs.Empty)
         End Sub
+    End Class
+
+    ''' <summary>
+    ''' A single staged edit for undo/redo: the original bytes at a given _Data index plus the
+    ''' selection to restore when the change is applied.
+    ''' </summary>
+    Private Class RawHexChange
+        Public Sub New(Index As Integer, Data() As Byte, SelectionStart As Long, SelectionLength As Long)
+            Me.Index = Index
+            Me.Data = Data
+            Me.SelectionStart = SelectionStart
+            Me.SelectionLength = SelectionLength
+        End Sub
+
+        Public Property Index As Integer
+        Public Property Data As Byte()
+        Public Property SelectionStart As Long
+        Public Property SelectionLength As Long
     End Class
 
 #End Region

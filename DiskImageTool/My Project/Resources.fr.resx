@@ -420,6 +420,9 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>Des modifications ont été apportées à cette image de disquette.{0}{0}Souhaitez-vous valider ces modifications avant de fermer cette fenêtre ?</value>
   </data>
+  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
+    <value>Des modifications ont été apportées à cette piste.{0}{0}Souhaitez-vous valider ces modifications avant de changer de piste ?</value>
+  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Avertissement: le disque dans le lecteur {0} n’est pas vide.{1}{1}Si vous continuez, le disque sera écrasé.{1}{1}Souhaitez-vous continuer ?</value>
   </data>

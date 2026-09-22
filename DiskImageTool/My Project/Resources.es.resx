@@ -420,6 +420,9 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>Se han realizado cambios en esta imagen de disco.{0}{0}¿Desea confirmar estos cambios antes de cerrar esta ventana?</value>
   </data>
+  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
+    <value>Se han realizado cambios en esta pista.{0}{0}¿Desea confirmar estos cambios antes de cambiar de pista?</value>
+  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Advertencia: el disco en la unidad {0} no está vacío.{1}{1}Si continúa, el disco será sobrescrito.{1}{1}¿Desea continuar?</value>
   </data>

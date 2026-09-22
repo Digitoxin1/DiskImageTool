@@ -420,6 +420,9 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>An diesem Diskettenabbild wurden Änderungen vorgenommen.{0}{0}Möchten Sie diese Änderungen übernehmen, bevor Sie dieses Fenster schließen?</value>
   </data>
+  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
+    <value>An dieser Spur wurden Änderungen vorgenommen.{0}{0}Möchten Sie diese Änderungen übernehmen, bevor Sie die Spur wechseln?</value>
+  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warnung: Die Diskette in Laufwerk {0} ist nicht leer.{1}{1}Wenn Sie fortfahren, wird sie überschrieben.{1}{1}Möchten Sie fortfahren?</value>
   </data>
