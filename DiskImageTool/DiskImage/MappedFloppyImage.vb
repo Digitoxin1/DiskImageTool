@@ -208,6 +208,20 @@ Namespace DiskImage
             InitProtectedSectors()
         End Sub
 
+        ''' <summary>
+        ''' Rebuilds the decoded sector map and protected-sector sets from the current bitstream
+        ''' tracks. Call after editing track bitstreams (and re-decoding their MFMData) so the
+        ''' decoded model reflects the changes.
+        ''' </summary>
+        Public Sub RebuildSectorMap()
+            If _Image Is Nothing Then
+                Exit Sub
+            End If
+
+            BuildSectorMap()
+            InitProtectedSectors()
+        End Sub
+
         Public Function IsProtectedSector(Sector As UInteger) As Boolean Implements IFloppyImage.IsProtectedSector
             Return _ProtectedSectors.Contains(Sector)
         End Function

@@ -112,7 +112,7 @@ Module HexViews
         Return DisplayHexViewForm(HexViewSectorData, True, True, False)
     End Function
 
-    Public Sub HexDisplayRawTrackData(Disk As Disk, TrackIndex As Integer)
+    Public Function HexDisplayRawTrackData(Disk As Disk, TrackIndex As Integer) As Boolean
         Dim Track As UShort
         Dim Side As Byte
         Dim AllTracks As Boolean
@@ -130,9 +130,11 @@ Module HexViews
         Dim Image = Disk.Image.BitstreamImage
 
         If Image IsNot Nothing Then
-            HexViewRawForm.Display(Disk, Track, Side, AllTracks)
+            Return HexViewRawForm.Display(Disk, Track, Side, AllTracks)
         End If
-    End Sub
+
+        Return False
+    End Function
 
     Public Function HexDisplayRootDirectory(Disk As Disk) As Boolean
         Dim HexViewSectorData = HexViewRootDirectory(Disk)

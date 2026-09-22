@@ -1,8 +1,14 @@
 ﻿Imports System.Text.RegularExpressions
 Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
+Imports DiskImageTool.DiskImage
+Imports DiskImageTool.Hb.Windows.Forms
+Imports DiskImageTool.HexView
 
 Partial Public Class HexViewRawForm
+    Private ReadOnly _UpdatedTracks As New HashSet(Of Point)
+    Private _TracksUpdated As Boolean = False
+
     Private Sub AddContextMenuBitEditItems()
         ContextMenuStrip1.Items.Add(New ToolStripSeparator())
 
@@ -327,4 +333,205 @@ Partial Public Class HexViewRawForm
 
         LoadTrack(_CurrentTrackData, True, True)
     End Sub
+
+#Region "Data Area Editing"
+
+    ''' <summary>
+    ''' True when one or more tracks were edited in this session and re-synced on close, so
+    ''' the caller can refresh the decoded views (tree/summary/hex).
+    ''' </summary>
+    Public ReadOnly Property TracksUpdated As Boolean
+        Get
+            Return _TracksUpdated
+        End Get
+    End Property
+
+    ''' <summary>
+    ''' On close, re-decode every edited track from its (already updated) bitstream and rebuild
+    ''' the image's decoded sector map so edits are reflected in the rest of the application.
+    ''' </summary>
+    Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
+        If _UpdatedTracks.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim BitstreamImage = _FloppyImage.BitstreamImage
+
+        For Each P In _UpdatedTracks
+            Dim BT = BitstreamImage.GetTrack(CUShort(P.X * BitstreamImage.TrackStep), CByte(P.Y))
+            If BT IsNot Nothing Then
+                BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
+            End If
+        Next
+
+        If TypeOf _FloppyImage Is MappedFloppyImage Then
+            CType(_FloppyImage, MappedFloppyImage).RebuildSectorMap()
+        End If
+
+        _TracksUpdated = True
+    End Sub
+
+    ''' <summary>
+    ''' Returns the sector whose data area contains the given hex byte index and can be
+    ''' edited (Debug only, MFM track, valid non-overlapping data checksum), otherwise Nothing.
+    ''' </summary>
+    Private Function GetEditableSector(Index As Long) As BitstreamRegionSector
+        If Not App.AppSettings.Debug Then
+            Return Nothing
+        End If
+
+        If _TrackType <> BitstreamTrackType.MFM Then
+            Return Nothing
+        End If
+
+        If _RegionMap Is Nothing Then
+            Return Nothing
+        End If
+
+        If Index < 0 OrElse Index > _RegionMap.Length - 1 Then
+            Return Nothing
+        End If
+
+        Dim Region = _RegionMap(Index)
+        If Region Is Nothing OrElse Region.RegionType <> MFMRegionType.DataArea Then
+            Return Nothing
+        End If
+
+        Dim Sector = Region.Sector
+        If Sector Is Nothing OrElse Not Sector.DataChecksumValid OrElse Sector.Overlaps Then
+            Return Nothing
+        End If
+
+        Return Sector
+    End Function
+
+    ''' <summary>
+    ''' Encodes a single byte into the bitstream at the given bit index using standard MFM
+    ''' rules. The first clock bit is derived from the previous byte's last data bit (read
+    ''' from the stream), and the following byte's first clock bit is recomputed so it stays
+    ''' consistent with this byte's last data bit.
+    ''' </summary>
+    Private Sub WriteMFMByteAt(Bitstream As BitArray, BitIndex As Integer, Value As Byte)
+        Dim Length = Bitstream.Length
+
+        BitIndex = AdjustBitIndex(BitIndex, Length)
+
+        Dim SeedBit = Bitstream(AdjustBitIndex(BitIndex - 1, Length))
+        Dim Encoded = MFMEncodeBytes({Value}, SeedBit)
+
+        For k = 0 To 15
+            Bitstream(AdjustBitIndex(BitIndex + k, Length)) = Encoded(k)
+        Next
+
+        ' The following byte's first clock bit depends on this byte's last data bit.
+        Dim NextClock = AdjustBitIndex(BitIndex + 16, Length)
+        Dim NextData = AdjustBitIndex(BitIndex + 17, Length)
+        Bitstream(NextClock) = (Not Bitstream(NextData)) And (Not Encoded(15))
+    End Sub
+
+    Private Sub HexBox1_ByteChanged(source As Object, e As HexBox.ByteChangedArgs) Handles HexBox1.ByteChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        Dim Sector = GetEditableSector(e.Index)
+        If Sector Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim Offset = _CurrentTrackData.Offset
+        Dim Length = _Bitstream.Length
+
+        ' Re-encode the edited data byte (the decoded value is already in _Data via the shared provider).
+        Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
+        WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
+
+        ' Recompute the data CRC over the decoded [A1 A1 A1, FB, data...] bytes.
+        Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
+        Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
+        Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
+        Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+
+        ' Overwrite the two checksum bytes so the sector stays checksum-valid.
+        Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
+
+        ' Reflect the recomputed checksum bytes in the display (and _Data via the shared provider).
+        _IgnoreEvent = True
+        HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
+        HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
+        _IgnoreEvent = False
+
+        ' Remember this track so it can be re-synced into the decoded model on close.
+        _UpdatedTracks.Add(New Point(_Track, _Side))
+
+        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+    End Sub
+
+    Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged
+        HexBox1.InsertActive = False
+    End Sub
+
+    ''' <summary>
+    ''' Overwrite-only byte provider that wraps a byte array by reference, so edits stay in
+    ''' sync with the form's decoded data buffer. Insert/delete are unsupported, enforcing
+    ''' overwrite-only editing in the raw hex view.
+    ''' </summary>
+    Private Class SharedByteProvider
+        Implements IByteProvider
+
+        Private ReadOnly _Bytes() As Byte
+
+        Public Sub New(Bytes() As Byte)
+            _Bytes = Bytes
+        End Sub
+
+        Public Event Changed As EventHandler Implements IByteProvider.Changed
+        Public Event LengthChanged As EventHandler Implements IByteProvider.LengthChanged
+
+        Public ReadOnly Property Length As Long Implements IByteProvider.Length
+            Get
+                Return _Bytes.Length
+            End Get
+        End Property
+
+        Public Sub ApplyChanges() Implements IByteProvider.ApplyChanges
+        End Sub
+
+        Public Sub DeleteBytes(index As Long, length As Long) Implements IByteProvider.DeleteBytes
+            'Not supported - overwrite only
+        End Sub
+
+        Public Function HasChanges() As Boolean Implements IByteProvider.HasChanges
+            Return False
+        End Function
+
+        Public Sub InsertBytes(index As Long, bs() As Byte) Implements IByteProvider.InsertBytes
+            'Not supported - overwrite only
+        End Sub
+
+        Public Function ReadByte(index As Long) As Byte Implements IByteProvider.ReadByte
+            Return _Bytes(index)
+        End Function
+
+        Public Function SupportsDeleteBytes() As Boolean Implements IByteProvider.SupportsDeleteBytes
+            Return False
+        End Function
+
+        Public Function SupportsInsertBytes() As Boolean Implements IByteProvider.SupportsInsertBytes
+            Return False
+        End Function
+
+        Public Function SupportsWriteByte() As Boolean Implements IByteProvider.SupportsWriteByte
+            Return True
+        End Function
+
+        Public Sub WriteByte(index As Long, value As Byte) Implements IByteProvider.WriteByte
+            _Bytes(index) = value
+            RaiseEvent Changed(Me, EventArgs.Empty)
+        End Sub
+    End Class
+
+#End Region
 End Class

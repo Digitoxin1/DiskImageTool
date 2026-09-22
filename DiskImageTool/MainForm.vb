@@ -2387,7 +2387,10 @@ Public Class MainForm
 
     Private Sub MenuHexRawTrackData_Click(sender As Object, e As EventArgs) Handles MenuHexRawTrackData.Click
         If sender.tag IsNot Nothing Then
-            HexDisplayRawTrackData(FilePanelMain.CurrentImage.Disk, CInt(sender.Tag))
+            Dim Updated = HexDisplayRawTrackData(FilePanelMain.CurrentImage.Disk, CInt(sender.Tag))
+            If Updated Then
+                DiskImageRefresh(FilePanelMain)
+            End If
         End If
     End Sub
 

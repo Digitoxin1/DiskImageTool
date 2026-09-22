@@ -75,11 +75,13 @@ Partial Public Class HexViewRawForm
         End If
     End Sub
 
-    Public Shared Sub Display(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
+    Public Shared Function Display(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean) As Boolean
         Using dlg As New HexViewRawForm(Disk, Track, Side, AllTracks)
             dlg.ShowDialog(App.CurrentFormInstance)
+
+            Return dlg.TracksUpdated
         End Using
-    End Sub
+    End Function
 
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
@@ -673,7 +675,7 @@ Partial Public Class HexViewRawForm
         Dim SelectionLength = HexBox1.SelectionLength
 
         HexBox1.ByteProvider = Nothing
-        HexBox1.ByteProvider = New DynamicByteProvider(Data)
+        HexBox1.ByteProvider = New SharedByteProvider(Data)
 
         If KeepGridLocation Then
             HexBox1.PerformScrollToLine(StartLine)
@@ -966,6 +968,8 @@ Partial Public Class HexViewRawForm
         ToolStripBtnCopyHexFormatted.Enabled = BtnCopyHexFormatted.Enabled
 
         BtnCopyEncoded.Enabled = HexBox1.CanCopy
+
+        HexBox1.ReadOnly = (GetEditableSector(HexBox1.SelectionStart) Is Nothing)
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
