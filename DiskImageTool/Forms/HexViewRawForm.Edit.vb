@@ -5,9 +5,9 @@ Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.HexView
 
 Partial Public Class HexViewRawForm
-    Private ReadOnly _Changes As New Stack(Of List(Of RawHexChange))
+    Private ReadOnly _Changes As New Stack(Of RawUndoStep)
     Private ReadOnly _OriginalBitstreams As New Dictionary(Of Point, BitArray)
-    Private ReadOnly _RedoChanges As New Stack(Of List(Of RawHexChange))
+    Private ReadOnly _RedoChanges As New Stack(Of RawUndoStep)
     Private _TracksUpdated As Boolean = False
 
     ''' <summary>
@@ -181,34 +181,51 @@ Partial Public Class HexViewRawForm
     End Function
 
     ''' <summary>
-    ''' Applies one undo/redo step: restores the stored bytes into _Data, re-encodes them into
-    ''' the working-clone bitstream, and records the inverse on the destination stack.
+    ''' Applies one undo/redo step. Overwrite restores decoded bytes in place. Insert/remove
+    ''' splices bits in the working clone and rebuilds the hex view from that clone.
     ''' </summary>
-    Private Sub PopChange(Source As Stack(Of List(Of RawHexChange)), Destination As Stack(Of List(Of RawHexChange)))
+    Private Sub PopChange(Source As Stack(Of RawUndoStep), Destination As Stack(Of RawUndoStep))
         If Source.Count = 0 Then
             Exit Sub
         End If
 
-        Dim ChangeList = Source.Pop()
-        Dim DestinationList As New List(Of RawHexChange)
+        Dim UndoStep = Source.Pop()
 
-        _IgnoreEvent = True
-        For Each Change In ChangeList
-            ' Capture the current value so the operation can be reversed.
-            DestinationList.Add(New RawHexChange(Change.Index, {_Data(Change.Index)}, Change.SelectionStart, Change.SelectionLength))
+        If UndoStep.Kind = RawUndoKind.Overwrite Then
+            Dim DestinationList As New List(Of RawHexChange)
 
-            ' Restore the stored bytes into the decoded display and the working-clone bitstream.
-            For Counter = 0 To Change.Data.Length - 1
-                HexBox1.ByteProvider.WriteByte(Change.Index + Counter, Change.Data(Counter))
-                ReEncodeByte(Change.Index + Counter)
+            _IgnoreEvent = True
+            For Each Change In UndoStep.Overwrites
+                DestinationList.Add(New RawHexChange(Change.Index, {_Data(Change.Index)}, Change.SelectionStart, Change.SelectionLength))
+
+                For Counter = 0 To Change.Data.Length - 1
+                    HexBox1.ByteProvider.WriteByte(Change.Index + Counter, Change.Data(Counter))
+                    ReEncodeByte(Change.Index + Counter)
+                Next
             Next
-        Next
-        _IgnoreEvent = False
+            _IgnoreEvent = False
 
-        Destination.Push(DestinationList)
+            Destination.Push(New RawUndoStep(DestinationList))
+            HexBox1.Select(UndoStep.Overwrites(0).SelectionStart, UndoStep.Overwrites(0).SelectionLength)
 
-        ' Restore the selection recorded with the first change in the list.
-        HexBox1.Select(ChangeList(0).SelectionStart, ChangeList(0).SelectionLength)
+            RefreshUndoButtons()
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+            Exit Sub
+        End If
+
+        If UndoStep.Kind = RawUndoKind.InsertBits Then
+            _Bitstream = RemoveBits(_Bitstream, UndoStep.BitIndex, UndoStep.Bits.Length)
+            Destination.Push(New RawUndoStep(RawUndoKind.RemoveBits, UndoStep.BitIndex, UndoStep.Bits, UndoStep.SelectionStart, UndoStep.SelectionLength))
+            ApplyMFMSpliceClocks(UndoStep.BitIndex, 0)
+        Else
+            _Bitstream = InsertBits(_Bitstream, UndoStep.BitIndex, UndoStep.Bits)
+            Destination.Push(New RawUndoStep(RawUndoKind.InsertBits, UndoStep.BitIndex, UndoStep.Bits, UndoStep.SelectionStart, UndoStep.SelectionLength))
+            ApplyMFMSpliceClocks(UndoStep.BitIndex, UndoStep.Bits.Length)
+        End If
+
+        ReloadFromWorkingBitstream()
+        HexBox1.Select(UndoStep.SelectionStart, UndoStep.SelectionLength)
 
         RefreshUndoButtons()
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
@@ -216,12 +233,250 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
-    ''' Pushes an edit onto the undo stack, clears the redo stack, and refreshes the buttons.
+    ''' Pushes an overwrite edit onto the undo stack, clears the redo stack, and refreshes the buttons.
     ''' </summary>
     Private Sub PushChanges(ChangeList As List(Of RawHexChange))
-        _Changes.Push(ChangeList)
+        _Changes.Push(New RawUndoStep(ChangeList))
         _RedoChanges.Clear()
         RefreshUndoButtons()
+    End Sub
+
+    ''' <summary>
+    ''' Pushes an insert or remove of a bit splice onto the undo stack for a later length-changing edit.
+    ''' </summary>
+    Private Sub PushSplice(Kind As RawUndoKind, BitIndex As Integer, Bits As BitArray, SelectionStart As Long, SelectionLength As Long)
+        _Changes.Push(New RawUndoStep(Kind, BitIndex, CType(Bits.Clone(), BitArray), SelectionStart, SelectionLength))
+        _RedoChanges.Clear()
+        RefreshUndoButtons()
+    End Sub
+
+    Private Function InsertBits(source As BitArray, index As Integer, bitsToInsert As BitArray) As BitArray
+        If index < 0 OrElse index > source.Length Then
+            Throw New ArgumentOutOfRangeException(NameOf(index))
+        End If
+
+        Dim insertCount = bitsToInsert.Length
+        Dim result As New BitArray(source.Length + insertCount)
+
+        Dim destPos As Integer = 0
+
+        For i = 0 To index - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        For i = 0 To insertCount - 1
+            result(destPos) = bitsToInsert(i)
+            destPos += 1
+        Next
+
+        For i = index To source.Length - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        Return result
+    End Function
+
+    Private Function RemoveBits(source As BitArray, index As Integer, count As Integer) As BitArray
+        Dim newLength = source.Length - count
+        Dim result As New BitArray(newLength)
+
+        Dim destPos As Integer = 0
+
+        For i = 0 To index - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        For i = index + count To source.Length - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        Return result
+    End Function
+
+    ''' <summary>
+    ''' Last data bit of the MFM byte that ends immediately before BitIndex (the first clock
+    ''' of the byte at BitIndex). The stream is treated as circular.
+    ''' </summary>
+    Private Function GetPreviousDataBit(BitIndex As Integer) As Boolean
+        Return _Bitstream(AdjustBitIndex(BitIndex - 1, _Bitstream.Length))
+    End Function
+
+    ''' <summary>
+    ''' Recomputes the MFM clock bit at BitIndex: clock is 1 only when both the previous data
+    ''' bit and this byte's first data bit are 0.
+    ''' </summary>
+    Private Sub FixClockAt(BitIndex As Integer)
+        If _Bitstream Is Nothing OrElse _Bitstream.Length < 2 Then
+            Exit Sub
+        End If
+
+        Dim Length = _Bitstream.Length
+        Dim ClockIndex = AdjustBitIndex(BitIndex, Length)
+        Dim DataIndex = AdjustBitIndex(BitIndex + 1, Length)
+        Dim PrevData = GetPreviousDataBit(BitIndex)
+        _Bitstream(ClockIndex) = (Not _Bitstream(DataIndex)) AndAlso (Not PrevData)
+    End Sub
+
+    ''' <summary>
+    ''' After a splice, fix clocks at both sides of the joined bytes. InsertedBitCount 0 is a
+    ''' delete: only the byte that now follows the previous content needs its first clock.
+    ''' </summary>
+    Private Sub ApplyMFMSpliceClocks(StartBit As Integer, InsertedBitCount As Integer)
+        FixClockAt(StartBit)
+        If InsertedBitCount > 0 Then
+            FixClockAt(StartBit + InsertedBitCount)
+        End If
+    End Sub
+
+    Private Function CopyBits(Source As BitArray, Index As Integer, Count As Integer) As BitArray
+        Dim Result As New BitArray(Count)
+        For i = 0 To Count - 1
+            Result(i) = Source(Index + i)
+        Next
+        Return Result
+    End Function
+
+    Private Function GetGapOrNullRegion(Index As Long) As BitstreamRegion
+        Dim Region = GetEditableRegion(Index)
+        If Region Is Nothing Then
+            Return Nothing
+        End If
+
+        If IsGapRegion(Region.RegionType) OrElse IsNullRegion(Region.RegionType) Then
+            Return Region
+        End If
+
+        Return Nothing
+    End Function
+
+    Private Function SelectionSpansMultipleRegions() As Boolean
+        If HexBox1.SelectionLength <= 1 Then
+            Return False
+        End If
+
+        If _RegionMap Is Nothing Then
+            Return True
+        End If
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionEnd = SelectionStart + HexBox1.SelectionLength - 1
+        If SelectionStart < 0 OrElse SelectionEnd > _RegionMap.Length - 1 Then
+            Return True
+        End If
+
+        Dim RegionStart = _RegionMap(SelectionStart)
+        Dim RegionEnd = _RegionMap(SelectionEnd)
+        Return RegionStart Is Nothing OrElse RegionEnd Is Nothing OrElse RegionStart IsNot RegionEnd
+    End Function
+
+    Private Sub RefreshGapMenuItems()
+        Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
+
+        Dim Visible = Region IsNot Nothing AndAlso Not SelectionSpansMultipleRegions()
+        ToolStripSeparatorGapBytes.Visible = Visible
+        BtnInsertGapBytes.Visible = Visible
+        BtnDeleteGapBytes.Visible = Visible
+        BtnDeleteGapBytes.Enabled = Visible AndAlso HexBox1.SelectionLength > 0
+    End Sub
+
+    Private Function GetCaretBitIndex() As Integer
+        If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing Then
+            Return -1
+        End If
+
+        Dim BitIndex = CInt(HexBox1.SelectionStart * 16 + _CurrentTrackData.Offset)
+        If BitIndex < 0 OrElse BitIndex > _Bitstream.Length Then
+            Return -1
+        End If
+
+        Return BitIndex
+    End Function
+
+    ''' <summary>
+    ''' Inserts N MFM-encoded fill bytes at the caret into the working clone.
+    ''' </summary>
+    Private Sub InsertGapOrNullBytes()
+        Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
+        If Region Is Nothing OrElse SelectionSpansMultipleRegions() Then
+            Exit Sub
+        End If
+
+        Dim DefaultFill As Byte = If(IsGapRegion(Region.RegionType), CByte(&H4E), CByte(0))
+        Dim Result = InsertBytesForm.Display(DefaultFill)
+        If Not Result.Result OrElse Result.Count < 1 Then
+            Exit Sub
+        End If
+
+        Dim Count = Result.Count
+        Dim FillByte = Result.FillByte
+
+        Dim BitIndex = GetCaretBitIndex()
+        If BitIndex < 0 Then
+            Exit Sub
+        End If
+
+        Dim Fill(Count - 1) As Byte
+        For i = 0 To Count - 1
+            Fill(i) = FillByte
+        Next
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim Encoded = MFMEncodeBytes(Fill, GetPreviousDataBit(BitIndex))
+
+        _Bitstream = InsertBits(_Bitstream, BitIndex, Encoded)
+        ApplyMFMSpliceClocks(BitIndex, Encoded.Length)
+        PushSplice(RawUndoKind.InsertBits, BitIndex, Encoded, SelectionStart, SelectionLength)
+        ReloadFromWorkingBitstream()
+        HexBox1.Select(SelectionStart, Count)
+    End Sub
+
+    ''' <summary>
+    ''' Removes the selected decoded bytes from the current gap/null region.
+    ''' </summary>
+    Private Sub DeleteGapOrNullBytes()
+        If HexBox1.SelectionLength < 1 OrElse SelectionSpansMultipleRegions() Then
+            Exit Sub
+        End If
+
+        Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
+        If Region Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim Count = CInt(HexBox1.SelectionLength)
+
+        Dim BitIndex = GetCaretBitIndex()
+        If BitIndex < 0 Then
+            Exit Sub
+        End If
+
+        Dim MaxBytes = CInt(Region.StartIndex + Region.Length - HexBox1.SelectionStart)
+        Dim MaxBits = (_Bitstream.Length - BitIndex) \ 16
+        If MaxBits < MaxBytes Then
+            MaxBytes = MaxBits
+        End If
+        If MaxBytes < 1 Then
+            Exit Sub
+        End If
+        If Count > MaxBytes Then
+            Count = MaxBytes
+        End If
+
+        Dim BitCount = Count * 16
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim Removed = CopyBits(_Bitstream, BitIndex, BitCount)
+
+        _Bitstream = RemoveBits(_Bitstream, BitIndex, BitCount)
+        ApplyMFMSpliceClocks(BitIndex, 0)
+        PushSplice(RawUndoKind.RemoveBits, BitIndex, Removed, SelectionStart, SelectionLength)
+        ReloadFromWorkingBitstream()
+        HexBox1.Select(SelectionStart, 0)
     End Sub
 
     ''' <summary>
@@ -429,7 +684,7 @@ Partial Public Class HexViewRawForm
         ' The following byte's first clock bit depends on this byte's last data bit.
         Dim NextClock = AdjustBitIndex(BitIndex + 16, Length)
         Dim NextData = AdjustBitIndex(BitIndex + 17, Length)
-        Bitstream(NextClock) = (Not Bitstream(NextData)) And (Not Encoded(15))
+        Bitstream(NextClock) = (Not Bitstream(NextData)) AndAlso (Not Encoded(15))
     End Sub
 
 #Region "Events"
@@ -541,6 +796,14 @@ Partial Public Class HexViewRawForm
         FillSelected(CByte(sender.Tag))
     End Sub
 
+    Private Sub BtnInsertGapBytes_Click(sender As Object, e As EventArgs) Handles BtnInsertGapBytes.Click
+        InsertGapOrNullBytes()
+    End Sub
+
+    Private Sub BtnDeleteGapBytes_Click(sender As Object, e As EventArgs) Handles BtnDeleteGapBytes.Click
+        DeleteGapOrNullBytes()
+    End Sub
+
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
         CommitChanges(False)
     End Sub
@@ -555,8 +818,39 @@ Partial Public Class HexViewRawForm
 #End Region
 
 #Region "Helpers"
+    Private Enum RawUndoKind
+        Overwrite
+        InsertBits
+        RemoveBits
+    End Enum
+
     ''' <summary>
-    ''' A single staged edit for undo/redo: the original bytes at a given _Data index plus the
+    ''' One undo/redo step: either a list of overwritten hex bytes, or a compact bitstream splice.
+    ''' </summary>
+    Private Class RawUndoStep
+        Public Sub New(Overwrites As List(Of RawHexChange))
+            Kind = RawUndoKind.Overwrite
+            Me.Overwrites = Overwrites
+        End Sub
+
+        Public Sub New(Kind As RawUndoKind, BitIndex As Integer, Bits As BitArray, SelectionStart As Long, SelectionLength As Long)
+            Me.Kind = Kind
+            Me.BitIndex = BitIndex
+            Me.Bits = Bits
+            Me.SelectionStart = SelectionStart
+            Me.SelectionLength = SelectionLength
+        End Sub
+
+        Public Property BitIndex As Integer
+        Public Property Bits As BitArray
+        Public Property Kind As RawUndoKind
+        Public Property Overwrites As List(Of RawHexChange)
+        Public Property SelectionLength As Long
+        Public Property SelectionStart As Long
+    End Class
+
+    ''' <summary>
+    ''' A single staged overwrite for undo/redo: the original bytes at a given _Data index plus the
     ''' selection to restore when the change is applied.
     ''' </summary>
     Private Class RawHexChange

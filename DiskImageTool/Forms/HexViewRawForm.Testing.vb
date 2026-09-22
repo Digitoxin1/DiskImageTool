@@ -258,58 +258,6 @@ Partial Public Class HexViewRawForm
         LoadTrack(_CurrentTrackData, True, True)
     End Sub
 
-    Private Function InsertBits(source As BitArray, index As Integer, bitsToInsert As BitArray) As BitArray
-        If index < 0 OrElse index > source.Length Then
-            Throw New ArgumentOutOfRangeException(NameOf(index))
-        End If
-
-        Dim insertCount = bitsToInsert.Length
-        Dim result As New BitArray(source.Length + insertCount)
-
-        Dim destPos As Integer = 0
-
-        ' Copy bits before insertion point
-        For i = 0 To index - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        ' Copy inserted bits
-        For i = 0 To insertCount - 1
-            result(destPos) = bitsToInsert(i)
-            destPos += 1
-        Next
-
-        ' Copy bits after insertion point
-        For i = index To source.Length - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        Return result
-    End Function
-
-    Private Function RemoveBits(source As BitArray, index As Integer, count As Integer) As BitArray
-        Dim newLength = source.Length - count
-        Dim result As New BitArray(newLength)
-
-        Dim destPos As Integer = 0
-
-        ' Copy before the removed slice
-        For i = 0 To index - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        ' Skip the removed bits and copy the rest
-        For i = index + count To source.Length - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        Return result
-    End Function
-
     Private Function RepeatBitArray(source As BitArray, count As UInteger) As BitArray
         If count = 0 OrElse source.Length = 0 Then
             Return New BitArray(0)

@@ -2036,4 +2036,28 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="SummaryPanel_WriteProtected" xml:space="preserve">
     <value>Protegido contra escritura</value>
   </data>
+  <data name="Menu_InsertRegionBytes" xml:space="preserve">
+    <value>Insert {0} Bytes</value>
+  </data>
+  <data name="Menu_DeleteRegionBytes" xml:space="preserve">
+    <value>Delete {0} Bytes</value>
+  </data>
+  <data name="Label_NULL" xml:space="preserve">
+    <value>NULL</value>
+  </data>
+  <data name="Dialog_ByteCount" xml:space="preserve">
+    <value>Number of bytes:</value>
+  </data>
+  <data name="Caption_ByteCount" xml:space="preserve">
+    <value>Byte Count</value>
+  </data>
+  <data name="Menu_InsertBytes" xml:space="preserve">
+    <value>Insert Bytes</value>
+  </data>
+  <data name="Menu_DeleteSelectedBytes" xml:space="preserve">
+    <value>Delete Selected Bytes</value>
+  </data>
+  <data name="Label_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
 </root>

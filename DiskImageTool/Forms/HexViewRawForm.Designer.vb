@@ -67,6 +67,9 @@ Partial Class HexViewRawForm
         Me.BtnSelectData = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnAdjustOffset = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparatorGapBytes = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnInsertGapBytes = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDeleteGapBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripBtnCopyText = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnCopyHex = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnCopyHexFormatted = New System.Windows.Forms.ToolStripButton()
@@ -315,9 +318,9 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertGapBytes, Me.BtnDeleteGapBytes})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 380)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 430)
         '
         'BtnCopyHex
         '
@@ -447,6 +450,23 @@ Partial Class HexViewRawForm
         Me.BtnAdjustOffset.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
         Me.BtnAdjustOffset.Size = New System.Drawing.Size(265, 22)
         Me.BtnAdjustOffset.Text = "{Adjust Bit &Offset}"
+        '
+        'ToolStripSeparatorGapBytes
+        '
+        Me.ToolStripSeparatorGapBytes.Name = "ToolStripSeparatorGapBytes"
+        Me.ToolStripSeparatorGapBytes.Size = New System.Drawing.Size(262, 6)
+        '
+        'BtnInsertGapBytes
+        '
+        Me.BtnInsertGapBytes.Name = "BtnInsertGapBytes"
+        Me.BtnInsertGapBytes.Size = New System.Drawing.Size(265, 22)
+        Me.BtnInsertGapBytes.Text = "{Insert GAP Bytes}"
+        '
+        'BtnDeleteGapBytes
+        '
+        Me.BtnDeleteGapBytes.Name = "BtnDeleteGapBytes"
+        Me.BtnDeleteGapBytes.Size = New System.Drawing.Size(265, 22)
+        Me.BtnDeleteGapBytes.Text = "{Delete GAP Bytes}"
         '
         'ToolStripBtnCopyText
         '
@@ -746,6 +766,9 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripBtnSelectData As ToolStripButton
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents BtnAdjustOffset As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparatorGapBytes As ToolStripSeparator
+    Friend WithEvents BtnInsertGapBytes As ToolStripMenuItem
+    Friend WithEvents BtnDeleteGapBytes As ToolStripMenuItem
     Friend WithEvents ToolStripBtnAdjustOffset As ToolStripButton
     Friend WithEvents ToolStripStatusBits As ToolStripStatusLabel
     Friend WithEvents PanelSectors As DiskImageTool.SelectablePanel

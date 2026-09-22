@@ -101,6 +101,8 @@ Partial Public Class HexViewRawForm
         BtnSelectData.Text = My.Resources.Menu_SelectData
         BtnSelectRegion.Text = My.Resources.Menu_SelectRegion
         BtnSelectSector.Text = My.Resources.Menu_SelectSector
+        BtnInsertGapBytes.Text = My.Resources.Menu_InsertBytes
+        BtnDeleteGapBytes.Text = My.Resources.Menu_DeleteSelectedBytes
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
         ToolStripBtnAdjustOffset.Text = WithoutHotkey(My.Resources.Menu_AdjustBitOffset)
@@ -756,6 +758,51 @@ Partial Public Class HexViewRawForm
         LoadData(Data, RegionData, KeepGridLocation)
     End Sub
 
+    ''' <summary>
+    ''' Rebuilds the decoded hex view from the working-clone bitstream without cloning the live track.
+    ''' </summary>
+    Private Sub ReloadFromWorkingBitstream()
+        If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim Data() As Byte
+        Dim RegionData As BitstreamRegionData
+
+        If _TrackType = BitstreamTrackType.MFM Or _TrackType = BitstreamTrackType.FM Then
+            Dim NumBytes = _Bitstream.Length \ 16
+            Dim Offset = _CurrentTrackData.Offset
+            RegionData = MFMGetRegionList(_Bitstream, _TrackType)
+            Data = MFMGetBytes(_Bitstream, Offset, RegionData.NumBytes)
+            _WeakBitRegions = GetWeakBitRegions(_Bitstream, Offset)
+
+            If _SurfaceData IsNot Nothing AndAlso _WeakBitRegions IsNot Nothing Then
+                For Each Range In _WeakBitRegions
+                    For Each Sector In RegionData.Sectors
+                        Dim SectorLength = Sector.Length
+                        If SectorLength = 0 Then
+                            SectorLength = NumBytes - Sector.StartIndex
+                        End If
+                        Dim SectorEnd As Integer = Sector.StartIndex + SectorLength - 1
+                        If Range.StartIndex <= SectorEnd AndAlso Range.EndIndex >= Sector.StartIndex Then
+                            Sector.HasWeakBits = True
+                        End If
+                    Next
+                Next
+            End If
+        Else
+            Data = BitsToBytes(_Bitstream, 0)
+            RegionData = New BitstreamRegionData With {
+                .NumBits = _Bitstream.Length,
+                .Aligned = False
+            }
+        End If
+
+        RegionData.Track = _Track
+        RegionData.Side = _Side
+        LoadData(Data, RegionData, False)
+    End Sub
+
     Private Sub PopulateTracks(AllTracks As Boolean)
         Dim SelectedIndex As Integer = -1
         ComboTrack.Items.Clear()
@@ -1008,6 +1055,7 @@ Partial Public Class HexViewRawForm
         HexBox1.ReadOnly = (GetEditableRegion(HexBox1.SelectionStart) Is Nothing)
 
         RefreshPasteButton()
+        RefreshGapMenuItems()
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
