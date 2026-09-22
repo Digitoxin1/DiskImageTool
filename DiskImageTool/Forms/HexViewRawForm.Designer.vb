@@ -26,7 +26,6 @@ Partial Class HexViewRawForm
         Dim ToolStripStatusGap As System.Windows.Forms.ToolStripStatusLabel
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
-        Dim PanelEdit As System.Windows.Forms.Panel
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewRawForm))
         Me.ToolStripEdit = New System.Windows.Forms.ToolStrip()
         Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
@@ -78,13 +77,12 @@ Partial Class HexViewRawForm
         Me.PanelMain = New System.Windows.Forms.Panel()
         Me.PanelSpacer = New System.Windows.Forms.Panel()
         Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
-        Me.PanelTop = New System.Windows.Forms.Panel()
+        Me.TableLayoutPanelTop = New System.Windows.Forms.TableLayoutPanel()
         Me.PanelSectors = New DiskImageTool.SelectablePanel()
+        Me.CheckBoxAllTracks = New System.Windows.Forms.CheckBox()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
-        PanelEdit = New System.Windows.Forms.Panel()
-        PanelEdit.SuspendLayout()
         Me.ToolStripEdit.SuspendLayout()
         CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ContextMenuStrip2.SuspendLayout()
@@ -92,7 +90,7 @@ Partial Class HexViewRawForm
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ToolStripMain.SuspendLayout()
         Me.PanelMain.SuspendLayout()
-        Me.PanelTop.SuspendLayout()
+        Me.TableLayoutPanelTop.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStripStatusGap
@@ -111,17 +109,6 @@ Partial Class HexViewRawForm
         ToolStripSeparator5.Name = "ToolStripSeparator5"
         ToolStripSeparator5.Size = New System.Drawing.Size(6, 25)
         '
-        'PanelEdit
-        '
-        PanelEdit.AutoSize = True
-        PanelEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        PanelEdit.Controls.Add(Me.ToolStripEdit)
-        PanelEdit.Dock = System.Windows.Forms.DockStyle.Left
-        PanelEdit.Location = New System.Drawing.Point(12, 0)
-        PanelEdit.Name = "PanelEdit"
-        PanelEdit.Size = New System.Drawing.Size(118, 25)
-        PanelEdit.TabIndex = 0
-        '
         'ToolStripEdit
         '
         Me.ToolStripEdit.CanOverflow = False
@@ -129,7 +116,7 @@ Partial Class HexViewRawForm
         Me.ToolStripEdit.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.ToolStripEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, Me.ToolStripSeparator3})
         Me.ToolStripEdit.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
-        Me.ToolStripEdit.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStripEdit.Location = New System.Drawing.Point(12, 0)
         Me.ToolStripEdit.Name = "ToolStripEdit"
         Me.ToolStripEdit.Size = New System.Drawing.Size(118, 25)
         Me.ToolStripEdit.TabIndex = 0
@@ -568,28 +555,48 @@ Partial Class HexViewRawForm
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
         '
-        'PanelTop
+        'TableLayoutPanelTop
         '
-        Me.PanelTop.AutoSize = True
-        Me.PanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.PanelTop.Controls.Add(Me.PanelSectors)
-        Me.PanelTop.Controls.Add(PanelEdit)
-        Me.PanelTop.Dock = System.Windows.Forms.DockStyle.Top
-        Me.PanelTop.Location = New System.Drawing.Point(0, 25)
-        Me.PanelTop.Name = "PanelTop"
-        Me.PanelTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
-        Me.PanelTop.Size = New System.Drawing.Size(944, 25)
-        Me.PanelTop.TabIndex = 1
+        Me.TableLayoutPanelTop.AutoSize = True
+        Me.TableLayoutPanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.TableLayoutPanelTop.ColumnCount = 3
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanelTop.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelTop.Controls.Add(Me.ToolStripEdit, 0, 0)
+        Me.TableLayoutPanelTop.Controls.Add(Me.PanelSectors, 1, 0)
+        Me.TableLayoutPanelTop.Controls.Add(Me.CheckBoxAllTracks, 2, 0)
+        Me.TableLayoutPanelTop.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TableLayoutPanelTop.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
+        Me.TableLayoutPanelTop.Location = New System.Drawing.Point(0, 25)
+        Me.TableLayoutPanelTop.Name = "TableLayoutPanelTop"
+        Me.TableLayoutPanelTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
+        Me.TableLayoutPanelTop.RowCount = 1
+        Me.TableLayoutPanelTop.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanelTop.Size = New System.Drawing.Size(944, 25)
+        Me.TableLayoutPanelTop.TabIndex = 1
         '
         'PanelSectors
         '
-        Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Top
+        Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Fill
         Me.PanelSectors.Location = New System.Drawing.Point(130, 0)
+        Me.PanelSectors.Margin = New System.Windows.Forms.Padding(0)
         Me.PanelSectors.Name = "PanelSectors"
         Me.PanelSectors.Padding = New System.Windows.Forms.Padding(2, 4, 0, 4)
-        Me.PanelSectors.Size = New System.Drawing.Size(802, 25)
+        Me.PanelSectors.Size = New System.Drawing.Size(711, 25)
         Me.PanelSectors.TabIndex = 1
         Me.PanelSectors.TabStop = True
+        '
+        'CheckBoxAllTracks
+        '
+        Me.CheckBoxAllTracks.AutoSize = True
+        Me.CheckBoxAllTracks.Location = New System.Drawing.Point(844, 3)
+        Me.CheckBoxAllTracks.Name = "CheckBoxAllTracks"
+        Me.CheckBoxAllTracks.Padding = New System.Windows.Forms.Padding(4, 2, 0, 0)
+        Me.CheckBoxAllTracks.Size = New System.Drawing.Size(85, 19)
+        Me.CheckBoxAllTracks.TabIndex = 2
+        Me.CheckBoxAllTracks.Text = "{All Tracks}"
+        Me.CheckBoxAllTracks.UseVisualStyleBackColor = True
         '
         'HexViewRawForm
         '
@@ -597,7 +604,7 @@ Partial Class HexViewRawForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(944, 573)
         Me.Controls.Add(Me.PanelMain)
-        Me.Controls.Add(Me.PanelTop)
+        Me.Controls.Add(Me.TableLayoutPanelTop)
         Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStripBottom)
         Me.KeyPreview = True
@@ -609,8 +616,6 @@ Partial Class HexViewRawForm
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        PanelEdit.ResumeLayout(False)
-        PanelEdit.PerformLayout()
         Me.ToolStripEdit.ResumeLayout(False)
         Me.ToolStripEdit.PerformLayout()
         CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).EndInit()
@@ -621,8 +626,8 @@ Partial Class HexViewRawForm
         Me.ToolStripMain.ResumeLayout(False)
         Me.ToolStripMain.PerformLayout()
         Me.PanelMain.ResumeLayout(False)
-        Me.PanelTop.ResumeLayout(False)
-        Me.PanelTop.PerformLayout()
+        Me.TableLayoutPanelTop.ResumeLayout(False)
+        Me.TableLayoutPanelTop.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -674,10 +679,11 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripStatusExactBitCount As ToolStripStatusLabel
     Friend WithEvents PanelMain As Panel
     Friend WithEvents PanelSpacer As Panel
-    Friend WithEvents PanelTop As Panel
     Friend WithEvents ToolStripEdit As ToolStrip
     Friend WithEvents ToolStripBtnCommit As ToolStripButton
     Friend WithEvents ToolStripBtnUndo As ToolStripButton
     Friend WithEvents ToolStripBtnRedo As ToolStripButton
     Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
+    Friend WithEvents TableLayoutPanelTop As TableLayoutPanel
+    Friend WithEvents CheckBoxAllTracks As CheckBox
 End Class

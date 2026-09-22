@@ -6,7 +6,6 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.Bitstream
 
 Partial Public Class HexViewRawForm
-    Private WithEvents CheckBoxAllTracks As ToolStripCheckBox
     Private WithEvents ComboTrack As ComboTrack
     Private WithEvents NumericBitOffset As ToolStripNumericUpDown
     Private _AllTracks As Boolean
@@ -108,6 +107,7 @@ Partial Public Class HexViewRawForm
         ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
         ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripBtnUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
+        CheckBoxAllTracks.Text = My.Resources.Label_AllTracks
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>
@@ -424,10 +424,12 @@ Partial Public Class HexViewRawForm
             ShowAllTracks = False
         End If
 
-        InitializeTrackNavigator()
+        CheckBoxAllTracks.Visible = ShowAllTracks
         If ShowAllTracks Then
-            InitializeAllTracksCheckBox()
+            CheckBoxAllTracks.Checked = _AllTracks
         End If
+
+        InitializeTrackNavigator()
         InitializeBitOffsetNavigator()
         InitializeToolstripLabels()
         PopulateTracks(_AllTracks)
@@ -501,16 +503,6 @@ Partial Public Class HexViewRawForm
                 End If
             End If
         Next
-    End Sub
-    Private Sub InitializeAllTracksCheckBox()
-        CheckBoxAllTracks = New ToolStripCheckBox With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .Checked = _AllTracks,
-            .Margin = New Padding(12, 3, 0, 2),
-            .Text = My.Resources.Label_AllTracks
-        }
-
-        ToolStripMain.Items.Add(CheckBoxAllTracks)
     End Sub
 
     Private Sub InitializeBitOffsetNavigator()
