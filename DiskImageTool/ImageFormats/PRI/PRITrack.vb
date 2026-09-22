@@ -47,6 +47,9 @@ Namespace ImageFormats.PRI
             End Get
             Set(value As BitArray)
                 _Bitstream = value
+                If value IsNot Nothing Then
+                    Length = CUInt(value.Length)
+                End If
             End Set
         End Property
 

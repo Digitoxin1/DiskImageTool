@@ -85,6 +85,10 @@ Namespace ImageFormats.PRI
                             If _Tracks.ContainsKey(Key) Then
                                 Dim PRITrack = _Tracks.Item(Key)
 
+                                If PRITrack.Bitstream IsNot Nothing AndAlso CUInt(PRITrack.Bitstream.Length) <> PRITrack.Length Then
+                                    PRITrack.Length = CUInt(PRITrack.Bitstream.Length)
+                                End If
+
                                 Buffer = New PRIChunk("TRAK", PRITrack.ChunkData).ToBytes
                                 fs.Write(Buffer, 0, Buffer.Length)
 

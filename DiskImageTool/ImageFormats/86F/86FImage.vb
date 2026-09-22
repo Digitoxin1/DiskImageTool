@@ -228,6 +228,8 @@ Namespace ImageFormats.D86F
             Dim TrackArray = GetTrackArray()
             Dim Reverse As Boolean = Not ReverseEndian
 
+            SyncBitcellSettingsForExport(TrackArray)
+
             Try
                 DeleteFileIfExists(FilePath)
 
@@ -506,6 +508,44 @@ Namespace ImageFormats.D86F
 
             Return Length
         End Function
+
+        Private Function GetExpectedBitCellCount(Track As D86FTrack) As UInteger
+            If BitcellMode And AlternateBitcellCalculation Then
+                Return Track.BitCellCount
+            Else
+                Dim IsMFM = Track.Encoding = Encoding.MFM
+                Return GetCalculatedBitCellCount(Track.BitRate, Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+            End If
+        End Function
+
+        Private Sub SyncBitcellSettingsForExport(TrackArray() As D86FTrack)
+            Dim Track As D86FTrack
+            Dim AnyChanged As Boolean = False
+
+            For Each Track In TrackArray
+                If Track Is Nothing OrElse Track.Bitstream.Length = 0 Then
+                    Continue For
+                End If
+
+                If CUInt(Track.Bitstream.Length) <> GetExpectedBitCellCount(Track) Then
+                    AnyChanged = True
+                    Exit For
+                End If
+            Next
+
+            If Not AnyChanged Then
+                Return
+            End If
+
+            BitcellMode = True
+            AlternateBitcellCalculation = True
+
+            For Each Track In TrackArray
+                If Track IsNot Nothing AndAlso Track.Bitstream.Length > 0 Then
+                    Track.BitCellCount = CUInt(Track.Bitstream.Length)
+                End If
+            Next
+        End Sub
 
         Private Function GetTrackArray() As D86FTrack()
             Dim TrackArray() As D86FTrack
