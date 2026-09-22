@@ -839,6 +839,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\images\Fill4E.png" />
     <None Include="Resources\images\MobyGames.png" />
     <None Include="Resources\images\HelpTableOfContents.png" />
     <None Include="Resources\images\FolderHex.png" />

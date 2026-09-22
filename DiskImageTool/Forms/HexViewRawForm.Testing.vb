@@ -629,6 +629,55 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
+    ''' Overwrites the current selection with a constant byte as a single undo step with one
+    ''' CRC refresh. The selection must already lie inside one editable region.
+    ''' </summary>
+    Private Sub FillSelected(Value As Byte)
+        If Not CanFillSelection() Then
+            Exit Sub
+        End If
+
+        Dim Offset = HexBox1.SelectionStart
+        Dim Length = CInt(HexBox1.SelectionLength)
+        Dim Region = GetEditableRegion(Offset)
+        If Region Is Nothing OrElse Length <= 0 Then
+            Exit Sub
+        End If
+
+        Dim Original(Length - 1) As Byte
+        Dim Modified = False
+
+        _IgnoreEvent = True
+        Try
+            For i = 0 To Length - 1
+                Dim Index = CInt(Offset + i)
+                Original(i) = _Data(Index)
+                If Original(i) <> Value Then
+                    HexBox1.ByteProvider.WriteByte(Index, Value)
+                    ReEncodeByte(Index)
+                    Modified = True
+                End If
+            Next
+
+            If Modified Then
+                Dim ChangeList As New List(Of RawHexChange) From {
+                    New RawHexChange(CInt(Offset), Original, Offset, Length)
+                }
+                StageRegionChecksum(ChangeList, Region)
+                PushChanges(ChangeList)
+            End If
+        Finally
+            _IgnoreEvent = False
+        End Try
+
+        If Modified Then
+            HexBox1.Invalidate()
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+        End If
+    End Sub
+
+    ''' <summary>
     ''' Enables/disables the undo, redo, and commit toolbar buttons based on the stack state.
     ''' </summary>
     Private Sub RefreshUndoButtons()
@@ -806,6 +855,18 @@ Partial Public Class HexViewRawForm
         If ClipboardHasHex() Then
             PasteHex()
         End If
+    End Sub
+
+    Private Sub BtnDelete_Click(sender As Object, e As EventArgs) Handles BtnDelete.Click, ToolStripBtnDelete.Click
+        FillSelected(0)
+    End Sub
+
+    Private Sub BtnFill4E_Click(sender As Object, e As EventArgs) Handles BtnFill4E.Click, ToolStripBtnFill4E.Click
+        FillSelected(&H4E)
+    End Sub
+
+    Private Sub BtnFill_Click(sender As Object, e As EventArgs)
+        FillSelected(CByte(sender.Tag))
     End Sub
 
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click

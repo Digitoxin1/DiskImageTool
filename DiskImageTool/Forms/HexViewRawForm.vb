@@ -44,6 +44,7 @@ Partial Public Class HexViewRawForm
 
         ' Add any initialization after the InitializeComponent() call.
         LocalizeForm()
+        PopulateFillValues()
 
         ToolStripEdit.Renderer = New FlatToolStripRenderer()
 
@@ -90,6 +91,9 @@ Partial Public Class HexViewRawForm
         BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
         BtnCopyText.Text = My.Resources.Menu_CopyText
         BtnCopyValue.Text = My.Resources.Menu_CopyValue
+        BtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        BtnFill.Text = My.Resources.Label_FillSelection
+        BtnFill4E.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x4E")
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FindNext
         BtnPaste.Text = My.Resources.Menu_PasteOver
@@ -103,6 +107,8 @@ Partial Public Class HexViewRawForm
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
+        ToolStripBtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        ToolStripBtnFill4E.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x4E")
         ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
         ToolStripBtnFind.Text = My.Resources.Label_Find
         ToolStripBtnFindNext.Text = My.Resources.Label_FindNext
@@ -784,6 +790,45 @@ Partial Public Class HexViewRawForm
         Return _FloppyImage.NonStandardTracks.Contains(TrackIndex) OrElse _FloppyImage.AdditionalTracks.Contains(TrackIndex)
     End Function
 
+    Private Function CanFillSelection() As Boolean
+        If HexBox1.ByteProvider Is Nothing OrElse HexBox1.SelectionLength <= 0 Then
+            Return False
+        End If
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionEnd = SelectionStart + HexBox1.SelectionLength - 1
+        If SelectionStart < 0 OrElse SelectionEnd >= HexBox1.ByteProvider.Length Then
+            Return False
+        End If
+
+        If _RegionMap Is Nothing Then
+            Return False
+        End If
+
+        Dim RegionStart = _RegionMap(SelectionStart)
+        Dim RegionEnd = _RegionMap(SelectionEnd)
+        If RegionStart Is Nothing OrElse RegionStart IsNot RegionEnd Then
+            Return False
+        End If
+
+        Return GetEditableRegion(SelectionStart) IsNot Nothing
+    End Function
+
+    Private Sub PopulateFillValues()
+        BtnFill.DropDownItems.Clear()
+        For Counter = 0 To 15
+            Dim Item As New ToolStripMenuItem(Counter.ToString("X"))
+            BtnFill.DropDownItems.Add(Item)
+            For Counter2 = 0 To 15
+                Dim Value = Counter * 16 + Counter2
+                Dim Item2 As New ToolStripMenuItem("0x" & Value.ToString("X2"), Nothing, AddressOf BtnFill_Click) With {
+                    .Tag = Value
+                }
+                Item.DropDownItems.Add(Item2)
+            Next
+        Next
+    End Sub
+
     Private Sub ProcessKeyPress(e As KeyEventArgs)
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
@@ -797,6 +842,11 @@ Partial Public Class HexViewRawForm
         ElseIf e.Control And e.KeyCode = Keys.V Then
             If ClipboardHasHex() Then
                 PasteHex()
+            End If
+            e.SuppressKeyPress = True
+        ElseIf e.KeyCode = Keys.Delete Then
+            If CanFillSelection() Then
+                FillSelected(0)
             End If
             e.SuppressKeyPress = True
         End If
@@ -947,6 +997,13 @@ Partial Public Class HexViewRawForm
         ToolStripBtnCopyHexFormatted.Enabled = BtnCopyHexFormatted.Enabled
 
         BtnCopyEncoded.Enabled = HexBox1.CanCopy
+
+        Dim FillEnabled = CanFillSelection()
+        BtnDelete.Enabled = FillEnabled
+        ToolStripBtnDelete.Enabled = FillEnabled
+        BtnFill4E.Enabled = FillEnabled
+        ToolStripBtnFill4E.Enabled = FillEnabled
+        BtnFill.Enabled = FillEnabled
 
         HexBox1.ReadOnly = (GetEditableRegion(HexBox1.SelectionStart) Is Nothing)
 
