@@ -7,8 +7,8 @@ Imports DiskImageTool.HexView
 
 Partial Public Class HexViewRawForm
     Private ReadOnly _Changes As New Stack(Of List(Of RawHexChange))
-    Private ReadOnly _RedoChanges As New Stack(Of List(Of RawHexChange))
     Private ReadOnly _OriginalBitstreams As New Dictionary(Of Point, BitArray)
+    Private ReadOnly _RedoChanges As New Stack(Of List(Of RawHexChange))
     Private _TracksUpdated As Boolean = False
 
     Private Sub AddContextMenuBitEditItems()
@@ -47,23 +47,224 @@ Partial Public Class HexViewRawForm
         ContextMenuStrip1.Items.Add(Item)
     End Sub
 
-    Private Function RepeatBitArray(source As BitArray, count As UInteger) As BitArray
-        If count = 0 OrElse source.Length = 0 Then
-            Return New BitArray(0)
+    Private Sub ContextMenuEditBits_Click()
+        Dim SelectionStart = HexBox1.SelectionStart
+
+        Dim Bits = GetBits(_Bitstream, SelectionStart, False)
+
+        Dim Value = InputBox("Edit bits: ", "Edit Bits", Bits)
+        Value = Value.Replace(" ", "")
+
+        If Not Regex.IsMatch(Value, "^(0|1){16}$") Then
+            Exit Sub
         End If
 
-        Dim result As New BitArray(source.Length * count)
+        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
+        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
 
-        For repeatIndex As Integer = 0 To count - 1
-            Dim offset As Integer = repeatIndex * source.Length
+        For counter = 0 To Value.Length - 1
+            _Bitstream.Set(BitIndex + counter, Value.Substring(counter, 1) = 1)
+        Next
 
-            For bitIndex As Integer = 0 To source.Length - 1
-                result(offset + bitIndex) = source(bitIndex)
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuGapToEnd_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+
+        For i = bitIndex To MFMTrack.Bitstream.Length - 1
+            Dim b As Boolean = GapBits((i - bitIndex) Mod 16) = "1"
+            MFMTrack.Bitstream.Set(i, b)
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuInsertBits_Click()
+        Dim selectionStart = HexBox1.SelectionStart
+
+        ' Empty default text
+        Dim value = InputBox("Insert bits: ", "Insert Bits", "")
+        value = value.Replace(" ", "")
+
+        ' Must be at least 1 bit, only 0 or 1
+        If String.IsNullOrEmpty(value) OrElse Not Regex.IsMatch(value, "^[01]+$") Then
+            Exit Sub
+        End If
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        ' Build a BitArray from the entered bits
+        Dim bitsToInsert As New BitArray(value.Length)
+        For i = 0 To value.Length - 1
+            bitsToInsert(i) = (value(i) = "1")
+        Next
+
+        ' Insert into the bitstream
+        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
+
+        ' Push updated bitstream back into the track and refresh UI
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuInsertGap_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        Dim value = InputBox("Insert gap: ", "Gap Count", "")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
+            Exit Sub
+        End If
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        ' Build a BitArray from the entered bits
+        Dim bitsToInsert As New BitArray(GapBits.Length * CInt(value))
+        For i As Integer = 0 To value - 1
+            For j = 0 To GapBits.Length - 1
+                Dim idx = i * GapBits.Length + j
+                bitsToInsert(idx) = (GapBits(j) = "1")
             Next
         Next
 
-        Return result
-    End Function
+        ' Insert into the bitstream
+        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
+
+        ' Push updated bitstream back into the track and refresh UI
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuNormalizeFirstGap_Click()
+        Dim GapBits = New BitArray({True, False, False, True, False, False, True, False, False, True, False, True, False, True, False, False})
+
+        Dim Value = InputBox("Normalize First Gap: ", "Gap Size")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(Value) OrElse Not IsNumeric(Value) OrElse Value <> Int(Value) OrElse Int(Value) < 0 Then
+            Exit Sub
+        End If
+
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    Dim RegionData = MFMGetRegionList(MFMTrack.Bitstream, MFMTrack.TrackType)
+                    Dim GapSize As UShort = RegionData.Gap4A
+                    If GapSize = 0 Then
+                        GapSize = RegionData.Gap1
+                    End If
+                    Dim Diff = CInt(Value) - GapSize
+                    If Diff <> 0 Then
+                        Dim NewGapBits = RepeatBitArray(GapBits, Math.Abs(Diff))
+                        If Diff > 0 Then
+                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, 0, NewGapBits)
+                            MFMTrack.Bitstream.Length = MFMTrack.Bitstream.Length - NewGapBits.Length
+                        Else
+                            MFMTrack.Bitstream = RemoveBits(MFMTrack.Bitstream, 0, NewGapBits.Length)
+                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, MFMTrack.Bitstream.Length, NewGapBits)
+                        End If
+                    End If
+                End If
+            Next
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuPadAllTracks_Click()
+        Const GapBits As String = "1001001001010100"
+
+        Dim selectionStart = HexBox1.SelectionStart
+
+        Dim value = InputBox("Pad All Tracks: ", "Track Size (Bits)", "")
+
+        ' Must be an integer
+        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
+            Exit Sub
+        End If
+
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                Dim PrevLength = MFMTrack.Bitstream.Length
+                PrevLength = Math.Ceiling(PrevLength / 16) * 16
+                MFMTrack.Bitstream.Length = CInt(value)
+                Dim FillLength = MFMTrack.Bitstream.Length - PrevLength
+                For k = 0 To FillLength - 1
+                    Dim b As Boolean = GapBits(k Mod 16) = "1"
+                    MFMTrack.Bitstream.Set(PrevLength + k, b)
+                Next
+            Next
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuRemoveBits_Click()
+        Dim SelectionStart = HexBox1.SelectionStart
+
+        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
+        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
+
+        Dim RegionStart = _RegionMap(SelectionStart)
+
+        Dim Value = InputBox("Number of bits to remove: ", "Remove Bits", RegionStart.BitOffset.ToString)
+        Dim Offset As UInteger
+        If Not UInteger.TryParse(Value, Offset) Then
+            Exit Sub
+        End If
+
+        _Bitstream = RemoveBits(_Bitstream, BitIndex, Offset)
+
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuRotateAllTracks_Click()
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
+                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    Dim Offset = MFMGetOffset(MFMTrack.Bitstream)
+                    If Offset > 0 Then
+                        MFMTrack.Bitstream = BitstreamAlign(MFMTrack.Bitstream, Offset)
+                    End If
+                End If
+            Next
+        Next
+
+        For Each Track As TrackData In ComboTrack.Items
+            Track.Offset = -1
+        Next
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
 
     Private Function InsertBits(source As BitArray, index As Integer, bitsToInsert As BitArray) As BitArray
         If index < 0 OrElse index > source.Length Then
@@ -117,227 +318,25 @@ Partial Public Class HexViewRawForm
         Return result
     End Function
 
-    Private Sub ContextMenuRotateAllTracks_Click()
-        For i = 0 To _FloppyImage.TrackCount - 1
-            For j = 0 To _FloppyImage.SideCount - 1
-                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
-                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
-                    Dim Offset = MFMGetOffset(MFMTrack.Bitstream)
-                    If Offset > 0 Then
-                        MFMTrack.Bitstream = BitstreamAlign(MFMTrack.Bitstream, Offset)
-                    End If
-                End If
+    Private Function RepeatBitArray(source As BitArray, count As UInteger) As BitArray
+        If count = 0 OrElse source.Length = 0 Then
+            Return New BitArray(0)
+        End If
+
+        Dim result As New BitArray(source.Length * count)
+
+        For repeatIndex As Integer = 0 To count - 1
+            Dim offset As Integer = repeatIndex * source.Length
+
+            For bitIndex As Integer = 0 To source.Length - 1
+                result(offset + bitIndex) = source(bitIndex)
             Next
         Next
 
-        For Each Track As TrackData In ComboTrack.Items
-            Track.Offset = -1
-        Next
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuNormalizeFirstGap_Click()
-        Dim GapBits = New BitArray({True, False, False, True, False, False, True, False, False, True, False, True, False, True, False, False})
-
-        Dim Value = InputBox("Normalize First Gap: ", "Gap Size")
-
-        ' Must be an integer
-        If String.IsNullOrEmpty(Value) OrElse Not IsNumeric(Value) OrElse Value <> Int(Value) OrElse Int(Value) < 0 Then
-            Exit Sub
-        End If
-
-        For i = 0 To _FloppyImage.TrackCount - 1
-            For j = 0 To _FloppyImage.SideCount - 1
-                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
-                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
-                    Dim RegionData = MFMGetRegionList(MFMTrack.Bitstream, MFMTrack.TrackType)
-                    Dim GapSize As UShort = RegionData.Gap4A
-                    If GapSize = 0 Then
-                        GapSize = RegionData.Gap1
-                    End If
-                    Dim Diff = CInt(Value) - GapSize
-                    If Diff <> 0 Then
-                        Dim NewGapBits = RepeatBitArray(GapBits, Math.Abs(Diff))
-                        If Diff > 0 Then
-                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, 0, NewGapBits)
-                            MFMTrack.Bitstream.Length = MFMTrack.Bitstream.Length - NewGapBits.Length
-                        Else
-                            MFMTrack.Bitstream = RemoveBits(MFMTrack.Bitstream, 0, NewGapBits.Length)
-                            MFMTrack.Bitstream = InsertBits(MFMTrack.Bitstream, MFMTrack.Bitstream.Length, NewGapBits)
-                        End If
-                    End If
-                End If
-            Next
-        Next
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuEditBits_Click()
-        Dim SelectionStart = HexBox1.SelectionStart
-
-        Dim Bits = GetBits(_Bitstream, SelectionStart, False)
-
-        Dim Value = InputBox("Edit bits: ", "Edit Bits", Bits)
-        Value = Value.Replace(" ", "")
-
-        If Not Regex.IsMatch(Value, "^(0|1){16}$") Then
-            Exit Sub
-        End If
-
-        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
-        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
-
-        For counter = 0 To Value.Length - 1
-            _Bitstream.Set(BitIndex + counter, Value.Substring(counter, 1) = 1)
-        Next
-
-        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
-        MFMTrack.Bitstream = _Bitstream
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuGapToEnd_Click()
-        Const GapBits As String = "1001001001010100"
-
-        Dim selectionStart = HexBox1.SelectionStart
-
-        ' Bit index where we insert
-        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
-        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
-
-        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
-
-        For i = bitIndex To MFMTrack.Bitstream.Length - 1
-            Dim b As Boolean = GapBits((i - bitIndex) Mod 16) = "1"
-            MFMTrack.Bitstream.Set(i, b)
-        Next
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuPadAllTracks_Click()
-        Const GapBits As String = "1001001001010100"
-
-        Dim selectionStart = HexBox1.SelectionStart
-
-        Dim value = InputBox("Pad All Tracks: ", "Track Size (Bits)", "")
-
-        ' Must be an integer
-        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
-            Exit Sub
-        End If
-
-        For i = 0 To _FloppyImage.TrackCount - 1
-            For j = 0 To _FloppyImage.SideCount - 1
-                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
-                Dim PrevLength = MFMTrack.Bitstream.Length
-                PrevLength = Math.Ceiling(PrevLength / 16) * 16
-                MFMTrack.Bitstream.Length = CInt(value)
-                Dim FillLength = MFMTrack.Bitstream.Length - PrevLength
-                For k = 0 To FillLength - 1
-                    Dim b As Boolean = GapBits(k Mod 16) = "1"
-                    MFMTrack.Bitstream.Set(PrevLength + k, b)
-                Next
-            Next
-        Next
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuInsertGap_Click()
-        Const GapBits As String = "1001001001010100"
-
-        Dim selectionStart = HexBox1.SelectionStart
-
-        Dim value = InputBox("Insert gap: ", "Gap Count", "")
-
-        ' Must be an integer
-        If String.IsNullOrEmpty(value) OrElse Not IsNumeric(value) OrElse value <> Int(value) Then
-            Exit Sub
-        End If
-
-        ' Bit index where we insert
-        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
-        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
-
-        ' Build a BitArray from the entered bits
-        Dim bitsToInsert As New BitArray(GapBits.Length * CInt(value))
-        For i As Integer = 0 To value - 1
-            For j = 0 To GapBits.Length - 1
-                Dim idx = i * GapBits.Length + j
-                bitsToInsert(idx) = (GapBits(j) = "1")
-            Next
-        Next
-
-        ' Insert into the bitstream
-        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
-
-        ' Push updated bitstream back into the track and refresh UI
-        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
-        MFMTrack.Bitstream = _Bitstream
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuInsertBits_Click()
-        Dim selectionStart = HexBox1.SelectionStart
-
-        ' Empty default text
-        Dim value = InputBox("Insert bits: ", "Insert Bits", "")
-        value = value.Replace(" ", "")
-
-        ' Must be at least 1 bit, only 0 or 1
-        If String.IsNullOrEmpty(value) OrElse Not Regex.IsMatch(value, "^[01]+$") Then
-            Exit Sub
-        End If
-
-        ' Bit index where we insert
-        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
-        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
-
-        ' Build a BitArray from the entered bits
-        Dim bitsToInsert As New BitArray(value.Length)
-        For i = 0 To value.Length - 1
-            bitsToInsert(i) = (value(i) = "1")
-        Next
-
-        ' Insert into the bitstream
-        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
-
-        ' Push updated bitstream back into the track and refresh UI
-        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
-        MFMTrack.Bitstream = _Bitstream
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuRemoveBits_Click()
-        Dim SelectionStart = HexBox1.SelectionStart
-
-        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
-        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
-
-        Dim RegionStart = _RegionMap(SelectionStart)
-
-        Dim Value = InputBox("Number of bits to remove: ", "Remove Bits", RegionStart.BitOffset.ToString)
-        Dim Offset As UInteger
-        If Not UInteger.TryParse(Value, Offset) Then
-            Exit Sub
-        End If
-
-        _Bitstream = RemoveBits(_Bitstream, BitIndex, Offset)
-
-        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
-        MFMTrack.Bitstream = _Bitstream
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
+        Return result
+    End Function
 
 #Region "Data Area Editing"
-
     ''' <summary>
     ''' True when one or more tracks were edited in this session and re-synced on close, so
     ''' the caller can refresh the decoded views (tree/summary/hex).
@@ -347,295 +346,6 @@ Partial Public Class HexViewRawForm
             Return _TracksUpdated
         End Get
     End Property
-
-    ''' <summary>
-    ''' On close, re-decode every edited track from its (already updated) bitstream and rebuild
-    ''' the image's decoded sector map so edits are reflected in the rest of the application.
-    ''' </summary>
-    Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
-        If _OriginalBitstreams.Count = 0 Then
-            Exit Sub
-        End If
-
-        Dim BitstreamImage = _FloppyImage.BitstreamImage
-
-        For Each KVP In _OriginalBitstreams
-            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
-            If BT IsNot Nothing Then
-                BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
-            End If
-        Next
-
-        If TypeOf _FloppyImage Is MappedFloppyImage Then
-            CType(_FloppyImage, MappedFloppyImage).RebuildSectorMap()
-        End If
-
-        _FloppyImage.History.BatchEditMode = True
-        For Each KVP In _OriginalBitstreams
-            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
-            If BT IsNot Nothing Then
-                _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
-            End If
-        Next
-        _FloppyImage.History.BatchEditMode = False
-
-        _TracksUpdated = True
-    End Sub
-
-    ''' <summary>
-    ''' Returns the region at the given hex byte index if it can be edited (Debug only, MFM
-    ''' track, current bit offset): a gap, a valid non-overlapping ID field, or a valid
-    ''' non-overlapping data area.
-    ''' </summary>
-    Private Function GetEditableRegion(Index As Long) As BitstreamRegion
-        If _TrackType <> BitstreamTrackType.MFM Then
-            Return Nothing
-        End If
-
-        If _RegionMap Is Nothing Then
-            Return Nothing
-        End If
-
-        If Index < 0 OrElse Index > _RegionMap.Length - 1 Then
-            Return Nothing
-        End If
-
-        Dim Region = _RegionMap(Index)
-        If Region Is Nothing Then
-            Return Nothing
-        End If
-
-        If _CurrentTrackData Is Nothing OrElse Region.BitOffset <> _CurrentTrackData.Offset Then
-            Return Nothing
-        End If
-
-        If IsGapRegion(Region.RegionType) Then
-            Return Region
-        End If
-
-        If IsNullRegion(Region.RegionType) Then
-            Return Region
-        End If
-
-        Dim Sector = Region.Sector
-        If Sector Is Nothing OrElse Sector.Overlaps Then
-            Return Nothing
-        End If
-
-        If IsIDAreaRegion(Region.RegionType) Then
-            If Sector.IDAMChecksumValid Then
-                Return Region
-            End If
-            Return Nothing
-        End If
-
-        If Region.RegionType = MFMRegionType.DataArea AndAlso Sector.DataChecksumValid Then
-            Return Region
-        End If
-
-        Return Nothing
-    End Function
-
-    Private Function IsGapRegion(RegionType As MFMRegionType) As Boolean
-        Select Case RegionType
-            Case MFMRegionType.Gap1, MFMRegionType.Gap2, MFMRegionType.Gap3, MFMRegionType.Gap4A, MFMRegionType.Gap4B
-                Return True
-            Case Else
-                Return False
-        End Select
-    End Function
-
-    Private Function IsNullRegion(RegionType As MFMRegionType) As Boolean
-        Select Case RegionType
-            Case MFMRegionType.DAMNulls, MFMRegionType.IDAMNulls, MFMRegionType.IAMNulls
-                Return True
-            Case Else
-                Return False
-        End Select
-    End Function
-
-    Private Function IsIDAreaRegion(RegionType As MFMRegionType) As Boolean
-        Select Case RegionType
-            Case MFMRegionType.IDArea, MFMRegionType.IDAreaCylinder, MFMRegionType.IDAreaHead, MFMRegionType.IDAreaSectorId, MFMRegionType.IDAreaSizeId
-                Return True
-            Case Else
-                Return False
-        End Select
-    End Function
-
-    ''' <summary>
-    ''' Hex-view index of the first ID-field byte (cylinder) for this ID-area region.
-    ''' Sector.StartIndex cannot be used here: it includes IDAM nulls and is not the hex
-    ''' index of the C/H/R/N field.
-    ''' </summary>
-    Private Function GetIDAreaStartIndex(Region As BitstreamRegion) As Long
-        Select Case Region.RegionType
-            Case MFMRegionType.IDAreaHead
-                Return Region.StartIndex - 1
-            Case MFMRegionType.IDAreaSectorId
-                Return Region.StartIndex - 2
-            Case MFMRegionType.IDAreaSizeId
-                Return Region.StartIndex - 3
-            Case Else
-                Return Region.StartIndex
-        End Select
-    End Function
-
-    ''' <summary>
-    ''' Encodes a single byte into the bitstream at the given bit index using standard MFM
-    ''' rules. The first clock bit is derived from the previous byte's last data bit (read
-    ''' from the stream), and the following byte's first clock bit is recomputed so it stays
-    ''' consistent with this byte's last data bit.
-    ''' </summary>
-    Private Sub WriteMFMByteAt(Bitstream As BitArray, BitIndex As Integer, Value As Byte)
-        Dim Length = Bitstream.Length
-
-        BitIndex = AdjustBitIndex(BitIndex, Length)
-
-        Dim SeedBit = Bitstream(AdjustBitIndex(BitIndex - 1, Length))
-        Dim Encoded = MFMEncodeBytes({Value}, SeedBit)
-
-        For k = 0 To 15
-            Bitstream(AdjustBitIndex(BitIndex + k, Length)) = Encoded(k)
-        Next
-
-        ' The following byte's first clock bit depends on this byte's last data bit.
-        Dim NextClock = AdjustBitIndex(BitIndex + 16, Length)
-        Dim NextData = AdjustBitIndex(BitIndex + 17, Length)
-        Bitstream(NextClock) = (Not Bitstream(NextData)) And (Not Encoded(15))
-    End Sub
-
-    Private Sub HexBox1_ByteChanged(source As Object, e As HexBox.ByteChangedArgs) Handles HexBox1.ByteChanged
-        If _IgnoreEvent Then
-            Exit Sub
-        End If
-
-        Dim Region = GetEditableRegion(e.Index)
-        If Region Is Nothing Then
-            Exit Sub
-        End If
-
-        Dim Offset = _CurrentTrackData.Offset
-        Dim Length = _Bitstream.Length
-
-        ' Record the original bytes affected by this edit so it can be undone.
-        Dim ChangeList As New List(Of RawHexChange) From {
-            New RawHexChange(e.Index, {e.PrevValue}, HexBox1.SelectionStart, HexBox1.SelectionLength)
-        }
-
-        ' Re-encode the edited byte into the working-clone bitstream
-        ' (the decoded value is already in _Data via the shared provider).
-        Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
-        WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
-
-        If IsIDAreaRegion(Region.RegionType) Then
-            Dim IdStart = GetIDAreaStartIndex(Region)
-            Dim IdBit = AdjustBitIndex(IdStart * 16 + Offset, Length)
-            Dim SyncBit = AdjustBitIndex(IdBit - MFM_SYNC_MARK_BYTES * 16, Length)
-            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES)
-            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
-            Dim Cs1 = IdStart + MFM_IDAREA_BYTES
-            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
-
-        ElseIf Region.RegionType = MFMRegionType.DataArea Then
-            Dim Sector = Region.Sector
-            Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
-            Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
-            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
-            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
-            Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
-            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
-        End If
-
-        PushChanges(ChangeList)
-
-        ' Bit-inspector now reflects the staged clone.
-        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
-    End Sub
-
-    ''' <summary>
-    ''' Writes two recomputed checksum bytes into the working-clone bitstream and the decoded
-    ''' display, and records them on the undo list.
-    ''' </summary>
-    Private Sub StageChecksumBytes(ChangeList As List(Of RawHexChange), Cs1 As Long, CsBytes() As Byte, Offset As Integer, Length As Integer)
-        ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
-        ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
-        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
-        WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
-
-        _IgnoreEvent = True
-        HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
-        HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
-        _IgnoreEvent = False
-    End Sub
-
-    Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged
-        HexBox1.InsertActive = False
-    End Sub
-
-    ''' <summary>
-    ''' Re-encodes the byte at the given _Data index into the working-clone bitstream so the
-    ''' clone (and the bit-inspector) stays consistent with the decoded data buffer.
-    ''' </summary>
-    Private Sub ReEncodeByte(Index As Integer)
-        Dim Offset = _CurrentTrackData.Offset
-        Dim Length = _Bitstream.Length
-
-        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Index * 16 + Offset, Length), _Data(Index))
-    End Sub
-
-    ''' <summary>
-    ''' Pushes an edit onto the undo stack, clears the redo stack, and refreshes the buttons.
-    ''' </summary>
-    Private Sub PushChanges(ChangeList As List(Of RawHexChange))
-        _Changes.Push(ChangeList)
-        _RedoChanges.Clear()
-        RefreshUndoButtons()
-    End Sub
-
-    ''' <summary>
-    ''' Applies one undo/redo step: restores the stored bytes into _Data, re-encodes them into
-    ''' the working-clone bitstream, and records the inverse on the destination stack.
-    ''' </summary>
-    Private Sub PopChange(Source As Stack(Of List(Of RawHexChange)), Destination As Stack(Of List(Of RawHexChange)))
-        If Source.Count = 0 Then
-            Exit Sub
-        End If
-
-        Dim ChangeList = Source.Pop()
-        Dim DestinationList As New List(Of RawHexChange)
-
-        _IgnoreEvent = True
-        For Each Change In ChangeList
-            ' Capture the current value so the operation can be reversed.
-            DestinationList.Add(New RawHexChange(Change.Index, {_Data(Change.Index)}, Change.SelectionStart, Change.SelectionLength))
-
-            ' Restore the stored bytes into the decoded display and the working-clone bitstream.
-            For Counter = 0 To Change.Data.Length - 1
-                HexBox1.ByteProvider.WriteByte(Change.Index + Counter, Change.Data(Counter))
-                ReEncodeByte(Change.Index + Counter)
-            Next
-        Next
-        _IgnoreEvent = False
-
-        Destination.Push(DestinationList)
-
-        ' Restore the selection recorded with the first change in the list.
-        HexBox1.Select(ChangeList(0).SelectionStart, ChangeList(0).SelectionLength)
-
-        RefreshUndoButtons()
-        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
-        DataInspectorRefresh(True)
-    End Sub
-
-    ''' <summary>
-    ''' Enables/disables the undo, redo, and commit toolbar buttons based on the stack state.
-    ''' </summary>
-    Private Sub RefreshUndoButtons()
-        ToolStripBtnUndo.Enabled = _Changes.Count > 0
-        ToolStripBtnRedo.Enabled = _RedoChanges.Count > 0
-        ToolStripBtnCommit.Enabled = _Changes.Count > 0
-    End Sub
 
     ''' <summary>
     ''' Commits the staged edits by assigning the working-clone bitstream to the live track,
@@ -698,20 +408,295 @@ Partial Public Class HexViewRawForm
         Return True
     End Function
 
-    Private Sub InitEditingButtons() Handles Me.Load
+    ''' <summary>
+    ''' Returns the region at the given hex byte index if it can be edited (Debug only, MFM
+    ''' track, current bit offset): a gap, a valid non-overlapping ID field, or a valid
+    ''' non-overlapping data area.
+    ''' </summary>
+    Private Function GetEditableRegion(Index As Long) As BitstreamRegion
+        If _TrackType <> BitstreamTrackType.MFM Then
+            Return Nothing
+        End If
+
+        If _RegionMap Is Nothing Then
+            Return Nothing
+        End If
+
+        If Index < 0 OrElse Index > _RegionMap.Length - 1 Then
+            Return Nothing
+        End If
+
+        Dim Region = _RegionMap(Index)
+        If Region Is Nothing Then
+            Return Nothing
+        End If
+
+        If _CurrentTrackData Is Nothing OrElse Region.BitOffset <> _CurrentTrackData.Offset Then
+            Return Nothing
+        End If
+
+        If IsGapRegion(Region.RegionType) Then
+            Return Region
+        End If
+
+        If IsNullRegion(Region.RegionType) Then
+            Return Region
+        End If
+
+        Dim Sector = Region.Sector
+        If Sector Is Nothing OrElse Sector.Overlaps Then
+            Return Nothing
+        End If
+
+        If IsIDAreaRegion(Region.RegionType) Then
+            If Sector.IDAMChecksumValid Then
+                Return Region
+            End If
+            Return Nothing
+        End If
+
+        If Region.RegionType = MFMRegionType.DataArea AndAlso Sector.DataChecksumValid Then
+            Return Region
+        End If
+
+        Return Nothing
+    End Function
+
+    ''' <summary>
+    ''' Hex-view index of the first ID-field byte (cylinder) for this ID-area region.
+    ''' Sector.StartIndex cannot be used here: it includes IDAM nulls and is not the hex
+    ''' index of the C/H/R/N field.
+    ''' </summary>
+    Private Function GetIDAreaStartIndex(Region As BitstreamRegion) As Long
+        Select Case Region.RegionType
+            Case MFMRegionType.IDAreaHead
+                Return Region.StartIndex - 1
+            Case MFMRegionType.IDAreaSectorId
+                Return Region.StartIndex - 2
+            Case MFMRegionType.IDAreaSizeId
+                Return Region.StartIndex - 3
+            Case Else
+                Return Region.StartIndex
+        End Select
+    End Function
+
+    Private Function IsGapRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.Gap1, MFMRegionType.Gap2, MFMRegionType.Gap3, MFMRegionType.Gap4A, MFMRegionType.Gap4B
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    Private Function IsIDAreaRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.IDArea, MFMRegionType.IDAreaCylinder, MFMRegionType.IDAreaHead, MFMRegionType.IDAreaSectorId, MFMRegionType.IDAreaSizeId
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    Private Function IsNullRegion(RegionType As MFMRegionType) As Boolean
+        Select Case RegionType
+            Case MFMRegionType.DAMNulls, MFMRegionType.IDAMNulls, MFMRegionType.IAMNulls
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+    ''' <summary>
+    ''' Applies one undo/redo step: restores the stored bytes into _Data, re-encodes them into
+    ''' the working-clone bitstream, and records the inverse on the destination stack.
+    ''' </summary>
+    Private Sub PopChange(Source As Stack(Of List(Of RawHexChange)), Destination As Stack(Of List(Of RawHexChange)))
+        If Source.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim ChangeList = Source.Pop()
+        Dim DestinationList As New List(Of RawHexChange)
+
+        _IgnoreEvent = True
+        For Each Change In ChangeList
+            ' Capture the current value so the operation can be reversed.
+            DestinationList.Add(New RawHexChange(Change.Index, {_Data(Change.Index)}, Change.SelectionStart, Change.SelectionLength))
+
+            ' Restore the stored bytes into the decoded display and the working-clone bitstream.
+            For Counter = 0 To Change.Data.Length - 1
+                HexBox1.ByteProvider.WriteByte(Change.Index + Counter, Change.Data(Counter))
+                ReEncodeByte(Change.Index + Counter)
+            Next
+        Next
+        _IgnoreEvent = False
+
+        Destination.Push(DestinationList)
+
+        ' Restore the selection recorded with the first change in the list.
+        HexBox1.Select(ChangeList(0).SelectionStart, ChangeList(0).SelectionLength)
+
+        RefreshUndoButtons()
+        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+        DataInspectorRefresh(True)
+    End Sub
+
+    ''' <summary>
+    ''' Pushes an edit onto the undo stack, clears the redo stack, and refreshes the buttons.
+    ''' </summary>
+    Private Sub PushChanges(ChangeList As List(Of RawHexChange))
+        _Changes.Push(ChangeList)
+        _RedoChanges.Clear()
         RefreshUndoButtons()
     End Sub
 
-    Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
-        CommitChanges(False)
+    ''' <summary>
+    ''' Re-encodes the byte at the given _Data index into the working-clone bitstream so the
+    ''' clone (and the bit-inspector) stays consistent with the decoded data buffer.
+    ''' </summary>
+    Private Sub ReEncodeByte(Index As Integer)
+        Dim Offset = _CurrentTrackData.Offset
+        Dim Length = _Bitstream.Length
+
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Index * 16 + Offset, Length), _Data(Index))
     End Sub
 
-    Private Sub ToolStripBtnUndo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnUndo.Click
-        PopChange(_Changes, _RedoChanges)
+    ''' <summary>
+    ''' Enables/disables the undo, redo, and commit toolbar buttons based on the stack state.
+    ''' </summary>
+    Private Sub RefreshUndoButtons()
+        ToolStripBtnUndo.Enabled = _Changes.Count > 0
+        ToolStripBtnRedo.Enabled = _RedoChanges.Count > 0
+        ToolStripBtnCommit.Enabled = _Changes.Count > 0
     End Sub
 
-    Private Sub ToolStripBtnRedo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnRedo.Click
-        PopChange(_RedoChanges, _Changes)
+    ''' <summary>
+    ''' Writes two recomputed checksum bytes into the working-clone bitstream and the decoded
+    ''' display, and records them on the undo list.
+    ''' </summary>
+    Private Sub StageChecksumBytes(ChangeList As List(Of RawHexChange), Cs1 As Long, CsBytes() As Byte, Offset As Integer, Length As Integer)
+        ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+        ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
+        WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
+
+        _IgnoreEvent = True
+        HexBox1.ByteProvider.WriteByte(Cs1, CsBytes(0))
+        HexBox1.ByteProvider.WriteByte(Cs1 + 1, CsBytes(1))
+        _IgnoreEvent = False
+    End Sub
+
+    ''' <summary>
+    ''' Encodes a single byte into the bitstream at the given bit index using standard MFM
+    ''' rules. The first clock bit is derived from the previous byte's last data bit (read
+    ''' from the stream), and the following byte's first clock bit is recomputed so it stays
+    ''' consistent with this byte's last data bit.
+    ''' </summary>
+    Private Sub WriteMFMByteAt(Bitstream As BitArray, BitIndex As Integer, Value As Byte)
+        Dim Length = Bitstream.Length
+
+        BitIndex = AdjustBitIndex(BitIndex, Length)
+
+        Dim SeedBit = Bitstream(AdjustBitIndex(BitIndex - 1, Length))
+        Dim Encoded = MFMEncodeBytes({Value}, SeedBit)
+
+        For k = 0 To 15
+            Bitstream(AdjustBitIndex(BitIndex + k, Length)) = Encoded(k)
+        Next
+
+        ' The following byte's first clock bit depends on this byte's last data bit.
+        Dim NextClock = AdjustBitIndex(BitIndex + 16, Length)
+        Dim NextData = AdjustBitIndex(BitIndex + 17, Length)
+        Bitstream(NextClock) = (Not Bitstream(NextData)) And (Not Encoded(15))
+    End Sub
+#End Region
+
+#Region "Events"
+    Private Sub HexBox1_ByteChanged(source As Object, e As HexBox.ByteChangedArgs) Handles HexBox1.ByteChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        Dim Region = GetEditableRegion(e.Index)
+        If Region Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim Offset = _CurrentTrackData.Offset
+        Dim Length = _Bitstream.Length
+
+        ' Record the original bytes affected by this edit so it can be undone.
+        Dim ChangeList As New List(Of RawHexChange) From {
+            New RawHexChange(e.Index, {e.PrevValue}, HexBox1.SelectionStart, HexBox1.SelectionLength)
+        }
+
+        ' Re-encode the edited byte into the working-clone bitstream
+        ' (the decoded value is already in _Data via the shared provider).
+        Dim ByteBit = AdjustBitIndex(e.Index * 16 + Offset, Length)
+        WriteMFMByteAt(_Bitstream, ByteBit, e.Value)
+
+        If IsIDAreaRegion(Region.RegionType) Then
+            Dim IdStart = GetIDAreaStartIndex(Region)
+            Dim IdBit = AdjustBitIndex(IdStart * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(IdBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = IdStart + MFM_IDAREA_BYTES
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+
+        ElseIf Region.RegionType = MFMRegionType.DataArea Then
+            Dim Sector = Region.Sector
+            Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
+            Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
+            Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
+            Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
+            Dim Cs1 = Sector.DataStartIndex + Sector.AdjustedDataLength
+            StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+        End If
+
+        PushChanges(ChangeList)
+
+        ' Bit-inspector now reflects the staged clone.
+        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+    End Sub
+
+    Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged
+        HexBox1.InsertActive = False
+    End Sub
+
+    ''' <summary>
+    ''' On close, re-decode every edited track from its (already updated) bitstream and rebuild
+    ''' the image's decoded sector map so edits are reflected in the rest of the application.
+    ''' </summary>
+    Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
+        If _OriginalBitstreams.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim BitstreamImage = _FloppyImage.BitstreamImage
+
+        For Each KVP In _OriginalBitstreams
+            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
+            If BT IsNot Nothing Then
+                BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
+            End If
+        Next
+
+        If TypeOf _FloppyImage Is MappedFloppyImage Then
+            CType(_FloppyImage, MappedFloppyImage).RebuildSectorMap()
+        End If
+
+        _FloppyImage.History.BatchEditMode = True
+        For Each KVP In _OriginalBitstreams
+            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
+            If BT IsNot Nothing Then
+                _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
+            End If
+        Next
+        _FloppyImage.History.BatchEditMode = False
+
+        _TracksUpdated = True
     End Sub
 
     Private Sub HexViewRawForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
@@ -729,6 +714,42 @@ Partial Public Class HexViewRawForm
         End If
     End Sub
 
+    Private Sub InitEditingButtons() Handles Me.Load
+        RefreshUndoButtons()
+    End Sub
+
+    Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
+        CommitChanges(False)
+    End Sub
+
+    Private Sub ToolStripBtnRedo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnRedo.Click
+        PopChange(_RedoChanges, _Changes)
+    End Sub
+
+    Private Sub ToolStripBtnUndo_Click(sender As Object, e As EventArgs) Handles ToolStripBtnUndo.Click
+        PopChange(_Changes, _RedoChanges)
+    End Sub
+#End Region
+
+#Region "Helpers"
+    ''' <summary>
+    ''' A single staged edit for undo/redo: the original bytes at a given _Data index plus the
+    ''' selection to restore when the change is applied.
+    ''' </summary>
+    Private Class RawHexChange
+        Public Sub New(Index As Integer, Data() As Byte, SelectionStart As Long, SelectionLength As Long)
+            Me.Index = Index
+            Me.Data = Data
+            Me.SelectionStart = SelectionStart
+            Me.SelectionLength = SelectionLength
+        End Sub
+
+        Public Property Data As Byte()
+        Public Property Index As Integer
+        Public Property SelectionLength As Long
+        Public Property SelectionStart As Long
+    End Class
+
     ''' <summary>
     ''' Overwrite-only byte provider that wraps a byte array by reference, so edits stay in
     ''' sync with the form's decoded data buffer. Insert/delete are unsupported, enforcing
@@ -738,13 +759,12 @@ Partial Public Class HexViewRawForm
         Implements IByteProvider
 
         Private ReadOnly _Bytes() As Byte
+        Public Event Changed As EventHandler Implements IByteProvider.Changed
+        Public Event LengthChanged As EventHandler Implements IByteProvider.LengthChanged
 
         Public Sub New(Bytes() As Byte)
             _Bytes = Bytes
         End Sub
-
-        Public Event Changed As EventHandler Implements IByteProvider.Changed
-        Public Event LengthChanged As EventHandler Implements IByteProvider.LengthChanged
 
         Public ReadOnly Property Length As Long Implements IByteProvider.Length
             Get
@@ -788,24 +808,6 @@ Partial Public Class HexViewRawForm
             RaiseEvent Changed(Me, EventArgs.Empty)
         End Sub
     End Class
-
-    ''' <summary>
-    ''' A single staged edit for undo/redo: the original bytes at a given _Data index plus the
-    ''' selection to restore when the change is applied.
-    ''' </summary>
-    Private Class RawHexChange
-        Public Sub New(Index As Integer, Data() As Byte, SelectionStart As Long, SelectionLength As Long)
-            Me.Index = Index
-            Me.Data = Data
-            Me.SelectionStart = SelectionStart
-            Me.SelectionLength = SelectionLength
-        End Sub
-
-        Public Property Index As Integer
-        Public Property Data As Byte()
-        Public Property SelectionStart As Long
-        Public Property SelectionLength As Long
-    End Class
-
 #End Region
+
 End Class
