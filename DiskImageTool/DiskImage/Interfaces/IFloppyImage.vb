@@ -48,6 +48,7 @@ Namespace DiskImage
         Function SetBytes(Value As Byte, Offset As UInteger) As Boolean
         Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean
         Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean
+        Function SetTrackBitstream(Track As UShort, Side As Byte, Bitstream As BitArray) As Boolean
         Function ToUInt16(StartIndex As Integer) As UShort
     End Interface
 End Namespace

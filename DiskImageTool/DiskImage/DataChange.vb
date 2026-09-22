@@ -2,6 +2,7 @@
     Public Enum DataChangeType
         Data
         Size
+        Bitstream
     End Enum
 
     Public Class DataChange

@@ -254,6 +254,10 @@
             Return True
         End Function
 
+        Public Function SetTrackBitstream(Track As UShort, Side As Byte, Bitstream As BitArray) As Boolean Implements IFloppyImage.SetTrackBitstream
+            Return False
+        End Function
+
         Private ReadOnly Property IFloppyImage_AdditionalTracks As HashSet(Of UShort) Implements IFloppyImage.AdditionalTracks
             Get
                 Return _AdditionalTracks

@@ -234,6 +234,22 @@ Namespace DiskImage
             Return False
         End Function
 
+        Public Function SetTrackBitstream(Track As UShort, Side As Byte, Bitstream As BitArray) As Boolean Implements IFloppyImage.SetTrackBitstream
+            If _Image Is Nothing Then
+                Return False
+            End If
+
+            Dim BitstreamTrack = _Image.GetTrack(CUShort(Track * _Image.TrackStep), Side)
+            If BitstreamTrack Is Nothing Then
+                Return False
+            End If
+
+            BitstreamTrack.Bitstream = Bitstream
+            BitstreamTrack.MFMData = New IBM_MFM.IBM_MFM_Track(Bitstream)
+
+            Return True
+        End Function
+
         Public Overridable Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
             Return _Image.Export(FilePath)
         End Function

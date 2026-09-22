@@ -8,7 +8,7 @@ Imports DiskImageTool.HexView
 Partial Public Class HexViewRawForm
     Private ReadOnly _Changes As New Stack(Of List(Of RawHexChange))
     Private ReadOnly _RedoChanges As New Stack(Of List(Of RawHexChange))
-    Private ReadOnly _UpdatedTracks As New HashSet(Of Point)
+    Private ReadOnly _OriginalBitstreams As New Dictionary(Of Point, BitArray)
     Private _TracksUpdated As Boolean = False
 
     Private Sub AddContextMenuBitEditItems()
@@ -353,14 +353,14 @@ Partial Public Class HexViewRawForm
     ''' the image's decoded sector map so edits are reflected in the rest of the application.
     ''' </summary>
     Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
-        If _UpdatedTracks.Count = 0 Then
+        If _OriginalBitstreams.Count = 0 Then
             Exit Sub
         End If
 
         Dim BitstreamImage = _FloppyImage.BitstreamImage
 
-        For Each P In _UpdatedTracks
-            Dim BT = BitstreamImage.GetTrack(CUShort(P.X * BitstreamImage.TrackStep), CByte(P.Y))
+        For Each KVP In _OriginalBitstreams
+            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
             If BT IsNot Nothing Then
                 BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
             End If
@@ -369,6 +369,15 @@ Partial Public Class HexViewRawForm
         If TypeOf _FloppyImage Is MappedFloppyImage Then
             CType(_FloppyImage, MappedFloppyImage).RebuildSectorMap()
         End If
+
+        _FloppyImage.History.BatchEditMode = True
+        For Each KVP In _OriginalBitstreams
+            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
+            If BT IsNot Nothing Then
+                _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
+            End If
+        Next
+        _FloppyImage.History.BatchEditMode = False
 
         _TracksUpdated = True
     End Sub
@@ -555,10 +564,12 @@ Partial Public Class HexViewRawForm
         Dim BitstreamImage = _FloppyImage.BitstreamImage
         Dim BT = BitstreamImage.GetTrack(CUShort(_Track * BitstreamImage.TrackStep), CByte(_Side))
         If BT IsNot Nothing Then
+            Dim Key As New Point(_Track, _Side)
+            If Not _OriginalBitstreams.ContainsKey(Key) Then
+                _OriginalBitstreams(Key) = CType(BT.Bitstream.Clone(), BitArray)
+            End If
             BT.Bitstream = _Bitstream
         End If
-
-        _UpdatedTracks.Add(New Point(_Track, _Side))
 
         _Changes.Clear()
         _RedoChanges.Clear()
