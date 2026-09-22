@@ -1012,31 +1012,6 @@ Partial Public Class HexViewRawForm
             PanelSectors.Height = PanelHeight
             PanelSectors.Visible = True
         End If
-
-        Dim TopPos = PanelSectors.Top + PanelSectors.Height + 3
-        Dim Height = StatusStripBottom.Top - TopPos - 3
-
-        If TopPos <> HexBox1.Top Or Height <> HexBox1.Height Then
-            If TopPos > DataGridDataInspector.Top Then
-                HexBox1.Height = Height
-                HexBox1.Top = TopPos
-            Else
-                HexBox1.Top = TopPos
-                HexBox1.Height = Height
-            End If
-            HexBox1.Refresh()
-        End If
-
-        If TopPos <> DataGridDataInspector.Top Or Height <> DataGridDataInspector.Height Then
-            If TopPos > DataGridDataInspector.Top Then
-                DataGridDataInspector.Height = Height
-                DataGridDataInspector.Top = TopPos
-            Else
-                DataGridDataInspector.Top = TopPos
-                DataGridDataInspector.Height = Height
-            End If
-            DataGridDataInspector.Refresh()
-        End If
     End Sub
 
     Private Sub Search(FindNext As Boolean)

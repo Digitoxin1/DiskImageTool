@@ -68,8 +68,10 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnSelectSector = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnSelectData = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnAdjustOffset = New System.Windows.Forms.ToolStripButton()
-        Me.PanelSectors = New DiskImageTool.SelectablePanel()
+        Me.PanelMain = New System.Windows.Forms.Panel()
+        Me.PanelSpacer = New System.Windows.Forms.Panel()
         Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
+        Me.PanelSectors = New DiskImageTool.SelectablePanel()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -78,6 +80,7 @@ Partial Class HexViewRawForm
         Me.StatusStripBottom.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ToolStripMain.SuspendLayout()
+        Me.PanelMain.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStripStatusGap
@@ -107,18 +110,16 @@ Partial Class HexViewRawForm
         '
         'DataGridDataInspector
         '
-        Me.DataGridDataInspector.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.DataGridDataInspector.BackgroundColor = System.Drawing.SystemColors.Window
         Me.DataGridDataInspector.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.DataGridDataInspector.ContextMenuStrip = Me.ContextMenuStrip2
+        Me.DataGridDataInspector.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DataGridDataInspector.GridColor = System.Drawing.SystemColors.ControlLight
-        Me.DataGridDataInspector.Location = New System.Drawing.Point(668, 53)
+        Me.DataGridDataInspector.Location = New System.Drawing.Point(668, 4)
         Me.DataGridDataInspector.Name = "DataGridDataInspector"
         Me.DataGridDataInspector.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.DataGridDataInspector.Size = New System.Drawing.Size(264, 493)
-        Me.DataGridDataInspector.TabIndex = 3
+        Me.DataGridDataInspector.Size = New System.Drawing.Size(264, 491)
+        Me.DataGridDataInspector.TabIndex = 2
         '
         'ContextMenuStrip2
         '
@@ -139,7 +140,7 @@ Partial Class HexViewRawForm
         Me.StatusStripBottom.Location = New System.Drawing.Point(0, 549)
         Me.StatusStripBottom.Name = "StatusStripBottom"
         Me.StatusStripBottom.Size = New System.Drawing.Size(944, 24)
-        Me.StatusStripBottom.TabIndex = 4
+        Me.StatusStripBottom.TabIndex = 3
         '
         'ToolStripStatusOffset
         '
@@ -448,20 +449,28 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnAdjustOffset.Name = "ToolStripBtnAdjustOffset"
         Me.ToolStripBtnAdjustOffset.Size = New System.Drawing.Size(23, 22)
         '
-        'PanelSectors
+        'PanelMain
         '
-        Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Top
-        Me.PanelSectors.Location = New System.Drawing.Point(0, 25)
-        Me.PanelSectors.Name = "PanelSectors"
-        Me.PanelSectors.Padding = New System.Windows.Forms.Padding(12, 4, 12, 4)
-        Me.PanelSectors.Size = New System.Drawing.Size(944, 25)
-        Me.PanelSectors.TabIndex = 1
-        Me.PanelSectors.TabStop = True
+        Me.PanelMain.Controls.Add(Me.DataGridDataInspector)
+        Me.PanelMain.Controls.Add(Me.PanelSpacer)
+        Me.PanelMain.Controls.Add(Me.HexBox1)
+        Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.PanelMain.Location = New System.Drawing.Point(0, 50)
+        Me.PanelMain.Name = "PanelMain"
+        Me.PanelMain.Padding = New System.Windows.Forms.Padding(12, 4, 12, 4)
+        Me.PanelMain.Size = New System.Drawing.Size(944, 499)
+        Me.PanelMain.TabIndex = 2
+        '
+        'PanelSpacer
+        '
+        Me.PanelSpacer.Dock = System.Windows.Forms.DockStyle.Left
+        Me.PanelSpacer.Location = New System.Drawing.Point(662, 4)
+        Me.PanelSpacer.Name = "PanelSpacer"
+        Me.PanelSpacer.Size = New System.Drawing.Size(6, 491)
+        Me.PanelSpacer.TabIndex = 1
         '
         'HexBox1
         '
-        Me.HexBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         '
         '
         '
@@ -475,30 +484,40 @@ Partial Class HexViewRawForm
         Me.HexBox1.BuiltInContextMenu.SelectAllMenuItemText = "{Select All}"
         Me.HexBox1.ColumnInfoVisible = True
         Me.HexBox1.ContextMenuStrip = Me.ContextMenuStrip1
+        Me.HexBox1.Dock = System.Windows.Forms.DockStyle.Left
         Me.HexBox1.Font = New System.Drawing.Font("Courier New", 9.75!)
         Me.HexBox1.ForeColor = System.Drawing.SystemColors.ControlText
         Me.HexBox1.HexViewTextColor = System.Drawing.SystemColors.ControlText
         Me.HexBox1.LineInfoVisible = True
-        Me.HexBox1.Location = New System.Drawing.Point(12, 53)
+        Me.HexBox1.Location = New System.Drawing.Point(12, 4)
         Me.HexBox1.Name = "HexBox1"
         Me.HexBox1.ReadOnly = True
         Me.HexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(60, Byte), Integer), CType(CType(188, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.HexBox1.Size = New System.Drawing.Size(650, 493)
+        Me.HexBox1.Size = New System.Drawing.Size(650, 491)
         Me.HexBox1.StringViewVisible = True
-        Me.HexBox1.TabIndex = 2
+        Me.HexBox1.TabIndex = 0
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
+        '
+        'PanelSectors
+        '
+        Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Top
+        Me.PanelSectors.Location = New System.Drawing.Point(0, 25)
+        Me.PanelSectors.Name = "PanelSectors"
+        Me.PanelSectors.Padding = New System.Windows.Forms.Padding(12, 4, 12, 4)
+        Me.PanelSectors.Size = New System.Drawing.Size(944, 25)
+        Me.PanelSectors.TabIndex = 1
+        Me.PanelSectors.TabStop = True
         '
         'HexViewRawForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(944, 573)
+        Me.Controls.Add(Me.PanelMain)
         Me.Controls.Add(Me.PanelSectors)
         Me.Controls.Add(Me.ToolStripMain)
-        Me.Controls.Add(Me.DataGridDataInspector)
         Me.Controls.Add(Me.StatusStripBottom)
-        Me.Controls.Add(Me.HexBox1)
         Me.KeyPreview = True
         Me.MaximizeBox = False
         Me.MaximumSize = New System.Drawing.Size(960, 1280)
@@ -515,6 +534,7 @@ Partial Class HexViewRawForm
         Me.ContextMenuStrip1.ResumeLayout(False)
         Me.ToolStripMain.ResumeLayout(False)
         Me.ToolStripMain.PerformLayout()
+        Me.PanelMain.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -564,4 +584,6 @@ Partial Class HexViewRawForm
     Friend WithEvents PanelSectors As DiskImageTool.SelectablePanel
     Friend WithEvents BtnCopyEncoded As ToolStripMenuItem
     Friend WithEvents ToolStripStatusExactBitCount As ToolStripStatusLabel
+    Friend WithEvents PanelMain As Panel
+    Friend WithEvents PanelSpacer As Panel
 End Class
