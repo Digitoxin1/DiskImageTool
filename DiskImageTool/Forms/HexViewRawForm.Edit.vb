@@ -22,22 +22,32 @@ Partial Public Class HexViewRawForm
     End Property
 
     ''' <summary>
-    ''' Commits staged edits by writing a clone of each edited cached bitstream to the live
-    ''' track, then clearing the undo/redo stacks.
+    ''' Commits staged edits by writing a clone of each undo-stack track's cached bitstream
+    ''' to the live track, then clearing the undo/redo stacks.
     ''' </summary>
     Private Sub ApplyStagedChanges()
         Dim BitstreamImage = _FloppyImage.BitstreamImage
+        Dim EditedTracks As New HashSet(Of Point)
 
-        For Each KVP In _OriginalBitstreams
+        For Each UndoStep In _Changes
+            EditedTracks.Add(New Point(UndoStep.Track, UndoStep.Side))
+        Next
+
+        For Each Key In EditedTracks
             Dim Cached As CachedTrack = Nothing
-            If Not _TrackCache.TryGetValue(KVP.Key, Cached) OrElse Cached.Bitstream Is Nothing Then
+            If Not _TrackCache.TryGetValue(Key, Cached) OrElse Cached.Bitstream Is Nothing Then
                 Continue For
             End If
 
-            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
-            If BT IsNot Nothing Then
-                BT.Bitstream = CType(Cached.Bitstream.Clone(), BitArray)
+            Dim BT = BitstreamImage.GetTrack(CUShort(Key.X * BitstreamImage.TrackStep), CByte(Key.Y))
+            If BT Is Nothing Then
+                Continue For
             End If
+
+            If Not _OriginalBitstreams.ContainsKey(Key) Then
+                _OriginalBitstreams(Key) = CType(BT.Bitstream.Clone(), BitArray)
+            End If
+            BT.Bitstream = CType(Cached.Bitstream.Clone(), BitArray)
         Next
 
         _Changes.Clear()
@@ -247,7 +257,6 @@ Partial Public Class HexViewRawForm
     ''' Pushes an overwrite edit onto the undo stack, clears the redo stack, and refreshes the buttons.
     ''' </summary>
     Private Sub PushChanges(ChangeList As List(Of RawHexChange))
-        EnsureOriginalSnapshot()
         _Changes.Push(New RawUndoStep(ChangeList, _Track, _Side))
         _RedoChanges.Clear()
         RefreshUndoButtons()
@@ -257,7 +266,6 @@ Partial Public Class HexViewRawForm
     ''' Pushes an insert or remove of a bit splice onto the undo stack for a later length-changing edit.
     ''' </summary>
     Private Sub PushSplice(Kind As RawUndoKind, BitIndex As Integer, Bits As BitArray, SelectionStart As Long, SelectionLength As Long)
-        EnsureOriginalSnapshot()
         _Changes.Push(New RawUndoStep(Kind, BitIndex, CType(Bits.Clone(), BitArray), SelectionStart, SelectionLength, _Track, _Side))
         _RedoChanges.Clear()
         RefreshUndoButtons()
@@ -663,7 +671,6 @@ Partial Public Class HexViewRawForm
         Dim SelectionLength = HexBox1.SelectionLength
 
         SetWorkingBitstream(BitstreamAlign(_Bitstream, CUInt(Offset)))
-        EnsureOriginalSnapshot()
         _Changes.Push(New RawUndoStep(RawUndoKind.RotateTrack, Offset, Nothing, SelectionStart, SelectionLength, _Track, _Side))
         _RedoChanges.Clear()
         RefreshUndoButtons()
@@ -1028,9 +1035,10 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
-    ''' On close, re-decode every track that actually differs from its pre-session snapshot
-    ''' and record a batched image-history change. Tracks that were edited then fully undone
-    ''' are skipped so the image is not marked modified.
+    ''' On close, re-decode every committed track from its updated bitstream and rebuild
+    ''' the image's decoded sector map so edits are reflected in the rest of the application.
+    ''' Uncommitted work that was fully undone never reaches this path because originals are
+    ''' only snapshotted when the undo stack is applied.
     ''' </summary>
     Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
         If _OriginalBitstreams.Count = 0 Then
@@ -1038,20 +1046,8 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim BitstreamImage = _FloppyImage.BitstreamImage
-        Dim Changed As New List(Of KeyValuePair(Of Point, BitArray))
 
         For Each KVP In _OriginalBitstreams
-            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
-            If BT IsNot Nothing AndAlso Not BitstreamsEqual(KVP.Value, BT.Bitstream) Then
-                Changed.Add(KVP)
-            End If
-        Next
-
-        If Changed.Count = 0 Then
-            Exit Sub
-        End If
-
-        For Each KVP In Changed
             Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
             If BT IsNot Nothing Then
                 BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
@@ -1063,7 +1059,7 @@ Partial Public Class HexViewRawForm
         End If
 
         _FloppyImage.History.BatchEditMode = True
-        For Each KVP In Changed
+        For Each KVP In _OriginalBitstreams
             Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
             If BT IsNot Nothing Then
                 _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
@@ -1158,23 +1154,6 @@ Partial Public Class HexViewRawForm
     End Enum
 
     ''' <summary>
-    ''' Snapshots the live bitstream the first time this track is edited so close-time
-    ''' history can restore the pre-session original.
-    ''' </summary>
-    Private Sub EnsureOriginalSnapshot()
-        Dim Key As New Point(_Track, _Side)
-        If _OriginalBitstreams.ContainsKey(Key) Then
-            Exit Sub
-        End If
-
-        Dim BitstreamImage = _FloppyImage.BitstreamImage
-        Dim BT = BitstreamImage.GetTrack(CUShort(_Track * BitstreamImage.TrackStep), CByte(_Side))
-        If BT IsNot Nothing Then
-            _OriginalBitstreams(Key) = CType(BT.Bitstream.Clone(), BitArray)
-        End If
-    End Sub
-
-    ''' <summary>
     ''' Assigns the current working bitstream and keeps the visited-track cache in sync when
     ''' insert/remove/rotate replace the BitArray instance.
     ''' </summary>
@@ -1186,28 +1165,6 @@ Partial Public Class HexViewRawForm
             Cached.Bitstream = Bits
         End If
     End Sub
-
-    Private Function BitstreamsEqual(A As BitArray, B As BitArray) As Boolean
-        If A Is B Then
-            Return True
-        End If
-
-        If A Is Nothing OrElse B Is Nothing Then
-            Return False
-        End If
-
-        If A.Length <> B.Length Then
-            Return False
-        End If
-
-        For i = 0 To A.Length - 1
-            If A(i) <> B(i) Then
-                Return False
-            End If
-        Next
-
-        Return True
-    End Function
 
     Private Function GetCachedOffset(Track As UShort, Side As Byte) As Integer
         Dim Cached As CachedTrack = Nothing
