@@ -58,8 +58,8 @@ Partial Public Class HexViewRawForm
 
     ''' <summary>
     ''' Returns the region at the given hex byte index if it can be edited (Debug only, MFM
-    ''' track, current bit offset): a gap, a valid non-overlapping ID field, or a valid
-    ''' non-overlapping data area.
+    ''' track, current bit offset): a gap, an ID field with a valid checksum, or a data area
+    ''' (checksum may be invalid; sector may overlap).
     ''' </summary>
     Private Function GetEditableRegion(Index As Long) As BitstreamRegion
         If _TrackType <> BitstreamTrackType.MFM Then
@@ -92,7 +92,7 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim Sector = Region.Sector
-        If Sector Is Nothing OrElse Sector.Overlaps Then
+        If Sector Is Nothing Then
             Return Nothing
         End If
 
@@ -103,7 +103,7 @@ Partial Public Class HexViewRawForm
             Return Nothing
         End If
 
-        If Region.RegionType = MFMRegionType.DataArea AndAlso Sector.DataChecksumValid Then
+        If Region.RegionType = MFMRegionType.DataArea Then
             Return Region
         End If
 
@@ -919,6 +919,7 @@ Partial Public Class HexViewRawForm
 
     ''' <summary>
     ''' Recalculates ID or data CRC for the edited region and stages the checksum bytes.
+    ''' Data CRC is only rewritten when the existing checksum is valid.
     ''' </summary>
     Private Sub StageRegionChecksum(ChangeList As List(Of RawHexChange), Region As BitstreamRegion)
         Dim Offset = _CurrentTrackData.Offset
@@ -935,6 +936,10 @@ Partial Public Class HexViewRawForm
 
         ElseIf Region.RegionType = MFMRegionType.DataArea Then
             Dim Sector = Region.Sector
+            If Sector Is Nothing OrElse Not Sector.DataChecksumValid Then
+                Exit Sub
+            End If
+
             Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
             Dim SyncBit = AdjustBitIndex(DataBit - MFM_SYNC_MARK_BYTES * 16, Length)
             Dim Buffer = MFMGetBytes(_Bitstream, SyncBit, Sector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
@@ -1023,8 +1028,9 @@ Partial Public Class HexViewRawForm
     End Sub
 
     ''' <summary>
-    ''' On close, re-decode every edited track from its (already updated) bitstream and rebuild
-    ''' the image's decoded sector map so edits are reflected in the rest of the application.
+    ''' On close, re-decode every track that actually differs from its pre-session snapshot
+    ''' and record a batched image-history change. Tracks that were edited then fully undone
+    ''' are skipped so the image is not marked modified.
     ''' </summary>
     Private Sub HexViewRawForm_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
         If _OriginalBitstreams.Count = 0 Then
@@ -1032,8 +1038,20 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim BitstreamImage = _FloppyImage.BitstreamImage
+        Dim Changed As New List(Of KeyValuePair(Of Point, BitArray))
 
         For Each KVP In _OriginalBitstreams
+            Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
+            If BT IsNot Nothing AndAlso Not BitstreamsEqual(KVP.Value, BT.Bitstream) Then
+                Changed.Add(KVP)
+            End If
+        Next
+
+        If Changed.Count = 0 Then
+            Exit Sub
+        End If
+
+        For Each KVP In Changed
             Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
             If BT IsNot Nothing Then
                 BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
@@ -1045,7 +1063,7 @@ Partial Public Class HexViewRawForm
         End If
 
         _FloppyImage.History.BatchEditMode = True
-        For Each KVP In _OriginalBitstreams
+        For Each KVP In Changed
             Dim BT = BitstreamImage.GetTrack(CUShort(KVP.Key.X * BitstreamImage.TrackStep), CByte(KVP.Key.Y))
             If BT IsNot Nothing Then
                 _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
@@ -1168,6 +1186,28 @@ Partial Public Class HexViewRawForm
             Cached.Bitstream = Bits
         End If
     End Sub
+
+    Private Function BitstreamsEqual(A As BitArray, B As BitArray) As Boolean
+        If A Is B Then
+            Return True
+        End If
+
+        If A Is Nothing OrElse B Is Nothing Then
+            Return False
+        End If
+
+        If A.Length <> B.Length Then
+            Return False
+        End If
+
+        For i = 0 To A.Length - 1
+            If A(i) <> B(i) Then
+                Return False
+            End If
+        Next
+
+        Return True
+    End Function
 
     Private Function GetCachedOffset(Track As UShort, Side As Byte) As Integer
         Dim Cached As CachedTrack = Nothing
