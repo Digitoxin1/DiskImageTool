@@ -2060,6 +2060,9 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Menu_RemoveSplice" xml:space="preserve">
     <value>Quitar Empalme</value>
   </data>
+  <data name="Menu_RotateTrack" xml:space="preserve">
+    <value>Rotar Pista</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Otro</value>
   </data>

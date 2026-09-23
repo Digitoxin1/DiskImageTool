@@ -214,6 +214,20 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
+        If UndoStep.Kind = RawUndoKind.RotateTrack Then
+            Dim Inverse = _Bitstream.Length - UndoStep.BitIndex
+            Dim CurrentStart = HexBox1.SelectionStart
+            Dim CurrentLength = HexBox1.SelectionLength
+            _Bitstream = BitstreamAlign(_Bitstream, CUInt(Inverse))
+            Destination.Push(New RawUndoStep(RawUndoKind.RotateTrack, Inverse, Nothing, CurrentStart, CurrentLength))
+            ReloadFromWorkingBitstream()
+            HexBox1.Select(UndoStep.SelectionStart, UndoStep.SelectionLength)
+            RefreshUndoButtons()
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+            Exit Sub
+        End If
+
         If UndoStep.Kind = RawUndoKind.InsertBits Then
             _Bitstream = RemoveBits(_Bitstream, UndoStep.BitIndex, UndoStep.Bits.Length)
             Destination.Push(New RawUndoStep(RawUndoKind.RemoveBits, UndoStep.BitIndex, UndoStep.Bits, UndoStep.SelectionStart, UndoStep.SelectionLength))
@@ -456,6 +470,40 @@ Partial Public Class HexViewRawForm
         BtnRemoveSplice.Enabled = TryGetRemoveSplice(BitIndex, BitCount)
     End Sub
 
+    Private Function TryGetRotateTrack(ByRef Offset As Integer) As Boolean
+        Offset = 0
+
+        If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing OrElse _RegionMap Is Nothing Then
+            Return False
+        End If
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        If SelectionStart <= 0 OrElse SelectionStart > _RegionMap.Length - 1 Then
+            Return False
+        End If
+
+        Dim Region = _RegionMap(SelectionStart)
+        If Region Is Nothing Then
+            Return False
+        End If
+
+        If Region.BitOffset <> CUInt(_CurrentTrackData.Offset) Then
+            Return False
+        End If
+
+        Offset = CInt(SelectionStart * 16)
+        If Offset <= 0 OrElse Offset >= _Bitstream.Length Then
+            Return False
+        End If
+
+        Return True
+    End Function
+
+    Private Sub RefreshRotateTrackMenuItem()
+        Dim Offset As Integer
+        BtnRotateTrack.Enabled = TryGetRotateTrack(Offset)
+    End Sub
+
     Private Function GetCaretBitIndex() As Integer
         If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing Then
             Return -1
@@ -572,6 +620,27 @@ Partial Public Class HexViewRawForm
         PushSplice(RawUndoKind.RemoveBits, BitIndex, Removed, SelectionStart, SelectionLength)
         ReloadFromWorkingBitstream()
         HexBox1.Select(SelectionStart, 0)
+    End Sub
+
+    ''' <summary>
+    ''' Rotates the working bitstream so the aligned byte under the caret becomes the first
+    ''' decoded byte of the track.
+    ''' </summary>
+    Private Sub RotateTrack()
+        Dim Offset As Integer
+        If Not TryGetRotateTrack(Offset) Then
+            Exit Sub
+        End If
+
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+
+        _Bitstream = BitstreamAlign(_Bitstream, CUInt(Offset))
+        _Changes.Push(New RawUndoStep(RawUndoKind.RotateTrack, Offset, Nothing, SelectionStart, SelectionLength))
+        _RedoChanges.Clear()
+        RefreshUndoButtons()
+        ReloadFromWorkingBitstream()
+        HexBox1.Select(0, 0)
     End Sub
 
     ''' <summary>
@@ -903,6 +972,10 @@ Partial Public Class HexViewRawForm
         RemoveSplice()
     End Sub
 
+    Private Sub BtnRotateTrack_Click(sender As Object, e As EventArgs) Handles BtnRotateTrack.Click
+        RotateTrack()
+    End Sub
+
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
         CommitChanges(False)
     End Sub
@@ -921,6 +994,7 @@ Partial Public Class HexViewRawForm
         Overwrite
         InsertBits
         RemoveBits
+        RotateTrack
     End Enum
 
     ''' <summary>

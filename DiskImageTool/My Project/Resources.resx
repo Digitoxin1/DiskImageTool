@@ -2316,6 +2316,9 @@ Do you wish to continue?</value>
   <data name="Menu_RemoveSplice" xml:space="preserve">
     <value>Remove Splice</value>
   </data>
+  <data name="Menu_RotateTrack" xml:space="preserve">
+    <value>Rotate Track</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Other</value>
   </data>

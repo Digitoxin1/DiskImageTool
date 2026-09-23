@@ -2060,6 +2060,9 @@ Souhaitez-vous continuer ?</value>
   <data name="Menu_RemoveSplice" xml:space="preserve">
     <value>Retirer l'épissure</value>
   </data>
+  <data name="Menu_RotateTrack" xml:space="preserve">
+    <value>Faire pivoter la piste</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Autre</value>
   </data>

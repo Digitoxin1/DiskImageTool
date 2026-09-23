@@ -2060,6 +2060,9 @@ Möchten Sie fortfahren?</value>
   <data name="Menu_RemoveSplice" xml:space="preserve">
     <value>Spleiß entfernen</value>
   </data>
+  <data name="Menu_RotateTrack" xml:space="preserve">
+    <value>Spur drehen</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Andere</value>
   </data>

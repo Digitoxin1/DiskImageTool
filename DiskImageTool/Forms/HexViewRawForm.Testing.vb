@@ -6,11 +6,7 @@ Partial Public Class HexViewRawForm
     Private Sub AddContextMenuBitEditItems()
         ContextMenuStrip1.Items.Add(New ToolStripSeparator())
 
-        Dim Item As New ToolStripMenuItem("Rotate All Tracks")
-        AddHandler Item.Click, AddressOf ContextMenuRotateAllTracks_Click
-        ContextMenuStrip1.Items.Add(Item)
-
-        Item = New ToolStripMenuItem("Normalize First Gap")
+        Dim Item = New ToolStripMenuItem("Normalize First Gap")
         AddHandler Item.Click, AddressOf ContextMenuNormalizeFirstGap_Click
         ContextMenuStrip1.Items.Add(Item)
 
@@ -132,26 +128,6 @@ Partial Public Class HexViewRawForm
                     MFMTrack.Bitstream.Set(PrevLength + k, b)
                 Next
             Next
-        Next
-
-        LoadTrack(_CurrentTrackData, True, True)
-    End Sub
-
-    Private Sub ContextMenuRotateAllTracks_Click()
-        For i = 0 To _FloppyImage.TrackCount - 1
-            For j = 0 To _FloppyImage.SideCount - 1
-                Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(i * _FloppyImage.BitstreamImage.TrackStep, j)
-                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
-                    Dim Offset = MFMGetOffset(MFMTrack.Bitstream)
-                    If Offset > 0 Then
-                        MFMTrack.Bitstream = BitstreamAlign(MFMTrack.Bitstream, Offset)
-                    End If
-                End If
-            Next
-        Next
-
-        For Each Track As TrackData In ComboTrack.Items
-            Track.Offset = -1
         Next
 
         LoadTrack(_CurrentTrackData, True, True)

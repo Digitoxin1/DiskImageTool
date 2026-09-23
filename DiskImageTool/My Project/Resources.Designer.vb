@@ -5669,6 +5669,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Rotate Track.
+        '''</summary>
+        Friend ReadOnly Property Menu_RotateTrack() As String
+            Get
+                Return ResourceManager.GetString("Menu_RotateTrack", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Save.
         '''</summary>
         Friend ReadOnly Property Menu_Save() As String

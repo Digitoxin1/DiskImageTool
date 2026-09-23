@@ -87,6 +87,7 @@ Partial Public Class HexViewRawForm
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
         BtnRemoveSplice.Text = My.Resources.Menu_RemoveSplice
+        BtnRotateTrack.Text = My.Resources.Menu_RotateTrack
         BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
         BtnCopyHex.Text = My.Resources.Menu_CopyHex
         BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
@@ -1058,6 +1059,7 @@ Partial Public Class HexViewRawForm
         RefreshPasteButton()
         RefreshGapMenuItems()
         RefreshRemoveSpliceMenuItem()
+        RefreshRotateTrackMenuItem()
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
