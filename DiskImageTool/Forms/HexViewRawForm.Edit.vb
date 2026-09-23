@@ -401,7 +401,6 @@ Partial Public Class HexViewRawForm
 
         Dim Visible = Region IsNot Nothing AndAlso Not SelectionSpansMultipleRegions()
 
-        ToolStripSeparatorGapBytes.Visible = Visible
         BtnInsertGapBytes.Visible = Visible
         BtnDeleteGapBytes.Visible = Visible
         BtnDeleteGapBytes.Enabled = Visible AndAlso HexBox1.SelectionLength > 0
