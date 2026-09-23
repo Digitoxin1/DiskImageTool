@@ -88,6 +88,7 @@ Partial Public Class HexViewRawForm
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
         BtnRemoveSplice.Text = My.Resources.Menu_RemoveSplice
         BtnRotateTrack.Text = My.Resources.Menu_RotateTrack
+        BtnNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
         BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
         BtnCopyHex.Text = My.Resources.Menu_CopyHex
         BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
@@ -1060,6 +1061,7 @@ Partial Public Class HexViewRawForm
         RefreshGapMenuItems()
         RefreshRemoveSpliceMenuItem()
         RefreshRotateTrackMenuItem()
+        RefreshNormalizeTrackSizeMenuItem()
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)

@@ -5534,6 +5534,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Normalize Track Size.
+        '''</summary>
+        Friend ReadOnly Property Menu_NormalizeTrackSize() As String
+            Get
+                Return ResourceManager.GetString("Menu_NormalizeTrackSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to N&amp;o to all.
         '''</summary>
         Friend ReadOnly Property Menu_NoToAll() As String

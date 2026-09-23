@@ -2063,6 +2063,9 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>Rotar Pista Aquí</value>
   </data>
+  <data name="Menu_NormalizeTrackSize" xml:space="preserve">
+    <value>Normalizar Tamaño de Pista</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Otro</value>
   </data>

@@ -230,6 +230,22 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
+        If UndoStep.Kind = RawUndoKind.ReplaceTail Then
+            Dim CurrentTail = CopyBits(_Bitstream, UndoStep.BitIndex, _Bitstream.Length - UndoStep.BitIndex)
+            _Bitstream = RemoveBits(_Bitstream, UndoStep.BitIndex, _Bitstream.Length - UndoStep.BitIndex)
+            If UndoStep.Bits IsNot Nothing AndAlso UndoStep.Bits.Length > 0 Then
+                _Bitstream = InsertBits(_Bitstream, UndoStep.BitIndex, UndoStep.Bits)
+            End If
+            ApplyMFMSpliceClocks(UndoStep.BitIndex, If(UndoStep.Bits Is Nothing, 0, UndoStep.Bits.Length))
+            Destination.Push(New RawUndoStep(RawUndoKind.ReplaceTail, UndoStep.BitIndex, CurrentTail, UndoStep.SelectionStart, UndoStep.SelectionLength))
+            ReloadFromWorkingBitstream()
+            HexBox1.Select(UndoStep.SelectionStart, UndoStep.SelectionLength)
+            RefreshUndoButtons()
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+            Exit Sub
+        End If
+
         If UndoStep.Kind = RawUndoKind.InsertBits Then
             _Bitstream = RemoveBits(_Bitstream, UndoStep.BitIndex, UndoStep.Bits.Length)
             Destination.Push(New RawUndoStep(RawUndoKind.RemoveBits, UndoStep.BitIndex, UndoStep.Bits, UndoStep.SelectionStart, UndoStep.SelectionLength))
@@ -665,6 +681,99 @@ Partial Public Class HexViewRawForm
         HexBox1.Select(0, 0)
     End Sub
 
+    Private Function GetTargetTrackBitCount() As Integer
+        If _Bitstream Is Nothing OrElse _FloppyImage Is Nothing OrElse _FloppyImage.BitstreamImage Is Nothing Then
+            Return 0
+        End If
+
+        Dim Image = _FloppyImage.BitstreamImage
+        Dim BT = Image.GetTrack(CUShort(_Track * Image.TrackStep), CByte(_Side))
+        If BT IsNot Nothing AndAlso BT.RPM <> 0 AndAlso BT.BitRate <> 0 Then
+            Return CInt(MFMGetSize(BT.RPM, BT.BitRate))
+        End If
+
+        Return CInt(InferBitCount(CUInt(_Bitstream.Length)))
+    End Function
+
+    Private Function TryGetNormalizeTrackSize(ByRef Target As Integer) As Boolean
+        Target = 0
+
+        If _Bitstream Is Nothing Then
+            Return False
+        End If
+
+        Target = GetTargetTrackBitCount()
+        If Target <= 0 OrElse Target = _Bitstream.Length Then
+            Return False
+        End If
+
+        Return True
+    End Function
+
+    Private Sub RefreshNormalizeTrackSizeMenuItem()
+        Dim Target As Integer
+        BtnNormalizeTrackSize.Enabled = TryGetNormalizeTrackSize(Target)
+    End Sub
+
+    ''' <summary>
+    ''' Resizes the working bitstream to the image-type target: chop the tail if too long,
+    ''' or 16-align and append MFM 0x4E if too short.
+    ''' </summary>
+    Private Sub NormalizeTrackSize()
+        Dim Target As Integer
+        If Not TryGetNormalizeTrackSize(Target) Then
+            Exit Sub
+        End If
+
+        Dim Length = _Bitstream.Length
+        Dim BitIndex As Integer
+        Dim NewTail As BitArray
+
+        If Length > Target Then
+            BitIndex = Target
+            NewTail = New BitArray(0)
+        Else
+            BitIndex = (Length \ 16) * 16
+            Dim PadBytes = (Target - BitIndex) \ 16
+            If PadBytes < 1 Then
+                Exit Sub
+            End If
+
+            Dim Fill(PadBytes - 1) As Byte
+            For i = 0 To PadBytes - 1
+                Fill(i) = CByte(MFM_GAP_BYTE)
+            Next
+
+            NewTail = MFMEncodeBytes(Fill, GetPreviousDataBit(BitIndex))
+        End If
+
+        ReplaceTail(BitIndex, NewTail)
+    End Sub
+
+    ''' <summary>
+    ''' Replaces bits from BitIndex through the end of the working clone with NewTail and
+    ''' records a single ReplaceTail undo step.
+    ''' </summary>
+    Private Sub ReplaceTail(BitIndex As Integer, NewTail As BitArray)
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim OldTail = CopyBits(_Bitstream, BitIndex, _Bitstream.Length - BitIndex)
+
+        _Bitstream = RemoveBits(_Bitstream, BitIndex, _Bitstream.Length - BitIndex)
+        If NewTail IsNot Nothing AndAlso NewTail.Length > 0 Then
+            _Bitstream = InsertBits(_Bitstream, BitIndex, NewTail)
+        End If
+        ApplyMFMSpliceClocks(BitIndex, If(NewTail Is Nothing, 0, NewTail.Length))
+        PushSplice(RawUndoKind.ReplaceTail, BitIndex, OldTail, SelectionStart, SelectionLength)
+        ReloadFromWorkingBitstream()
+
+        If HexBox1.ByteProvider Is Nothing OrElse SelectionStart >= HexBox1.ByteProvider.Length Then
+            HexBox1.Select(0, 0)
+        Else
+            HexBox1.Select(SelectionStart, 0)
+        End If
+    End Sub
+
     ''' <summary>
     ''' Re-encodes the byte at the given _Data index into the working-clone bitstream so the
     ''' clone (and the bit-inspector) stays consistent with the decoded data buffer.
@@ -1008,6 +1117,10 @@ Partial Public Class HexViewRawForm
         RotateTrack()
     End Sub
 
+    Private Sub BtnNormalizeTrackSize_Click(sender As Object, e As EventArgs) Handles BtnNormalizeTrackSize.Click
+        NormalizeTrackSize()
+    End Sub
+
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
         CommitChanges(False)
     End Sub
@@ -1027,6 +1140,7 @@ Partial Public Class HexViewRawForm
         InsertBits
         RemoveBits
         RotateTrack
+        ReplaceTail
     End Enum
 
     ''' <summary>

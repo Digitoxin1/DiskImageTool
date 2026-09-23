@@ -2063,6 +2063,9 @@ Möchten Sie fortfahren?</value>
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>Spur hier drehen</value>
   </data>
+  <data name="Menu_NormalizeTrackSize" xml:space="preserve">
+    <value>Trackgröße normalisieren</value>
+  </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Andere</value>
   </data>

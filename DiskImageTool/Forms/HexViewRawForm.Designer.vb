@@ -69,6 +69,7 @@ Partial Class HexViewRawForm
         Me.BtnAdjustOffset = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRemoveSplice = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRotateTrack = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnNormalizeTrackSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparatorGapBytes = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnInsertGapBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDeleteGapBytes = New System.Windows.Forms.ToolStripMenuItem()
@@ -320,7 +321,7 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertGapBytes, Me.BtnDeleteGapBytes, Me.BtnRemoveSplice, Me.BtnRotateTrack})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertGapBytes, Me.BtnDeleteGapBytes, Me.BtnRemoveSplice, Me.BtnRotateTrack, Me.BtnNormalizeTrackSize})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
         Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 474)
         '
@@ -464,6 +465,12 @@ Partial Class HexViewRawForm
         Me.BtnRotateTrack.Name = "BtnRotateTrack"
         Me.BtnRotateTrack.Size = New System.Drawing.Size(265, 22)
         Me.BtnRotateTrack.Text = "{Rotate Track Here}"
+        '
+        'BtnNormalizeTrackSize
+        '
+        Me.BtnNormalizeTrackSize.Name = "BtnNormalizeTrackSize"
+        Me.BtnNormalizeTrackSize.Size = New System.Drawing.Size(265, 22)
+        Me.BtnNormalizeTrackSize.Text = "{Normalize Track Size}"
         '
         'ToolStripSeparatorGapBytes
         '
@@ -782,6 +789,7 @@ Partial Class HexViewRawForm
     Friend WithEvents BtnAdjustOffset As ToolStripMenuItem
     Friend WithEvents BtnRemoveSplice As ToolStripMenuItem
     Friend WithEvents BtnRotateTrack As ToolStripMenuItem
+    Friend WithEvents BtnNormalizeTrackSize As ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorGapBytes As ToolStripSeparator
     Friend WithEvents BtnInsertGapBytes As ToolStripMenuItem
     Friend WithEvents BtnDeleteGapBytes As ToolStripMenuItem
