@@ -86,37 +86,41 @@ Partial Public Class HexViewRawForm
 
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
-        BtnRemoveSplice.Text = My.Resources.Menu_RemoveSplice
-        BtnRotateTrack.Text = My.Resources.Menu_RotateTrack
-        BtnNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
         BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
         BtnCopyHex.Text = My.Resources.Menu_CopyHex
         BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
         BtnCopyText.Text = My.Resources.Menu_CopyText
         BtnCopyValue.Text = My.Resources.Menu_CopyValue
         BtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        BtnDeleteBytes.Text = My.Resources.Menu_DeleteSelectedBytes
         BtnFill.Text = My.Resources.Label_FillSelection
         BtnFill4E.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x4E")
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FindNext
+        BtnInsertBytes.Text = My.Resources.Menu_InsertBytes
+        BtnNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
         BtnPaste.Text = My.Resources.Menu_PasteOver
+        BtnRemoveSplice.Text = My.Resources.Menu_RemoveSplice
+        BtnRotateTrack.Text = My.Resources.Menu_RotateTrack
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
         BtnSelectData.Text = My.Resources.Menu_SelectData
         BtnSelectRegion.Text = My.Resources.Menu_SelectRegion
         BtnSelectSector.Text = My.Resources.Menu_SelectSector
-        BtnInsertGapBytes.Text = My.Resources.Menu_InsertBytes
-        BtnDeleteGapBytes.Text = My.Resources.Menu_DeleteSelectedBytes
+        CheckBoxAllTracks.Text = My.Resources.Label_AllTracks
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
         ToolStripBtnAdjustOffset.Text = WithoutHotkey(My.Resources.Menu_AdjustBitOffset)
+        ToolStripBtnCommit.Text = My.Resources.Label_Commit
+        ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
         ToolStripBtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
         ToolStripBtnFill4E.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x4E")
-        ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
         ToolStripBtnFind.Text = My.Resources.Label_Find
         ToolStripBtnFindNext.Text = My.Resources.Label_FindNext
+        ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
+        ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
         ToolStripBtnSelectData.Text = My.Resources.Label_Data
         ToolStripBtnSelectData.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectData)
@@ -124,12 +128,13 @@ Partial Public Class HexViewRawForm
         ToolStripBtnSelectRegion.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectRegion)
         ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
         ToolStripBtnSelectSector.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectSector)
-        ToolStripStatusChecksumText.Text = My.Resources.Label_Checksum & ":"
-        ToolStripBtnCommit.Text = My.Resources.Label_Commit
-        ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
-        ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripBtnUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
-        CheckBoxAllTracks.Text = My.Resources.Label_AllTracks
+        ToolStripStatusChecksumText.Text = My.Resources.Label_Checksum & ":"
+        ToolStripToolsDeleteBytes.Text = My.Resources.Menu_DeleteSelectedBytes
+        ToolStripToolsInsertBytes.Text = My.Resources.Menu_InsertBytes
+        ToolStripToolsNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
+        ToolStripToolsRemoveSplice.Text = My.Resources.Menu_RemoveSplice
+        ToolStripToolsRotateTrack.Text = My.Resources.Menu_RotateTrack
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>
@@ -699,6 +704,8 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
+        PersistCurrentTrackOffset()
+
         Me.Text = My.Resources.Caption_RawTrackData & " - " & FormatTrackSide(My.Resources.Label_Track, TrackData.Track, TrackData.Side)
 
         _CurrentTrackData = TrackData
@@ -708,63 +715,50 @@ Partial Public Class HexViewRawForm
 
         Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(TrackData.Track * _FloppyImage.BitstreamImage.TrackStep, TrackData.Side)
 
-        Dim Data() As Byte
-        Dim RegionData As BitstreamRegionData
         _TrackType = MFMTrack.TrackType
         If MFMTrack.TrackType = BitstreamTrackType.MFM Or MFMTrack.TrackType = BitstreamTrackType.FM Then
+            Dim Cached = GetOrCreateCachedTrack(TrackData.Track, TrackData.Side, MFMTrack)
+            _Bitstream = Cached.Bitstream
+
             If TrackData.Offset = -1 Then
-                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
-                    TrackData.Offset = MFMGetOffset(MFMTrack.Bitstream)
+                If Cached.Offset >= 0 Then
+                    TrackData.Offset = Cached.Offset
+                ElseIf MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    TrackData.Offset = MFMGetOffset(_Bitstream)
+                    Cached.Offset = TrackData.Offset
                 Else
-                    TrackData.Offset = FMGetOffset(MFMTrack.Bitstream)
+                    TrackData.Offset = FMGetOffset(_Bitstream)
+                    Cached.Offset = TrackData.Offset
                 End If
+            Else
+                Cached.Offset = TrackData.Offset
             End If
-            Dim NumBytes = MFMTrack.Bitstream.Length \ 16
-            RegionData = MFMGetRegionList(MFMTrack.Bitstream, MFMTrack.TrackType)
-            Data = MFMGetBytes(MFMTrack.Bitstream, TrackData.Offset, RegionData.NumBytes)
+
             _IgnoreEvent = True
             NumericBitOffset.Value = TrackData.Offset
             _IgnoreEvent = False
-            ' Work on a clone so data-area edits are staged; the live track is only updated on Commit.
-            _Bitstream = CType(MFMTrack.Bitstream.Clone(), BitArray)
             _SurfaceData = MFMTrack.SurfaceData
-            _WeakBitRegions = GetWeakBitRegions(MFMTrack.Bitstream, TrackData.Offset)
 
-            If _SurfaceData IsNot Nothing Then
-                For Each Range In _WeakBitRegions
-                    For Each Sector In RegionData.Sectors
-                        Dim SectorLength = Sector.Length
-                        If SectorLength = 0 Then
-                            SectorLength = NumBytes - Sector.StartIndex
-                        End If
-                        Dim SectorEnd As Integer = Sector.StartIndex + SectorLength - 1
-                        If Range.StartIndex <= SectorEnd AndAlso Range.EndIndex >= Sector.StartIndex Then
-                            Sector.HasWeakBits = True
-                        End If
-                    Next
-                Next
-            End If
+            ReloadFromWorkingBitstream(KeepGridLocation)
         Else
-            Data = BitsToBytes(MFMTrack.Bitstream, 0)
-            RegionData = New BitstreamRegionData With {
+            Dim Data = BitsToBytes(MFMTrack.Bitstream, 0)
+            Dim RegionData = New BitstreamRegionData With {
                 .NumBits = MFMTrack.Bitstream.Length,
                 .Aligned = False
             }
 
             _Bitstream = Nothing
             _SurfaceData = Nothing
+            RegionData.Track = TrackData.Track
+            RegionData.Side = TrackData.Side
+            LoadData(Data, RegionData, KeepGridLocation)
         End If
-
-        RegionData.Track = TrackData.Track
-        RegionData.Side = TrackData.Side
-
-        LoadData(Data, RegionData, KeepGridLocation)
     End Sub
 
     ''' <summary>
     ''' Rebuilds the decoded hex view from the working-clone bitstream without cloning the live track.
     ''' </summary>
-    Private Sub ReloadFromWorkingBitstream()
+    Private Sub ReloadFromWorkingBitstream(Optional KeepGridLocation As Boolean = False)
         If _Bitstream Is Nothing OrElse _CurrentTrackData Is Nothing Then
             Exit Sub
         End If
@@ -803,7 +797,7 @@ Partial Public Class HexViewRawForm
 
         RegionData.Track = _Track
         RegionData.Side = _Side
-        LoadData(Data, RegionData, False)
+        LoadData(Data, RegionData, KeepGridLocation)
     End Sub
 
     Private Sub PopulateTracks(AllTracks As Boolean)
@@ -815,7 +809,7 @@ Partial Public Class HexViewRawForm
                     Dim TrackData As New TrackData With {
                         .Track = i,
                         .Side = j,
-                        .Offset = -1
+                        .Offset = GetCachedOffset(i, j)
                     }
                     ComboTrack.Items.Add(TrackData)
                     If i = _Track And j = _Side Then
@@ -1377,13 +1371,6 @@ Partial Public Class HexViewRawForm
         Dim AllTracks = CheckBoxAllTracks.Checked
         Dim TrackWouldChange = Not IsTrackListed(_Track, _Side, AllTracks)
 
-        If TrackWouldChange AndAlso Not ConfirmCommitOrDiscard() Then
-            _IgnoreEvent = True
-            CheckBoxAllTracks.Checked = Not AllTracks
-            _IgnoreEvent = False
-            Exit Sub
-        End If
-
         _IgnoreEvent = True
         PopulateTracks(AllTracks)
         _IgnoreEvent = False
@@ -1398,10 +1385,7 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
-        If Not ConfirmCommitOrDiscard() Then
-            _IgnoreEvent = True
-            ComboTrack.SelectedItem = _CurrentTrackData
-            _IgnoreEvent = False
+        If ComboTrack.SelectedItem Is Nothing Then
             Exit Sub
         End If
 
@@ -1547,6 +1531,7 @@ Partial Public Class HexViewRawForm
             ' Do not draw the ToolStrip border
         End Sub
     End Class
+
 #End Region
 
 End Class

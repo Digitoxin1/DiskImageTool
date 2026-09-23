@@ -32,6 +32,15 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnUndo = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnRedo = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripDropDownTools = New System.Windows.Forms.ToolStripDropDownButton()
+        Me.ToolStripToolsInsertBytes = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripToolsDeleteBytes = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripToolsRemoveSplice = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripToolsRotateTrack = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripToolsNormalizeTrackSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripStatusExactBitCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.DataGridDataInspector = New System.Windows.Forms.DataGridView()
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -67,12 +76,12 @@ Partial Class HexViewRawForm
         Me.BtnSelectData = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnAdjustOffset = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparatorGapBytes = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnInsertBytes = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDeleteBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRemoveSplice = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRotateTrack = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnNormalizeTrackSize = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparatorGapBytes = New System.Windows.Forms.ToolStripSeparator()
-        Me.BtnInsertGapBytes = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnDeleteGapBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripBtnCopyText = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnCopyHex = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnCopyHexFormatted = New System.Windows.Forms.ToolStripButton()
@@ -95,6 +104,8 @@ Partial Class HexViewRawForm
         Me.TableLayoutPanelTop = New System.Windows.Forms.TableLayoutPanel()
         Me.PanelSectors = New DiskImageTool.SelectablePanel()
         Me.CheckBoxAllTracks = New System.Windows.Forms.CheckBox()
+        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -129,11 +140,11 @@ Partial Class HexViewRawForm
         Me.ToolStripEdit.CanOverflow = False
         Me.ToolStripEdit.Dock = System.Windows.Forms.DockStyle.None
         Me.ToolStripEdit.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, Me.ToolStripSeparator3})
+        Me.ToolStripEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, Me.ToolStripSeparator3, Me.ToolStripDropDownTools, Me.ToolStripSeparator4})
         Me.ToolStripEdit.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.ToolStripEdit.Location = New System.Drawing.Point(12, 0)
         Me.ToolStripEdit.Name = "ToolStripEdit"
-        Me.ToolStripEdit.Size = New System.Drawing.Size(118, 25)
+        Me.ToolStripEdit.Size = New System.Drawing.Size(172, 25)
         Me.ToolStripEdit.TabIndex = 0
         Me.ToolStripEdit.TabStop = True
         Me.ToolStripEdit.Text = "ToolStrip1"
@@ -168,6 +179,62 @@ Partial Class HexViewRawForm
         '
         Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
         Me.ToolStripSeparator3.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripDropDownTools
+        '
+        Me.ToolStripDropDownTools.AutoToolTip = False
+        Me.ToolStripDropDownTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripDropDownTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripToolsInsertBytes, Me.ToolStripToolsDeleteBytes, Me.ToolStripSeparator7, Me.ToolStripToolsRemoveSplice, Me.ToolStripToolsRotateTrack, Me.ToolStripSeparator9, Me.ToolStripToolsNormalizeTrackSize})
+        Me.ToolStripDropDownTools.Image = CType(resources.GetObject("ToolStripDropDownTools.Image"), System.Drawing.Image)
+        Me.ToolStripDropDownTools.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripDropDownTools.Name = "ToolStripDropDownTools"
+        Me.ToolStripDropDownTools.Size = New System.Drawing.Size(48, 22)
+        Me.ToolStripDropDownTools.Text = "Tools"
+        '
+        'ToolStripToolsInsertBytes
+        '
+        Me.ToolStripToolsInsertBytes.Name = "ToolStripToolsInsertBytes"
+        Me.ToolStripToolsInsertBytes.Size = New System.Drawing.Size(193, 22)
+        Me.ToolStripToolsInsertBytes.Text = "{Insert Bytes}"
+        '
+        'ToolStripToolsDeleteBytes
+        '
+        Me.ToolStripToolsDeleteBytes.Name = "ToolStripToolsDeleteBytes"
+        Me.ToolStripToolsDeleteBytes.Size = New System.Drawing.Size(193, 22)
+        Me.ToolStripToolsDeleteBytes.Text = "{Delete Selected Bytes}"
+        '
+        'ToolStripSeparator7
+        '
+        Me.ToolStripSeparator7.Name = "ToolStripSeparator7"
+        Me.ToolStripSeparator7.Size = New System.Drawing.Size(190, 6)
+        '
+        'ToolStripToolsRemoveSplice
+        '
+        Me.ToolStripToolsRemoveSplice.Name = "ToolStripToolsRemoveSplice"
+        Me.ToolStripToolsRemoveSplice.Size = New System.Drawing.Size(193, 22)
+        Me.ToolStripToolsRemoveSplice.Text = "{Remove Splice Here}"
+        '
+        'ToolStripToolsRotateTrack
+        '
+        Me.ToolStripToolsRotateTrack.Name = "ToolStripToolsRotateTrack"
+        Me.ToolStripToolsRotateTrack.Size = New System.Drawing.Size(193, 22)
+        Me.ToolStripToolsRotateTrack.Text = "{Rotate Track Here}"
+        '
+        'ToolStripSeparator9
+        '
+        Me.ToolStripSeparator9.Name = "ToolStripSeparator9"
+        Me.ToolStripSeparator9.Size = New System.Drawing.Size(190, 6)
+        '
+        'ToolStripToolsNormalizeTrackSize
+        '
+        Me.ToolStripToolsNormalizeTrackSize.Name = "ToolStripToolsNormalizeTrackSize"
+        Me.ToolStripToolsNormalizeTrackSize.Size = New System.Drawing.Size(193, 22)
+        Me.ToolStripToolsNormalizeTrackSize.Text = "{NormalizeTrackSize}"
+        '
+        'ToolStripSeparator4
+        '
+        Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripStatusExactBitCount
         '
@@ -321,9 +388,9 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertGapBytes, Me.BtnDeleteGapBytes, Me.BtnRemoveSplice, Me.BtnRotateTrack, Me.BtnNormalizeTrackSize})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertBytes, Me.BtnDeleteBytes, Me.ToolStripSeparator11, Me.BtnRemoveSplice, Me.BtnRotateTrack, Me.ToolStripSeparator10, Me.BtnNormalizeTrackSize})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 474)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 508)
         '
         'BtnCopyHex
         '
@@ -454,6 +521,23 @@ Partial Class HexViewRawForm
         Me.BtnAdjustOffset.Size = New System.Drawing.Size(265, 22)
         Me.BtnAdjustOffset.Text = "{Adjust Bit &Offset}"
         '
+        'ToolStripSeparatorGapBytes
+        '
+        Me.ToolStripSeparatorGapBytes.Name = "ToolStripSeparatorGapBytes"
+        Me.ToolStripSeparatorGapBytes.Size = New System.Drawing.Size(262, 6)
+        '
+        'BtnInsertBytes
+        '
+        Me.BtnInsertBytes.Name = "BtnInsertBytes"
+        Me.BtnInsertBytes.Size = New System.Drawing.Size(265, 22)
+        Me.BtnInsertBytes.Text = "{Insert Bytes}"
+        '
+        'BtnDeleteBytes
+        '
+        Me.BtnDeleteBytes.Name = "BtnDeleteBytes"
+        Me.BtnDeleteBytes.Size = New System.Drawing.Size(265, 22)
+        Me.BtnDeleteBytes.Text = "{Delete Selected Bytes}"
+        '
         'BtnRemoveSplice
         '
         Me.BtnRemoveSplice.Name = "BtnRemoveSplice"
@@ -471,23 +555,6 @@ Partial Class HexViewRawForm
         Me.BtnNormalizeTrackSize.Name = "BtnNormalizeTrackSize"
         Me.BtnNormalizeTrackSize.Size = New System.Drawing.Size(265, 22)
         Me.BtnNormalizeTrackSize.Text = "{Normalize Track Size}"
-        '
-        'ToolStripSeparatorGapBytes
-        '
-        Me.ToolStripSeparatorGapBytes.Name = "ToolStripSeparatorGapBytes"
-        Me.ToolStripSeparatorGapBytes.Size = New System.Drawing.Size(262, 6)
-        '
-        'BtnInsertGapBytes
-        '
-        Me.BtnInsertGapBytes.Name = "BtnInsertGapBytes"
-        Me.BtnInsertGapBytes.Size = New System.Drawing.Size(265, 22)
-        Me.BtnInsertGapBytes.Text = "{Insert GAP Bytes}"
-        '
-        'BtnDeleteGapBytes
-        '
-        Me.BtnDeleteGapBytes.Name = "BtnDeleteGapBytes"
-        Me.BtnDeleteGapBytes.Size = New System.Drawing.Size(265, 22)
-        Me.BtnDeleteGapBytes.Text = "{Delete GAP Bytes}"
         '
         'ToolStripBtnCopyText
         '
@@ -694,11 +761,11 @@ Partial Class HexViewRawForm
         'PanelSectors
         '
         Me.PanelSectors.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.PanelSectors.Location = New System.Drawing.Point(130, 0)
+        Me.PanelSectors.Location = New System.Drawing.Point(184, 0)
         Me.PanelSectors.Margin = New System.Windows.Forms.Padding(0)
         Me.PanelSectors.Name = "PanelSectors"
         Me.PanelSectors.Padding = New System.Windows.Forms.Padding(2, 4, 0, 4)
-        Me.PanelSectors.Size = New System.Drawing.Size(711, 25)
+        Me.PanelSectors.Size = New System.Drawing.Size(657, 25)
         Me.PanelSectors.TabIndex = 1
         Me.PanelSectors.TabStop = True
         '
@@ -712,6 +779,16 @@ Partial Class HexViewRawForm
         Me.CheckBoxAllTracks.TabIndex = 2
         Me.CheckBoxAllTracks.Text = "{All Tracks}"
         Me.CheckBoxAllTracks.UseVisualStyleBackColor = True
+        '
+        'ToolStripSeparator10
+        '
+        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(262, 6)
+        '
+        'ToolStripSeparator11
+        '
+        Me.ToolStripSeparator11.Name = "ToolStripSeparator11"
+        Me.ToolStripSeparator11.Size = New System.Drawing.Size(262, 6)
         '
         'HexViewRawForm
         '
@@ -791,8 +868,8 @@ Partial Class HexViewRawForm
     Friend WithEvents BtnRotateTrack As ToolStripMenuItem
     Friend WithEvents BtnNormalizeTrackSize As ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorGapBytes As ToolStripSeparator
-    Friend WithEvents BtnInsertGapBytes As ToolStripMenuItem
-    Friend WithEvents BtnDeleteGapBytes As ToolStripMenuItem
+    Friend WithEvents BtnInsertBytes As ToolStripMenuItem
+    Friend WithEvents BtnDeleteBytes As ToolStripMenuItem
     Friend WithEvents ToolStripBtnAdjustOffset As ToolStripButton
     Friend WithEvents ToolStripStatusBits As ToolStripStatusLabel
     Friend WithEvents PanelSectors As DiskImageTool.SelectablePanel
@@ -816,4 +893,15 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripBtnDelete As ToolStripButton
     Friend WithEvents ToolStripBtnFill4E As ToolStripButton
     Friend WithEvents ToolStripSeparator6 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
+    Friend WithEvents ToolStripDropDownTools As ToolStripDropDownButton
+    Friend WithEvents ToolStripToolsInsertBytes As ToolStripMenuItem
+    Friend WithEvents ToolStripToolsDeleteBytes As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator7 As ToolStripSeparator
+    Friend WithEvents ToolStripToolsRemoveSplice As ToolStripMenuItem
+    Friend WithEvents ToolStripToolsRotateTrack As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator9 As ToolStripSeparator
+    Friend WithEvents ToolStripToolsNormalizeTrackSize As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator11 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
 End Class
