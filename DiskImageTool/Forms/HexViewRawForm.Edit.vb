@@ -27,6 +27,7 @@ Partial Public Class HexViewRawForm
     Private Sub ApplyStagedChanges()
         Dim BitstreamImage = _FloppyImage.BitstreamImage
         Dim BT = BitstreamImage.GetTrack(CUShort(_Track * BitstreamImage.TrackStep), CByte(_Side))
+
         If BT IsNot Nothing Then
             Dim Key As New Point(_Track, _Side)
             If Not _OriginalBitstreams.ContainsKey(Key) Then
@@ -218,6 +219,7 @@ Partial Public Class HexViewRawForm
             Dim Inverse = _Bitstream.Length - UndoStep.BitIndex
             Dim CurrentStart = HexBox1.SelectionStart
             Dim CurrentLength = HexBox1.SelectionLength
+
             _Bitstream = BitstreamAlign(_Bitstream, CUInt(Inverse))
             Destination.Push(New RawUndoStep(RawUndoKind.RotateTrack, Inverse, Nothing, CurrentStart, CurrentLength))
             ReloadFromWorkingBitstream()
@@ -332,6 +334,7 @@ Partial Public Class HexViewRawForm
         Dim ClockIndex = AdjustBitIndex(BitIndex, Length)
         Dim DataIndex = AdjustBitIndex(BitIndex + 1, Length)
         Dim PrevData = GetPreviousDataBit(BitIndex)
+
         _Bitstream(ClockIndex) = (Not _Bitstream(DataIndex)) AndAlso (Not PrevData)
     End Sub
 
@@ -341,6 +344,7 @@ Partial Public Class HexViewRawForm
     ''' </summary>
     Private Sub ApplyMFMSpliceClocks(StartBit As Integer, InsertedBitCount As Integer)
         FixClockAt(StartBit)
+
         If InsertedBitCount > 0 Then
             FixClockAt(StartBit + InsertedBitCount)
         End If
@@ -348,14 +352,17 @@ Partial Public Class HexViewRawForm
 
     Private Function CopyBits(Source As BitArray, Index As Integer, Count As Integer) As BitArray
         Dim Result As New BitArray(Count)
+
         For i = 0 To Count - 1
             Result(i) = Source(Index + i)
         Next
+
         Return Result
     End Function
 
     Private Function GetGapOrNullRegion(Index As Long) As BitstreamRegion
         Dim Region = GetEditableRegion(Index)
+
         If Region Is Nothing Then
             Return Nothing
         End If
@@ -378,12 +385,14 @@ Partial Public Class HexViewRawForm
 
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionEnd = SelectionStart + HexBox1.SelectionLength - 1
+
         If SelectionStart < 0 OrElse SelectionEnd > _RegionMap.Length - 1 Then
             Return True
         End If
 
         Dim RegionStart = _RegionMap(SelectionStart)
         Dim RegionEnd = _RegionMap(SelectionEnd)
+
         Return RegionStart Is Nothing OrElse RegionEnd Is Nothing OrElse RegionStart IsNot RegionEnd
     End Function
 
@@ -391,6 +400,7 @@ Partial Public Class HexViewRawForm
         Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
 
         Dim Visible = Region IsNot Nothing AndAlso Not SelectionSpansMultipleRegions()
+
         ToolStripSeparatorGapBytes.Visible = Visible
         BtnInsertGapBytes.Visible = Visible
         BtnDeleteGapBytes.Visible = Visible
@@ -467,6 +477,7 @@ Partial Public Class HexViewRawForm
     Private Sub RefreshRemoveSpliceMenuItem()
         Dim BitIndex As Integer
         Dim BitCount As Integer
+
         BtnRemoveSplice.Enabled = TryGetRemoveSplice(BitIndex, BitCount)
     End Sub
 
@@ -501,6 +512,7 @@ Partial Public Class HexViewRawForm
 
     Private Sub RefreshRotateTrackMenuItem()
         Dim Offset As Integer
+
         BtnRotateTrack.Enabled = TryGetRotateTrack(Offset)
     End Sub
 
@@ -510,6 +522,7 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim BitIndex = CInt(HexBox1.SelectionStart * 16 + _CurrentTrackData.Offset)
+
         If BitIndex < 0 OrElse BitIndex > _Bitstream.Length Then
             Return -1
         End If
@@ -522,12 +535,14 @@ Partial Public Class HexViewRawForm
     ''' </summary>
     Private Sub InsertGapOrNullBytes()
         Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
+
         If Region Is Nothing OrElse SelectionSpansMultipleRegions() Then
             Exit Sub
         End If
 
         Dim DefaultFill As Byte = If(IsGapRegion(Region.RegionType), CByte(&H4E), CByte(0))
         Dim Result = InsertBytesForm.Display(DefaultFill)
+
         If Not Result.Result OrElse Result.Count < 1 Then
             Exit Sub
         End If
@@ -536,11 +551,13 @@ Partial Public Class HexViewRawForm
         Dim FillByte = Result.FillByte
 
         Dim BitIndex = GetCaretBitIndex()
+
         If BitIndex < 0 Then
             Exit Sub
         End If
 
         Dim Fill(Count - 1) As Byte
+
         For i = 0 To Count - 1
             Fill(i) = FillByte
         Next
@@ -565,6 +582,7 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim Region = GetGapOrNullRegion(HexBox1.SelectionStart)
+
         If Region Is Nothing Then
             Exit Sub
         End If
@@ -572,32 +590,27 @@ Partial Public Class HexViewRawForm
         Dim Count = CInt(HexBox1.SelectionLength)
 
         Dim BitIndex = GetCaretBitIndex()
+
         If BitIndex < 0 Then
             Exit Sub
         End If
 
         Dim MaxBytes = CInt(Region.StartIndex + Region.Length - HexBox1.SelectionStart)
         Dim MaxBits = (_Bitstream.Length - BitIndex) \ 16
+
         If MaxBits < MaxBytes Then
             MaxBytes = MaxBits
         End If
+
         If MaxBytes < 1 Then
             Exit Sub
         End If
+
         If Count > MaxBytes Then
             Count = MaxBytes
         End If
 
-        Dim BitCount = Count * 16
-        Dim SelectionStart = HexBox1.SelectionStart
-        Dim SelectionLength = HexBox1.SelectionLength
-        Dim Removed = CopyBits(_Bitstream, BitIndex, BitCount)
-
-        _Bitstream = RemoveBits(_Bitstream, BitIndex, BitCount)
-        ApplyMFMSpliceClocks(BitIndex, 0)
-        PushSplice(RawUndoKind.RemoveBits, BitIndex, Removed, SelectionStart, SelectionLength)
-        ReloadFromWorkingBitstream()
-        HexBox1.Select(SelectionStart, 0)
+        RemoveBitsFromWorkingClone(BitIndex, Count * 16)
     End Sub
 
     ''' <summary>
@@ -607,10 +620,19 @@ Partial Public Class HexViewRawForm
     Private Sub RemoveSplice()
         Dim BitIndex As Integer
         Dim BitCount As Integer
+
         If Not TryGetRemoveSplice(BitIndex, BitCount) Then
             Exit Sub
         End If
 
+        RemoveBitsFromWorkingClone(BitIndex, BitCount)
+    End Sub
+
+    ''' <summary>
+    ''' Removes BitCount bits at BitIndex from the working clone, records a RemoveBits undo
+    ''' step, and reloads the hex view.
+    ''' </summary>
+    Private Sub RemoveBitsFromWorkingClone(BitIndex As Integer, BitCount As Integer)
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
         Dim Removed = CopyBits(_Bitstream, BitIndex, BitCount)
@@ -628,6 +650,7 @@ Partial Public Class HexViewRawForm
     ''' </summary>
     Private Sub RotateTrack()
         Dim Offset As Integer
+
         If Not TryGetRotateTrack(Offset) Then
             Exit Sub
         End If
@@ -660,28 +683,34 @@ Partial Public Class HexViewRawForm
     ''' </summary>
     Private Sub PasteHex()
         Dim HexBytes = ConvertHexToBytes(Clipboard.GetText)
+
         If HexBytes Is Nothing Then
             Exit Sub
         End If
 
         Dim Offset = HexBox1.SelectionStart
         Dim Region = GetEditableRegion(Offset)
+
         If Region Is Nothing Then
             Exit Sub
         End If
 
         Dim MaxLength = CInt(Region.StartIndex + Region.Length - Offset)
+
         If MaxLength <= 0 Then
             Exit Sub
         End If
 
         Dim Length = HexBytes.Length
+
         If Length > MaxLength Then
             Length = MaxLength
         End If
+
         If Offset + Length > HexBox1.ByteProvider.Length Then
             Length = CInt(HexBox1.ByteProvider.Length - Offset)
         End If
+
         If Length <= 0 Then
             Exit Sub
         End If
@@ -732,6 +761,7 @@ Partial Public Class HexViewRawForm
         Dim Offset = HexBox1.SelectionStart
         Dim Length = CInt(HexBox1.SelectionLength)
         Dim Region = GetEditableRegion(Offset)
+
         If Region Is Nothing OrElse Length <= 0 Then
             Exit Sub
         End If
@@ -780,6 +810,7 @@ Partial Public Class HexViewRawForm
 
     Private Sub RefreshPasteButton()
         Dim Enabled = ClipboardHasHex() AndAlso GetEditableRegion(HexBox1.SelectionStart) IsNot Nothing
+
         BtnPaste.Enabled = Enabled
         ToolStripBtnPaste.Enabled = Enabled
     End Sub
@@ -799,6 +830,7 @@ Partial Public Class HexViewRawForm
             Dim CsBytes = BitConverter.GetBytes(MFMCRC16(Buffer))
             Dim Cs1 = IdStart + MFM_IDAREA_BYTES
             StageChecksumBytes(ChangeList, Cs1, CsBytes, Offset, Length)
+
         ElseIf Region.RegionType = MFMRegionType.DataArea Then
             Dim Sector = Region.Sector
             Dim DataBit = AdjustBitIndex(Sector.DataStartIndex * 16 + Offset, Length)
@@ -817,6 +849,7 @@ Partial Public Class HexViewRawForm
     Private Sub StageChecksumBytes(ChangeList As List(Of RawHexChange), Cs1 As Long, CsBytes() As Byte, Offset As Integer, Length As Integer)
         ChangeList.Add(New RawHexChange(Cs1, {_Data(Cs1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
         ChangeList.Add(New RawHexChange(Cs1 + 1, {_Data(Cs1 + 1)}, HexBox1.SelectionStart, HexBox1.SelectionLength))
+
         WriteMFMByteAt(_Bitstream, AdjustBitIndex(Cs1 * 16 + Offset, Length), CsBytes(0))
         WriteMFMByteAt(_Bitstream, AdjustBitIndex((Cs1 + 1) * 16 + Offset, Length), CsBytes(1))
 
