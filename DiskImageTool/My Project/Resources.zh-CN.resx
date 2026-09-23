@@ -2058,10 +2058,10 @@ Flux 映像集：“{0}”
     <value>删除所选字节</value>
   </data>
   <data name="Menu_RemoveSplice" xml:space="preserve">
-    <value>移除拼接</value>
+    <value>在此处移除拼接</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
-    <value>旋转磁道</value>
+    <value>在此处旋转磁道</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
     <value>其他</value>

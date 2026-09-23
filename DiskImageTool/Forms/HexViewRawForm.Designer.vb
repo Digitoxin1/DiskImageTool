@@ -457,13 +457,13 @@ Partial Class HexViewRawForm
         '
         Me.BtnRemoveSplice.Name = "BtnRemoveSplice"
         Me.BtnRemoveSplice.Size = New System.Drawing.Size(265, 22)
-        Me.BtnRemoveSplice.Text = "{Remove Splice}"
+        Me.BtnRemoveSplice.Text = "{Remove Splice Here}"
         '
         'BtnRotateTrack
         '
         Me.BtnRotateTrack.Name = "BtnRotateTrack"
         Me.BtnRotateTrack.Size = New System.Drawing.Size(265, 22)
-        Me.BtnRotateTrack.Text = "{Rotate Track}"
+        Me.BtnRotateTrack.Text = "{Rotate Track Here}"
         '
         'ToolStripSeparatorGapBytes
         '

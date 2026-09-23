@@ -2058,10 +2058,10 @@ Möchten Sie fortfahren?</value>
     <value>Ausgewählte Bytes löschen</value>
   </data>
   <data name="Menu_RemoveSplice" xml:space="preserve">
-    <value>Spleiß entfernen</value>
+    <value>Spleiß hier entfernen</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
-    <value>Spur drehen</value>
+    <value>Spur hier drehen</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Andere</value>

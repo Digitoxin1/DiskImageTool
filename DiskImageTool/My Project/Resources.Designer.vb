@@ -5642,7 +5642,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Remove Splice.
+        '''  Looks up a localized string similar to Remove Splice Here.
         '''</summary>
         Friend ReadOnly Property Menu_RemoveSplice() As String
             Get
@@ -5669,7 +5669,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Rotate Track.
+        '''  Looks up a localized string similar to Rotate Track Here.
         '''</summary>
         Friend ReadOnly Property Menu_RotateTrack() As String
             Get

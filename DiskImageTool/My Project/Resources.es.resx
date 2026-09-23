@@ -2058,10 +2058,10 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
     <value>Eliminar Bytes Seleccionados</value>
   </data>
   <data name="Menu_RemoveSplice" xml:space="preserve">
-    <value>Quitar Empalme</value>
+    <value>Quitar Empalme Aquí</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
-    <value>Rotar Pista</value>
+    <value>Rotar Pista Aquí</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Otro</value>

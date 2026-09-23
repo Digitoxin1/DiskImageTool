@@ -2314,10 +2314,10 @@ Do you wish to continue?</value>
     <value>Delete Selected Bytes</value>
   </data>
   <data name="Menu_RemoveSplice" xml:space="preserve">
-    <value>Remove Splice</value>
+    <value>Remove Splice Here</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
-    <value>Rotate Track</value>
+    <value>Rotate Track Here</value>
   </data>
   <data name="Label_Other" xml:space="preserve">
     <value>Other</value>
