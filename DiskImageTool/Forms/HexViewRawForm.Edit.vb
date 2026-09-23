@@ -175,6 +175,12 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim UndoStep = Source.Pop()
+
+        If UndoStep.Kind = RawUndoKind.NormalizeAll Then
+            ApplyNormalizeAllUndo(UndoStep, Destination)
+            Exit Sub
+        End If
+
         SwitchToWorkingTrack(UndoStep.Track, UndoStep.Side)
 
         If UndoStep.Kind = RawUndoKind.Overwrite Then
@@ -318,29 +324,45 @@ Partial Public Class HexViewRawForm
         Return result
     End Function
 
+    Private Function GetPreviousDataBit(Bits As BitArray, BitIndex As Integer) As Boolean
+        Return Bits(AdjustBitIndex(BitIndex - 1, Bits.Length))
+    End Function
+
     ''' <summary>
     ''' Last data bit of the MFM byte that ends immediately before BitIndex (the first clock
     ''' of the byte at BitIndex). The stream is treated as circular.
     ''' </summary>
     Private Function GetPreviousDataBit(BitIndex As Integer) As Boolean
-        Return _Bitstream(AdjustBitIndex(BitIndex - 1, _Bitstream.Length))
+        Return GetPreviousDataBit(_Bitstream, BitIndex)
     End Function
+
+    Private Sub FixClockAt(Bits As BitArray, BitIndex As Integer)
+        If Bits Is Nothing OrElse Bits.Length < 2 Then
+            Exit Sub
+        End If
+
+        Dim Length = Bits.Length
+        Dim ClockIndex = AdjustBitIndex(BitIndex, Length)
+        Dim DataIndex = AdjustBitIndex(BitIndex + 1, Length)
+        Dim PrevData = GetPreviousDataBit(Bits, BitIndex)
+
+        Bits(ClockIndex) = (Not Bits(DataIndex)) AndAlso (Not PrevData)
+    End Sub
 
     ''' <summary>
     ''' Recomputes the MFM clock bit at BitIndex: clock is 1 only when both the previous data
     ''' bit and this byte's first data bit are 0.
     ''' </summary>
     Private Sub FixClockAt(BitIndex As Integer)
-        If _Bitstream Is Nothing OrElse _Bitstream.Length < 2 Then
-            Exit Sub
+        FixClockAt(_Bitstream, BitIndex)
+    End Sub
+
+    Private Sub ApplyMFMSpliceClocks(Bits As BitArray, StartBit As Integer, InsertedBitCount As Integer)
+        FixClockAt(Bits, StartBit)
+
+        If InsertedBitCount > 0 Then
+            FixClockAt(Bits, StartBit + InsertedBitCount)
         End If
-
-        Dim Length = _Bitstream.Length
-        Dim ClockIndex = AdjustBitIndex(BitIndex, Length)
-        Dim DataIndex = AdjustBitIndex(BitIndex + 1, Length)
-        Dim PrevData = GetPreviousDataBit(BitIndex)
-
-        _Bitstream(ClockIndex) = (Not _Bitstream(DataIndex)) AndAlso (Not PrevData)
     End Sub
 
     ''' <summary>
@@ -678,42 +700,142 @@ Partial Public Class HexViewRawForm
         HexBox1.Select(0, 0)
     End Sub
 
-    Private Function GetTargetTrackBitCount() As Integer
-        If _Bitstream Is Nothing OrElse _FloppyImage Is Nothing OrElse _FloppyImage.BitstreamImage Is Nothing Then
+    Private Function GetTargetTrackBitCount(Track As UShort, Side As Byte, Bits As BitArray) As Integer
+        If Bits Is Nothing OrElse _FloppyImage Is Nothing OrElse _FloppyImage.BitstreamImage Is Nothing Then
             Return 0
         End If
 
         Dim Image = _FloppyImage.BitstreamImage
-        Dim BT = Image.GetTrack(CUShort(_Track * Image.TrackStep), CByte(_Side))
+        Dim BT = Image.GetTrack(CUShort(Track * Image.TrackStep), CByte(Side))
         If BT IsNot Nothing AndAlso BT.RPM <> 0 AndAlso BT.BitRate <> 0 Then
             Return CInt(MFMGetSize(BT.RPM, BT.BitRate))
         End If
 
-        Return CInt(InferBitCount(CUInt(_Bitstream.Length)))
+        Return CInt(InferBitCount(CUInt(Bits.Length)))
     End Function
 
-    Private Function TryGetNormalizeTrackSize(ByRef Target As Integer) As Boolean
+    Private Function GetTargetTrackBitCount() As Integer
+        Return GetTargetTrackBitCount(_Track, _Side, _Bitstream)
+    End Function
+
+    Private Function TryGetNormalizeTrackSize(Bits As BitArray, Track As UShort, Side As Byte, ByRef Target As Integer) As Boolean
         Target = 0
 
-        If _Bitstream Is Nothing Then
+        If Bits Is Nothing Then
             Return False
         End If
 
-        Target = GetTargetTrackBitCount()
-        If Target <= 0 OrElse Target = _Bitstream.Length Then
+        Target = GetTargetTrackBitCount(Track, Side, Bits)
+        If Target <= 0 OrElse Target = Bits.Length Then
             Return False
         End If
 
         Return True
     End Function
 
+    Private Function TryGetNormalizeTrackSize(ByRef Target As Integer) As Boolean
+        Return TryGetNormalizeTrackSize(_Bitstream, _Track, _Side, Target)
+    End Function
+
+    Private Function AnyTrackNeedsNormalize() As Boolean
+        If _FloppyImage Is Nothing OrElse _FloppyImage.BitstreamImage Is Nothing Then
+            Return False
+        End If
+
+        Dim Image = _FloppyImage.BitstreamImage
+        For t = 0 To _FloppyImage.TrackCount - 1
+            For s = 0 To _FloppyImage.SideCount - 1
+                Dim BT = Image.GetTrack(CUShort(t * Image.TrackStep), CByte(s))
+                If BT Is Nothing Then
+                    Continue For
+                End If
+                If BT.TrackType <> BitstreamTrackType.MFM AndAlso BT.TrackType <> BitstreamTrackType.FM Then
+                    Continue For
+                End If
+
+                Dim Bits As BitArray = Nothing
+                Dim Cached As CachedTrack = Nothing
+                If _TrackCache.TryGetValue(New Point(t, s), Cached) AndAlso Cached.Bitstream IsNot Nothing Then
+                    Bits = Cached.Bitstream
+                Else
+                    Bits = BT.Bitstream
+                End If
+
+                Dim Target As Integer
+                If TryGetNormalizeTrackSize(Bits, CUShort(t), CByte(s), Target) Then
+                    Return True
+                End If
+            Next
+        Next
+
+        Return False
+    End Function
+
     Private Sub RefreshNormalizeTrackSizeMenuItem()
         Dim Target As Integer
-
         Dim Enabled = TryGetNormalizeTrackSize(Target)
 
         BtnNormalizeTrackSize.Enabled = Enabled
         ToolStripToolsNormalizeTrackSize.Enabled = Enabled
+        ToolStripToolsNormalizeAllTrackSizes.Enabled = AnyTrackNeedsNormalize()
+    End Sub
+
+    Private Function TryBuildNormalizeTail(Bits As BitArray, Track As UShort, Side As Byte, ByRef BitIndex As Integer, ByRef NewTail As BitArray) As Boolean
+        BitIndex = 0
+        NewTail = Nothing
+
+        Dim Target As Integer
+        If Not TryGetNormalizeTrackSize(Bits, Track, Side, Target) Then
+            Return False
+        End If
+
+        Dim Length = Bits.Length
+
+        If Length > Target Then
+            BitIndex = Target
+            NewTail = New BitArray(0)
+            Return True
+        End If
+
+        BitIndex = (Length \ 16) * 16
+        Dim PadBytes = (Target - BitIndex) \ 16
+        If PadBytes < 1 Then
+            Return False
+        End If
+
+        Dim Fill(PadBytes - 1) As Byte
+        For i = 0 To PadBytes - 1
+            Fill(i) = CByte(MFM_GAP_BYTE)
+        Next
+
+        NewTail = MFMEncodeBytes(Fill, GetPreviousDataBit(Bits, BitIndex))
+        Return True
+    End Function
+
+    Private Function ReplaceTailOnBits(Bits As BitArray, BitIndex As Integer, NewTail As BitArray, ByRef OldTail As BitArray) As BitArray
+        Dim TailLength = Bits.Length - BitIndex
+        If TailLength < 0 Then
+            TailLength = 0
+        End If
+        OldTail = CopyBits(Bits, BitIndex, TailLength)
+
+        Dim Result = RemoveBits(Bits, BitIndex, TailLength)
+        If NewTail IsNot Nothing AndAlso NewTail.Length > 0 Then
+            Result = InsertBits(Result, BitIndex, NewTail)
+        End If
+        ApplyMFMSpliceClocks(Result, BitIndex, If(NewTail Is Nothing, 0, NewTail.Length))
+        Return Result
+    End Function
+
+    Private Sub AssignCachedBitstream(Track As UShort, Side As Byte, Bits As BitArray)
+        Dim Cached As CachedTrack = Nothing
+        If _TrackCache.TryGetValue(New Point(Track, Side), Cached) Then
+            Cached.Bitstream = Bits
+        End If
+
+        If Track = _Track AndAlso Side = _Side Then
+            SetWorkingBitstream(Bits)
+        End If
     End Sub
 
     ''' <summary>
@@ -721,34 +843,112 @@ Partial Public Class HexViewRawForm
     ''' or 16-align and append MFM 0x4E if too short.
     ''' </summary>
     Private Sub NormalizeTrackSize()
-        Dim Target As Integer
-        If Not TryGetNormalizeTrackSize(Target) Then
+        Dim BitIndex As Integer
+        Dim NewTail As BitArray = Nothing
+        If Not TryBuildNormalizeTail(_Bitstream, _Track, _Side, BitIndex, NewTail) Then
             Exit Sub
         End If
 
-        Dim Length = _Bitstream.Length
-        Dim BitIndex As Integer
-        Dim NewTail As BitArray
+        ReplaceTail(BitIndex, NewTail)
+    End Sub
 
-        If Length > Target Then
-            BitIndex = Target
-            NewTail = New BitArray(0)
-        Else
-            BitIndex = (Length \ 16) * 16
-            Dim PadBytes = (Target - BitIndex) \ 16
-            If PadBytes < 1 Then
-                Exit Sub
-            End If
-
-            Dim Fill(PadBytes - 1) As Byte
-            For i = 0 To PadBytes - 1
-                Fill(i) = CByte(MFM_GAP_BYTE)
-            Next
-
-            NewTail = MFMEncodeBytes(Fill, GetPreviousDataBit(BitIndex))
+    ''' <summary>
+    ''' Normalizes every MFM/FM track that is not already at its target size and records
+    ''' the batch as a single undo step.
+    ''' </summary>
+    Private Sub NormalizeAllTrackSizes()
+        If _FloppyImage Is Nothing OrElse _FloppyImage.BitstreamImage Is Nothing Then
+            Exit Sub
         End If
 
-        ReplaceTail(BitIndex, NewTail)
+        Dim Image = _FloppyImage.BitstreamImage
+        Dim Tails As New List(Of RawTrackTail)
+        Dim CurrentChanged = False
+
+        For t = 0 To _FloppyImage.TrackCount - 1
+            For s = 0 To _FloppyImage.SideCount - 1
+                Dim BT = Image.GetTrack(CUShort(t * Image.TrackStep), CByte(s))
+                If BT Is Nothing Then
+                    Continue For
+                End If
+                If BT.TrackType <> BitstreamTrackType.MFM AndAlso BT.TrackType <> BitstreamTrackType.FM Then
+                    Continue For
+                End If
+
+                Dim Track = CUShort(t)
+                Dim Side = CByte(s)
+                Dim Cached = GetOrCreateCachedTrack(Track, Side, BT)
+                Dim BitIndex As Integer
+                Dim NewTail As BitArray = Nothing
+                If Not TryBuildNormalizeTail(Cached.Bitstream, Track, Side, BitIndex, NewTail) Then
+                    Continue For
+                End If
+
+                Dim OldTail As BitArray = Nothing
+                Dim Updated = ReplaceTailOnBits(Cached.Bitstream, BitIndex, NewTail, OldTail)
+                AssignCachedBitstream(Track, Side, Updated)
+                If Track = _Track AndAlso Side = _Side Then
+                    CurrentChanged = True
+                End If
+                Tails.Add(New RawTrackTail(Track, Side, BitIndex, OldTail))
+            Next
+        Next
+
+        If Tails.Count = 0 Then
+            Exit Sub
+        End If
+
+        _Changes.Push(New RawUndoStep(Tails))
+        _RedoChanges.Clear()
+        RefreshUndoButtons()
+
+        If CurrentChanged Then
+            ReloadFromWorkingBitstream()
+            If HexBox1.ByteProvider Is Nothing OrElse HexBox1.SelectionStart >= HexBox1.ByteProvider.Length Then
+                HexBox1.Select(0, 0)
+            End If
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+        End If
+
+        RefreshNormalizeTrackSizeMenuItem()
+        MsgBox(String.Format(My.Resources.Dialog_NormalizeAllTrackSizes, Tails.Count), MsgBoxStyle.Information)
+    End Sub
+
+    Private Sub ApplyNormalizeAllUndo(UndoStep As RawUndoStep, Destination As Stack(Of RawUndoStep))
+        Dim Inverse As New List(Of RawTrackTail)
+        Dim CurrentChanged = False
+        Dim Image = _FloppyImage.BitstreamImage
+
+        For Each Tail In UndoStep.TrackTails
+            Dim BT = Image.GetTrack(CUShort(Tail.Track * Image.TrackStep), CByte(Tail.Side))
+            If BT Is Nothing Then
+                Continue For
+            End If
+
+            Dim Cached = GetOrCreateCachedTrack(Tail.Track, Tail.Side, BT)
+            Dim CurrentTail As BitArray = Nothing
+            Dim Updated = ReplaceTailOnBits(Cached.Bitstream, Tail.BitIndex, Tail.Bits, CurrentTail)
+            AssignCachedBitstream(Tail.Track, Tail.Side, Updated)
+            Inverse.Add(New RawTrackTail(Tail.Track, Tail.Side, Tail.BitIndex, CurrentTail))
+            If Tail.Track = _Track AndAlso Tail.Side = _Side Then
+                CurrentChanged = True
+            End If
+        Next
+
+        Destination.Push(New RawUndoStep(Inverse))
+        RefreshUndoButtons()
+
+        If CurrentChanged Then
+            ReloadFromWorkingBitstream()
+            If HexBox1.ByteProvider Is Nothing OrElse HexBox1.SelectionStart >= HexBox1.ByteProvider.Length Then
+                HexBox1.Select(0, 0)
+            End If
+            RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+            DataInspectorRefresh(True)
+        End If
+
+        RefreshNormalizeTrackSizeMenuItem()
     End Sub
 
     ''' <summary>
@@ -758,13 +958,10 @@ Partial Public Class HexViewRawForm
     Private Sub ReplaceTail(BitIndex As Integer, NewTail As BitArray)
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
-        Dim OldTail = CopyBits(_Bitstream, BitIndex, _Bitstream.Length - BitIndex)
+        Dim OldTail As BitArray = Nothing
+        Dim Updated = ReplaceTailOnBits(_Bitstream, BitIndex, NewTail, OldTail)
 
-        SetWorkingBitstream(RemoveBits(_Bitstream, BitIndex, _Bitstream.Length - BitIndex))
-        If NewTail IsNot Nothing AndAlso NewTail.Length > 0 Then
-            SetWorkingBitstream(InsertBits(_Bitstream, BitIndex, NewTail))
-        End If
-        ApplyMFMSpliceClocks(BitIndex, If(NewTail Is Nothing, 0, NewTail.Length))
+        SetWorkingBitstream(Updated)
         PushSplice(RawUndoKind.ReplaceTail, BitIndex, OldTail, SelectionStart, SelectionLength)
         ReloadFromWorkingBitstream()
 
@@ -1131,6 +1328,10 @@ Partial Public Class HexViewRawForm
         NormalizeTrackSize()
     End Sub
 
+    Private Sub ToolStripToolsNormalizeAllTrackSizes_Click(sender As Object, e As EventArgs) Handles ToolStripToolsNormalizeAllTrackSizes.Click
+        NormalizeAllTrackSizes()
+    End Sub
+
     Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
         CommitChanges()
     End Sub
@@ -1151,6 +1352,7 @@ Partial Public Class HexViewRawForm
         RemoveBits
         RotateTrack
         ReplaceTail
+        NormalizeAll
     End Enum
 
     ''' <summary>
@@ -1268,12 +1470,32 @@ Partial Public Class HexViewRawForm
             Me.Side = Side
         End Sub
 
+        Public Sub New(Tails As List(Of RawTrackTail))
+            Kind = RawUndoKind.NormalizeAll
+            Me.TrackTails = Tails
+        End Sub
+
         Public Property BitIndex As Integer
         Public Property Bits As BitArray
         Public Property Kind As RawUndoKind
         Public Property Overwrites As List(Of RawHexChange)
         Public Property SelectionLength As Long
         Public Property SelectionStart As Long
+        Public Property Side As Byte
+        Public Property Track As UShort
+        Public Property TrackTails As List(Of RawTrackTail)
+    End Class
+
+    Private Class RawTrackTail
+        Public Sub New(Track As UShort, Side As Byte, BitIndex As Integer, Bits As BitArray)
+            Me.Track = Track
+            Me.Side = Side
+            Me.BitIndex = BitIndex
+            Me.Bits = Bits
+        End Sub
+
+        Public Property BitIndex As Integer
+        Public Property Bits As BitArray
         Public Property Side As Byte
         Public Property Track As UShort
     End Class

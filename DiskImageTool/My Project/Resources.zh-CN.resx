@@ -447,6 +447,9 @@
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>找不到“{0}”</value>
   </data>
+  <data name="Dialog_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>已标准化 {0} 个磁道。</value>
+  </data>
   <data name="Label_FAT" xml:space="preserve">
     <value>文件分配表</value>
   </data>
@@ -2062,6 +2065,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>在此处旋转磁道</value>
+  </data>
+  <data name="Menu_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>标准化所有磁道大小</value>
   </data>
   <data name="Menu_NormalizeTrackSize" xml:space="preserve">
     <value>标准化磁道大小</value>

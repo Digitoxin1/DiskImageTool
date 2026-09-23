@@ -447,6 +447,9 @@
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>Impossible de trouver '{0}'</value>
   </data>
+  <data name="Dialog_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>{0} piste(s) normalisée(s).</value>
+  </data>
   <data name="Label_FAT" xml:space="preserve">
     <value>Table d’allocation de fichiers</value>
   </data>
@@ -2062,6 +2065,9 @@ Souhaitez-vous continuer ?</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>Faire pivoter la piste ici</value>
+  </data>
+  <data name="Menu_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>Normaliser toutes les tailles de piste</value>
   </data>
   <data name="Menu_NormalizeTrackSize" xml:space="preserve">
     <value>Normaliser la taille de la piste</value>

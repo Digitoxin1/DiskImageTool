@@ -133,6 +133,7 @@ Partial Public Class HexViewRawForm
         ToolStripToolsDeleteBytes.Text = My.Resources.Menu_DeleteSelectedBytes
         ToolStripToolsInsertBytes.Text = My.Resources.Menu_InsertBytes
         ToolStripToolsNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
+        ToolStripToolsNormalizeAllTrackSizes.Text = My.Resources.Menu_NormalizeAllTrackSizes
         ToolStripToolsRemoveSplice.Text = My.Resources.Menu_RemoveSplice
         ToolStripToolsRotateTrack.Text = My.Resources.Menu_RotateTrack
     End Sub

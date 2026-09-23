@@ -447,6 +447,9 @@
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>Can't Find '{0}'</value>
   </data>
+  <data name="Dialog_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>Normalized {0} track(s).</value>
+  </data>
   <data name="Label_FAT" xml:space="preserve">
     <value>File Allocation Table</value>
   </data>
@@ -2318,6 +2321,9 @@ Do you wish to continue?</value>
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>Rotate Track Here</value>
+  </data>
+  <data name="Menu_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>Normalize All Track Sizes</value>
   </data>
   <data name="Menu_NormalizeTrackSize" xml:space="preserve">
     <value>Normalize Track Size</value>

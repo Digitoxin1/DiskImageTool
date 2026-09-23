@@ -447,6 +447,9 @@
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>No se puede encontrar '{0}'</value>
   </data>
+  <data name="Dialog_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>Se normalizaron {0} pista(s).</value>
+  </data>
   <data name="Label_FAT" xml:space="preserve">
     <value>Tabla de asignación de archivos</value>
   </data>
@@ -2062,6 +2065,9 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   </data>
   <data name="Menu_RotateTrack" xml:space="preserve">
     <value>Rotar Pista Aquí</value>
+  </data>
+  <data name="Menu_NormalizeAllTrackSizes" xml:space="preserve">
+    <value>Normalizar Todos los Tamaños de Pista</value>
   </data>
   <data name="Menu_NormalizeTrackSize" xml:space="preserve">
     <value>Normalizar Tamaño de Pista</value>

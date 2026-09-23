@@ -1384,6 +1384,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Normalized {0} track(s)..
+        '''</summary>
+        Friend ReadOnly Property Dialog_NormalizeAllTrackSizes() As String
+            Get
+                Return ResourceManager.GetString("Dialog_NormalizeAllTrackSizes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Error opening file &apos;{0}&apos;..
         '''</summary>
         Friend ReadOnly Property Dialog_OpenFileError() As String
@@ -5530,6 +5539,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_NoRecentFiles() As String
             Get
                 Return ResourceManager.GetString("Menu_NoRecentFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Normalize All Track Sizes.
+        '''</summary>
+        Friend ReadOnly Property Menu_NormalizeAllTrackSizes() As String
+            Get
+                Return ResourceManager.GetString("Menu_NormalizeAllTrackSizes", resourceCulture)
             End Get
         End Property
         
