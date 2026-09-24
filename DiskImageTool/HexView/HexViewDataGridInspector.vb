@@ -65,7 +65,7 @@ Namespace HexView
             DataGridView.AllowUserToResizeRows = False
             DataGridView.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable
             DataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-            DataGridView.EditMode = DataGridViewEditMode.EditOnF2
+            DataGridView.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2
             DataGridView.MultiSelect = False
             DataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing
             DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect

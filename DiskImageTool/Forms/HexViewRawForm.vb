@@ -221,6 +221,41 @@ Partial Public Class HexViewRawForm
         BtnCopyValue.Enabled = Enabled
     End Sub
 
+    Private Sub ApplyInspectorByteHighlight()
+        If Not DataGridDataInspector.ContainsFocus Then
+            Exit Sub
+        End If
+
+        If DataGridDataInspector.SelectedRows.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim Row = DataGridDataInspector.SelectedRows.Item(0)
+        Dim Editable As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_EDITABLE).Value
+        Dim Length As Integer = Row.Cells.Item(HexViewDataGridInspector.COLUMN_LENGTH).Value
+
+        If Not Editable OrElse Row.ReadOnly OrElse Length <= 0 Then
+            RestoreInspectorByteHighlight()
+            Exit Sub
+        End If
+
+        If _CachedSelectedLength = -1 Then
+            _CachedSelectedLength = HexBox1.SelectionLength
+        End If
+
+        HexBox1.SelectionLength = Length
+    End Sub
+
+    Private Sub RestoreInspectorByteHighlight()
+        If _CachedSelectedLength = -1 Then
+            Exit Sub
+        End If
+
+        Dim CachedLength = _CachedSelectedLength
+        _CachedSelectedLength = -1
+        HexBox1.SelectionLength = CachedLength
+    End Sub
+
     Public Sub CopyHexEncoded(HexBox As HexBox, Formatted As Boolean)
         Dim Bitstream = BitstreamAlign(_Bitstream, _CurrentTrackData.Offset)
         Dim Data = BitsToBytes(_Bitstream, 0)
@@ -1395,17 +1430,12 @@ Partial Public Class HexViewRawForm
 
     Private Sub DataGridDataInspector_CellBeginEdit(sender As Object, e As DataGridViewCellCancelEventArgs) Handles DataGridDataInspector.CellBeginEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim Invalid As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_INVALID).Value
         Dim Editable As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_EDITABLE).Value
-        Dim Length As Integer = Row.Cells.Item(HexViewDataGridInspector.COLUMN_LENGTH).Value
 
         If Not Editable Then
             e.Cancel = True
             Exit Sub
         End If
-
-        _CachedSelectedLength = HexBox1.SelectionLength
-        HexBox1.SelectionLength = Length
 
         _StoredCellValue = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
     End Sub
@@ -1413,19 +1443,26 @@ Partial Public Class HexViewRawForm
     Private Sub DataGridDataInspector_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridDataInspector.CellEndEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
         Dim CellValue As String = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
-        Dim DataType As DataRowEnum = Row.Cells.Item(HexViewDataGridInspector.COLUMN_TYPE).Value
 
         If CellValue <> _StoredCellValue Then
             _CachedSelectedLength = -1
             'DataInspectorUpdateHexBox(CellValue, DataType)
-        Else
-            HexBox1.SelectionLength = _CachedSelectedLength
-            _CachedSelectedLength = -1
         End If
+    End Sub
+
+    Private Sub DataGridDataInspector_Enter(sender As Object, e As EventArgs) Handles DataGridDataInspector.Enter
+        ApplyInspectorByteHighlight()
+    End Sub
+
+    Private Sub DataGridDataInspector_Leave(sender As Object, e As EventArgs) Handles DataGridDataInspector.Leave
+        RestoreInspectorByteHighlight()
     End Sub
 
     Private Sub DataGridDataInspector_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridDataInspector.SelectionChanged
         DataInspectorRefreshButtons()
+        If DataGridDataInspector.ContainsFocus Then
+            ApplyInspectorByteHighlight()
+        End If
     End Sub
 
     Private Sub HexBox1_KeyDown(sender As Object, e As KeyEventArgs) Handles HexBox1.KeyDown
