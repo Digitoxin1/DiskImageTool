@@ -6,9 +6,9 @@ Imports DiskImageTool.HexView
 
 Partial Public Class HexViewRawForm
     Private ReadOnly _Changes As New Stack(Of RawUndoStep)
-    Private ReadOnly _OriginalBitstreams As New Dictionary(Of Point, BitArray)
+    Private ReadOnly _OriginalBitstreams As New Dictionary(Of TrackKey, BitArray)
     Private ReadOnly _RedoChanges As New Stack(Of RawUndoStep)
-    Private ReadOnly _TrackCache As New Dictionary(Of Point, CachedTrack)
+    Private ReadOnly _TrackCache As New Dictionary(Of TrackKey, CachedTrack)
     Private _TracksUpdated As Boolean = False
 
     ''' <summary>
@@ -82,15 +82,15 @@ Partial Public Class HexViewRawForm
     ''' to the live track, then clearing the undo/redo stacks.
     ''' </summary>
     Private Sub ApplyStagedChanges()
-        Dim EditedTracks As New HashSet(Of Point)
+        Dim EditedTracks As New HashSet(Of TrackKey)
 
         For Each UndoStep In _Changes
             If UndoStep.Kind = RawUndoKind.NormalizeAll AndAlso UndoStep.TrackTails IsNot Nothing Then
                 For Each Tail In UndoStep.TrackTails
-                    EditedTracks.Add(New Point(Tail.Track, Tail.Side))
+                    EditedTracks.Add(New TrackKey(Tail.Track, Tail.Side))
                 Next
             Else
-                EditedTracks.Add(New Point(UndoStep.Track, UndoStep.Side))
+                EditedTracks.Add(New TrackKey(UndoStep.Track, UndoStep.Side))
             End If
         Next
 
@@ -100,7 +100,7 @@ Partial Public Class HexViewRawForm
                 Continue For
             End If
 
-            Dim BT = GetLiveTrack(CUShort(Key.X), CByte(Key.Y))
+            Dim BT = GetLiveTrack(Key.Track, Key.Side)
             If BT Is Nothing Then
                 Continue For
             End If
@@ -1149,25 +1149,19 @@ Partial Public Class HexViewRawForm
             Exit Sub
         End If
 
+        _FloppyImage.History.BatchEditMode = True
         For Each KVP In _OriginalBitstreams
-            Dim BT = GetLiveTrack(CUShort(KVP.Key.X), CByte(KVP.Key.Y))
+            Dim BT = GetLiveTrack(KVP.Key.Track, KVP.Key.Side)
             If BT IsNot Nothing Then
                 BT.MFMData = New IBM_MFM_Track(BT.Bitstream)
+                _FloppyImage.History.AddBitstreamChange(KVP.Key.Track, KVP.Key.Side, KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
             End If
         Next
+        _FloppyImage.History.BatchEditMode = False
 
         If TypeOf _FloppyImage Is MappedFloppyImage Then
             CType(_FloppyImage, MappedFloppyImage).RebuildSectorMap()
         End If
-
-        _FloppyImage.History.BatchEditMode = True
-        For Each KVP In _OriginalBitstreams
-            Dim BT = GetLiveTrack(CUShort(KVP.Key.X), CByte(KVP.Key.Y))
-            If BT IsNot Nothing Then
-                _FloppyImage.History.AddBitstreamChange(CUShort(KVP.Key.X), CByte(KVP.Key.Y), KVP.Value, CType(BT.Bitstream.Clone(), BitArray))
-            End If
-        Next
-        _FloppyImage.History.BatchEditMode = False
 
         _TracksUpdated = True
     End Sub
@@ -1266,7 +1260,7 @@ Partial Public Class HexViewRawForm
 
     Private Function GetCachedOffset(Track As UShort, Side As Byte) As Integer
         Dim Cached As CachedTrack = Nothing
-        If _TrackCache.TryGetValue(New Point(Track, Side), Cached) Then
+        If _TrackCache.TryGetValue(New TrackKey(Track, Side), Cached) Then
             Return Cached.Offset
         End If
 
@@ -1282,7 +1276,7 @@ Partial Public Class HexViewRawForm
     End Function
 
     Private Function GetOrCreateCachedTrack(Track As UShort, Side As Byte, LiveTrack As IBitstreamTrack) As CachedTrack
-        Dim Key As New Point(Track, Side)
+        Dim Key As New TrackKey(Track, Side)
         Dim Cached As CachedTrack = Nothing
         If _TrackCache.TryGetValue(Key, Cached) Then
             Return Cached
@@ -1298,7 +1292,7 @@ Partial Public Class HexViewRawForm
 
     Private Function GetWorkingBits(Track As UShort, Side As Byte, LiveTrack As IBitstreamTrack) As BitArray
         Dim Cached As CachedTrack = Nothing
-        If _TrackCache.TryGetValue(New Point(Track, Side), Cached) AndAlso Cached.Bitstream IsNot Nothing Then
+        If _TrackCache.TryGetValue(New TrackKey(Track, Side), Cached) AndAlso Cached.Bitstream IsNot Nothing Then
             Return Cached.Bitstream
         End If
 
@@ -1311,7 +1305,7 @@ Partial Public Class HexViewRawForm
         End If
 
         Dim Cached As CachedTrack = Nothing
-        If _TrackCache.TryGetValue(New Point(_CurrentTrackData.Track, _CurrentTrackData.Side), Cached) Then
+        If _TrackCache.TryGetValue(New TrackKey(_CurrentTrackData.Track, _CurrentTrackData.Side), Cached) Then
             Cached.Offset = _CurrentTrackData.Offset
         End If
     End Sub
@@ -1323,7 +1317,7 @@ Partial Public Class HexViewRawForm
     End Sub
     Private Sub SetCachedBitstream(Track As UShort, Side As Byte, Bits As BitArray)
         Dim Cached As CachedTrack = Nothing
-        If _TrackCache.TryGetValue(New Point(Track, Side), Cached) Then
+        If _TrackCache.TryGetValue(New TrackKey(Track, Side), Cached) Then
             Cached.Bitstream = Bits
         End If
 
@@ -1374,6 +1368,33 @@ Partial Public Class HexViewRawForm
 
         LoadTrack(TrackData, False, False)
     End Sub
+
+    ''' <summary>
+    ''' Dictionary key for a cylinder/head pair.
+    ''' </summary>
+    Private Structure TrackKey
+        Implements IEquatable(Of TrackKey)
+
+        Public Sub New(Track As UShort, Side As Byte)
+            Me.Track = Track
+            Me.Side = Side
+        End Sub
+
+        Public Property Side As Byte
+        Public Property Track As UShort
+
+        Public Overloads Function Equals(other As TrackKey) As Boolean Implements IEquatable(Of TrackKey).Equals
+            Return Track = other.Track AndAlso Side = other.Side
+        End Function
+
+        Public Overrides Function Equals(obj As Object) As Boolean
+            Return TypeOf obj Is TrackKey AndAlso Equals(DirectCast(obj, TrackKey))
+        End Function
+
+        Public Overrides Function GetHashCode() As Integer
+            Return (CInt(Track) << 8) Or Side
+        End Function
+    End Structure
 
     ''' <summary>
     ''' Working clone and last bit offset for a visited track.
