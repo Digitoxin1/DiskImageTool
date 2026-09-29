@@ -420,17 +420,8 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>Se han realizado cambios en esta imagen de disco.{0}{0}¿Desea confirmar estos cambios antes de cerrar esta ventana?</value>
   </data>
-  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
-    <value>Se han realizado cambios en esta pista.{0}{0}¿Desea confirmar estos cambios antes de cambiar de pista?</value>
-  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Advertencia: el disco en la unidad {0} no está vacío.{1}{1}Si continúa, el disco será sobrescrito.{1}{1}¿Desea continuar?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
-    <value>Advertencia: el disco en la unidad {0} no está vacío y está formateado como {1}.{2}{2}La imagen que intenta escribir es una imagen de tipo {3}.{2}{2}Si continúa, el disco será sobrescrito y podría quedar ilegible.{2}{2}¿Desea continuar?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
-    <value>Advertencia: el disco en la unidad {0} no está vacío, pero no se pudo determinar el tipo de formato.{1}{1}La imagen que intenta escribir es una imagen de tipo {2}.{1}{1}Si continúa, el disco será sobrescrito y podría quedar ilegible.{1}{1}¿Desea continuar?</value>
   </data>
   <data name="Dialog_DiskWriteError" xml:space="preserve">
     <value>Error: No se puede escribir en la unidad en este momento.</value>
@@ -440,6 +431,12 @@
   </data>
   <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
     <value>La unidad de disquete {0} no está lista.{1}{1}Verifique que haya un disquete formateado insertado en la unidad {0}.</value>
+  </data>
+  <data name="Dialog_FloppyNoDisk" xml:space="preserve">
+    <value>No hay ningún disco en la unidad {0}.{1}{1}Inserte un disco en la unidad {0} e inténtelo de nuevo.</value>
+  </data>
+  <data name="Dialog_FloppyNonstandardFormat" xml:space="preserve">
+    <value>Esta imagen no se puede escribir en una unidad de disquete.{1}{1}{0} no es un formato de disquete estándar.</value>
   </data>
   <data name="Dialog_SaveFileError2" xml:space="preserve">
     <value>Ocurrió un error al intentar guardar el archivo.</value>

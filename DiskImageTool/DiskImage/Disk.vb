@@ -190,7 +190,7 @@
 
             Return Result
         End Function
-        Private Function InferFloppyDiskFormat() As FloppyDiskFormat
+        Public Function InferFloppyDiskFormat() As FloppyDiskFormat
             Dim DiskFormat As FloppyDiskFormat
 
             If _BPB.IsValid Then

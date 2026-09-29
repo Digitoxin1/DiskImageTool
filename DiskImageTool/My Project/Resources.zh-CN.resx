@@ -420,17 +420,8 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>此磁盘映像已有更改。{0}{0}关闭此窗口前要提交这些更改吗？</value>
   </data>
-  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
-    <value>此磁道已有更改。{0}{0}切换磁道前要提交这些更改吗？</value>
-  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>警告：驱动器 {0} 中的磁盘非空。{1}{1}如果继续，磁盘将被覆盖。{1}{1}要继续吗？</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
-    <value>警告：驱动器 {0} 中的磁盘非空，且格式为 {1}。{2}{2}您要写入的映像是 {3} 映像。{2}{2}如果继续，磁盘将被覆盖，并可能无法读取。{2}{2}要继续吗？</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
-    <value>警告：驱动器 {0} 中的磁盘非空，但无法确定格式类型。{1}{1}您要写入的映像是 {2} 映像。{1}{1}如果继续，磁盘将被覆盖，并可能无法读取。{1}{1}要继续吗？</value>
   </data>
   <data name="Dialog_DiskWriteError" xml:space="preserve">
     <value>错误：当前无法写入该驱动器。</value>
@@ -440,6 +431,12 @@
   </data>
   <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
     <value>软驱 {0} 未就绪。{1}{1}请确认驱动器 {0} 中已插入已格式化的磁盘。</value>
+  </data>
+  <data name="Dialog_FloppyNoDisk" xml:space="preserve">
+    <value>驱动器 {0} 中没有磁盘。{1}{1}请在驱动器 {0} 中插入磁盘，然后重试。</value>
+  </data>
+  <data name="Dialog_FloppyNonstandardFormat" xml:space="preserve">
+    <value>此映像无法写入软盘驱动器。{1}{1}{0} 不是标准软盘格式。</value>
   </data>
   <data name="Dialog_SaveFileError2" xml:space="preserve">
     <value>尝试保存文件时出错。</value>

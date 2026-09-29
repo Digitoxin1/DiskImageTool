@@ -420,17 +420,8 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>Changes have been made to this disk image.{0}{0}Do you wish to commit these changes before closing this window?</value>
   </data>
-  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
-    <value>Changes have been made to this track.{0}{0}Do you wish to commit these changes before changing tracks?</value>
-  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
-    <value>Warning: The disk in drive {0} is not empty and is formatted as a {1}.{2}{2}The image you are attempting to write is a {3} image.{2}{2}If you continue, the disk will be overwritten and may be unreadable.{2}{2}Do you wish to continue?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
-    <value>Warning: The disk in drive {0} is not empty, but I am unable to determine the format type.{1}{1}The image you are attempting to write is a {2} image.{1}{1}If you continue, the disk will be overwritten and may be unreadable.{1}{1}Do you wish to continue?</value>
   </data>
   <data name="Dialog_DiskWriteError" xml:space="preserve">
     <value>Error: Unable to write to the drive at this time.</value>
@@ -440,6 +431,12 @@
   </data>
   <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
     <value>Floppy drive {0} is not ready.{1}{1}Please verify that a formatted disk is inserted into drive {0}.</value>
+  </data>
+  <data name="Dialog_FloppyNoDisk" xml:space="preserve">
+    <value>There is no disk in drive {0}.{1}{1}Please insert a disk into drive {0} and try again.</value>
+  </data>
+  <data name="Dialog_FloppyNonstandardFormat" xml:space="preserve">
+    <value>This image cannot be written to a floppy drive.{1}{1}{0} is not a standard floppy format.</value>
   </data>
   <data name="Dialog_SaveFileError2" xml:space="preserve">
     <value>An error has occurred while attempting to save the file.</value>

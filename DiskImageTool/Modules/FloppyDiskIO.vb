@@ -2,6 +2,7 @@
 
 Module FloppyDiskIO
     Private Const BYTES_PER_SECTOR As UShort = 512
+
     Public Function FloppyDiskRead(Drive As FloppyDriveEnum) As String
         Dim FloppyDrive As New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
@@ -59,58 +60,28 @@ Module FloppyDiskIO
             Exit Sub
         End If
 
-        Dim FloppyDrive As New FloppyInterface
-        Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
-        Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo As New IO.DriveInfo(DriveName)
-        Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskFormat = FloppyDiskFormatGet(Disk.BPB)
-        Dim NewFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(NewDiskFormat))
-        Dim DetectedFormat As FloppyDiskFormat = 255
-        Dim DoFormat = Not IsReady
+        Dim NewDiskFormat = Disk.DiskParams.Format
 
-        Dim MsgBoxResult As MsgBoxResult
-        If IsReady Then
-            Dim Result = FloppyDrive.OpenRead(Drive)
-            If Result Then
-                Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
-                Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
-                If BytesRead = Buffer.Length Then
-                    DetectedFormat = FloppyDiskFormatGet(Buffer)
-                Else
-                    DetectedFormat = FloppyDiskFormat.FloppyUnknown
-                End If
-                FloppyDrive.Close()
-            Else
-                DetectedFormat = FloppyDiskFormat.FloppyUnknown
-            End If
-            Dim Msg As String
-            If DetectedFormat = NewDiskFormat Then
-                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning, DriveLetter, Environment.NewLine)
-            ElseIf DetectedFormat = -1 Then
-                DoFormat = True
-                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_UnknownFormat, DriveLetter, Environment.NewLine, NewFormatName)
-            Else
-                DoFormat = True
-                Dim DetectedFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(DetectedFormat))
-                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_Mismatched, DriveLetter, DetectedFormatName, Environment.NewLine, NewFormatName)
-            End If
-            MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
-        Else
-            MsgBoxResult = MsgBoxResult.Ok
+        If Not FloppyDiskFormatIsStandard(NewDiskFormat) Then
+            Dim NewFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(NewDiskFormat))
+
+            MsgBox(String.Format(My.Resources.Dialog_FloppyNonstandardFormat, NewFormatName, Environment.NewLine), MsgBoxStyle.Exclamation)
+            Exit Sub
         End If
 
-        If MsgBoxResult = MsgBoxResult.Ok Then
-            Dim Result = FloppyDrive.OpenWrite(Drive)
-            If Result Then
-                Dim WriteOptions = FloppyWriteOptionsForm.Display(DoFormat, DetectedFormat, NewDiskFormat)
-                If Not WriteOptions.Cancelled Then
-                    FloppyAccessForm.WriteDisk(FloppyDrive, Disk.BPB, Disk.Image.GetBytes, WriteOptions.Format, WriteOptions.Verify)
-                End If
-                FloppyDrive.Close()
-            Else
-                MsgBox(My.Resources.Dialog_DiskWriteError, MsgBoxStyle.Exclamation)
+        Dim FloppyDrive As New FloppyInterface
+
+        Dim WriteOptions = FloppyWriteOptionsForm.Display(FloppyDrive, Drive, NewDiskFormat)
+
+        If Not WriteOptions.Cancelled Then
+            If FloppyDrive.IsOpen Then
+                Dim BPB = BuildBPB(NewDiskFormat)
+                FloppyAccessForm.WriteDisk(FloppyDrive, BPB, Disk.Image.GetBytes, WriteOptions.Format, WriteOptions.Verify)
             End If
+        End If
+
+        If FloppyDrive.IsOpen Then
+            FloppyDrive.Close()
         End If
     End Sub
 

@@ -872,15 +872,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Changes have been made to this track.{0}{0}Do you wish to commit these changes before changing tracks?.
-        '''</summary>
-        Friend ReadOnly Property Dialog_CommitChangesTrack() As String
-            Get
-                Return ResourceManager.GetString("Dialog_CommitChangesTrack", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to An operation is currently in progress. Do you wish to cancel?.
         '''</summary>
         Friend ReadOnly Property Dialog_ConfirmCancel() As String
@@ -998,24 +989,6 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_DiskNotEmptyWarning() As String
             Get
                 Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty and is formatted as a {1}.{2}{2}The image you are attempting to write is a {3} image.{2}{2}If you continue, the disk will be overwritten and may be unreadable.{2}{2}Do you wish to continue?.
-        '''</summary>
-        Friend ReadOnly Property Dialog_DiskNotEmptyWarning_Mismatched() As String
-            Get
-                Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning_Mismatched", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty, but I am unable to determine the format type.{1}{1}The image you are attempting to write is a {2} image.{1}{1}If you continue, the disk will be overwritten and may be unreadable.{1}{1}Do you wish to continue?.
-        '''</summary>
-        Friend ReadOnly Property Dialog_DiskNotEmptyWarning_UnknownFormat() As String
-            Get
-                Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning_UnknownFormat", resourceCulture)
             End Get
         End Property
         
@@ -1169,6 +1142,24 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_FloppyError_Writing() As String
             Get
                 Return ResourceManager.GetString("Dialog_FloppyError_Writing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to There is no disk in drive {0}.{1}{1}Please insert a disk into drive {0} and try again..
+        '''</summary>
+        Friend ReadOnly Property Dialog_FloppyNoDisk() As String
+            Get
+                Return ResourceManager.GetString("Dialog_FloppyNoDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This image cannot be written to a floppy drive.{1}{1}{0} is not a standard floppy format..
+        '''</summary>
+        Friend ReadOnly Property Dialog_FloppyNonstandardFormat() As String
+            Get
+                Return ResourceManager.GetString("Dialog_FloppyNonstandardFormat", resourceCulture)
             End Get
         End Property
         

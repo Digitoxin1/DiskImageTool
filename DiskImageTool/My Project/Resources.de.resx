@@ -420,17 +420,8 @@
   <data name="Dialog_CommitChanges" xml:space="preserve">
     <value>An diesem Diskettenabbild wurden Änderungen vorgenommen.{0}{0}Möchten Sie diese Änderungen übernehmen, bevor Sie dieses Fenster schließen?</value>
   </data>
-  <data name="Dialog_CommitChangesTrack" xml:space="preserve">
-    <value>An dieser Spur wurden Änderungen vorgenommen.{0}{0}Möchten Sie diese Änderungen übernehmen, bevor Sie die Spur wechseln?</value>
-  </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warnung: Die Diskette in Laufwerk {0} ist nicht leer.{1}{1}Wenn Sie fortfahren, wird sie überschrieben.{1}{1}Möchten Sie fortfahren?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
-    <value>Warnung: Die Diskette in Laufwerk {0} ist nicht leer und ist als {1} formatiert.{2}{2}Das Abbild, das Sie schreiben möchten, ist ein {3}-Abbild.{2}{2}Wenn Sie fortfahren, wird die Diskette überschrieben und möglicherweise unlesbar.{2}{2}Möchten Sie fortfahren?</value>
-  </data>
-  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
-    <value>Warnung: Die Diskette in Laufwerk {0} ist nicht leer, aber das Format konnte nicht bestimmt werden.{1}{1}Das Abbild, das Sie schreiben möchten, ist ein {2}-Abbild.{1}{1}Wenn Sie fortfahren, wird die Diskette überschrieben und möglicherweise unlesbar.{1}{1}Möchten Sie fortfahren?</value>
   </data>
   <data name="Dialog_DiskWriteError" xml:space="preserve">
     <value>Fehler: Derzeit kann nicht auf das Laufwerk geschrieben werden.</value>
@@ -440,6 +431,12 @@
   </data>
   <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
     <value>Diskettenlaufwerk {0} ist nicht bereit.{1}{1}Bitte stellen Sie sicher, dass eine formatierte Diskette in Laufwerk {0} eingelegt ist.</value>
+  </data>
+  <data name="Dialog_FloppyNoDisk" xml:space="preserve">
+    <value>Es befindet sich keine Diskette im Laufwerk {0}.{1}{1}Bitte legen Sie eine Diskette in Laufwerk {0} ein und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Dialog_FloppyNonstandardFormat" xml:space="preserve">
+    <value>Dieses Image kann nicht auf ein Diskettenlaufwerk geschrieben werden.{1}{1}{0} ist kein Standard-Diskettenformat.</value>
   </data>
   <data name="Dialog_SaveFileError2" xml:space="preserve">
     <value>Beim Speichern der Datei ist ein Fehler aufgetreten.</value>
