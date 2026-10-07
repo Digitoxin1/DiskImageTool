@@ -92,6 +92,7 @@
             '
             Me.ButtonCancel.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonCancel.AutoSize = True
+            Me.ButtonCancel.CausesValidation = False
             Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
             Me.ButtonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl
             Me.ButtonCancel.Location = New System.Drawing.Point(93, 10)

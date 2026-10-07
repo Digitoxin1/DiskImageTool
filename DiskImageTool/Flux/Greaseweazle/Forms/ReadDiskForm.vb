@@ -1570,7 +1570,12 @@ Namespace Flux.Greaseweazle
 
             If IsFluxOutput Then
                 Dim ParentFolder As String = ReadDiskHelpers.GetOutputFolderName(FolderNameInput)
-                DisplayFileName = IO.Path.Combine(ParentFolder, ReadDiskHelpers.FLUX_WILDCARD)
+                If ParentFolder.Length = 0 Then
+                    DisplayFileName = ReadDiskHelpers.FLUX_WILDCARD
+                Else
+                    DisplayFileName = ParentFolder.TrimEnd("\"c, "/"c) & "\" & ReadDiskHelpers.FLUX_WILDCARD
+                End If
+                'DisplayFileName = IO.Path.Combine(ParentFolder, ReadDiskHelpers.FLUX_WILDCARD)
             Else
                 DisplayFileName = GetNewFileName(_TempFilePath)
             End If
@@ -2123,6 +2128,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub TextBoxFileName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFileName.Validating, TextBoxPrefixName.Validating
+            If Me.ActiveControl Is ButtonCancel Then
+                Return
+            End If
+
             Dim tb As TextBox = DirectCast(sender, TextBox)
 
             Dim errorMessage As String = ValidateFileNameWithPlaceholders(tb.Text)
@@ -2140,6 +2149,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub TextBoxFolderName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFolderName.Validating
+            If Me.ActiveControl Is ButtonCancel Then
+                Return
+            End If
+
             Dim tb As TextBox = DirectCast(sender, TextBox)
 
             Dim errorMessage As String = ValidatePathNameWithPlaceholders(tb.Text)
