@@ -25,7 +25,9 @@ Namespace ImageFormats.TD0
 
             If td0.Tracks IsNot Nothing AndAlso td0.Tracks.Count > 0 Then
                 For Each s In td0.Tracks(0).Sectors
-                    If s IsNot Nothing AndAlso Not s.Header.NoData AndAlso Not s.Header.HasCrcError AndAlso s.Data IsNot Nothing Then
+                    ' A CRC-error flag means TeleDisk had trouble reading the sector.
+                    ' The data is still stored and still occupies a sector on the track.
+                    If s IsNot Nothing AndAlso Not s.Header.NoData AndAlso s.Data IsNot Nothing Then
                         total += CUInt(s.Data.Length)
                     End If
                 Next

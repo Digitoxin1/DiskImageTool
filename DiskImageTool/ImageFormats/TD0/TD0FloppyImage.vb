@@ -90,7 +90,7 @@ Namespace ImageFormats.TD0
             Return If(IsFM, BitstreamTrackType.FM, BitstreamTrackType.MFM)
         End Function
 
-        Private Function IsStandardSector(Track As TD0Track, Sector As TD0Sector, MaxSectors As Byte) As Boolean
+        Private Function IsMappableSector(Track As TD0Track, Sector As TD0Sector, MaxSectors As Byte) As Boolean
             If Sector Is Nothing Then
                 Return False
             End If
@@ -99,7 +99,8 @@ Namespace ImageFormats.TD0
                 Return False
             End If
 
-            If Sector.Header.NoData Or Sector.Header.IsDeletedDataMark Or Sector.Header.HasCrcError Or Sector.Data Is Nothing Then
+            ' CRC-error sectors are still mapped. TeleDisk stores their data.
+            If Sector.Header.NoData Or Sector.Header.IsDeletedDataMark Or Sector.Data Is Nothing Then
                 Return False
             End If
 
@@ -110,6 +111,10 @@ Namespace ImageFormats.TD0
             Return True
         End Function
 
+        Private Function IsStandardSector(Track As TD0Track, Sector As TD0Sector, MaxSectors As Byte) As Boolean
+            Return IsMappableSector(Track, Sector, MaxSectors) AndAlso Not Sector.Header.HasCrcError
+        End Function
+
         Private Sub ProcessSectors(Track As TD0Track)
             Dim BitstreamSector As BitstreamSector
             Dim SectorSize As UInteger
@@ -117,8 +122,8 @@ Namespace ImageFormats.TD0
             Dim Buffer() As Byte
 
             For Each Sector In Track.Sectors
-                IsStandard = IsStandardSector(Track, Sector, SECTOR_COUNT)
-                If IsStandard Then
+                If IsMappableSector(Track, Sector, SECTOR_COUNT) Then
+                    IsStandard = IsStandardSector(Track, Sector, SECTOR_COUNT)
                     BitstreamSector = GetSector(Track.Cylinder, Track.Head, Sector.Header.SectorId)
                     If BitstreamSector Is Nothing Then
                         SectorSize = Sector.Data.Length
@@ -141,12 +146,10 @@ Namespace ImageFormats.TD0
         Private Sub ProcessSectors1024(Track As TD0Track)
             Dim BitstreamSector As BitstreamSector
             Dim NewSectorId As Integer
-            Dim IsStandard As Boolean
             Dim Buffer() As Byte
 
             For Each Sector In Track.Sectors
-                IsStandard = IsStandardSector(Track, Sector, 4)
-                If IsStandard And Sector.Data.Length = 1024 Then
+                If IsMappableSector(Track, Sector, 4) And Sector.Data.Length = 1024 Then
                     For i = 0 To 1
                         NewSectorId = (Sector.Header.SectorId - 1) * 2 + 1 + i
                         BitstreamSector = GetSector(Track.Cylinder, Track.Head, NewSectorId)
