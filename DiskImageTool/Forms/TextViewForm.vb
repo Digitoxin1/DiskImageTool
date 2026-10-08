@@ -14,10 +14,9 @@
         TextBox1.Text = Content
         TextBox1.SelectionStart = 0
         TextBox1.ReadOnly = Not Editable
-        If Not WrapText Then
-            TextBox1.WordWrap = False
-            TextBox1.ScrollBars = ScrollBars.Both
-        End If
+        CheckWordWrap.Checked = WrapText
+        ApplyWordWrap(WrapText)
+        LayoutWordWrap()
 
         m_SaveFileName = SaveFileName
         m_OriginalBytes = OriginalBytes
@@ -68,9 +67,39 @@
         End Using
     End Sub
 
+    Private Sub ApplyWordWrap(Wrap As Boolean)
+        If Wrap Then
+            TextBox1.ScrollBars = ScrollBars.Vertical
+            TextBox1.WordWrap = True
+        Else
+            TextBox1.WordWrap = False
+            TextBox1.ScrollBars = ScrollBars.Both
+        End If
+    End Sub
+
+    Private Sub CheckWordWrap_CheckedChanged(sender As Object, e As EventArgs) Handles CheckWordWrap.CheckedChanged
+        ApplyWordWrap(CheckWordWrap.Checked)
+    End Sub
+
+    Private Sub LayoutWordWrap()
+        Dim Used = PanelBottom.Padding.Horizontal _
+            + BtnClose.Margin.Horizontal + BtnClose.Width _
+            + BtnSave.Margin.Horizontal + BtnSave.Width _
+            + CheckWordWrap.Margin.Horizontal + CheckWordWrap.Width
+        Dim SpacerWidth = Math.Max(0, PanelBottom.ClientSize.Width - Used)
+        If PanelSpacer.Width <> SpacerWidth Then
+            PanelSpacer.Width = SpacerWidth
+        End If
+    End Sub
+
     Private Sub LocalizeForm()
         BtnClose.Text = WithoutHotkey(My.Resources.Menu_Close)
         BtnSave.Text = WithoutHotkey(My.Resources.Menu_Save)
+        CheckWordWrap.Text = My.Resources.Label_WordWrap
+    End Sub
+
+    Private Sub PanelBottom_Resize(sender As Object, e As EventArgs) Handles PanelBottom.Resize
+        LayoutWordWrap()
     End Sub
 
     Private Sub TextViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown

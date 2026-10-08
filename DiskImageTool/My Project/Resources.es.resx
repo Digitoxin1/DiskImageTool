@@ -2072,4 +2072,7 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Label_Other" xml:space="preserve">
     <value>Otro</value>
   </data>
+  <data name="Label_WordWrap" xml:space="preserve">
+    <value>Ajuste de línea</value>
+  </data>
 </root>

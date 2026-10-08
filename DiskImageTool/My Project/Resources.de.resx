@@ -2072,4 +2072,7 @@ Möchten Sie fortfahren?</value>
   <data name="Label_Other" xml:space="preserve">
     <value>Andere</value>
   </data>
+  <data name="Label_WordWrap" xml:space="preserve">
+    <value>Zeilenumbruch</value>
+  </data>
 </root>

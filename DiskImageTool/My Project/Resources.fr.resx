@@ -2072,4 +2072,7 @@ Souhaitez-vous continuer ?</value>
   <data name="Label_Other" xml:space="preserve">
     <value>Autre</value>
   </data>
+  <data name="Label_WordWrap" xml:space="preserve">
+    <value>Retour à la ligne automatique</value>
+  </data>
 </root>

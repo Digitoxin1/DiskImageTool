@@ -5084,6 +5084,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Word wrap.
+        '''</summary>
+        Friend ReadOnly Property Label_WordWrap() As String
+            Get
+                Return ResourceManager.GetString("Label_WordWrap", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Write.
         '''</summary>
         Friend ReadOnly Property Label_Write() As String

@@ -2072,4 +2072,7 @@ Flux 映像集：“{0}”
   <data name="Label_Other" xml:space="preserve">
     <value>其他</value>
   </data>
+  <data name="Label_WordWrap" xml:space="preserve">
+    <value>自动换行</value>
+  </data>
 </root>

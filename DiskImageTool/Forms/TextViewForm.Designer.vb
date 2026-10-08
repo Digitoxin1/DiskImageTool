@@ -27,6 +27,8 @@ Partial Class TextViewForm
         Me.PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnClose = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
+        Me.PanelSpacer = New System.Windows.Forms.Panel()
+        Me.CheckWordWrap = New System.Windows.Forms.CheckBox()
         PanelMain = New System.Windows.Forms.Panel()
         PanelMain.SuspendLayout()
         Me.PanelBottom.SuspendLayout()
@@ -62,6 +64,8 @@ Partial Class TextViewForm
         Me.PanelBottom.BackColor = System.Drawing.SystemColors.Control
         Me.PanelBottom.Controls.Add(Me.BtnClose)
         Me.PanelBottom.Controls.Add(Me.BtnSave)
+        Me.PanelBottom.Controls.Add(Me.PanelSpacer)
+        Me.PanelBottom.Controls.Add(Me.CheckWordWrap)
         Me.PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
         Me.PanelBottom.Location = New System.Drawing.Point(0, 518)
@@ -70,6 +74,7 @@ Partial Class TextViewForm
         Me.PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
         Me.PanelBottom.Size = New System.Drawing.Size(769, 43)
         Me.PanelBottom.TabIndex = 1
+        Me.PanelBottom.WrapContents = False
         '
         'BtnClose
         '
@@ -92,6 +97,25 @@ Partial Class TextViewForm
         Me.BtnSave.Text = "{Save}"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
+        'PanelSpacer
+        '
+        Me.PanelSpacer.Location = New System.Drawing.Point(583, 10)
+        Me.PanelSpacer.Margin = New System.Windows.Forms.Padding(0)
+        Me.PanelSpacer.Name = "PanelSpacer"
+        Me.PanelSpacer.Size = New System.Drawing.Size(0, 23)
+        Me.PanelSpacer.TabIndex = 2
+        '
+        'CheckWordWrap
+        '
+        Me.CheckWordWrap.AutoSize = True
+        Me.CheckWordWrap.Location = New System.Drawing.Point(491, 13)
+        Me.CheckWordWrap.Margin = New System.Windows.Forms.Padding(18, 3, 6, 0)
+        Me.CheckWordWrap.Name = "CheckWordWrap"
+        Me.CheckWordWrap.Size = New System.Drawing.Size(86, 17)
+        Me.CheckWordWrap.TabIndex = 3
+        Me.CheckWordWrap.Text = "{Word wrap}"
+        Me.CheckWordWrap.UseVisualStyleBackColor = True
+        '
         'TextViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -108,6 +132,7 @@ Partial Class TextViewForm
         PanelMain.ResumeLayout(False)
         PanelMain.PerformLayout()
         Me.PanelBottom.ResumeLayout(False)
+        Me.PanelBottom.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -116,4 +141,6 @@ Partial Class TextViewForm
     Friend WithEvents BtnClose As Button
     Friend WithEvents BtnSave As Button
     Friend WithEvents PanelBottom As FlowLayoutPanel
+    Friend WithEvents CheckWordWrap As CheckBox
+    Friend PanelSpacer As Panel
 End Class
