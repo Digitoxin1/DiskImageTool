@@ -125,11 +125,17 @@ Nota: Los datos resaltados en verde son el código de arranque.</value>
   <data name="BootSectorForm_AllowedValues" xml:space="preserve">
     <value>Valores Permitidos:</value>
   </data>
+  <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
+    <value>Valores permitidos: {0}</value>
+  </data>
   <data name="BootSectorForm_BootSectorSignature" xml:space="preserve">
     <value>Indica al BIOS que el sector es ejecutable.</value>
   </data>
   <data name="BootSectorForm_BytesPerSector" xml:space="preserve">
     <value>Número de bytes en cada sector físico</value>
+  </data>
+  <data name="BootSectorForm_BytesPerSector_Note" xml:space="preserve">
+    <value>Nota: Este valor debe ser {0} para todos los disquetes.</value>
   </data>
   <data name="BootSectorForm_DiskType" xml:space="preserve">
     <value>El tipo de disco detectado se basa en los valores actuales del sector de arranque. Cambiarlo ajustará los valores en el sector de arranque al tipo de disco seleccionado.</value>
@@ -204,6 +210,9 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="BootSectorForm_TypicalValues" xml:space="preserve">
     <value>Valores típicos:</value>
   </data>
+  <data name="BootSectorForm_TypicalValuesInline" xml:space="preserve">
+    <value>Valores típicos: {0}</value>
+  </data>
   <data name="BootSectorForm_Unused" xml:space="preserve">
     <value>No utilizado</value>
   </data>
@@ -218,32 +227,88 @@ Nota: Esta ID se genera normalmente convirtiendo la fecha y hora actual en un va
   <data name="BootSectorForm_VolumeSerialNumberButton" xml:space="preserve">
     <value>Generar un nuevo número de serie del volumen basado en una fecha y hora proporcionadas</value>
   </data>
-  <data name="Greaseweazle_Revs" xml:space="preserve">
-    <value>Número de revoluciones a leer por pista</value>
+  <data name="Flux_86FSurfaceData" xml:space="preserve">
+    <value>Incluir datos brutos de superficie de flujo en la
+salida .86F.
+
+Solo disponible con PCImgCnv cuando el tipo de salida
+es .86F.</value>
   </data>
-  <data name="Greaseweazle_Retries" xml:space="preserve">
-    <value>Número máximo de reintentos de lectura por pista cuando se produce un error de lectura.</value>
+  <data name="Flux_AutoSaveLog" xml:space="preserve">
+    <value>Guardar automáticamente el registro de conversión
+junto al conjunto de imágenes de flujo cuando la
+conversión se realiza correctamente.</value>
   </data>
-  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
-    <value>Número máximo de veces que el cabezal de la unidad vuelve a buscar una pista si fallan todos los reintentos de lectura.</value>
+  <data name="Flux_Clean" xml:space="preserve">
+    <value>Limpiar los cabezales de la disquetera en la bahía
+de unidad seleccionada usando un disco de limpieza.</value>
   </data>
-  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
-    <value>Restablecer el dispositivo Greaseweazle a su estado predeterminado de encendido.</value>
+  <data name="Flux_ContinueAfterFailure" xml:space="preserve">
+    <value>Continuar escribiendo las pistas restantes si una
+pista falla la verificación, en lugar de abortar
+la ejecución.</value>
   </data>
-  <data name="Flux_SaveLog" xml:space="preserve">
-    <value>Guardar la salida de la consola en un archivo de registro.</value>
+  <data name="Flux_Convert" xml:space="preserve">
+    <value>Convertir el conjunto de imágenes de flujo cargado al
+tipo de imagen seleccionado sin volver a leer la unidad.</value>
   </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>Intentar detectar el formato del disco en la unidad seleccionada analizando el sector de arranque.</value>
   </data>
-  <data name="Greaseweazle_Drives" xml:space="preserve">
-    <value>Unidades de disquete disponibles.
+  <data name="Flux_Device" xml:space="preserve">
+    <value>La herramienta de procesamiento de flujo utilizada
+para decodificar el conjunto de imágenes de flujo
+cargado (Greaseweazle, Kryoflux o PCImgCnv).</value>
+  </data>
+  <data name="Flux_Discard" xml:space="preserve">
+    <value>Descartar la imagen o el conjunto de imágenes cargado.</value>
+  </data>
+  <data name="Flux_DoubleStep" xml:space="preserve">
+    <value>Saltar una pista sí y otra no al leer un disquete de 360 KB en una unidad de 1,2 MB.</value>
+  </data>
+  <data name="Flux_Erase" xml:space="preserve">
+    <value>Borrar el disquete en la unidad seleccionada.
 
-Esta lista se puede configurar en
-Configuración de Greaseweazle en el menú Opciones.</value>
+Cuando Seleccionar pistas está activado, solo se borran
+las pistas seleccionadas en la cuadrícula.</value>
+  </data>
+  <data name="Flux_EraseEmpty" xml:space="preserve">
+    <value>Escribir patrones de borrado en las pistas que no
+contienen datos en lugar de dejarlas tal cual.</value>
+  </data>
+  <data name="Flux_ExtendedLogOutput" xml:space="preserve">
+    <value>Capturar la salida detallada de Kryoflux (eventos de
+lectura y decodificación de celdas) en el registro
+de conversión.</value>
+  </data>
+  <data name="Flux_FolderName" xml:space="preserve">
+    <value>La subcarpeta dentro de la Carpeta Raíz donde se guarda
+el conjunto de imágenes de flujo.
+
+Puede crear una plantilla de nombre de carpeta encerrando un número
+entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
+
+El número dentro de los corchetes se incrementará automáticamente
+en cada lectura posterior.</value>
   </data>
   <data name="Flux_Format" xml:space="preserve">
     <value>El formato del disquete en la unidad seleccionada.</value>
+  </data>
+  <data name="Flux_ImageFolder" xml:space="preserve">
+    <value>La carpeta de destino personalizada para el archivo de
+imagen secundario, utilizada cuando Ubicación está
+establecida en Personalizado.</value>
+  </data>
+  <data name="Flux_ImageFolderBrowse" xml:space="preserve">
+    <value>Buscar la carpeta donde se guarda el archivo de imagen secundario.</value>
+  </data>
+  <data name="Flux_ImageLocation" xml:space="preserve">
+    <value>Dónde se guarda el archivo de imagen secundario.
+
+Elija la Carpeta raíz, la misma carpeta que el conjunto
+de imágenes de flujo o una carpeta personalizada. Al
+seleccionar Personalizado se habilita el campo Carpeta
+de imagen a continuación.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
     <value>El tipo de salida primario para la lectura.
@@ -257,6 +322,30 @@ Cuando se selecciona Conjunto de Imágenes Flux, se puede
 producir una imagen decodificada adicional durante la misma
 lectura eligiendo un Tipo de salida 2.</value>
   </data>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>Importar la imagen cargada a Disk Image Tool.</value>
+  </data>
+  <data name="Flux_ImportClose" xml:space="preserve">
+    <value>Importar la imagen cargada y cerrar este diálogo.</value>
+  </data>
+  <data name="Flux_Modifications" xml:space="preserve">
+    <value>Ver las modificaciones por sector que PCImgCnv aplicó
+durante la conversión.</value>
+  </data>
+  <data name="Flux_NoVerify" xml:space="preserve">
+    <value>Omitir la verificación posterior a la escritura.
+
+Más rápido pero no detecta errores de escritura.</value>
+  </data>
+  <data name="Flux_OpenFile" xml:space="preserve">
+    <value>Abrir un conjunto de imágenes de flujo o una imagen
+de sectores diferente para convertir.</value>
+  </data>
+  <data name="Flux_OutputSource" xml:space="preserve">
+    <value>Cuando el mismo conjunto de flujo ha sido procesado
+por más de una herramienta, elija qué salida de
+herramienta se utiliza para la importación.</value>
+  </data>
   <data name="Flux_OutputType2" xml:space="preserve">
     <value>Una segunda salida opcional producida junto con el
 conjunto de imágenes de flujo durante la misma lectura.
@@ -265,127 +354,11 @@ Disponible solo cuando el tipo de salida primario es
 Conjunto de Imágenes Flux. El tipo seleccionado se decodifica
 del disco y se guarda en la ubicación elegida abajo.</value>
   </data>
-  <data name="Greaseweazle_ReadFilename" xml:space="preserve">
-    <value>El nombre del archivo de salida.
+  <data name="Flux_PreErase" xml:space="preserve">
+    <value>Borrar cada pista antes de escribirla.
 
-Puede crear una plantilla de nombre de archivo encerrando un número
-entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
-
-El número dentro de los corchetes se incrementará automáticamente
-en cada lectura posterior.</value>
-  </data>
-  <data name="Greaseweazle_FileExt" xml:space="preserve">
-    <value>La extensión del archivo de salida.</value>
-  </data>
-  <data name="Greaseweazle_FileExt2" xml:space="preserve">
-    <value>La extensión de archivo para la salida secundaria.</value>
-  </data>
-  <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Guardar un archivo de registro junto al conjunto de imágenes
-de flujo, capturando la salida de consola de Greaseweazle de la ejecución.
-
-El nombre del archivo de registro se puede configurar en
-Configuración de Greaseweazle en el menú Opciones.</value>
-  </data>
-  <data name="Flux_Discard" xml:space="preserve">
-    <value>Descartar la imagen o el conjunto de imágenes cargado.</value>
-  </data>
-  <data name="Flux_Read" xml:space="preserve">
-    <value>Leer un disquete desde la unidad seleccionada al tipo de salida seleccionado.
-
-Cuando Seleccionar Pistas está habilitado, solo se vuelven
-a leer las pistas seleccionadas en la cuadrícula inferior.</value>
-  </data>
-  <data name="Greaseweazle_RootFolder" xml:space="preserve">
-    <value>La carpeta raíz para sus conjuntos de imágenes de flujo.
-
-La carpeta raíz predeterminada se puede configurar en
-Configuración de Greaseweazle en el menú Opciones.</value>
-  </data>
-  <data name="Flux_DoubleStep" xml:space="preserve">
-    <value>Saltar una pista sí y otra no al leer un disquete de 360 KB en una unidad de 1,2 MB.</value>
-  </data>
-  <data name="Flux_Import" xml:space="preserve">
-    <value>Importar la imagen cargada a Disk Image Tool.</value>
-  </data>
-  <data name="Flux_ImportClose" xml:space="preserve">
-    <value>Importar la imagen cargada y cerrar este diálogo.</value>
-  </data>
-  <data name="Flux_Save" xml:space="preserve">
-    <value>Guardar el conjunto de imágenes de flujo cargado en el destino elegido.</value>
-  </data>
-  <data name="Flux_SaveClose" xml:space="preserve">
-    <value>Guardar el conjunto de imágenes de flujo cargado y cerrar este diálogo.</value>
-  </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir el conjunto de imágenes de flujo cargado al
-tipo de imagen seleccionado sin volver a leer la unidad.</value>
-  </data>
-  <data name="Flux_Preview" xml:space="preserve">
-    <value>Previsualizar el contenido del disco en la unidad seleccionada
-sin guardar una imagen, o previsualizar la imagen
-actualmente cargada.
-
-Para un disco no leído, se lee la primera pista y se
-muestra la lista del directorio.</value>
-  </data>
-  <data name="Flux_Refine" xml:space="preserve">
-    <value>Abrir un conjunto de imágenes de flujo (.raw) existente y cargar
-su estado actual en la cuadrícula de pistas.
-
-A continuación, el formulario se coloca en modo de selección
-de pistas para que se puedan volver a leer pistas individuales
-contra el conjunto de flujo original.</value>
-  </data>
-  <data name="Flux_Verify" xml:space="preserve">
-    <value>Verificar el conjunto de imágenes de flujo cargado
-usando Kryoflux sin volver a leer la unidad.
-
-Los resultados de la verificación de cada pista se
-muestran en la cuadrícula superior.</value>
-  </data>
-  <data name="Flux_RootBrowse" xml:space="preserve">
-    <value>Buscar la carpeta raíz donde se guardan los conjuntos de imágenes de flujo.</value>
-  </data>
-  <data name="Flux_ImageLocation" xml:space="preserve">
-    <value>Dónde se guarda el archivo de imagen secundario.
-
-Elija la Carpeta raíz, la misma carpeta que el conjunto
-de imágenes de flujo o una carpeta personalizada. Al
-seleccionar Personalizado se habilita el campo Carpeta
-de imagen a continuación.</value>
-  </data>
-  <data name="Flux_ImageFolder" xml:space="preserve">
-    <value>La carpeta de destino personalizada para el archivo de
-imagen secundario, utilizada cuando Ubicación está
-establecida en Personalizado.</value>
-  </data>
-  <data name="Flux_ImageFolderBrowse" xml:space="preserve">
-    <value>Buscar la carpeta donde se guarda el archivo de imagen secundario.</value>
-  </data>
-  <data name="Flux_ToggleSequence" xml:space="preserve">
-    <value>Encerrar o quitar los corchetes angulares (&lt; &gt;) del número
-actual en el campo de nombre de archivo, carpeta o
-prefijo enfocado.
-
-Un número entre corchetes se incrementa automáticamente
-después de cada lectura.</value>
-  </data>
-  <data name="Flux_SelectTracks" xml:space="preserve">
-    <value>Habilitar la selección por pista en la cuadrícula inferior.
-
-Cuando está marcado, solo se vuelven a leer las pistas
-seleccionadas en la cuadrícula en la próxima Lectura.</value>
-  </data>
-  <data name="Flux_FolderName" xml:space="preserve">
-    <value>La subcarpeta dentro de la Carpeta Raíz donde se guarda
-el conjunto de imágenes de flujo.
-
-Puede crear una plantilla de nombre de carpeta encerrando un número
-entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
-
-El número dentro de los corchetes se incrementará automáticamente
-en cada lectura posterior.</value>
+Más lento pero más fiable en medios desgastados o
+formateados previamente.</value>
   </data>
   <data name="Flux_PrefixName" xml:space="preserve">
     <value>Prefijo del nombre de archivo para los archivos .raw de pista
@@ -398,22 +371,16 @@ entre corchetes angulares (&lt; &gt;). Por ejemplo: cara&lt;1&gt;.
 El número dentro de los corchetes se incrementará automáticamente
 en cada lectura posterior.</value>
   </data>
-  <data name="Flux_Clean" xml:space="preserve">
-    <value>Limpiar los cabezales de la disquetera en la bahía
-de unidad seleccionada usando un disco de limpieza.</value>
-  </data>
-  <data name="Flux_Erase" xml:space="preserve">
-    <value>Borrar el disquete en la unidad seleccionada.
+  <data name="Flux_Preview" xml:space="preserve">
+    <value>Previsualizar el contenido del disco en la unidad seleccionada
+sin guardar una imagen, o previsualizar la imagen
+actualmente cargada.
 
-Cuando Seleccionar pistas está activado, solo se borran
-las pistas seleccionadas en la cuadrícula.</value>
+Para un disco no leído, se lee la primera pista y se
+muestra la lista del directorio.</value>
   </data>
-  <data name="Flux_Write" xml:space="preserve">
-    <value>Escribir la imagen cargada en el disquete en la
-unidad seleccionada.
-
-Cuando Seleccionar pistas está activado, solo se escriben
-las pistas seleccionadas en la cuadrícula.</value>
+  <data name="Flux_PreviewConvert" xml:space="preserve">
+    <value>Vista previa del contenido de la imagen convertida actualmente.</value>
   </data>
   <data name="Flux_Process" xml:space="preserve">
     <value>Ejecutar la conversión sobre el conjunto de imágenes de
@@ -422,60 +389,19 @@ flujo cargado actualmente.
 Cuando Seleccionar pistas está activado, solo se vuelven a
 convertir las pistas seleccionadas en la cuadrícula.</value>
   </data>
-  <data name="Greaseweazle_CleanCyls" xml:space="preserve">
-    <value>Número de cilindros a limpiar.
+  <data name="Flux_Read" xml:space="preserve">
+    <value>Leer un disquete desde la unidad seleccionada al tipo de salida seleccionado.
 
-La mayoría de las unidades usan 40 (5,25" doble densidad)
-u 80 (todas las demás).</value>
+Cuando Seleccionar Pistas está habilitado, solo se vuelven
+a leer las pistas seleccionadas en la cuadrícula inferior.</value>
   </data>
-  <data name="Greaseweazle_CleanPasses" xml:space="preserve">
-    <value>Número de pasadas de limpieza a realizar.</value>
-  </data>
-  <data name="Greaseweazle_CleanLinger" xml:space="preserve">
-    <value>Tiempo en milisegundos que el cabezal permanecerá
-en cada cilindro durante una pasada.</value>
-  </data>
-  <data name="Greaseweazle_Hfreq" xml:space="preserve">
-    <value>Borrar usando una señal de alta frecuencia en lugar
-del borrado de CC predeterminado. Use esto para medios
-que no responden a un borrado normal.</value>
-  </data>
-  <data name="Flux_PreErase" xml:space="preserve">
-    <value>Borrar cada pista antes de escribirla.
+  <data name="Flux_Refine" xml:space="preserve">
+    <value>Abrir un conjunto de imágenes de flujo (.raw) existente y cargar
+su estado actual en la cuadrícula de pistas.
 
-Más lento pero más fiable en medios desgastados o
-formateados previamente.</value>
-  </data>
-  <data name="Flux_EraseEmpty" xml:space="preserve">
-    <value>Escribir patrones de borrado en las pistas que no
-contienen datos en lugar de dejarlas tal cual.</value>
-  </data>
-  <data name="Flux_NoVerify" xml:space="preserve">
-    <value>Omitir la verificación posterior a la escritura.
-
-Más rápido pero no detecta errores de escritura.</value>
-  </data>
-  <data name="Flux_ContinueAfterFailure" xml:space="preserve">
-    <value>Continuar escribiendo las pistas restantes si una
-pista falla la verificación, en lugar de abortar
-la ejecución.</value>
-  </data>
-  <data name="Flux_Device" xml:space="preserve">
-    <value>La herramienta de procesamiento de flujo utilizada
-para decodificar el conjunto de imágenes de flujo
-cargado (Greaseweazle, Kryoflux o PCImgCnv).</value>
-  </data>
-  <data name="Flux_AutoSaveLog" xml:space="preserve">
-    <value>Guardar automáticamente el registro de conversión
-junto al conjunto de imágenes de flujo cuando la
-conversión se realiza correctamente.</value>
-  </data>
-  <data name="Flux_86FSurfaceData" xml:space="preserve">
-    <value>Incluir datos brutos de superficie de flujo en la
-salida .86F.
-
-Solo disponible con PCImgCnv cuando el tipo de salida
-es .86F.</value>
+A continuación, el formulario se coloca en modo de selección
+de pistas para que se puedan volver a leer pistas individuales
+contra el conjunto de flujo original.</value>
   </data>
   <data name="Flux_Remaster" xml:space="preserve">
     <value>Aplicar la disposición de pistas guardada al
@@ -484,38 +410,112 @@ reconvertir con PCImgCnv.
 Solo disponible cuando se ha generado una disposición
 de pistas.</value>
   </data>
-  <data name="Flux_ExtendedLogOutput" xml:space="preserve">
-    <value>Capturar la salida detallada de Kryoflux (eventos de
-lectura y decodificación de celdas) en el registro
-de conversión.</value>
+  <data name="Flux_RootBrowse" xml:space="preserve">
+    <value>Buscar la carpeta raíz donde se guardan los conjuntos de imágenes de flujo.</value>
   </data>
-  <data name="Flux_OpenFile" xml:space="preserve">
-    <value>Abrir un conjunto de imágenes de flujo o una imagen
-de sectores diferente para convertir.</value>
+  <data name="Flux_Save" xml:space="preserve">
+    <value>Guardar el conjunto de imágenes de flujo cargado en el destino elegido.</value>
   </data>
-  <data name="Flux_PreviewConvert" xml:space="preserve">
-    <value>Vista previa del contenido de la imagen convertida actualmente.</value>
+  <data name="Flux_SaveClose" xml:space="preserve">
+    <value>Guardar el conjunto de imágenes de flujo cargado y cerrar este diálogo.</value>
+  </data>
+  <data name="Flux_SaveLog" xml:space="preserve">
+    <value>Guardar la salida de la consola en un archivo de registro.</value>
+  </data>
+  <data name="Flux_SelectTracks" xml:space="preserve">
+    <value>Habilitar la selección por pista en la cuadrícula inferior.
+
+Cuando está marcado, solo se vuelven a leer las pistas
+seleccionadas en la cuadrícula en la próxima Lectura.</value>
+  </data>
+  <data name="Flux_ToggleSequence" xml:space="preserve">
+    <value>Encerrar o quitar los corchetes angulares (&lt; &gt;) del número
+actual en el campo de nombre de archivo, carpeta o
+prefijo enfocado.
+
+Un número entre corchetes se incrementa automáticamente
+después de cada lectura.</value>
   </data>
   <data name="Flux_TrackLayout" xml:space="preserve">
     <value>Ver la disposición por pista que PCImgCnv produjo
 durante la conversión.</value>
   </data>
-  <data name="Flux_Modifications" xml:space="preserve">
-    <value>Ver las modificaciones por sector que PCImgCnv aplicó
-durante la conversión.</value>
+  <data name="Flux_Verify" xml:space="preserve">
+    <value>Verificar el conjunto de imágenes de flujo cargado
+usando Kryoflux sin volver a leer la unidad.
+
+Los resultados de la verificación de cada pista se
+muestran en la cuadrícula superior.</value>
   </data>
-  <data name="Flux_OutputSource" xml:space="preserve">
-    <value>Cuando el mismo conjunto de flujo ha sido procesado
-por más de una herramienta, elija qué salida de
-herramienta se utiliza para la importación.</value>
+  <data name="Flux_Write" xml:space="preserve">
+    <value>Escribir la imagen cargada en el disquete en la
+unidad seleccionada.
+
+Cuando Seleccionar pistas está activado, solo se escriben
+las pistas seleccionadas en la cuadrícula.</value>
   </data>
-  <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
-    <value>Valores permitidos: {0}</value>
+  <data name="Greaseweazle_CleanCyls" xml:space="preserve">
+    <value>Número de cilindros a limpiar.
+
+La mayoría de las unidades usan 40 (5,25" doble densidad)
+u 80 (todas las demás).</value>
   </data>
-  <data name="BootSectorForm_TypicalValuesInline" xml:space="preserve">
-    <value>Valores típicos: {0}</value>
+  <data name="Greaseweazle_CleanLinger" xml:space="preserve">
+    <value>Tiempo en milisegundos que el cabezal permanecerá
+en cada cilindro durante una pasada.</value>
   </data>
-  <data name="BootSectorForm_BytesPerSector_Note" xml:space="preserve">
-    <value>Nota: Este valor debe ser {0} para todos los disquetes.</value>
+  <data name="Greaseweazle_CleanPasses" xml:space="preserve">
+    <value>Número de pasadas de limpieza a realizar.</value>
+  </data>
+  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
+    <value>Restablecer el dispositivo Greaseweazle a su estado predeterminado de encendido.</value>
+  </data>
+  <data name="Greaseweazle_Drives" xml:space="preserve">
+    <value>Unidades de disquete disponibles.
+
+Esta lista se puede configurar en
+Configuración de Greaseweazle en el menú Opciones.</value>
+  </data>
+  <data name="Greaseweazle_FileExt" xml:space="preserve">
+    <value>La extensión del archivo de salida.</value>
+  </data>
+  <data name="Greaseweazle_FileExt2" xml:space="preserve">
+    <value>La extensión de archivo para la salida secundaria.</value>
+  </data>
+  <data name="Greaseweazle_Hfreq" xml:space="preserve">
+    <value>Borrar usando una señal de alta frecuencia en lugar
+del borrado de CC predeterminado. Use esto para medios
+que no responden a un borrado normal.</value>
+  </data>
+  <data name="Greaseweazle_ReadFilename" xml:space="preserve">
+    <value>El nombre del archivo de salida.
+
+Puede crear una plantilla de nombre de archivo encerrando un número
+entre corchetes angulares (&lt; &gt;). Por ejemplo: Disco &lt;1&gt; de 3.
+
+El número dentro de los corchetes se incrementará automáticamente
+en cada lectura posterior.</value>
+  </data>
+  <data name="Greaseweazle_Retries" xml:space="preserve">
+    <value>Número máximo de reintentos de lectura por pista cuando se produce un error de lectura.</value>
+  </data>
+  <data name="Greaseweazle_Revs" xml:space="preserve">
+    <value>Número de revoluciones a leer por pista</value>
+  </data>
+  <data name="Greaseweazle_RootFolder" xml:space="preserve">
+    <value>La carpeta raíz para sus conjuntos de imágenes de flujo.
+
+La carpeta raíz predeterminada se puede configurar en
+Configuración de Greaseweazle en el menú Opciones.</value>
+  </data>
+  <data name="Greaseweazle_SaveLog" xml:space="preserve">
+    <value>Guardar un archivo de registro junto al conjunto de imágenes
+de flujo, capturando la salida de consola de Greaseweazle de la ejecución.
+
+El nombre del archivo de registro se puede configurar en
+Configuración de Greaseweazle en el menú Opciones.</value>
+  </data>
+  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
+    <value>Número máximo de veces que el cabezal de la unidad vuelve a buscar una pista si fallan todos los reintentos de lectura.</value>
   </data>
 </root>
