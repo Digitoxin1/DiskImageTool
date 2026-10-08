@@ -19,7 +19,9 @@ Public Class TextViewForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        If UseDosFont Then
+        If IsSimplifiedChinese() Then
+            ApplyNSimSun()
+        ElseIf UseDosFont Then
             ApplyDosFont()
         End If
 
@@ -81,6 +83,20 @@ Public Class TextViewForm
             End If
         End Using
     End Sub
+
+    Private Sub ApplyNSimSun()
+        Dim Candidate As New Font("NSimSun", 12.0!, FontStyle.Regular, GraphicsUnit.Point)
+        If Candidate.Name.Equals("NSimSun", StringComparison.OrdinalIgnoreCase) Then
+            TextBox1.Font = Candidate
+        Else
+            Candidate.Dispose()
+        End If
+    End Sub
+
+    Private Function IsSimplifiedChinese() As Boolean
+        Dim Culture = Globalization.CultureInfo.CurrentUICulture
+        Return Culture.Name.Equals("zh-CN", StringComparison.OrdinalIgnoreCase) OrElse Culture.Name.StartsWith("zh-Hans", StringComparison.OrdinalIgnoreCase)
+    End Function
 
     Private Sub ApplyDosFont()
         If Not EnsureDosFont() Then

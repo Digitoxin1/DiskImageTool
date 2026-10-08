@@ -547,13 +547,27 @@ Module DiskImageLib
             Length = Bytes.Length
         End If
 
-        Dim Content = Encoding.GetEncoding(437).GetString(Bytes, 0, Length)
+        Dim Content = Encoding.GetEncoding(DosCodePage()).GetString(Bytes, 0, Length)
         Content = ApplyCp437Graphics(Content)
         Content = Content.Replace(ChrW(0), " "c)
         'Content = Content.Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Replace(vbLf, vbCrLf)
 
         TextViewForm.Display(Caption, Content, False, False, True, DirectoryEntry.GetFullFileName, Bytes, True)
     End Sub
+
+    Private Function DosCodePage() As Integer
+        Dim Culture = Globalization.CultureInfo.CurrentUICulture
+        If Culture.Name.Equals("zh-CN", StringComparison.OrdinalIgnoreCase) OrElse Culture.Name.StartsWith("zh-Hans", StringComparison.OrdinalIgnoreCase) Then
+            Return 936
+        End If
+
+        Select Case Culture.TwoLetterISOLanguageName
+            Case "fr", "de", "es"
+                Return 850
+            Case Else
+                Return 437
+        End Select
+    End Function
 
     Private Function FilePropertiesEdit(FilePanel As FilePanel) As Boolean
         Dim Result As Boolean = False
