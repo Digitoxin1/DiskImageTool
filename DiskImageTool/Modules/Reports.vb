@@ -250,7 +250,7 @@ Module Reports
             Caption &= " - " & FileName
         End If
 
-        TextViewForm.Display(Caption, Content, True, True, SaveFileName)
+        TextViewForm.Display(Caption, Content, True, True, True, SaveFileName)
     End Sub
 
     Public Sub DisplayReportXMLDump(Content As String, Optional Filename As String = "")

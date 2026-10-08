@@ -61,7 +61,7 @@ Module MenuHelp
             Exit Sub
         End Try
 
-        TextViewForm.Display(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
+        TextViewForm.Display(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, True, "ChangeLog.txt")
     End Sub
 
     Public Sub ProjectPageDisplay()

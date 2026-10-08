@@ -1,7 +1,8 @@
 ﻿Public Class TextViewForm
     Private m_SaveFileName As String
+    Private m_OriginalBytes() As Byte
 
-    Public Sub New(Caption As String, Content As String, Editable As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "")
+    Public Sub New(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -13,16 +14,21 @@
         TextBox1.Text = Content
         TextBox1.SelectionStart = 0
         TextBox1.ReadOnly = Not Editable
+        If Not WrapText Then
+            TextBox1.WordWrap = False
+            TextBox1.ScrollBars = ScrollBars.Both
+        End If
 
         m_SaveFileName = SaveFileName
+        m_OriginalBytes = OriginalBytes
 
         If Not EnableSave Then
             PanelBottom.Visible = False
         End If
     End Sub
 
-    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "")
-        Using dlg As New TextViewForm(Caption, Content, Editable, EnableSave, SaveFileName)
+    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing)
+        Using dlg As New TextViewForm(Caption, Content, Editable, WrapText, EnableSave, SaveFileName, OriginalBytes)
             dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
@@ -53,7 +59,11 @@
             End If
 
             If Dialog.ShowDialog = DialogResult.OK Then
-                IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
+                If m_OriginalBytes IsNot Nothing Then
+                    IO.File.WriteAllBytes(Dialog.FileName, m_OriginalBytes)
+                Else
+                    IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
+                End If
             End If
         End Using
     End Sub

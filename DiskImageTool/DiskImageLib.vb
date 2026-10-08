@@ -466,6 +466,40 @@ Module DiskImageLib
         Return SaveAllForm.Display(Caption)
     End Function
 
+    Private Function ApplyCp437Graphics(Text As String) As String
+        If String.IsNullOrEmpty(Text) Then
+            Return Text
+        End If
+
+        ' Index is the code page 437 byte. 0x09, 0x0A, and 0x0D stay as controls.
+        Dim Graphics() As Char = {
+            ChrW(0),
+            ChrW(&H263A), ChrW(&H263B), ChrW(&H2665), ChrW(&H2666),
+            ChrW(&H2663), ChrW(&H2660), ChrW(&H2022), ChrW(&H25D8),
+            ChrW(9), ChrW(10), ChrW(&H2642), ChrW(&H2640),
+            ChrW(13), ChrW(&H266B), ChrW(&H263C), ChrW(&H25BA),
+            ChrW(&H25C4), ChrW(&H2195), ChrW(&H203C), ChrW(&HB6),
+            ChrW(&HA7), ChrW(&H25AC), ChrW(&H21A8), ChrW(&H2191),
+            ChrW(&H2193), ChrW(&H2192), ChrW(&H2190), ChrW(&H221F),
+            ChrW(&H2194), ChrW(&H25B2), ChrW(&H25BC)
+        }
+
+        Dim Result As New StringBuilder(Text.Length)
+
+        For Each Ch In Text
+            Dim Code = AscW(Ch)
+            If Code > 0 AndAlso Code < 32 Then
+                Result.Append(Graphics(Code))
+            ElseIf Code = &H7F Then
+                Result.Append(ChrW(&H2302))
+            Else
+                Result.Append(Ch)
+            End If
+        Next
+
+        Return Result.ToString()
+    End Function
+
     Private Function BootSectorEdit(Disk As Disk) As Boolean
         Dim Response = BootSectorForm.Display(Disk.BootSector.Data, App.Globals.BootstrapDB)
 
@@ -507,26 +541,18 @@ Module DiskImageLib
         End If
 
         Dim Bytes = DirectoryEntry.GetContent
-        Dim Content As String
 
-        Using Stream As New IO.MemoryStream
-            Dim PrevByte As Byte = 0
-            For Counter = 0 To Bytes.Length - 1
-                Dim B = Bytes(Counter)
-                If B = 0 Then
-                    Stream.WriteByte(32)
-                ElseIf Counter > 0 And B = 10 And PrevByte <> 13 Then
-                    Stream.WriteByte(13)
-                    Stream.WriteByte(10)
-                Else
-                    Stream.WriteByte(B)
-                End If
-                PrevByte = B
-            Next
-            Content = Encoding.UTF7.GetString(Stream.GetBuffer)
-        End Using
+        Dim Length = Array.IndexOf(Bytes, CByte(&H1A))
+        If Length < 0 Then
+            Length = Bytes.Length
+        End If
 
-        TextViewForm.Display(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
+        Dim Content = Encoding.GetEncoding(437).GetString(Bytes, 0, Length)
+        Content = ApplyCp437Graphics(Content)
+        Content = Content.Replace(ChrW(0), " "c)
+        'Content = Content.Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Replace(vbLf, vbCrLf)
+
+        TextViewForm.Display(Caption, Content, False, False, True, DirectoryEntry.GetFullFileName, Bytes)
     End Sub
 
     Private Function FilePropertiesEdit(FilePanel As FilePanel) As Boolean

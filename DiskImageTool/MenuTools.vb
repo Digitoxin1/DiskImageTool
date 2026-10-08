@@ -93,7 +93,7 @@ Module MenuTools
             Caption &= " - " & FileName
         End If
 
-        TextViewForm.Display(Caption, TrackLayout.ToString, True, True, SaveFileName)
+        TextViewForm.Display(Caption, TrackLayout.ToString, True, True, True, SaveFileName)
     End Sub
 
     Public Function ImageClearReservedBytes(CurrentImage As DiskImageContainer) As Boolean

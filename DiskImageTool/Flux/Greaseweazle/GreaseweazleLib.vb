@@ -43,7 +43,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, True, "GreaseweazleBandwidth.txt")
         End Sub
 
         Public Function BuildRanges(values As HashSet(Of UShort), Optional DoubleStep As Boolean = False) As List(Of (StartTrack As UShort, EndTrack As UShort))
@@ -284,7 +284,7 @@ Namespace Flux.Greaseweazle
 
             ParentForm.Cursor = Cursors.Default
 
-            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, True, "GreaseweazleInfo.txt")
         End Sub
 
         ' Maps a UI-side drive id ("A"/"B"/"0".."3") to a Greaseweazle DriveSpec.
