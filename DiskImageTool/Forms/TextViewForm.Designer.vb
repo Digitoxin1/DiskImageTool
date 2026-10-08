@@ -49,7 +49,7 @@ Partial Class TextViewForm
         Me.TextBox1.AcceptsTab = True
         Me.TextBox1.BackColor = System.Drawing.SystemColors.Window
         Me.TextBox1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBox1.Font = New System.Drawing.Font("Consolas", 11.25!)
+        Me.TextBox1.Font = New System.Drawing.Font("Consolas", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox1.Location = New System.Drawing.Point(0, 0)
         Me.TextBox1.MaxLength = 2949120
         Me.TextBox1.Multiline = True

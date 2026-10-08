@@ -900,6 +900,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\floppyDisk.ico" />
+    <EmbeddedResource Include="Resources\fonts\Mx437_IBM_VGA_9x16.ttf">
+      <LogicalName>DiskImageTool.Mx437_IBM_VGA_9x16.ttf</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\License.txt" />
     <EmbeddedResource Include="Resources\bootstrap.xml" />
   </ItemGroup>

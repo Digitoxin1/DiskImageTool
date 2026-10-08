@@ -1,13 +1,28 @@
-﻿Public Class TextViewForm
+﻿Imports System.Runtime.InteropServices
+
+Public Class TextViewForm
+    Private Const DosFontResource As String = "DiskImageTool.Mx437_IBM_VGA_9x16.ttf"
+    Private Shared _DosFontData() As Byte
+    Private Shared _DosFontMemory As IntPtr
+    Private Shared _DosFontCollection As Text.PrivateFontCollection
+
     Private m_SaveFileName As String
     Private m_OriginalBytes() As Byte
 
-    Public Sub New(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing)
+    <DllImport("gdi32.dll", SetLastError:=True)>
+    Private Shared Function AddFontMemResourceEx(pbFont As IntPtr, cbFont As Integer, pdv As IntPtr, ByRef pcFonts As Integer) As IntPtr
+    End Function
+
+    Public Sub New(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing, Optional UseDosFont As Boolean = False)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        If UseDosFont Then
+            ApplyDosFont()
+        End If
+
         LocalizeForm()
 
         Me.Text = Caption
@@ -26,8 +41,8 @@
         End If
     End Sub
 
-    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing)
-        Using dlg As New TextViewForm(Caption, Content, Editable, WrapText, EnableSave, SaveFileName, OriginalBytes)
+    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing, Optional UseDosFont As Boolean = False)
+        Using dlg As New TextViewForm(Caption, Content, Editable, WrapText, EnableSave, SaveFileName, OriginalBytes, UseDosFont)
             dlg.ShowDialog(App.CurrentFormInstance)
         End Using
     End Sub
@@ -66,6 +81,46 @@
             End If
         End Using
     End Sub
+
+    Private Sub ApplyDosFont()
+        If Not EnsureDosFont() Then
+            Exit Sub
+        End If
+
+        TextBox1.Font = New Font(_DosFontCollection.Families(0), 12.0!, FontStyle.Regular, GraphicsUnit.Point)
+    End Sub
+
+    Private Shared Function EnsureDosFont() As Boolean
+        If _DosFontMemory <> IntPtr.Zero Then
+            Return True
+        End If
+
+        Dim Assembly = Reflection.Assembly.GetExecutingAssembly()
+        Using Stream = Assembly.GetManifestResourceStream(DosFontResource)
+            If Stream Is Nothing Then
+                Return False
+            End If
+
+            Using Memory As New IO.MemoryStream()
+                Stream.CopyTo(Memory)
+                _DosFontData = Memory.ToArray()
+            End Using
+        End Using
+
+        _DosFontMemory = Marshal.AllocCoTaskMem(_DosFontData.Length)
+        Marshal.Copy(_DosFontData, 0, _DosFontMemory, _DosFontData.Length)
+
+        Dim FontCount As Integer = 0
+        If AddFontMemResourceEx(_DosFontMemory, _DosFontData.Length, IntPtr.Zero, FontCount) = IntPtr.Zero Then
+            Marshal.FreeCoTaskMem(_DosFontMemory)
+            _DosFontMemory = IntPtr.Zero
+            Return False
+        End If
+
+        _DosFontCollection = New Text.PrivateFontCollection()
+        _DosFontCollection.AddMemoryFont(_DosFontMemory, _DosFontData.Length)
+        Return True
+    End Function
 
     Private Sub ApplyWordWrap(Wrap As Boolean)
         If Wrap Then

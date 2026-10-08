@@ -552,7 +552,7 @@ Module DiskImageLib
         Content = Content.Replace(ChrW(0), " "c)
         'Content = Content.Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Replace(vbLf, vbCrLf)
 
-        TextViewForm.Display(Caption, Content, False, False, True, DirectoryEntry.GetFullFileName, Bytes)
+        TextViewForm.Display(Caption, Content, False, False, True, DirectoryEntry.GetFullFileName, Bytes, True)
     End Sub
 
     Private Function FilePropertiesEdit(FilePanel As FilePanel) As Boolean
