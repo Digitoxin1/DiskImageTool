@@ -22,6 +22,13 @@ Public Class TransCopyImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
+        GetType(DataGridView).InvokeMember(
+            "DoubleBuffered",
+            Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.SetProperty,
+            Nothing,
+            DataGridViewTracks,
+            New Object() {True})
+
         ' Add any initialization after the InitializeComponent() call.
         LocalizeForm()
         InitializeGridColumns()
