@@ -98,12 +98,13 @@ Namespace ImageFormats.IMD
             End If
         End Function
 
-        Private Function IsStandardSector(Track As IMDTrack, Sector As IMDSector, MaxSectors As Byte) As Boolean
+        Private Function IsMappableSector(Track As IMDTrack, Sector As IMDSector, MaxSectors As Byte) As Boolean
             If Sector.SectorId < 1 Or Sector.SectorId > MaxSectors Then
                 Return False
             End If
 
-            If Sector.Unavailable Or Sector.Deleted Or Sector.ChecksumError Then
+            ' Checksum-error sectors are still mapped. ImageDisk stores their data.
+            If Sector.Unavailable Or Sector.Deleted Or Sector.Data Is Nothing Then
                 Return False
             End If
 
@@ -114,6 +115,10 @@ Namespace ImageFormats.IMD
             Return True
         End Function
 
+        Private Function IsStandardSector(Track As IMDTrack, Sector As IMDSector, MaxSectors As Byte) As Boolean
+            Return IsMappableSector(Track, Sector, MaxSectors) AndAlso Not Sector.ChecksumError
+        End Function
+
         Private Sub ProcessSectors(Track As IMDTrack)
             Dim BitstreamSector As BitstreamSector
             Dim SectorSize As UInteger
@@ -121,8 +126,8 @@ Namespace ImageFormats.IMD
             Dim Buffer() As Byte
 
             For Each Sector In Track.Sectors
-                IsStandard = IsStandardSector(Track, Sector, SECTOR_COUNT)
-                If IsStandard Then
+                If IsMappableSector(Track, Sector, SECTOR_COUNT) Then
+                    IsStandard = IsStandardSector(Track, Sector, SECTOR_COUNT)
                     BitstreamSector = GetSector(Track.Track, Track.Side, Sector.SectorId)
                     If BitstreamSector Is Nothing Then
                         SectorSize = Sector.Data.Length
@@ -145,12 +150,10 @@ Namespace ImageFormats.IMD
         Private Sub ProcessSectors1024(Track As IMDTrack)
             Dim BitstreamSector As BitstreamSector
             Dim NewSectorId As Integer
-            Dim IsStandard As Boolean
             Dim Buffer() As Byte
 
             For Each Sector In Track.Sectors
-                IsStandard = IsStandardSector(Track, Sector, 4)
-                If IsStandard And Sector.Data.Length = 1024 Then
+                If IsMappableSector(Track, Sector, 4) And Sector.Data.Length = 1024 Then
                     For i = 0 To 1
                         NewSectorId = (Sector.SectorId - 1) * 2 + 1 + i
                         BitstreamSector = GetSector(Track.Track, Track.Side, NewSectorId)

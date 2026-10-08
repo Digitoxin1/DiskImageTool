@@ -25,7 +25,9 @@ Namespace ImageFormats.IMD
             Dim TotalSize As UShort = 0
             If IMD.TrackCount > 0 Then
                 For Each Sector In IMD.Tracks.Item(0).Sectors
-                    If Not Sector.ChecksumError Then
+                    ' A checksum error means the sector was read badly. The data is
+                    ' still stored and still occupies a sector on the track.
+                    If Sector.Data IsNot Nothing Then
                         TotalSize += Sector.Data.Length
                     End If
                 Next

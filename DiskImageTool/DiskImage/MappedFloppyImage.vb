@@ -609,8 +609,8 @@ Namespace DiskImage
             Dim Buffer() As Byte
 
             For Each MFMSector In MFMData.Sectors
-                IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side, SECTOR_COUNT)
-                If IsStandard Then
+                If IBM_MFM.IsMappableSector(MFMSector, Track, Side, SECTOR_COUNT) Then
+                    IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side, SECTOR_COUNT)
                     Sector = GetSector(Track, Side, MFMSector.SectorId)
                     If Sector Is Nothing Then
                         SectorSize = MFMSector.GetSizeBytes
@@ -634,12 +634,10 @@ Namespace DiskImage
             Dim BitstreamSector As BitstreamSector
             Dim Sector As BitstreamSector
             Dim NewSectorId As Integer
-            Dim IsStandard As Boolean
             Dim Buffer() As Byte
 
             For Each MFMSector In MFMData.Sectors
-                IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side, 4)
-                If IsStandard And MFMSector.GetSizeBytes = 1024 Then
+                If IBM_MFM.IsMappableSector(MFMSector, Track, Side, 4) And MFMSector.GetSizeBytes = 1024 Then
                     For i = 0 To 1
                         NewSectorId = (MFMSector.SectorId - 1) * 2 + 1 + i
                         Sector = GetSector(Track, Side, NewSectorId)

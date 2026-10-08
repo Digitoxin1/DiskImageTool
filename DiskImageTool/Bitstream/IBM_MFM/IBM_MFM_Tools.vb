@@ -846,16 +846,12 @@
                 Return CUShort(Value)
             End Function
 
-            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, MaxSectors As Byte) As Boolean
+            Public Function IsMappableSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, MaxSectors As Byte) As Boolean
                 If Sector.SectorId < 1 Or Sector.SectorId > MaxSectors Then
                     Return False
                 End If
 
-                If Not Sector.DAMFound Then
-                    Return False
-                End If
-
-                If Not Sector.InitialDataChecksumValid Or Not Sector.IDChecksumValid Then
+                If Not Sector.DAMFound Or Sector.Data Is Nothing Then
                     Return False
                 End If
 
@@ -867,11 +863,16 @@
                     Return False
                 End If
 
+                ' A bad ID or data checksum still has stored sector data.
                 If Sector.DAM <> MFMAddressMark.Data Then
                     Return False
                 End If
 
                 Return True
+            End Function
+
+            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, MaxSectors As Byte) As Boolean
+                Return IsMappableSector(Sector, Track, Side, MaxSectors) AndAlso Sector.InitialDataChecksumValid AndAlso Sector.IDChecksumValid
             End Function
 
             Public Function MFMCRC16(data As Byte()) As UShort

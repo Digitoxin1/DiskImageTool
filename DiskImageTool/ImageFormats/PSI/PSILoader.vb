@@ -30,9 +30,9 @@ Namespace ImageFormats.PSI
             Dim TotalSize As UShort = 0
             For Each Sector In PSI.Sectors
                 If Sector.Track = 0 And Sector.Side = 0 Then
-                    If Not Sector.HasDataCRCError Then
-                        TotalSize += Sector.Size
-                    End If
+                    ' A data CRC error means the sector was read badly. The data is
+                    ' still stored and still occupies a sector on the track.
+                    TotalSize += Sector.Size
                 End If
             Next
             SectorCount = TotalSize \ 512

@@ -114,12 +114,12 @@ Namespace ImageFormats.PSI
             Return HashBytesToString(HashAlgorithm.Hash)
         End Function
 
-        Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
+        Private Function IsMappableSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
             If PSISector.Sector < 1 Or PSISector.Sector > MaxSectors Then
                 Return False
             End If
 
-            If PSISector.HasDataCRCError Then
+            If PSISector.Data Is Nothing Then
                 Return False
             End If
 
@@ -132,7 +132,26 @@ Namespace ImageFormats.PSI
                     Return False
                 End If
 
-                If PSISector.MFMHeader.DeletedDAM Or PSISector.MFMHeader.MissingDAM Or PSISector.MFMHeader.IDFieldCRCError Or PSISector.MFMHeader.DataFieldCRCError Then
+                ' CRC-error sectors are still mapped. The image stores their data.
+                If PSISector.MFMHeader.DeletedDAM Or PSISector.MFMHeader.MissingDAM Then
+                    Return False
+                End If
+            End If
+
+            Return True
+        End Function
+
+        Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
+            If Not IsMappableSector(PSISector, MaxSectors) Then
+                Return False
+            End If
+
+            If PSISector.HasDataCRCError Then
+                Return False
+            End If
+
+            If PSISector.MFMHeader IsNot Nothing Then
+                If PSISector.MFMHeader.IDFieldCRCError Or PSISector.MFMHeader.DataFieldCRCError Then
                     Return False
                 End If
             End If
@@ -143,8 +162,8 @@ Namespace ImageFormats.PSI
         Private Sub ProcessSector(PSISector As PSISector, MaxSectors As UShort)
             Dim BitstreamSector As BitstreamSector
 
-            Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
-            If IsStandard Then
+            If IsMappableSector(PSISector, MaxSectors) Then
+                Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
                 BitstreamSector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
                 If BitstreamSector Is Nothing Then
                     If PSISector.Size > 0 And PSISector.Size < 512 Then
@@ -165,8 +184,7 @@ Namespace ImageFormats.PSI
         Private Sub ProcessSector1024(PSISector As PSISector)
             Dim BitstreamSector As BitstreamSector
 
-            Dim IsStandard = IsStandardSector(PSISector, 4)
-            If IsStandard And PSISector.Size = 1024 Then
+            If IsMappableSector(PSISector, 4) And PSISector.Size = 1024 Then
                 For i = 0 To 1
                     Dim NewSectorId = (PSISector.Sector - 1) * 2 + 1 + i
                     BitstreamSector = GetSector(PSISector.Track, PSISector.Side, NewSectorId)
