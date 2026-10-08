@@ -9,6 +9,7 @@ Public Class TextViewForm
     Private m_SaveFileName As String
     Private m_OriginalBytes() As Byte
     Private m_VgaFontToggle As Boolean
+    Private m_Initialized As Boolean = False
 
     <DllImport("gdi32.dll", SetLastError:=True)>
     Private Shared Function AddFontMemResourceEx(pbFont As IntPtr, cbFont As Integer, pdv As IntPtr, ByRef pcFonts As Integer) As IntPtr
@@ -21,13 +22,15 @@ Public Class TextViewForm
 
         ' Add any initialization after the InitializeComponent() call.
         Dim UsingNSimSun As Boolean = False
-        If IsSimplifiedChinese() Then
+        Dim IsChinese = IsSimplifiedChinese()
+
+        If IsChinese Then
             UsingNSimSun = ApplyNSimSun()
         End If
 
         LocalizeForm()
 
-        If UseDosFont AndAlso Not UsingNSimSun Then
+        If UseDosFont AndAlso Not IsChinese AndAlso Not UsingNSimSun Then
             CheckVgaFont.Visible = True
             CheckVgaFont.Checked = True
         Else
@@ -38,6 +41,7 @@ Public Class TextViewForm
         TextBox1.Text = Content
         TextBox1.SelectionStart = 0
         TextBox1.ReadOnly = Not Editable
+        TextBox1.AcceptsTab = Editable
         CheckWordWrap.Checked = WrapText
         ApplyWordWrap(WrapText)
 
@@ -47,6 +51,8 @@ Public Class TextViewForm
         If Not EnableSave Then
             PanelBottom.Visible = False
         End If
+
+        m_Initialized = True
     End Sub
 
     Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, WrapText As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional OriginalBytes() As Byte = Nothing, Optional UseDosFont As Boolean = False)
