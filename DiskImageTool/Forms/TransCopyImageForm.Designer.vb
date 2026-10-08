@@ -24,7 +24,8 @@ Partial Class TransCopyImageForm
     Private Sub InitializeComponent()
         Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
         Dim PanelMain As System.Windows.Forms.Panel
-        Me.BtnClose = New System.Windows.Forms.Button()
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.DataGridViewTracks = New System.Windows.Forms.DataGridView()
         Me.TableLayoutPanelHeader = New System.Windows.Forms.TableLayoutPanel()
         Me.LblComment = New System.Windows.Forms.Label()
@@ -32,7 +33,7 @@ Partial Class TransCopyImageForm
         Me.LblComment2 = New System.Windows.Forms.Label()
         Me.TxtComment2 = New System.Windows.Forms.TextBox()
         Me.LblDiskType = New System.Windows.Forms.Label()
-        Me.TxtDiskType = New System.Windows.Forms.TextBox()
+        Me.CboDiskType = New System.Windows.Forms.ComboBox()
         Me.LblTrackStart = New System.Windows.Forms.Label()
         Me.TxtTrackStart = New System.Windows.Forms.TextBox()
         Me.LblTrackEnd = New System.Windows.Forms.Label()
@@ -51,7 +52,8 @@ Partial Class TransCopyImageForm
         '
         'PanelBottom
         '
-        PanelBottom.Controls.Add(Me.BtnClose)
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
         PanelBottom.Location = New System.Drawing.Point(0, 557)
@@ -62,17 +64,29 @@ Partial Class TransCopyImageForm
         PanelBottom.TabIndex = 1
         PanelBottom.WrapContents = False
         '
-        'BtnClose
+        'BtnCancel
         '
-        Me.BtnClose.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.BtnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnClose.Location = New System.Drawing.Point(891, 10)
-        Me.BtnClose.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
-        Me.BtnClose.Name = "BtnClose"
-        Me.BtnClose.Size = New System.Drawing.Size(75, 23)
-        Me.BtnClose.TabIndex = 0
-        Me.BtnClose.Text = "{&Close}"
-        Me.BtnClose.UseVisualStyleBackColor = True
+        Me.BtnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Location = New System.Drawing.Point(891, 10)
+        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.BtnCancel.TabIndex = 0
+        Me.BtnCancel.Text = "{&Cancel}"
+        Me.BtnCancel.UseVisualStyleBackColor = True
+        '
+        'BtnUpdate
+        '
+        Me.BtnUpdate.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnUpdate.Location = New System.Drawing.Point(804, 10)
+        Me.BtnUpdate.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+        Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.Size = New System.Drawing.Size(75, 23)
+        Me.BtnUpdate.TabIndex = 1
+        Me.BtnUpdate.Text = "{&Update}"
+        Me.BtnUpdate.UseVisualStyleBackColor = True
         '
         'PanelMain
         '
@@ -116,7 +130,7 @@ Partial Class TransCopyImageForm
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblComment2, 0, 1)
         Me.TableLayoutPanelHeader.Controls.Add(Me.TxtComment2, 1, 1)
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblDiskType, 0, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtDiskType, 1, 2)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.CboDiskType, 1, 2)
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackStart, 0, 3)
         Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackStart, 3, 2)
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackEnd, 0, 4)
@@ -191,14 +205,15 @@ Partial Class TransCopyImageForm
         Me.LblDiskType.TabIndex = 4
         Me.LblDiskType.Text = "{Disk Type}"
         '
-        'TxtDiskType
+        'CboDiskType
         '
-        Me.TxtDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtDiskType.Location = New System.Drawing.Point(96, 55)
-        Me.TxtDiskType.Name = "TxtDiskType"
-        Me.TxtDiskType.ReadOnly = True
-        Me.TxtDiskType.Size = New System.Drawing.Size(200, 20)
-        Me.TxtDiskType.TabIndex = 5
+        Me.CboDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.CboDiskType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboDiskType.FormattingEnabled = True
+        Me.CboDiskType.Location = New System.Drawing.Point(96, 54)
+        Me.CboDiskType.Name = "CboDiskType"
+        Me.CboDiskType.Size = New System.Drawing.Size(200, 21)
+        Me.CboDiskType.TabIndex = 5
         '
         'LblTrackStart
         '
@@ -282,10 +297,9 @@ Partial Class TransCopyImageForm
         '
         'TransCopyImageForm
         '
-        Me.AcceptButton = Me.BtnClose
+        Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.CancelButton = Me.BtnClose
         Me.ClientSize = New System.Drawing.Size(984, 600)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
@@ -306,14 +320,15 @@ Partial Class TransCopyImageForm
 
     End Sub
 
-    Friend WithEvents BtnClose As Button
+    Friend WithEvents BtnCancel As Button
+    Friend WithEvents BtnUpdate As Button
     Friend WithEvents TableLayoutPanelHeader As TableLayoutPanel
     Friend WithEvents LblComment As Label
     Friend WithEvents TxtComment As TextBox
     Friend WithEvents LblComment2 As Label
     Friend WithEvents TxtComment2 As TextBox
     Friend WithEvents LblDiskType As Label
-    Friend WithEvents TxtDiskType As TextBox
+    Friend WithEvents CboDiskType As ComboBox
     Friend WithEvents LblTrackStart As Label
     Friend WithEvents TxtTrackStart As TextBox
     Friend WithEvents LblTrackEnd As Label

@@ -17,6 +17,9 @@ Public Class TransCopyImageForm
     Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
     Private Const GRID_COLUMN_RPM As String = "GridRPM"
 
+    Private ReadOnly _Image As TransCopyImage
+    Private _Updated As Boolean
+
     Public Sub New(Image As TransCopyImage)
 
         ' This call is required by the designer.
@@ -30,26 +33,29 @@ Public Class TransCopyImageForm
             New Object() {True})
 
         ' Add any initialization after the InitializeComponent() call.
+        _Image = Image
         LocalizeForm()
         InitializeGridColumns()
         PopulateHeader(Image)
         DataGridViewTracks.DataSource = GetTrackTable(Image)
     End Sub
 
-    Public Shared Sub Display(Disk As Disk)
+    Public Shared Function Display(Disk As Disk) As Boolean
         If Disk Is Nothing OrElse Disk.Image Is Nothing OrElse Disk.Image.ImageType <> FloppyImageType.TranscopyImage Then
-            Exit Sub
+            Return False
         End If
 
         Dim Image As TransCopyImage = DirectCast(Disk.Image, TranscopyFloppyImage).Image
         Using dlg As New TransCopyImageForm(Image)
             dlg.ShowDialog(App.CurrentFormInstance)
+            Return dlg._Updated
         End Using
-    End Sub
+    End Function
 
     Private Sub LocalizeForm()
         Me.Text = WithoutHotkey(My.Resources.Menu_ImageProperties)
-        BtnClose.Text = My.Resources.Menu_Close
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
         LblComment.Text = My.Resources.Label_Comment
         LblComment2.Text = My.Resources.Label_Comment2
         LblDiskType.Text = My.Resources.SummaryPanel_DiskType
@@ -62,11 +68,55 @@ Public Class TransCopyImageForm
     Private Sub PopulateHeader(Image As TransCopyImage)
         TxtComment.Text = Image.Comment
         TxtComment2.Text = Image.Comment2
-        TxtDiskType.Text = DiskTypeToString(Image.DiskType)
+        PopulateDiskTypes(Image)
         TxtTrackStart.Text = Image.TrackStart.ToString()
         TxtTrackEnd.Text = Image.TrackEnd.ToString()
         TxtSides.Text = Image.SideCount.ToString()
         TxtTrackIncrement.Text = Image.TrackIncrement.ToString()
+    End Sub
+
+    Private Sub PopulateDiskTypes(Image As TransCopyImage)
+        CboDiskType.BeginUpdate()
+        CboDiskType.Items.Clear()
+
+        Dim Selected As DiskTypeItem = Nothing
+        For Each DiskType As TransCopyDiskType In [Enum].GetValues(GetType(TransCopyDiskType))
+            Dim Item As New DiskTypeItem(DiskType)
+            CboDiskType.Items.Add(Item)
+            If DiskType = Image.DiskType Then
+                Selected = Item
+            End If
+        Next
+
+        If Selected Is Nothing Then
+            Selected = New DiskTypeItem(Image.DiskType)
+            CboDiskType.Items.Insert(0, Selected)
+        End If
+
+        CboDiskType.SelectedItem = Selected
+        CboDiskType.EndUpdate()
+    End Sub
+
+    Private Sub ApplyUpdates()
+        Dim Item = TryCast(CboDiskType.SelectedItem, DiskTypeItem)
+        If Item IsNot Nothing AndAlso _Image.DiskType <> Item.DiskType Then
+            _Image.DiskType = Item.DiskType
+            _Updated = True
+        End If
+
+        If _Image.Comment <> TxtComment.Text Then
+            _Image.Comment = TxtComment.Text
+            _Updated = True
+        End If
+
+        If _Image.Comment2 <> TxtComment2.Text Then
+            _Image.Comment2 = TxtComment2.Text
+            _Updated = True
+        End If
+    End Sub
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ApplyUpdates()
     End Sub
 
     Private Sub InitializeGridColumns()
@@ -213,4 +263,21 @@ Public Class TransCopyImageForm
     Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
         DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
     End Sub
+
+    Private Class DiskTypeItem
+        Public Sub New(DiskType As TransCopyDiskType)
+            _DiskType = DiskType
+        End Sub
+
+        Public ReadOnly Property DiskType As TransCopyDiskType
+
+        Public Overrides Function ToString() As String
+            Dim Caption As String = DiskTypeToString(_DiskType)
+            If [Enum].IsDefined(GetType(TransCopyDiskType), _DiskType) Then
+                Return Caption
+            End If
+
+            Return Caption & " (" & CByte(_DiskType).ToString("X2") & ")"
+        End Function
+    End Class
 End Class

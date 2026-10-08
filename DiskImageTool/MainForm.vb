@@ -2224,7 +2224,9 @@ Public Class MainForm
             Exit Sub
         End If
 
-        TransCopyImageForm.Display(FilePanelMain.CurrentImage.Disk)
+        If TransCopyImageForm.Display(FilePanelMain.CurrentImage.Disk) Then
+            SummaryPopulate(FilePanelMain.CurrentImage)
+        End If
     End Sub
 
     Private Sub MenuEditImportFiles_Click(sender As Object, e As EventArgs) Handles ToolStripImportFiles.Click, MenuEditImportFiles.Click
