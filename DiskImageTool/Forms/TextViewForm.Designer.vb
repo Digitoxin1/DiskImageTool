@@ -24,14 +24,18 @@ Partial Class TextViewForm
     Private Sub InitializeComponent()
         Dim PanelMain As System.Windows.Forms.Panel
         Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        Me.PanelBottom = New System.Windows.Forms.Panel()
+        Me.PanelButtons = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnClose = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
-        Me.PanelSpacer = New System.Windows.Forms.Panel()
+        Me.PanelChecks = New System.Windows.Forms.FlowLayoutPanel()
         Me.CheckWordWrap = New System.Windows.Forms.CheckBox()
+        Me.CheckVgaFont = New System.Windows.Forms.CheckBox()
         PanelMain = New System.Windows.Forms.Panel()
         PanelMain.SuspendLayout()
         Me.PanelBottom.SuspendLayout()
+        Me.PanelButtons.SuspendLayout()
+        Me.PanelChecks.SuspendLayout()
         Me.SuspendLayout()
         '
         'PanelMain
@@ -62,19 +66,30 @@ Partial Class TextViewForm
         'PanelBottom
         '
         Me.PanelBottom.BackColor = System.Drawing.SystemColors.Control
-        Me.PanelBottom.Controls.Add(Me.BtnClose)
-        Me.PanelBottom.Controls.Add(Me.BtnSave)
-        Me.PanelBottom.Controls.Add(Me.PanelSpacer)
-        Me.PanelBottom.Controls.Add(Me.CheckWordWrap)
+        Me.PanelBottom.Controls.Add(Me.PanelButtons)
+        Me.PanelBottom.Controls.Add(Me.PanelChecks)
         Me.PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
         Me.PanelBottom.Location = New System.Drawing.Point(0, 518)
         Me.PanelBottom.Margin = New System.Windows.Forms.Padding(0)
         Me.PanelBottom.Name = "PanelBottom"
         Me.PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
         Me.PanelBottom.Size = New System.Drawing.Size(769, 43)
         Me.PanelBottom.TabIndex = 1
-        Me.PanelBottom.WrapContents = False
+        '
+        'PanelButtons
+        '
+        Me.PanelButtons.AutoSize = True
+        Me.PanelButtons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.PanelButtons.Controls.Add(Me.BtnClose)
+        Me.PanelButtons.Controls.Add(Me.BtnSave)
+        Me.PanelButtons.Dock = System.Windows.Forms.DockStyle.Right
+        Me.PanelButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
+        Me.PanelButtons.Location = New System.Drawing.Point(583, 10)
+        Me.PanelButtons.Margin = New System.Windows.Forms.Padding(0)
+        Me.PanelButtons.Name = "PanelButtons"
+        Me.PanelButtons.Size = New System.Drawing.Size(180, 23)
+        Me.PanelButtons.TabIndex = 1
+        Me.PanelButtons.WrapContents = False
         '
         'BtnClose
         '
@@ -97,24 +112,39 @@ Partial Class TextViewForm
         Me.BtnSave.Text = "{Save}"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
-        'PanelSpacer
+        'PanelChecks
         '
-        Me.PanelSpacer.Location = New System.Drawing.Point(583, 10)
-        Me.PanelSpacer.Margin = New System.Windows.Forms.Padding(0)
-        Me.PanelSpacer.Name = "PanelSpacer"
-        Me.PanelSpacer.Size = New System.Drawing.Size(0, 23)
-        Me.PanelSpacer.TabIndex = 2
+        Me.PanelChecks.AutoSize = True
+        Me.PanelChecks.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.PanelChecks.Controls.Add(Me.CheckWordWrap)
+        Me.PanelChecks.Controls.Add(Me.CheckVgaFont)
+        Me.PanelChecks.Dock = System.Windows.Forms.DockStyle.Left
+        Me.PanelChecks.Location = New System.Drawing.Point(6, 10)
+        Me.PanelChecks.Margin = New System.Windows.Forms.Padding(0)
+        Me.PanelChecks.Name = "PanelChecks"
+        Me.PanelChecks.Size = New System.Drawing.Size(180, 23)
+        Me.PanelChecks.TabIndex = 0
+        Me.PanelChecks.WrapContents = False
         '
         'CheckWordWrap
         '
         Me.CheckWordWrap.AutoSize = True
-        Me.CheckWordWrap.Location = New System.Drawing.Point(491, 13)
-        Me.CheckWordWrap.Margin = New System.Windows.Forms.Padding(18, 3, 6, 0)
+        Me.CheckWordWrap.Margin = New System.Windows.Forms.Padding(6, 3, 6, 0)
         Me.CheckWordWrap.Name = "CheckWordWrap"
         Me.CheckWordWrap.Size = New System.Drawing.Size(86, 17)
         Me.CheckWordWrap.TabIndex = 3
         Me.CheckWordWrap.Text = "{Word wrap}"
         Me.CheckWordWrap.UseVisualStyleBackColor = True
+        '
+        'CheckVgaFont
+        '
+        Me.CheckVgaFont.AutoSize = True
+        Me.CheckVgaFont.Margin = New System.Windows.Forms.Padding(6, 3, 6, 0)
+        Me.CheckVgaFont.Name = "CheckVgaFont"
+        Me.CheckVgaFont.TabIndex = 4
+        Me.CheckVgaFont.Text = "{VGA Font}"
+        Me.CheckVgaFont.UseVisualStyleBackColor = True
+        Me.CheckVgaFont.Visible = False
         '
         'TextViewForm
         '
@@ -131,6 +161,10 @@ Partial Class TextViewForm
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         PanelMain.ResumeLayout(False)
         PanelMain.PerformLayout()
+        Me.PanelButtons.ResumeLayout(False)
+        Me.PanelButtons.PerformLayout()
+        Me.PanelChecks.ResumeLayout(False)
+        Me.PanelChecks.PerformLayout()
         Me.PanelBottom.ResumeLayout(False)
         Me.PanelBottom.PerformLayout()
         Me.ResumeLayout(False)
@@ -140,7 +174,9 @@ Partial Class TextViewForm
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents BtnClose As Button
     Friend WithEvents BtnSave As Button
-    Friend WithEvents PanelBottom As FlowLayoutPanel
+    Friend WithEvents PanelBottom As Panel
+    Friend WithEvents PanelChecks As FlowLayoutPanel
+    Friend WithEvents PanelButtons As FlowLayoutPanel
     Friend WithEvents CheckWordWrap As CheckBox
-    Friend PanelSpacer As Panel
+    Friend WithEvents CheckVgaFont As CheckBox
 End Class

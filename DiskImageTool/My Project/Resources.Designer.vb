@@ -5048,6 +5048,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to VGA Font.
+        '''</summary>
+        Friend ReadOnly Property Label_VgaFont() As String
+            Get
+                Return ResourceManager.GetString("Label_VgaFont", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to View on MobyGames.
         '''</summary>
         Friend ReadOnly Property Label_ViewMobyGames() As String

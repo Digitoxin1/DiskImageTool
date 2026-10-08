@@ -8,6 +8,7 @@ Public Class TextViewForm
 
     Private m_SaveFileName As String
     Private m_OriginalBytes() As Byte
+    Private m_VgaFontToggle As Boolean
 
     <DllImport("gdi32.dll", SetLastError:=True)>
     Private Shared Function AddFontMemResourceEx(pbFont As IntPtr, cbFont As Integer, pdv As IntPtr, ByRef pcFonts As Integer) As IntPtr
@@ -19,13 +20,19 @@ Public Class TextViewForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        Dim UsingNSimSun As Boolean = False
         If IsSimplifiedChinese() Then
-            ApplyNSimSun()
-        ElseIf UseDosFont Then
-            ApplyDosFont()
+            UsingNSimSun = ApplyNSimSun()
         End If
 
         LocalizeForm()
+
+        If UseDosFont AndAlso Not UsingNSimSun Then
+            CheckVgaFont.Visible = True
+            CheckVgaFont.Checked = True
+        Else
+            CheckVgaFont.Visible = False
+        End If
 
         Me.Text = Caption
         TextBox1.Text = Content
@@ -33,7 +40,6 @@ Public Class TextViewForm
         TextBox1.ReadOnly = Not Editable
         CheckWordWrap.Checked = WrapText
         ApplyWordWrap(WrapText)
-        LayoutWordWrap()
 
         m_SaveFileName = SaveFileName
         m_OriginalBytes = OriginalBytes
@@ -84,13 +90,19 @@ Public Class TextViewForm
         End Using
     End Sub
 
-    Private Sub ApplyNSimSun()
+    Private Function ApplyNSimSun() As Boolean
         Dim Candidate As New Font("NSimSun", 12.0!, FontStyle.Regular, GraphicsUnit.Point)
         If Candidate.Name.Equals("NSimSun", StringComparison.OrdinalIgnoreCase) Then
             TextBox1.Font = Candidate
-        Else
-            Candidate.Dispose()
+            Return True
         End If
+
+        Candidate.Dispose()
+        Return False
+    End Function
+
+    Private Sub ApplyConsolas()
+        TextBox1.Font = New Font("Consolas", 11.25!, FontStyle.Regular, GraphicsUnit.Point)
     End Sub
 
     Private Function IsSimplifiedChinese() As Boolean
@@ -98,13 +110,14 @@ Public Class TextViewForm
         Return Culture.Name.Equals("zh-CN", StringComparison.OrdinalIgnoreCase) OrElse Culture.Name.StartsWith("zh-Hans", StringComparison.OrdinalIgnoreCase)
     End Function
 
-    Private Sub ApplyDosFont()
+    Private Function ApplyDosFont() As Boolean
         If Not EnsureDosFont() Then
-            Exit Sub
+            Return False
         End If
 
         TextBox1.Font = New Font(_DosFontCollection.Families(0), 12.0!, FontStyle.Regular, GraphicsUnit.Point)
-    End Sub
+        Return True
+    End Function
 
     Private Shared Function EnsureDosFont() As Boolean
         If _DosFontMemory <> IntPtr.Zero Then
@@ -152,14 +165,21 @@ Public Class TextViewForm
         ApplyWordWrap(CheckWordWrap.Checked)
     End Sub
 
-    Private Sub LayoutWordWrap()
-        Dim Used = PanelBottom.Padding.Horizontal _
-            + BtnClose.Margin.Horizontal + BtnClose.Width _
-            + BtnSave.Margin.Horizontal + BtnSave.Width _
-            + CheckWordWrap.Margin.Horizontal + CheckWordWrap.Width
-        Dim SpacerWidth = Math.Max(0, PanelBottom.ClientSize.Width - Used)
-        If PanelSpacer.Width <> SpacerWidth Then
-            PanelSpacer.Width = SpacerWidth
+    Private Sub CheckVgaFont_CheckedChanged(sender As Object, e As EventArgs) Handles CheckVgaFont.CheckedChanged
+        If m_VgaFontToggle Then
+            Exit Sub
+        End If
+
+        If CheckVgaFont.Checked Then
+            If ApplyDosFont() Then
+                Exit Sub
+            End If
+
+            m_VgaFontToggle = True
+            CheckVgaFont.Checked = False
+            m_VgaFontToggle = False
+        Else
+            ApplyConsolas()
         End If
     End Sub
 
@@ -167,10 +187,7 @@ Public Class TextViewForm
         BtnClose.Text = WithoutHotkey(My.Resources.Menu_Close)
         BtnSave.Text = WithoutHotkey(My.Resources.Menu_Save)
         CheckWordWrap.Text = My.Resources.Label_WordWrap
-    End Sub
-
-    Private Sub PanelBottom_Resize(sender As Object, e As EventArgs) Handles PanelBottom.Resize
-        LayoutWordWrap()
+        CheckVgaFont.Text = My.Resources.Label_VgaFont
     End Sub
 
     Private Sub TextViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown

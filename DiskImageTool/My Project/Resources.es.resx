@@ -2075,4 +2075,7 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Label_WordWrap" xml:space="preserve">
     <value>Ajuste de línea</value>
   </data>
+  <data name="Label_VgaFont" xml:space="preserve">
+    <value>Fuente VGA</value>
+  </data>
 </root>

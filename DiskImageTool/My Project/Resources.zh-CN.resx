@@ -2075,4 +2075,7 @@ Flux 映像集：“{0}”
   <data name="Label_WordWrap" xml:space="preserve">
     <value>自动换行</value>
   </data>
+  <data name="Label_VgaFont" xml:space="preserve">
+    <value>VGA 字体</value>
+  </data>
 </root>

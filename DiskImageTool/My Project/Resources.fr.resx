@@ -2075,4 +2075,7 @@ Souhaitez-vous continuer ?</value>
   <data name="Label_WordWrap" xml:space="preserve">
     <value>Retour à la ligne automatique</value>
   </data>
+  <data name="Label_VgaFont" xml:space="preserve">
+    <value>Police VGA</value>
+  </data>
 </root>

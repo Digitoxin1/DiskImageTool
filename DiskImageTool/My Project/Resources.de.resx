@@ -2075,4 +2075,7 @@ Möchten Sie fortfahren?</value>
   <data name="Label_WordWrap" xml:space="preserve">
     <value>Zeilenumbruch</value>
   </data>
+  <data name="Label_VgaFont" xml:space="preserve">
+    <value>VGA-Schrift</value>
+  </data>
 </root>
