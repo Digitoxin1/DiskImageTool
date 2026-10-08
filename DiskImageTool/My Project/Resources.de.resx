@@ -2078,4 +2078,157 @@ Möchten Sie fortfahren?</value>
   <data name="Label_VgaFont" xml:space="preserve">
     <value>VGA-Schrift</value>
   </data>
+  <data name="MainMenu_Reports" xml:space="preserve">
+    <value>&amp;Berichte</value>
+  </data>
+  <data name="MainMenu_Disk" xml:space="preserve">
+    <value>&amp;Diskette</value>
+  </data>
+  <data name="MainMenu_Filters" xml:space="preserve">
+    <value>F&amp;ilter</value>
+  </data>
+  <data name="MainMenu_NewInstance" xml:space="preserve">
+    <value>In neuer Instanz öffnen</value>
+  </data>
+  <data name="MainMenu_Options" xml:space="preserve">
+    <value>&amp;Optionen</value>
+  </data>
+  <data name="MainMenu_Tools" xml:space="preserve">
+    <value>&amp;Extras</value>
+  </data>
+  <data name="MainMenu_UpdateAvailable" xml:space="preserve">
+    <value>Update verfügbar</value>
+  </data>
+  <data name="MainMenu_HexView" xml:space="preserve">
+    <value>&amp;Hex</value>
+  </data>
+  <data name="MainMenu_Edit_Revert" xml:space="preserve">
+    <value>&amp;Änderungen verwerfen</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xClean" xml:space="preserve">
+    <value>&amp;Windows-Änderungen entfernen</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xCleanBatch" xml:space="preserve">
+    <value>Windows-Änderungen im Stapel entfernen</value>
+  </data>
+  <data name="MainMenu_Tools_RestructureImage" xml:space="preserve">
+    <value>&amp;Abbild restrukturieren</value>
+  </data>
+  <data name="MainMenu_Tools_RestoreBootSector" xml:space="preserve">
+    <value>&amp;Bootsektor aus dem Stammverzeichnis wiederherstellen</value>
+  </data>
+  <data name="MainMenu_Tools_RemoveBootSector" xml:space="preserve">
+    <value>&amp;Bootsektor aus dem Stammverzeichnis entfernen</value>
+  </data>
+  <data name="MainMenu_Tools_FixImageSizeSubMenu" xml:space="preserve">
+    <value>Abbildgröße &amp;korrigieren</value>
+  </data>
+  <data name="MainMenu_Tools_ClearReservedBytes" xml:space="preserve">
+    <value>&amp;Reservierte Bytes löschen</value>
+  </data>
+  <data name="MainMenu_Reports_ImageAnalysis" xml:space="preserve">
+    <value>Imageanalyse (XML)</value>
+  </data>
+  <data name="MainMenu_Reports_BatchImageAnalysis" xml:space="preserve">
+    <value>Stapel-Imageanalyse (XML)</value>
+  </data>
+  <data name="MainMenu_Options_DragDrop" xml:space="preserve">
+    <value>Import per Drag &amp;&amp; Drop</value>
+  </data>
+  <data name="MainMenu_Options_Flux" xml:space="preserve">
+    <value>&amp;Flux Konfiguration</value>
+  </data>
+  <data name="MainMenu_Options_DisplayTitles" xml:space="preserve">
+    <value>Titel anzeigen</value>
+  </data>
+  <data name="MainMenu_Options_CreateBackup" xml:space="preserve">
+    <value>Sicherung beim Speichern erstellen</value>
+  </data>
+  <data name="MainMenu_Options_CheckUpdate" xml:space="preserve">
+    <value>Beim Start nach Updates suchen</value>
+  </data>
+  <data name="MainMenu_Flux_PcImgCnv_TrackLayout" xml:space="preserve">
+    <value>tracklayout.txt erstellen</value>
+  </data>
+  <data name="MainMenu_Hex_RawTrackData" xml:space="preserve">
+    <value>&amp;Rohspur-Daten</value>
+  </data>
+  <data name="MainMenu_Hex_OverdumpData" xml:space="preserve">
+    <value>&amp;Überdump-Daten</value>
+  </data>
+  <data name="MainMenu_Hex_LostClusters" xml:space="preserve">
+    <value>&amp;Verlorene Cluster</value>
+  </data>
+  <data name="MainMenu_Hex_FreeClusters" xml:space="preserve">
+    <value>Freie &amp;Cluster mit Daten</value>
+  </data>
+  <data name="MainMenu_Hex_Disk" xml:space="preserve">
+    <value>Gesamte &amp;Diskette</value>
+  </data>
+  <data name="MainMenu_Hex_BadSectors" xml:space="preserve">
+    <value>Defekte &amp;Sektoren</value>
+  </data>
+  <data name="MainMenu_Help_UpdateCheck" xml:space="preserve">
+    <value>Nach &amp;Updates suchen</value>
+  </data>
+  <data name="MainMenu_Help_ProjectPage" xml:space="preserve">
+    <value>&amp;Projektseite</value>
+  </data>
+  <data name="MainMenu_Help_Docs" xml:space="preserve">
+    <value>&amp;Dokumentation</value>
+  </data>
+  <data name="MainMenu_Help_ChangeLog" xml:space="preserve">
+    <value>&amp;Änderungsprotokoll</value>
+  </data>
+  <data name="MainMenu_File_Exit" xml:space="preserve">
+    <value>&amp;Beenden</value>
+  </data>
+  <data name="MainMenu_File_NewImage" xml:space="preserve">
+    <value>&amp;Neues Abbild</value>
+  </data>
+  <data name="MainMenu_File_Recent" xml:space="preserve">
+    <value>Zuletzt verwendet</value>
+  </data>
+  <data name="MainMenu_File_Reload" xml:space="preserve">
+    <value>&amp;Von Datenträger neu laden</value>
+  </data>
+  <data name="MainMenu_Filters_Clear" xml:space="preserve">
+    <value>Filter löschen</value>
+  </data>
+  <data name="MainMenu_Filters_ScanNew" xml:space="preserve">
+    <value>&amp;Neue Abbilder scannen</value>
+  </data>
+  <data name="MainMenu_Flux_Convert" xml:space="preserve">
+    <value>&amp;Flux-Image konvertieren</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Bandwidth" xml:space="preserve">
+    <value>&amp;Bandbreite melden</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Clean" xml:space="preserve">
+    <value>Laufwerk &amp;reinigen</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Erase" xml:space="preserve">
+    <value>Diskette &amp;löschen</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Info" xml:space="preserve">
+    <value>&amp;Geräteinfo</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Read" xml:space="preserve">
+    <value>Diskette &amp;lesen</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Write" xml:space="preserve">
+    <value>&amp;Diskette schreiben</value>
+  </data>
+  <data name="Label_Retry" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Label_ResetSort" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="Label_OpenImages" xml:space="preserve">
+    <value>Disk-Images öffnen</value>
+  </data>
+  <data name="Label_DropMessage" xml:space="preserve">
+    <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
+  </data>
 </root>

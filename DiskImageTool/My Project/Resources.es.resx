@@ -2078,4 +2078,157 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
   <data name="Label_VgaFont" xml:space="preserve">
     <value>Fuente VGA</value>
   </data>
+  <data name="MainMenu_Reports" xml:space="preserve">
+    <value>&amp;Informes</value>
+  </data>
+  <data name="MainMenu_Disk" xml:space="preserve">
+    <value>&amp;Disco</value>
+  </data>
+  <data name="MainMenu_Filters" xml:space="preserve">
+    <value>F&amp;iltros</value>
+  </data>
+  <data name="MainMenu_NewInstance" xml:space="preserve">
+    <value>Abrir en una nueva instancia</value>
+  </data>
+  <data name="MainMenu_Options" xml:space="preserve">
+    <value>&amp;Opciones</value>
+  </data>
+  <data name="MainMenu_Tools" xml:space="preserve">
+    <value>&amp;Herramientas</value>
+  </data>
+  <data name="MainMenu_UpdateAvailable" xml:space="preserve">
+    <value>Actualización disponible</value>
+  </data>
+  <data name="MainMenu_HexView" xml:space="preserve">
+    <value>&amp;Hexadecimal</value>
+  </data>
+  <data name="MainMenu_Edit_Revert" xml:space="preserve">
+    <value>&amp;Revertir Cambios</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xClean" xml:space="preserve">
+    <value>Eliminar modificaciones de &amp;Windows</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xCleanBatch" xml:space="preserve">
+    <value>Eliminar modificaciones de Windows por lote</value>
+  </data>
+  <data name="MainMenu_Tools_RestructureImage" xml:space="preserve">
+    <value>&amp;Reestructurar Imagen</value>
+  </data>
+  <data name="MainMenu_Tools_RestoreBootSector" xml:space="preserve">
+    <value>Restaurar el &amp;sector de arranque desde el directorio raíz</value>
+  </data>
+  <data name="MainMenu_Tools_RemoveBootSector" xml:space="preserve">
+    <value>Quitar el &amp;sector de arranque del directorio raíz</value>
+  </data>
+  <data name="MainMenu_Tools_FixImageSizeSubMenu" xml:space="preserve">
+    <value>Corregir &amp;tamaño de la imagen</value>
+  </data>
+  <data name="MainMenu_Tools_ClearReservedBytes" xml:space="preserve">
+    <value>Borrar bytes &amp;reservados</value>
+  </data>
+  <data name="MainMenu_Reports_ImageAnalysis" xml:space="preserve">
+    <value>Análisis de imagen (XML)</value>
+  </data>
+  <data name="MainMenu_Reports_BatchImageAnalysis" xml:space="preserve">
+    <value>Análisis de imágenes por lote (XML)</value>
+  </data>
+  <data name="MainMenu_Options_DragDrop" xml:space="preserve">
+    <value>Importar usando arrastrar y soltar</value>
+  </data>
+  <data name="MainMenu_Options_Flux" xml:space="preserve">
+    <value>&amp;Flux Configuración</value>
+  </data>
+  <data name="MainMenu_Options_DisplayTitles" xml:space="preserve">
+    <value>Mostrar títulos</value>
+  </data>
+  <data name="MainMenu_Options_CreateBackup" xml:space="preserve">
+    <value>Crear copia de seguridad al guardar</value>
+  </data>
+  <data name="MainMenu_Options_CheckUpdate" xml:space="preserve">
+    <value>Buscar actualizaciones al iniciar</value>
+  </data>
+  <data name="MainMenu_Flux_PcImgCnv_TrackLayout" xml:space="preserve">
+    <value>Generar tracklayout.txt</value>
+  </data>
+  <data name="MainMenu_Hex_RawTrackData" xml:space="preserve">
+    <value>&amp;Datos de Pista en Bruto</value>
+  </data>
+  <data name="MainMenu_Hex_OverdumpData" xml:space="preserve">
+    <value>&amp;Datos Excedentes</value>
+  </data>
+  <data name="MainMenu_Hex_LostClusters" xml:space="preserve">
+    <value>&amp;Clústeres Perdidos</value>
+  </data>
+  <data name="MainMenu_Hex_FreeClusters" xml:space="preserve">
+    <value>&amp;Clústeres libres con datos</value>
+  </data>
+  <data name="MainMenu_Hex_Disk" xml:space="preserve">
+    <value>Todo el &amp;disco</value>
+  </data>
+  <data name="MainMenu_Hex_BadSectors" xml:space="preserve">
+    <value>Sectores &amp;defectuosos</value>
+  </data>
+  <data name="MainMenu_Help_UpdateCheck" xml:space="preserve">
+    <value>Buscar &amp;actualizaciones</value>
+  </data>
+  <data name="MainMenu_Help_ProjectPage" xml:space="preserve">
+    <value>&amp;Página del Proyecto</value>
+  </data>
+  <data name="MainMenu_Help_Docs" xml:space="preserve">
+    <value>&amp;Documentación</value>
+  </data>
+  <data name="MainMenu_Help_ChangeLog" xml:space="preserve">
+    <value>&amp;Registro de Cambios</value>
+  </data>
+  <data name="MainMenu_File_Exit" xml:space="preserve">
+    <value>Sa&amp;lir</value>
+  </data>
+  <data name="MainMenu_File_NewImage" xml:space="preserve">
+    <value>&amp;Nueva Imagen</value>
+  </data>
+  <data name="MainMenu_File_Recent" xml:space="preserve">
+    <value>Recientes</value>
+  </data>
+  <data name="MainMenu_File_Reload" xml:space="preserve">
+    <value>&amp;Recargar desde el Disco</value>
+  </data>
+  <data name="MainMenu_Filters_Clear" xml:space="preserve">
+    <value>Borrar filtros</value>
+  </data>
+  <data name="MainMenu_Filters_ScanNew" xml:space="preserve">
+    <value>E&amp;scanear nuevas imágenes</value>
+  </data>
+  <data name="MainMenu_Flux_Convert" xml:space="preserve">
+    <value>&amp;Convertir imagen de flujo</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Bandwidth" xml:space="preserve">
+    <value>Informar del &amp;ancho de banda</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Clean" xml:space="preserve">
+    <value>&amp;Limpiar unidad</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Erase" xml:space="preserve">
+    <value>&amp;Borrar disco</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Info" xml:space="preserve">
+    <value>&amp;Información del &amp;dispositivo</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Read" xml:space="preserve">
+    <value>&amp;Leer disco</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Write" xml:space="preserve">
+    <value>&amp;Escribir disco</value>
+  </data>
+  <data name="Label_Retry" xml:space="preserve">
+    <value>Reintentar</value>
+  </data>
+  <data name="Label_ResetSort" xml:space="preserve">
+    <value>Restablecer</value>
+  </data>
+  <data name="Label_OpenImages" xml:space="preserve">
+    <value>Abrir imágenes de disco</value>
+  </data>
+  <data name="Label_DropMessage" xml:space="preserve">
+    <value>Arrastrar y soltar imágenes de disquete aquí</value>
+  </data>
 </root>

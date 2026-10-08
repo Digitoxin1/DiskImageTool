@@ -2078,4 +2078,157 @@ Flux 映像集：“{0}”
   <data name="Label_VgaFont" xml:space="preserve">
     <value>VGA 字体</value>
   </data>
+  <data name="MainMenu_Reports" xml:space="preserve">
+    <value>报告(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Disk" xml:space="preserve">
+    <value>磁盘(&amp;D)</value>
+  </data>
+  <data name="MainMenu_Filters" xml:space="preserve">
+    <value>筛选(&amp;I)</value>
+  </data>
+  <data name="MainMenu_NewInstance" xml:space="preserve">
+    <value>在新实例中打开</value>
+  </data>
+  <data name="MainMenu_Options" xml:space="preserve">
+    <value>选项(&amp;O)</value>
+  </data>
+  <data name="MainMenu_Tools" xml:space="preserve">
+    <value>工具(&amp;T)</value>
+  </data>
+  <data name="MainMenu_UpdateAvailable" xml:space="preserve">
+    <value>有可用更新</value>
+  </data>
+  <data name="MainMenu_HexView" xml:space="preserve">
+    <value>十六进制(&amp;H)</value>
+  </data>
+  <data name="MainMenu_Edit_Revert" xml:space="preserve">
+    <value>还原更改(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xClean" xml:space="preserve">
+    <value>移除 Windows 修改(&amp;W)</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xCleanBatch" xml:space="preserve">
+    <value>批量移除 Windows 修改</value>
+  </data>
+  <data name="MainMenu_Tools_RestructureImage" xml:space="preserve">
+    <value>重组映像(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Tools_RestoreBootSector" xml:space="preserve">
+    <value>从根目录恢复引导扇区(&amp;B)</value>
+  </data>
+  <data name="MainMenu_Tools_RemoveBootSector" xml:space="preserve">
+    <value>从根目录移除引导扇区(&amp;B)</value>
+  </data>
+  <data name="MainMenu_Tools_FixImageSizeSubMenu" xml:space="preserve">
+    <value>修正映像大小(&amp;S)</value>
+  </data>
+  <data name="MainMenu_Tools_ClearReservedBytes" xml:space="preserve">
+    <value>清除保留字节(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Reports_ImageAnalysis" xml:space="preserve">
+    <value>映像分析 (XML)</value>
+  </data>
+  <data name="MainMenu_Reports_BatchImageAnalysis" xml:space="preserve">
+    <value>批量映像分析 (XML)</value>
+  </data>
+  <data name="MainMenu_Options_DragDrop" xml:space="preserve">
+    <value>使用拖放导入</value>
+  </data>
+  <data name="MainMenu_Options_Flux" xml:space="preserve">
+    <value>Flux 配置(&amp;F)</value>
+  </data>
+  <data name="MainMenu_Options_DisplayTitles" xml:space="preserve">
+    <value>显示标题</value>
+  </data>
+  <data name="MainMenu_Options_CreateBackup" xml:space="preserve">
+    <value>保存时创建备份</value>
+  </data>
+  <data name="MainMenu_Options_CheckUpdate" xml:space="preserve">
+    <value>启动时检查更新</value>
+  </data>
+  <data name="MainMenu_Flux_PcImgCnv_TrackLayout" xml:space="preserve">
+    <value>生成 tracklayout.txt</value>
+  </data>
+  <data name="MainMenu_Hex_RawTrackData" xml:space="preserve">
+    <value>原始磁道数据(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Hex_OverdumpData" xml:space="preserve">
+    <value>过量转储数据(&amp;O)</value>
+  </data>
+  <data name="MainMenu_Hex_LostClusters" xml:space="preserve">
+    <value>丢失簇(&amp;L)</value>
+  </data>
+  <data name="MainMenu_Hex_FreeClusters" xml:space="preserve">
+    <value>含数据的空闲簇(&amp;C)</value>
+  </data>
+  <data name="MainMenu_Hex_Disk" xml:space="preserve">
+    <value>整个磁盘(&amp;D)</value>
+  </data>
+  <data name="MainMenu_Hex_BadSectors" xml:space="preserve">
+    <value>损坏扇区(&amp;S)</value>
+  </data>
+  <data name="MainMenu_Help_UpdateCheck" xml:space="preserve">
+    <value>检查更新(&amp;U)</value>
+  </data>
+  <data name="MainMenu_Help_ProjectPage" xml:space="preserve">
+    <value>项目主页(&amp;P)</value>
+  </data>
+  <data name="MainMenu_Help_Docs" xml:space="preserve">
+    <value>文档(&amp;D)</value>
+  </data>
+  <data name="MainMenu_Help_ChangeLog" xml:space="preserve">
+    <value>更新日志(&amp;C)</value>
+  </data>
+  <data name="MainMenu_File_Exit" xml:space="preserve">
+    <value>退出(&amp;X)</value>
+  </data>
+  <data name="MainMenu_File_NewImage" xml:space="preserve">
+    <value>新建映像(&amp;N)</value>
+  </data>
+  <data name="MainMenu_File_Recent" xml:space="preserve">
+    <value>最近使用</value>
+  </data>
+  <data name="MainMenu_File_Reload" xml:space="preserve">
+    <value>从磁盘重新加载(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Filters_Clear" xml:space="preserve">
+    <value>清除筛选</value>
+  </data>
+  <data name="MainMenu_Filters_ScanNew" xml:space="preserve">
+    <value>扫描新映像(&amp;N)</value>
+  </data>
+  <data name="MainMenu_Flux_Convert" xml:space="preserve">
+    <value>转换 Flux 映像(&amp;C)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Bandwidth" xml:space="preserve">
+    <value>报告带宽(&amp;B)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Clean" xml:space="preserve">
+    <value>清洗驱动器(&amp;C)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Erase" xml:space="preserve">
+    <value>擦除磁盘(&amp;E)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Info" xml:space="preserve">
+    <value>设备信息(&amp;D)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Read" xml:space="preserve">
+    <value>读取磁盘(&amp;R)</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Write" xml:space="preserve">
+    <value>写入磁盘(&amp;W)</value>
+  </data>
+  <data name="Label_Retry" xml:space="preserve">
+    <value>重试</value>
+  </data>
+  <data name="Label_ResetSort" xml:space="preserve">
+    <value>重置排序</value>
+  </data>
+  <data name="Label_OpenImages" xml:space="preserve">
+    <value>打开磁盘映像</value>
+  </data>
+  <data name="Label_DropMessage" xml:space="preserve">
+    <value>将软盘映像拖放到此处</value>
+  </data>
 </root>

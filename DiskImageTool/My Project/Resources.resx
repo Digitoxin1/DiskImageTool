@@ -2337,4 +2337,157 @@ Do you wish to continue?</value>
   <data name="Fill4E" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Fill4E.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="MainMenu_Reports" xml:space="preserve">
+    <value>&amp;Reports</value>
+  </data>
+  <data name="MainMenu_Disk" xml:space="preserve">
+    <value>&amp;Disk</value>
+  </data>
+  <data name="MainMenu_Filters" xml:space="preserve">
+    <value>F&amp;ilters</value>
+  </data>
+  <data name="MainMenu_NewInstance" xml:space="preserve">
+    <value>Open In New Instance</value>
+  </data>
+  <data name="MainMenu_Options" xml:space="preserve">
+    <value>&amp;Options</value>
+  </data>
+  <data name="MainMenu_Tools" xml:space="preserve">
+    <value>&amp;Tools</value>
+  </data>
+  <data name="MainMenu_UpdateAvailable" xml:space="preserve">
+    <value>Update Available</value>
+  </data>
+  <data name="MainMenu_HexView" xml:space="preserve">
+    <value>&amp;Hex</value>
+  </data>
+  <data name="MainMenu_Edit_Revert" xml:space="preserve">
+    <value>&amp;Revert Changes</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xCleanBatch" xml:space="preserve">
+    <value>Batch Remove Windows Modifications</value>
+  </data>
+  <data name="MainMenu_Tools_Win9xClean" xml:space="preserve">
+    <value>Remove &amp;Windows Modifications</value>
+  </data>
+  <data name="MainMenu_Tools_ClearReservedBytes" xml:space="preserve">
+    <value>Clear &amp;Reserved Bytes</value>
+  </data>
+  <data name="MainMenu_Tools_FixImageSizeSubMenu" xml:space="preserve">
+    <value>Fix Image &amp;Size</value>
+  </data>
+  <data name="MainMenu_Tools_RemoveBootSector" xml:space="preserve">
+    <value>Remove &amp;Boot Sector from Root Directory</value>
+  </data>
+  <data name="MainMenu_Tools_RestoreBootSector" xml:space="preserve">
+    <value>Restore &amp;Boot Sector from Root Directory</value>
+  </data>
+  <data name="MainMenu_Tools_RestructureImage" xml:space="preserve">
+    <value>&amp;Restructure Image</value>
+  </data>
+  <data name="MainMenu_Reports_BatchImageAnalysis" xml:space="preserve">
+    <value>Batch Image Analysis (XML)</value>
+  </data>
+  <data name="MainMenu_Reports_ImageAnalysis" xml:space="preserve">
+    <value>Image Analysis (XML)</value>
+  </data>
+  <data name="MainMenu_Options_CheckUpdate" xml:space="preserve">
+    <value>Check for Update on Startup</value>
+  </data>
+  <data name="MainMenu_Options_CreateBackup" xml:space="preserve">
+    <value>Create Backup on Save</value>
+  </data>
+  <data name="MainMenu_Options_DisplayTitles" xml:space="preserve">
+    <value>Display Titles</value>
+  </data>
+  <data name="MainMenu_Options_DragDrop" xml:space="preserve">
+    <value>Import using Drag and Drop</value>
+  </data>
+  <data name="MainMenu_Options_Flux" xml:space="preserve">
+    <value>&amp;Flux Configuration</value>
+  </data>
+  <data name="MainMenu_Flux_PcImgCnv_TrackLayout" xml:space="preserve">
+    <value>Generate tracklayout.txt</value>
+  </data>
+  <data name="MainMenu_Hex_BadSectors" xml:space="preserve">
+    <value>Bad &amp;Sectors</value>
+  </data>
+  <data name="MainMenu_Hex_Disk" xml:space="preserve">
+    <value>Entire &amp;Disk</value>
+  </data>
+  <data name="MainMenu_Hex_FreeClusters" xml:space="preserve">
+    <value>Free &amp;Clusters with Data</value>
+  </data>
+  <data name="MainMenu_Hex_LostClusters" xml:space="preserve">
+    <value>&amp;Lost Clusters</value>
+  </data>
+  <data name="MainMenu_Hex_OverdumpData" xml:space="preserve">
+    <value>&amp;Overdump Data</value>
+  </data>
+  <data name="MainMenu_Hex_RawTrackData" xml:space="preserve">
+    <value>&amp;Raw Track Data</value>
+  </data>
+  <data name="MainMenu_Help_ChangeLog" xml:space="preserve">
+    <value>&amp;Change Log</value>
+  </data>
+  <data name="MainMenu_Help_Docs" xml:space="preserve">
+    <value>&amp;Documentation</value>
+  </data>
+  <data name="MainMenu_Help_ProjectPage" xml:space="preserve">
+    <value>&amp;Project Page</value>
+  </data>
+  <data name="MainMenu_Help_UpdateCheck" xml:space="preserve">
+    <value>Check for &amp;Update</value>
+  </data>
+  <data name="MainMenu_File_Exit" xml:space="preserve">
+    <value>E&amp;xit</value>
+  </data>
+  <data name="MainMenu_File_NewImage" xml:space="preserve">
+    <value>&amp;New Image</value>
+  </data>
+  <data name="MainMenu_File_Recent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="MainMenu_File_Reload" xml:space="preserve">
+    <value>&amp;Reload from Disk</value>
+  </data>
+  <data name="MainMenu_Filters_Clear" xml:space="preserve">
+    <value>Clear Filters</value>
+  </data>
+  <data name="MainMenu_Filters_ScanNew" xml:space="preserve">
+    <value>Scan &amp;New Images</value>
+  </data>
+  <data name="MainMenu_Flux_Convert" xml:space="preserve">
+    <value>&amp;Convert Flux Image</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Bandwidth" xml:space="preserve">
+    <value>Report &amp;Bandwidth</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Clean" xml:space="preserve">
+    <value>&amp;Clean Drive</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Erase" xml:space="preserve">
+    <value>&amp;Erase Disk</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Info" xml:space="preserve">
+    <value>&amp;Device Info</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Read" xml:space="preserve">
+    <value>&amp;Read Disk</value>
+  </data>
+  <data name="MainMenu_Greaseweazle_Write" xml:space="preserve">
+    <value>&amp;Write Disk</value>
+  </data>
+  <data name="Label_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Label_ResetSort" xml:space="preserve">
+    <value>Reset Sort</value>
+  </data>
+  <data name="Label_OpenImages" xml:space="preserve">
+    <value>Open Disk Images</value>
+  </data>
+  <data name="Label_DropMessage" xml:space="preserve">
+    <value>Drag &amp;&amp; Drop Floppy Disk Images Here</value>
+  </data>
 </root>

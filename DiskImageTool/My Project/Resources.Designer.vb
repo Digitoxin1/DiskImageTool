@@ -3194,6 +3194,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Drag &amp;&amp; Drop Floppy Disk Images Here.
+        '''</summary>
+        Friend ReadOnly Property Label_DropMessage() As String
+            Get
+                Return ResourceManager.GetString("Label_DropMessage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Encoding() As String
@@ -4256,6 +4265,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Open Disk Images.
+        '''</summary>
+        Friend ReadOnly Property Label_OpenImages() As String
+            Get
+                Return ResourceManager.GetString("Label_OpenImages", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Options.
         '''</summary>
         Friend ReadOnly Property Label_Options() As String
@@ -4499,11 +4517,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Reset Sort.
+        '''</summary>
+        Friend ReadOnly Property Label_ResetSort() As String
+            Get
+                Return ResourceManager.GetString("Label_ResetSort", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Retries.
         '''</summary>
         Friend ReadOnly Property Label_Retries() As String
             Get
                 Return ResourceManager.GetString("Label_Retries", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Retry.
+        '''</summary>
+        Friend ReadOnly Property Label_Retry() As String
+            Get
+                Return ResourceManager.GetString("Label_Retry", resourceCulture)
             End Get
         End Property
         
@@ -5143,6 +5179,429 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Yes() As String
             Get
                 Return ResourceManager.GetString("Label_Yes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Disk() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Disk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Revert Changes.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Edit_Revert() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Edit_Revert", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to E&amp;xit.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_File_Exit() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_File_Exit", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;New Image.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_File_NewImage() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_File_NewImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Recent.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_File_Recent() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_File_Recent", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Reload from Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_File_Reload() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_File_Reload", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to F&amp;ilters.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Filters() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Filters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Clear Filters.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Filters_Clear() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Filters_Clear", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Scan &amp;New Images.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Filters_ScanNew() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Filters_ScanNew", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Convert Flux Image.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Flux_Convert() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Flux_Convert", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Generate tracklayout.txt.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Flux_PcImgCnv_TrackLayout() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Flux_PcImgCnv_TrackLayout", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Report &amp;Bandwidth.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Bandwidth() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Bandwidth", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Clean Drive.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Clean() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Clean", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Erase Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Erase() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Erase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Device Info.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Info() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Info", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Read Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Read() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Read", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Write Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Greaseweazle_Write() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Greaseweazle_Write", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Change Log.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Help_ChangeLog() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Help_ChangeLog", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Documentation.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Help_Docs() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Help_Docs", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Project Page.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Help_ProjectPage() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Help_ProjectPage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Check for &amp;Update.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Help_UpdateCheck() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Help_UpdateCheck", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Bad &amp;Sectors.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_BadSectors() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_BadSectors", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Entire &amp;Disk.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_Disk() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_Disk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Free &amp;Clusters with Data.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_FreeClusters() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_FreeClusters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Lost Clusters.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_LostClusters() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_LostClusters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Overdump Data.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_OverdumpData() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_OverdumpData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Raw Track Data.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Hex_RawTrackData() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Hex_RawTrackData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Hex.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_HexView() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_HexView", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Open In New Instance.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_NewInstance() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_NewInstance", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Options.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Check for Update on Startup.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options_CheckUpdate() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options_CheckUpdate", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Create Backup on Save.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options_CreateBackup() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options_CreateBackup", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Display Titles.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options_DisplayTitles() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options_DisplayTitles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Import using Drag and Drop.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options_DragDrop() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options_DragDrop", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Flux Configuration.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Options_Flux() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Options_Flux", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Reports.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Reports() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Reports", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Batch Image Analysis (XML).
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Reports_BatchImageAnalysis() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Reports_BatchImageAnalysis", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image Analysis (XML).
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Reports_ImageAnalysis() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Reports_ImageAnalysis", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Tools.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Clear &amp;Reserved Bytes.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_ClearReservedBytes() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_ClearReservedBytes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Fix Image &amp;Size.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_FixImageSizeSubMenu() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_FixImageSizeSubMenu", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Remove &amp;Boot Sector from Root Directory.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_RemoveBootSector() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_RemoveBootSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Restore &amp;Boot Sector from Root Directory.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_RestoreBootSector() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_RestoreBootSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Restructure Image.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_RestructureImage() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_RestructureImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Remove &amp;Windows Modifications.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_Win9xClean() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_Win9xClean", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Batch Remove Windows Modifications.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_Tools_Win9xCleanBatch() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_Tools_Win9xCleanBatch", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Update Available.
+        '''</summary>
+        Friend ReadOnly Property MainMenu_UpdateAvailable() As String
+            Get
+                Return ResourceManager.GetString("MainMenu_UpdateAvailable", resourceCulture)
             End Get
         End Property
         
