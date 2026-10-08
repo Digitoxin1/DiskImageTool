@@ -855,6 +855,7 @@ Public Class MainForm
             MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
             MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
             MenuReportsImageAnalysis.Enabled = CheckSize
+            MenuEditImageProperties.Enabled = Disk.Image.ImageType = FloppyImageType.TranscopyImage
             SetButtonStateSaveAs(True)
             MenuGreaseweazleWrite.Enabled = CheckSize
         Else
@@ -870,6 +871,7 @@ Public Class MainForm
             MenuDiskWriteFloppyB.Enabled = False
             MenuReportsModifications.Enabled = False
             MenuReportsImageAnalysis.Enabled = False
+            MenuEditImageProperties.Enabled = False
             SetButtonStateSaveAs(False)
             MenuGreaseweazleWrite.Enabled = False
         End If
@@ -995,6 +997,7 @@ Public Class MainForm
         MenuDiskWriteFloppyB.Text = String.Format(My.Resources.Menu_WriteDiskInDrive, "B")
         MenuEditBootSector.Text = My.Resources.Menu_BootSector
         MenuEditFAT.Text = My.Resources.Menu_FAT
+        MenuEditImageProperties.Text = My.Resources.Menu_ImageProperties
         MenuEditFileProperties.Text = My.Resources.Menu_FileProperties
         MenuEditImportFiles.Text = My.Resources.Menu_ImportFiles
         MenuEditRedo.Text = My.Resources.Menu_Redo
@@ -2214,6 +2217,14 @@ Public Class MainForm
 
     Private Sub MenuEditFileProperties_Click(sender As Object, e As EventArgs) Handles MenuEditFileProperties.Click, ToolStripFileProperties.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.FileProperties)
+    End Sub
+
+    Private Sub MenuEditImageProperties_Click(sender As Object, e As EventArgs) Handles MenuEditImageProperties.Click
+        If FilePanelMain.CurrentImage Is Nothing Then
+            Exit Sub
+        End If
+
+        TransCopyImageForm.Display(FilePanelMain.CurrentImage.Disk)
     End Sub
 
     Private Sub MenuEditImportFiles_Click(sender As Object, e As EventArgs) Handles ToolStripImportFiles.Click, MenuEditImportFiles.Click

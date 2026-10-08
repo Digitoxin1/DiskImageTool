@@ -34,6 +34,7 @@ Partial Class MainForm
         Dim MenuFileSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MenuFileSeparator3 As System.Windows.Forms.ToolStripSeparator
         Dim MenuEditSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuEditSeparatorImage As System.Windows.Forms.ToolStripSeparator
         Dim MenuEditSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MenuToolsSeparator As System.Windows.Forms.ToolStripSeparator
         Dim MenuHelpSeparator As System.Windows.Forms.ToolStripSeparator
@@ -99,6 +100,7 @@ Partial Class MainForm
         Me.MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFAT = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditImageProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -181,6 +183,7 @@ Partial Class MainForm
         MenuFileSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MenuFileSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         MenuEditSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        MenuEditSeparatorImage = New System.Windows.Forms.ToolStripSeparator()
         MenuEditSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MenuToolsSeparator = New System.Windows.Forms.ToolStripSeparator()
         MenuHelpSeparator = New System.Windows.Forms.ToolStripSeparator()
@@ -452,6 +455,11 @@ Partial Class MainForm
         '
         MenuEditSeparator1.Name = "MenuEditSeparator1"
         MenuEditSeparator1.Size = New System.Drawing.Size(185, 6)
+        '
+        'MenuEditSeparatorImage
+        '
+        MenuEditSeparatorImage.Name = "MenuEditSeparatorImage"
+        MenuEditSeparatorImage.Size = New System.Drawing.Size(185, 6)
         '
         'MenuEditSeparator2
         '
@@ -768,7 +776,7 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        Me.MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
+        Me.MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditImageProperties, MenuEditSeparatorImage, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
         Me.MainMenuEdit.Name = "MainMenuEdit"
         Me.MainMenuEdit.Size = New System.Drawing.Size(47, 20)
         Me.MainMenuEdit.Text = "{&Edit}"
@@ -784,6 +792,12 @@ Partial Class MainForm
         Me.MenuEditFAT.Name = "MenuEditFAT"
         Me.MenuEditFAT.Size = New System.Drawing.Size(188, 22)
         Me.MenuEditFAT.Text = "{File &Allocation Table}"
+        '
+        'MenuEditImageProperties
+        '
+        Me.MenuEditImageProperties.Name = "MenuEditImageProperties"
+        Me.MenuEditImageProperties.Size = New System.Drawing.Size(188, 22)
+        Me.MenuEditImageProperties.Text = "{I&mage Properties}"
         '
         'MenuEditFileProperties
         '
@@ -1371,6 +1385,7 @@ Partial Class MainForm
     Friend WithEvents MenuFiltersScanNew As ToolStripMenuItem
     Friend WithEvents StatusBarFileCount As ToolStripStatusLabel
     Friend WithEvents MenuEditFileProperties As ToolStripMenuItem
+    Friend WithEvents MenuEditImageProperties As ToolStripMenuItem
     Friend WithEvents MainMenuFilters As ToolStripMenuItem
     Friend WithEvents MenuHexFAT As ToolStripMenuItem
     Friend WithEvents MenuEditExportFile As ToolStripMenuItem

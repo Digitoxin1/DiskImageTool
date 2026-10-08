@@ -2852,6 +2852,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Comment.
+        '''</summary>
+        Friend ReadOnly Property Label_Comment() As String
+            Get
+                Return ResourceManager.GetString("Label_Comment", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Comment 2.
+        '''</summary>
+        Friend ReadOnly Property Label_Comment2() As String
+            Get
+                Return ResourceManager.GetString("Label_Comment2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Commit.
         '''</summary>
         Friend ReadOnly Property Label_Commit() As String
@@ -2911,6 +2929,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Convert() As String
             Get
                 Return ResourceManager.GetString("Label_Convert", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Copy Across Index.
+        '''</summary>
+        Friend ReadOnly Property Label_CopyAcrossIndex() As String
+            Get
+                Return ResourceManager.GetString("Label_CopyAcrossIndex", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Copy Weak Bits.
+        '''</summary>
+        Friend ReadOnly Property Label_CopyWeakBits() As String
+            Get
+                Return ResourceManager.GetString("Label_CopyWeakBits", resourceCulture)
             End Get
         End Property
         
@@ -3208,6 +3244,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Encoding() As String
             Get
                 Return ResourceManager.GetString("Label_Encoding", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Ending Track.
+        '''</summary>
+        Friend ReadOnly Property Label_EndingTrack() As String
+            Get
+                Return ResourceManager.GetString("Label_EndingTrack", resourceCulture)
             End Get
         End Property
         
@@ -3905,6 +3950,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Keep Track Length.
+        '''</summary>
+        Friend ReadOnly Property Label_KeepTrackLength() As String
+            Get
+                Return ResourceManager.GetString("Label_KeepTrackLength", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Language.
         '''</summary>
         Friend ReadOnly Property Label_Language() As String
@@ -3950,11 +4004,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Length.
+        '''</summary>
+        Friend ReadOnly Property Label_Length() As String
+            Get
+                Return ResourceManager.GetString("Label_Length", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Length(h).
         '''</summary>
         Friend ReadOnly Property Label_LengthHex() As String
             Get
                 Return ResourceManager.GetString("Label_LengthHex", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Length Tolerance.
+        '''</summary>
+        Friend ReadOnly Property Label_LengthTolerance() As String
+            Get
+                Return ResourceManager.GetString("Label_LengthTolerance", resourceCulture)
             End Get
         End Property
         
@@ -4135,6 +4207,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_No() As String
             Get
                 Return ResourceManager.GetString("Label_No", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to No Address Marks.
+        '''</summary>
+        Friend ReadOnly Property Label_NoAddressMarks() As String
+            Get
+                Return ResourceManager.GetString("Label_NoAddressMarks", resourceCulture)
             End Get
         End Property
         
@@ -4778,6 +4859,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Sides.
+        '''</summary>
+        Friend ReadOnly Property Label_Sides() As String
+            Get
+                Return ResourceManager.GetString("Label_Sides", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Size.
         '''</summary>
         Friend ReadOnly Property Label_Size() As String
@@ -4805,6 +4895,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Skew.
+        '''</summary>
+        Friend ReadOnly Property Label_Skew() As String
+            Get
+                Return ResourceManager.GetString("Label_Skew", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Source.
         '''</summary>
         Friend ReadOnly Property Label_Source() As String
@@ -4828,6 +4927,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_StandardFormats() As String
             Get
                 Return ResourceManager.GetString("Label_StandardFormats", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Starting Track.
+        '''</summary>
+        Friend ReadOnly Property Label_StartingTrack() As String
+            Get
+                Return ResourceManager.GetString("Label_StartingTrack", resourceCulture)
             End Get
         End Property
         
@@ -4931,6 +5039,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Track Increment.
+        '''</summary>
+        Friend ReadOnly Property Label_TrackIncrement() As String
+            Get
+                Return ResourceManager.GetString("Label_TrackIncrement", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Tracklayout.
         '''</summary>
         Friend ReadOnly Property Label_Tracklayout() As String
@@ -4945,6 +5062,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Tracks() As String
             Get
                 Return ResourceManager.GetString("Label_Tracks", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track Type.
+        '''</summary>
+        Friend ReadOnly Property Label_TrackType() As String
+            Get
+                Return ResourceManager.GetString("Label_TrackType", resourceCulture)
             End Get
         End Property
         
@@ -5935,6 +6061,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_FixFileSize() As String
             Get
                 Return ResourceManager.GetString("Menu_FixFileSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to I&amp;mage Properties.
+        '''</summary>
+        Friend ReadOnly Property Menu_ImageProperties() As String
+            Get
+                Return ResourceManager.GetString("Menu_ImageProperties", resourceCulture)
             End Get
         End Property
         

@@ -923,6 +923,12 @@ Archivo de imagen: '{1}'
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>Limpiar el disco</value>
   </data>
+  <data name="Label_Comment" xml:space="preserve">
+    <value>Comentario</value>
+  </data>
+  <data name="Label_Comment2" xml:space="preserve">
+    <value>Comentario 2</value>
+  </data>
   <data name="Label_Commit" xml:space="preserve">
     <value>Confirmar</value>
   </data>
@@ -943,6 +949,12 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Convert" xml:space="preserve">
     <value>Convertir</value>
+  </data>
+  <data name="Label_CopyAcrossIndex" xml:space="preserve">
+    <value>Copiar a través del índice</value>
+  </data>
+  <data name="Label_CopyWeakBits" xml:space="preserve">
+    <value>Copiar bits débiles</value>
   </data>
   <data name="Label_Created" xml:space="preserve">
     <value>Creado</value>
@@ -1039,6 +1051,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>Codificación</value>
+  </data>
+  <data name="Label_EndingTrack" xml:space="preserve">
+    <value>Pista final</value>
   </data>
   <data name="Label_Entries" xml:space="preserve">
     <value>{0} entradas</value>
@@ -1271,6 +1286,9 @@ Archivo de imagen: '{1}'
   <data name="Label_KeepData" xml:space="preserve">
     <value>Conservar datos</value>
   </data>
+  <data name="Label_KeepTrackLength" xml:space="preserve">
+    <value>Conservar longitud de pista</value>
+  </data>
   <data name="Label_Language" xml:space="preserve">
     <value>Idioma</value>
   </data>
@@ -1286,8 +1304,14 @@ Archivo de imagen: '{1}'
   <data name="Label_LastWritten" xml:space="preserve">
     <value>Última escritura</value>
   </data>
+  <data name="Label_Length" xml:space="preserve">
+    <value>Longitud</value>
+  </data>
   <data name="Label_LengthHex" xml:space="preserve">
     <value>Longitud(h)</value>
+  </data>
+  <data name="Label_LengthTolerance" xml:space="preserve">
+    <value>Tolerancia de longitud</value>
   </data>
   <data name="Label_Linger" xml:space="preserve">
     <value>Espera</value>
@@ -1348,6 +1372,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_No" xml:space="preserve">
     <value>No</value>
+  </data>
+  <data name="Label_NoAddressMarks" xml:space="preserve">
+    <value>Sin marcas de dirección</value>
   </data>
   <data name="Label_NoBootLoader" xml:space="preserve">
     <value>Sin cargador de arranque</value>
@@ -1562,6 +1589,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Side" xml:space="preserve">
     <value>Cara</value>
   </data>
+  <data name="Label_Sides" xml:space="preserve">
+    <value>Caras</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Tamaño</value>
   </data>
@@ -1571,6 +1601,9 @@ Archivo de imagen: '{1}'
   <data name="Label_SizeOnDisk" xml:space="preserve">
     <value>Tamaño en disco</value>
   </data>
+  <data name="Label_Skew" xml:space="preserve">
+    <value>Desfase</value>
+  </data>
   <data name="Label_Source" xml:space="preserve">
     <value>Origen</value>
   </data>
@@ -1579,6 +1612,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_StandardFormats" xml:space="preserve">
     <value>Formatos estándar</value>
+  </data>
+  <data name="Label_StartingTrack" xml:space="preserve">
+    <value>Pista inicial</value>
   </data>
   <data name="Label_Status" xml:space="preserve">
     <value>Estado</value>
@@ -1606,6 +1642,12 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>Pista</value>
+  </data>
+  <data name="Label_TrackIncrement" xml:space="preserve">
+    <value>Incremento de pista</value>
+  </data>
+  <data name="Label_TrackType" xml:space="preserve">
+    <value>Tipo de pista</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>Pistas</value>
@@ -1933,6 +1975,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Menu_FixFileSize" xml:space="preserve">
     <value>Corregir &amp;tamaño del archivo</value>
+  </data>
+  <data name="Menu_ImageProperties" xml:space="preserve">
+    <value>Propiedades de la i&amp;magen</value>
   </data>
   <data name="Menu_ImportFiles" xml:space="preserve">
     <value>&amp;Importar Archivos</value>

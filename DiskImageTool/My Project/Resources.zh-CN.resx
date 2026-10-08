@@ -923,6 +923,12 @@ Flux 映像集：“{0}”
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>清洗磁盘</value>
   </data>
+  <data name="Label_Comment" xml:space="preserve">
+    <value>注释</value>
+  </data>
+  <data name="Label_Comment2" xml:space="preserve">
+    <value>注释 2</value>
+  </data>
   <data name="Label_Commit" xml:space="preserve">
     <value>提交</value>
   </data>
@@ -943,6 +949,12 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Convert" xml:space="preserve">
     <value>转换</value>
+  </data>
+  <data name="Label_CopyAcrossIndex" xml:space="preserve">
+    <value>跨索引复制</value>
+  </data>
+  <data name="Label_CopyWeakBits" xml:space="preserve">
+    <value>复制弱位</value>
   </data>
   <data name="Label_Created" xml:space="preserve">
     <value>创建时间</value>
@@ -1039,6 +1051,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>编码</value>
+  </data>
+  <data name="Label_EndingTrack" xml:space="preserve">
+    <value>结束磁道</value>
   </data>
   <data name="Label_Entries" xml:space="preserve">
     <value>{0} 个条目</value>
@@ -1271,6 +1286,9 @@ Flux 映像集：“{0}”
   <data name="Label_KeepData" xml:space="preserve">
     <value>保留数据</value>
   </data>
+  <data name="Label_KeepTrackLength" xml:space="preserve">
+    <value>保持磁道长度</value>
+  </data>
   <data name="Label_Language" xml:space="preserve">
     <value>语言</value>
   </data>
@@ -1286,8 +1304,14 @@ Flux 映像集：“{0}”
   <data name="Label_LastWritten" xml:space="preserve">
     <value>上次写入</value>
   </data>
+  <data name="Label_Length" xml:space="preserve">
+    <value>长度</value>
+  </data>
   <data name="Label_LengthHex" xml:space="preserve">
     <value>长度(h)</value>
+  </data>
+  <data name="Label_LengthTolerance" xml:space="preserve">
+    <value>长度容差</value>
   </data>
   <data name="Label_Linger" xml:space="preserve">
     <value>停留</value>
@@ -1348,6 +1372,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_No" xml:space="preserve">
     <value>否</value>
+  </data>
+  <data name="Label_NoAddressMarks" xml:space="preserve">
+    <value>无地址标记</value>
   </data>
   <data name="Label_NoBootLoader" xml:space="preserve">
     <value>无引导加载程序</value>
@@ -1562,6 +1589,9 @@ Flux 映像集：“{0}”
   <data name="Label_Side" xml:space="preserve">
     <value>面</value>
   </data>
+  <data name="Label_Sides" xml:space="preserve">
+    <value>面数</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>大小</value>
   </data>
@@ -1571,6 +1601,9 @@ Flux 映像集：“{0}”
   <data name="Label_SizeOnDisk" xml:space="preserve">
     <value>占用空间</value>
   </data>
+  <data name="Label_Skew" xml:space="preserve">
+    <value>偏斜</value>
+  </data>
   <data name="Label_Source" xml:space="preserve">
     <value>来源</value>
   </data>
@@ -1579,6 +1612,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_StandardFormats" xml:space="preserve">
     <value>标准格式</value>
+  </data>
+  <data name="Label_StartingTrack" xml:space="preserve">
+    <value>起始磁道</value>
   </data>
   <data name="Label_Status" xml:space="preserve">
     <value>状态</value>
@@ -1606,6 +1642,12 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>磁道</value>
+  </data>
+  <data name="Label_TrackIncrement" xml:space="preserve">
+    <value>磁道增量</value>
+  </data>
+  <data name="Label_TrackType" xml:space="preserve">
+    <value>磁道类型</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>磁道</value>
@@ -1933,6 +1975,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Menu_FixFileSize" xml:space="preserve">
     <value>修正文件大小(&amp;S)</value>
+  </data>
+  <data name="Menu_ImageProperties" xml:space="preserve">
+    <value>映像属性(&amp;M)</value>
   </data>
   <data name="Menu_ImportFiles" xml:space="preserve">
     <value>导入文件(&amp;I)</value>

@@ -1073,6 +1073,12 @@ Do you wish to overwrite?</value>
     <value>Cluster</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="Label_Comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Label_Comment2" xml:space="preserve">
+    <value>Comment 2</value>
+  </data>
   <data name="Label_Commit" xml:space="preserve">
     <value>Commit</value>
   </data>
@@ -1097,6 +1103,12 @@ Do you wish to overwrite?</value>
   <data name="Label_CRC32" xml:space="preserve">
     <value>CRC32</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="Label_CopyAcrossIndex" xml:space="preserve">
+    <value>Copy Across Index</value>
+  </data>
+  <data name="Label_CopyWeakBits" xml:space="preserve">
+    <value>Copy Weak Bits</value>
   </data>
   <data name="Label_Created" xml:space="preserve">
     <value>Created</value>
@@ -1193,6 +1205,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>Encoding</value>
+  </data>
+  <data name="Label_EndingTrack" xml:space="preserve">
+    <value>Ending Track</value>
   </data>
   <data name="Label_Entries" xml:space="preserve">
     <value>{0} entries</value>
@@ -1425,6 +1440,9 @@ Do you wish to overwrite?</value>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Keep Data</value>
   </data>
+  <data name="Label_KeepTrackLength" xml:space="preserve">
+    <value>Keep Track Length</value>
+  </data>
   <data name="Label_Language" xml:space="preserve">
     <value>Language</value>
   </data>
@@ -1440,8 +1458,14 @@ Do you wish to overwrite?</value>
   <data name="Label_LastWritten" xml:space="preserve">
     <value>Last Written</value>
   </data>
+  <data name="Label_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
   <data name="Label_LengthHex" xml:space="preserve">
     <value>Length(h)</value>
+  </data>
+  <data name="Label_LengthTolerance" xml:space="preserve">
+    <value>Length Tolerance</value>
   </data>
   <data name="Label_Linger" xml:space="preserve">
     <value>Linger</value>
@@ -1502,6 +1526,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_No" xml:space="preserve">
     <value>No</value>
+  </data>
+  <data name="Label_NoAddressMarks" xml:space="preserve">
+    <value>No Address Marks</value>
   </data>
   <data name="Label_NoBootLoader" xml:space="preserve">
     <value>No Boot Loader</value>
@@ -1716,6 +1743,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Side" xml:space="preserve">
     <value>Side</value>
   </data>
+  <data name="Label_Sides" xml:space="preserve">
+    <value>Sides</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Size</value>
   </data>
@@ -1725,6 +1755,9 @@ Do you wish to overwrite?</value>
   <data name="Label_SizeOnDisk" xml:space="preserve">
     <value>Size on Disk</value>
   </data>
+  <data name="Label_Skew" xml:space="preserve">
+    <value>Skew</value>
+  </data>
   <data name="Label_Source" xml:space="preserve">
     <value>Source</value>
   </data>
@@ -1733,6 +1766,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_StandardFormats" xml:space="preserve">
     <value>Standard Formats</value>
+  </data>
+  <data name="Label_StartingTrack" xml:space="preserve">
+    <value>Starting Track</value>
   </data>
   <data name="Label_Status" xml:space="preserve">
     <value>Status</value>
@@ -1768,6 +1804,12 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>Track</value>
+  </data>
+  <data name="Label_TrackIncrement" xml:space="preserve">
+    <value>Track Increment</value>
+  </data>
+  <data name="Label_TrackType" xml:space="preserve">
+    <value>Track Type</value>
   </data>
   <data name="Label_Tracklayout" xml:space="preserve">
     <value>Tracklayout</value>
@@ -2107,6 +2149,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Menu_FixFileSize" xml:space="preserve">
     <value>Fix File &amp;Size</value>
+  </data>
+  <data name="Menu_ImageProperties" xml:space="preserve">
+    <value>I&amp;mage Properties</value>
   </data>
   <data name="Menu_ImportFiles" xml:space="preserve">
     <value>&amp;Import Files</value>

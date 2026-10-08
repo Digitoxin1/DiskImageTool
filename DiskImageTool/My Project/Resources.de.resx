@@ -923,6 +923,12 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>Diskette reinigen</value>
   </data>
+  <data name="Label_Comment" xml:space="preserve">
+    <value>Kommentar</value>
+  </data>
+  <data name="Label_Comment2" xml:space="preserve">
+    <value>Kommentar 2</value>
+  </data>
   <data name="Label_Commit" xml:space="preserve">
     <value>Übernehmen</value>
   </data>
@@ -943,6 +949,12 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Convert" xml:space="preserve">
     <value>Konvertieren</value>
+  </data>
+  <data name="Label_CopyAcrossIndex" xml:space="preserve">
+    <value>Über Index kopieren</value>
+  </data>
+  <data name="Label_CopyWeakBits" xml:space="preserve">
+    <value>Schwache Bits kopieren</value>
   </data>
   <data name="Label_Created" xml:space="preserve">
     <value>Erstellt</value>
@@ -1039,6 +1051,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>Kodierung</value>
+  </data>
+  <data name="Label_EndingTrack" xml:space="preserve">
+    <value>Endspur</value>
   </data>
   <data name="Label_Entries" xml:space="preserve">
     <value>{0} Einträge</value>
@@ -1271,6 +1286,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Daten behalten</value>
   </data>
+  <data name="Label_KeepTrackLength" xml:space="preserve">
+    <value>Spurlänge beibehalten</value>
+  </data>
   <data name="Label_Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
@@ -1286,8 +1304,14 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_LastWritten" xml:space="preserve">
     <value>Zuletzt geschrieben</value>
   </data>
+  <data name="Label_Length" xml:space="preserve">
+    <value>Länge</value>
+  </data>
   <data name="Label_LengthHex" xml:space="preserve">
     <value>Länge(h)</value>
+  </data>
+  <data name="Label_LengthTolerance" xml:space="preserve">
+    <value>Längentoleranz</value>
   </data>
   <data name="Label_Linger" xml:space="preserve">
     <value>Verweildauer</value>
@@ -1348,6 +1372,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_No" xml:space="preserve">
     <value>Nein</value>
+  </data>
+  <data name="Label_NoAddressMarks" xml:space="preserve">
+    <value>Keine Adressmarken</value>
   </data>
   <data name="Label_NoBootLoader" xml:space="preserve">
     <value>Kein Bootloader</value>
@@ -1562,6 +1589,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Side" xml:space="preserve">
     <value>Seite</value>
   </data>
+  <data name="Label_Sides" xml:space="preserve">
+    <value>Seiten</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Größe</value>
   </data>
@@ -1571,6 +1601,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_SizeOnDisk" xml:space="preserve">
     <value>Größe auf Datenträger</value>
   </data>
+  <data name="Label_Skew" xml:space="preserve">
+    <value>Versatz</value>
+  </data>
   <data name="Label_Source" xml:space="preserve">
     <value>Quelle</value>
   </data>
@@ -1579,6 +1612,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_StandardFormats" xml:space="preserve">
     <value>Standardformate</value>
+  </data>
+  <data name="Label_StartingTrack" xml:space="preserve">
+    <value>Anfangsspur</value>
   </data>
   <data name="Label_Status" xml:space="preserve">
     <value>Status</value>
@@ -1606,6 +1642,12 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>Spur</value>
+  </data>
+  <data name="Label_TrackIncrement" xml:space="preserve">
+    <value>Spurinkrement</value>
+  </data>
+  <data name="Label_TrackType" xml:space="preserve">
+    <value>Spurtyp</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>Spuren</value>
@@ -1933,6 +1975,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Menu_FixFileSize" xml:space="preserve">
     <value>Dateigröße &amp;korrigieren</value>
+  </data>
+  <data name="Menu_ImageProperties" xml:space="preserve">
+    <value>Abbildei&amp;genschaften</value>
   </data>
   <data name="Menu_ImportFiles" xml:space="preserve">
     <value>Dateien &amp;importieren</value>
