@@ -209,6 +209,37 @@ Module Utility
         Return "(" & text & ")"
     End Function
 
+    Public Function DecodeFloppyText(data As Byte()) As String
+        Dim Normalized = NormalizeFloppyTextBytes(data)
+        If Normalized.Length = 0 Then
+            Return ""
+        End If
+
+        If Normalized.Length >= 3 AndAlso Normalized(0) = &HEF AndAlso Normalized(1) = &HBB AndAlso Normalized(2) = &HBF Then
+            Return Text.Encoding.UTF8.GetString(Normalized, 3, Normalized.Length - 3)
+        End If
+
+        If HasNonAsciiBytes(Normalized) AndAlso IsValidUtf8(Normalized) Then
+            Return Text.Encoding.UTF8.GetString(Normalized)
+        End If
+
+        Dim PreferredChinese = GetPreferredChineseCodePage()
+        If PreferredChinese <> 0 AndAlso HasNonAsciiBytes(Normalized) Then
+            Return GetCodePageString(Normalized, PreferredChinese)
+        End If
+
+        Dim ScoreGbk = ScoreDbcs(Normalized, False)
+        Dim ScoreBig5 = ScoreDbcs(Normalized, True)
+        If ScoreGbk > 0 OrElse ScoreBig5 > 0 Then
+            If ScoreGbk >= ScoreBig5 Then
+                Return GetCodePageString(Normalized, 936)
+            End If
+            Return GetCodePageString(Normalized, 950)
+        End If
+
+        Return Text.Encoding.Default.GetString(Normalized)
+    End Function
+
     Public Function IsBinaryData(data As Byte(), Optional BytesToCheck As Integer = 4096) As Boolean
         Dim allowedControlChars As Byte() = {7, 8, 9, 10, 11, 12, 13, 26, 27}
         Dim maxBytesToCheck As Integer = Math.Min(BytesToCheck, data.Length)
@@ -420,5 +451,104 @@ Module Utility
         End If
 
         Return Root & "..." & Directory.Substring(Directory.Length - (Available - Root.Length - 3)) & "\" & FileName
+    End Function
+
+    Private Function GetCodePageString(data As Byte(), codePage As Integer) As String
+        Try
+            Return Text.Encoding.GetEncoding(codePage).GetString(data)
+        Catch
+            Return Text.Encoding.Default.GetString(data)
+        End Try
+    End Function
+
+    Private Function GetPreferredChineseCodePage() As Integer
+        Dim SystemCodePage = Text.Encoding.Default.CodePage
+        If SystemCodePage = 936 OrElse SystemCodePage = 950 Then
+            Return SystemCodePage
+        End If
+
+        Dim Name = CultureInfo.CurrentUICulture.Name
+        If Name.StartsWith("zh-TW") OrElse Name.StartsWith("zh-HK") OrElse Name.StartsWith("zh-MO") OrElse Name.StartsWith("zh-Hant") Then
+            Return 950
+        End If
+        If Name.StartsWith("zh") Then
+            Return 936
+        End If
+
+        Return 0
+    End Function
+
+    Private Function HasNonAsciiBytes(data As Byte()) As Boolean
+        For Each b In data
+            If b > 127 Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
+
+    Private Function IsValidUtf8(data As Byte()) As Boolean
+        Try
+            Dim Utf8 = New Text.UTF8Encoding(False, True)
+            Utf8.GetString(data)
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Private Function NormalizeFloppyTextBytes(data As Byte()) As Byte()
+        Using Stream As New IO.MemoryStream
+            Dim PrevByte As Byte = 0
+            For Counter = 0 To data.Length - 1
+                Dim B = data(Counter)
+                If B = 0 Then
+                    Stream.WriteByte(32)
+                ElseIf Counter > 0 And B = 10 And PrevByte <> 13 Then
+                    Stream.WriteByte(13)
+                    Stream.WriteByte(10)
+                Else
+                    Stream.WriteByte(B)
+                End If
+                PrevByte = B
+            Next
+            Return Stream.ToArray()
+        End Using
+    End Function
+
+    Private Function ScoreDbcs(data As Byte(), isBig5 As Boolean) As Integer
+        Dim Index = 0
+        Dim ValidPairs = 0
+        Dim InvalidPairs = 0
+        Dim GbkOnlyTrails = 0
+
+        While Index < data.Length
+            Dim Lead = data(Index)
+            If Lead < 128 Then
+                Index += 1
+            ElseIf Index + 1 < data.Length AndAlso Lead >= &H81 Then
+                Dim Trail = data(Index + 1)
+                Dim ValidTrail As Boolean
+                If isBig5 Then
+                    ValidTrail = (Trail >= &H40 AndAlso Trail <= &H7E) OrElse (Trail >= &HA1 AndAlso Trail <= &HFE)
+                Else
+                    ValidTrail = (Trail >= &H40 AndAlso Trail <= &H7E) OrElse (Trail >= &H80 AndAlso Trail <= &HFE)
+                    If Trail >= &H80 AndAlso Trail <= &HA0 Then
+                        GbkOnlyTrails += 1
+                    End If
+                End If
+                If ValidTrail Then
+                    ValidPairs += 1
+                Else
+                    InvalidPairs += 1
+                End If
+                Index += 2
+            Else
+                InvalidPairs += 1
+                Index += 1
+            End If
+        End While
+
+        Return ValidPairs * 3 + GbkOnlyTrails * 4 - InvalidPairs * 8
     End Function
 End Module

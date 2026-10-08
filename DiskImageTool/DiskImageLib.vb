@@ -506,25 +506,7 @@ Module DiskImageLib
             Caption = My.Resources.Label_File & " - " & DirectoryEntry.GetShortFileName(True)
         End If
 
-        Dim Bytes = DirectoryEntry.GetContent
-        Dim Content As String
-
-        Using Stream As New IO.MemoryStream
-            Dim PrevByte As Byte = 0
-            For Counter = 0 To Bytes.Length - 1
-                Dim B = Bytes(Counter)
-                If B = 0 Then
-                    Stream.WriteByte(32)
-                ElseIf Counter > 0 And B = 10 And PrevByte <> 13 Then
-                    Stream.WriteByte(13)
-                    Stream.WriteByte(10)
-                Else
-                    Stream.WriteByte(B)
-                End If
-                PrevByte = B
-            Next
-            Content = Encoding.UTF7.GetString(Stream.GetBuffer)
-        End Using
+        Dim Content = DecodeFloppyText(DirectoryEntry.GetContent)
 
         TextViewForm.Display(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
     End Sub
