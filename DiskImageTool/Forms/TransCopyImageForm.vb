@@ -116,7 +116,7 @@ Public Class TransCopyImageForm
         AddTextColumn(GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
         AddTextColumn(GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
         AddTextColumn(GRID_COLUMN_SKEW, My.Resources.Label_Skew, 60, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_LENGTH, My.Resources.Label_Length, 65, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(GRID_COLUMN_LENGTH, My.Resources.Label_Length, 65, DataGridViewContentAlignment.MiddleRight, "N0")
         AddTextColumn(GRID_COLUMN_TRACK_TYPE, My.Resources.Label_TrackType, 180, DataGridViewContentAlignment.MiddleLeft)
         AddTextColumn(GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight)
         AddTextColumn(GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight)
