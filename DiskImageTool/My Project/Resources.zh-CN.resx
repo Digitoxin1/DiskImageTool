@@ -249,6 +249,48 @@
   <data name="Caption_ValidClusters" xml:space="preserve">
     <value>有效簇</value>
   </data>
+  <data name="D86F_DiskType_FixedRPM" xml:space="preserve">
+    <value>固定转速</value>
+  </data>
+  <data name="D86F_DiskType_Zoned" xml:space="preserve">
+    <value>分区</value>
+  </data>
+  <data name="D86F_Encoding_FM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="D86F_Encoding_GCR" xml:space="preserve">
+    <value>GCR</value>
+  </data>
+  <data name="D86F_Encoding_M2FM" xml:space="preserve">
+    <value>M2FM</value>
+  </data>
+  <data name="D86F_Encoding_MFM" xml:space="preserve">
+    <value>MFM</value>
+  </data>
+  <data name="D86F_Hole_DD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="D86F_Hole_ED" xml:space="preserve">
+    <value>ED</value>
+  </data>
+  <data name="D86F_Hole_ED2000" xml:space="preserve">
+    <value>ED 2000 kbps</value>
+  </data>
+  <data name="D86F_Hole_HD" xml:space="preserve">
+    <value>HD</value>
+  </data>
+  <data name="D86F_Zone_Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="D86F_Zone_Commodore64" xml:space="preserve">
+    <value>Commodore 64</value>
+  </data>
+  <data name="D86F_Zone_PreApple1" xml:space="preserve">
+    <value>Pre-Apple #1</value>
+  </data>
+  <data name="D86F_Zone_PreApple2" xml:space="preserve">
+    <value>Pre-Apple #2</value>
+  </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>请输入有效的 8 位二进制值</value>
   </data>
@@ -896,6 +938,9 @@ Flux 映像集：“{0}”
   <data name="Label_AllTracks" xml:space="preserve">
     <value>所有磁道</value>
   </data>
+  <data name="Label_AlternateBitCell" xml:space="preserve">
+    <value>备用计算</value>
+  </data>
   <data name="Label_ApplicationPath" xml:space="preserve">
     <value>应用程序路径</value>
   </data>
@@ -925,6 +970,12 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_BatchImageAnalysis" xml:space="preserve">
     <value>批量映像分析</value>
+  </data>
+  <data name="Label_BitCellCount" xml:space="preserve">
+    <value>位单元数</value>
+  </data>
+  <data name="Label_BitCellMode" xml:space="preserve">
+    <value>位单元模式</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>位偏移</value>
@@ -1286,6 +1337,9 @@ Flux 映像集：“{0}”
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>隐藏扇区</value>
   </data>
+  <data name="Label_Hole" xml:space="preserve">
+    <value>盘孔</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>映像</value>
   </data>
@@ -1330,6 +1384,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_InterfaceType" xml:space="preserve">
     <value>接口类型</value>
+  </data>
+  <data name="Label_IndexHole" xml:space="preserve">
+    <value>索引孔</value>
   </data>
   <data name="Label_Info" xml:space="preserve">
     <value>信息</value>
@@ -1583,6 +1640,9 @@ Flux 映像集：“{0}”
   <data name="Label_Retrying" xml:space="preserve">
     <value>正在重试</value>
   </data>
+  <data name="Label_ReverseEndian" xml:space="preserve">
+    <value>反转字节序</value>
+  </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>转数</value>
   </data>
@@ -1597,6 +1657,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>根文件夹</value>
+  </data>
+  <data name="Label_RPMSlowdown" xml:space="preserve">
+    <value>转速降低</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>保存</value>
@@ -1696,6 +1759,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>从日志中去除路径</value>
+  </data>
+  <data name="Label_SurfaceData" xml:space="preserve">
+    <value>表面数据</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>同步 FAT</value>
@@ -1817,6 +1883,9 @@ Flux 映像集：“{0}”
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>写入磁盘</value>
   </data>
+  <data name="Label_WriteProtect" xml:space="preserve">
+    <value>写保护</value>
+  </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>写入拼接</value>
   </data>
@@ -1825,6 +1894,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Yes" xml:space="preserve">
     <value>是</value>
+  </data>
+  <data name="Label_ZoneType" xml:space="preserve">
+    <value>区域类型</value>
   </data>
   <data name="MainMenu_Disk" xml:space="preserve">
     <value>磁盘(&amp;D)</value>

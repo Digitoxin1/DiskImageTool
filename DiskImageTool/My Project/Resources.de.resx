@@ -249,6 +249,48 @@
   <data name="Caption_ValidClusters" xml:space="preserve">
     <value>Gültige Cluster</value>
   </data>
+  <data name="D86F_DiskType_FixedRPM" xml:space="preserve">
+    <value>Feste Drehzahl</value>
+  </data>
+  <data name="D86F_DiskType_Zoned" xml:space="preserve">
+    <value>Zoniert</value>
+  </data>
+  <data name="D86F_Encoding_FM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="D86F_Encoding_GCR" xml:space="preserve">
+    <value>GCR</value>
+  </data>
+  <data name="D86F_Encoding_M2FM" xml:space="preserve">
+    <value>M2FM</value>
+  </data>
+  <data name="D86F_Encoding_MFM" xml:space="preserve">
+    <value>MFM</value>
+  </data>
+  <data name="D86F_Hole_DD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="D86F_Hole_ED" xml:space="preserve">
+    <value>ED</value>
+  </data>
+  <data name="D86F_Hole_ED2000" xml:space="preserve">
+    <value>ED 2000 kbit/s</value>
+  </data>
+  <data name="D86F_Hole_HD" xml:space="preserve">
+    <value>HD</value>
+  </data>
+  <data name="D86F_Zone_Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="D86F_Zone_Commodore64" xml:space="preserve">
+    <value>Commodore 64</value>
+  </data>
+  <data name="D86F_Zone_PreApple1" xml:space="preserve">
+    <value>Prä-Apple #1</value>
+  </data>
+  <data name="D86F_Zone_PreApple2" xml:space="preserve">
+    <value>Prä-Apple #2</value>
+  </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>Bitte geben Sie einen gültigen 8-Bit-Binärwert ein</value>
   </data>
@@ -896,6 +938,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Alle Spuren</value>
   </data>
+  <data name="Label_AlternateBitCell" xml:space="preserve">
+    <value>Alternative Berechnung</value>
+  </data>
   <data name="Label_ApplicationPath" xml:space="preserve">
     <value>Anwendungspfad</value>
   </data>
@@ -925,6 +970,12 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_BatchImageAnalysis" xml:space="preserve">
     <value>Stapel-Imageanalyse</value>
+  </data>
+  <data name="Label_BitCellCount" xml:space="preserve">
+    <value>Bitzellenanzahl</value>
+  </data>
+  <data name="Label_BitCellMode" xml:space="preserve">
+    <value>Bitzellenmodus</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Bit-Versatz</value>
@@ -1286,6 +1337,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Versteckte Sektoren</value>
   </data>
+  <data name="Label_Hole" xml:space="preserve">
+    <value>Loch</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Abbild</value>
   </data>
@@ -1330,6 +1384,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_InterfaceType" xml:space="preserve">
     <value>Schnittstellentyp</value>
+  </data>
+  <data name="Label_IndexHole" xml:space="preserve">
+    <value>Indexloch</value>
   </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Info</value>
@@ -1583,6 +1640,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Retrying" xml:space="preserve">
     <value>Wiederholen</value>
   </data>
+  <data name="Label_ReverseEndian" xml:space="preserve">
+    <value>Endianness umgekehrt</value>
+  </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>Umdr.</value>
   </data>
@@ -1597,6 +1657,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Stammordner</value>
+  </data>
+  <data name="Label_RPMSlowdown" xml:space="preserve">
+    <value>RPM-Verlangsamung</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Sichern</value>
@@ -1696,6 +1759,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>Pfad aus Protokollen entfernen</value>
+  </data>
+  <data name="Label_SurfaceData" xml:space="preserve">
+    <value>Oberflächendaten</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>FATs synchronisieren</value>
@@ -1817,6 +1883,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Diskette schreiben</value>
   </data>
+  <data name="Label_WriteProtect" xml:space="preserve">
+    <value>Schreibschutz</value>
+  </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Schreibübergänge</value>
   </data>
@@ -1825,6 +1894,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Yes" xml:space="preserve">
     <value>Ja</value>
+  </data>
+  <data name="Label_ZoneType" xml:space="preserve">
+    <value>Zonentyp</value>
   </data>
   <data name="MainMenu_Disk" xml:space="preserve">
     <value>&amp;Diskette</value>

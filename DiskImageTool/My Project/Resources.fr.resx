@@ -249,6 +249,48 @@
   <data name="Caption_ValidClusters" xml:space="preserve">
     <value>Clusters valides</value>
   </data>
+  <data name="D86F_DiskType_FixedRPM" xml:space="preserve">
+    <value>Régime fixe</value>
+  </data>
+  <data name="D86F_DiskType_Zoned" xml:space="preserve">
+    <value>Zoné</value>
+  </data>
+  <data name="D86F_Encoding_FM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="D86F_Encoding_GCR" xml:space="preserve">
+    <value>GCR</value>
+  </data>
+  <data name="D86F_Encoding_M2FM" xml:space="preserve">
+    <value>M2FM</value>
+  </data>
+  <data name="D86F_Encoding_MFM" xml:space="preserve">
+    <value>MFM</value>
+  </data>
+  <data name="D86F_Hole_DD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="D86F_Hole_ED" xml:space="preserve">
+    <value>ED</value>
+  </data>
+  <data name="D86F_Hole_ED2000" xml:space="preserve">
+    <value>ED 2000 kbit/s</value>
+  </data>
+  <data name="D86F_Hole_HD" xml:space="preserve">
+    <value>HD</value>
+  </data>
+  <data name="D86F_Zone_Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="D86F_Zone_Commodore64" xml:space="preserve">
+    <value>Commodore 64</value>
+  </data>
+  <data name="D86F_Zone_PreApple1" xml:space="preserve">
+    <value>Pré-Apple #1</value>
+  </data>
+  <data name="D86F_Zone_PreApple2" xml:space="preserve">
+    <value>Pré-Apple #2</value>
+  </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>Veuillez entrer une valeur binaire valide sur 8 bits</value>
   </data>
@@ -896,6 +938,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Toutes les pistes</value>
   </data>
+  <data name="Label_AlternateBitCell" xml:space="preserve">
+    <value>Calcul alternatif</value>
+  </data>
   <data name="Label_ApplicationPath" xml:space="preserve">
     <value>Chemin de l’application</value>
   </data>
@@ -925,6 +970,12 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_BatchImageAnalysis" xml:space="preserve">
     <value>Analyse d’images par lot</value>
+  </data>
+  <data name="Label_BitCellCount" xml:space="preserve">
+    <value>Nombre de cellules de bits</value>
+  </data>
+  <data name="Label_BitCellMode" xml:space="preserve">
+    <value>Mode cellule de bits</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Déc. bit</value>
@@ -1286,6 +1337,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Secteurs masqués</value>
   </data>
+  <data name="Label_Hole" xml:space="preserve">
+    <value>Trou</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -1330,6 +1384,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_InterfaceType" xml:space="preserve">
     <value>Type d’interface</value>
+  </data>
+  <data name="Label_IndexHole" xml:space="preserve">
+    <value>Trou d’index</value>
   </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Infos</value>
@@ -1583,6 +1640,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Retrying" xml:space="preserve">
     <value>Nouvelle tentative</value>
   </data>
+  <data name="Label_ReverseEndian" xml:space="preserve">
+    <value>Endianness inversé</value>
+  </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>Tours</value>
   </data>
@@ -1597,6 +1657,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Dossier racine</value>
+  </data>
+  <data name="Label_RPMSlowdown" xml:space="preserve">
+    <value>Ralentissement RPM</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Sauver</value>
@@ -1696,6 +1759,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>Retirer le chemin des journaux</value>
+  </data>
+  <data name="Label_SurfaceData" xml:space="preserve">
+    <value>Données de surface</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>Synchroniser les FAT</value>
@@ -1817,6 +1883,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Écrire le disque</value>
   </data>
+  <data name="Label_WriteProtect" xml:space="preserve">
+    <value>Protection en écriture</value>
+  </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Coupures d’écriture</value>
   </data>
@@ -1825,6 +1894,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_Yes" xml:space="preserve">
     <value>Oui</value>
+  </data>
+  <data name="Label_ZoneType" xml:space="preserve">
+    <value>Type de zone</value>
   </data>
   <data name="MainMenu_Disk" xml:space="preserve">
     <value>&amp;Disquette</value>

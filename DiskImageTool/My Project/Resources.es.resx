@@ -249,6 +249,48 @@
   <data name="Caption_ValidClusters" xml:space="preserve">
     <value>Clusters válidos</value>
   </data>
+  <data name="D86F_DiskType_FixedRPM" xml:space="preserve">
+    <value>RPM fijo</value>
+  </data>
+  <data name="D86F_DiskType_Zoned" xml:space="preserve">
+    <value>Zonado</value>
+  </data>
+  <data name="D86F_Encoding_FM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="D86F_Encoding_GCR" xml:space="preserve">
+    <value>GCR</value>
+  </data>
+  <data name="D86F_Encoding_M2FM" xml:space="preserve">
+    <value>M2FM</value>
+  </data>
+  <data name="D86F_Encoding_MFM" xml:space="preserve">
+    <value>MFM</value>
+  </data>
+  <data name="D86F_Hole_DD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="D86F_Hole_ED" xml:space="preserve">
+    <value>ED</value>
+  </data>
+  <data name="D86F_Hole_ED2000" xml:space="preserve">
+    <value>ED 2000 kbps</value>
+  </data>
+  <data name="D86F_Hole_HD" xml:space="preserve">
+    <value>HD</value>
+  </data>
+  <data name="D86F_Zone_Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="D86F_Zone_Commodore64" xml:space="preserve">
+    <value>Commodore 64</value>
+  </data>
+  <data name="D86F_Zone_PreApple1" xml:space="preserve">
+    <value>Pre-Apple #1</value>
+  </data>
+  <data name="D86F_Zone_PreApple2" xml:space="preserve">
+    <value>Pre-Apple #2</value>
+  </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>Por favor, introduzca un valor binario de 8 bits válido</value>
   </data>
@@ -896,6 +938,9 @@ Archivo de imagen: '{1}'
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Todas las Pistas</value>
   </data>
+  <data name="Label_AlternateBitCell" xml:space="preserve">
+    <value>Cálculo alternativo</value>
+  </data>
   <data name="Label_ApplicationPath" xml:space="preserve">
     <value>Ruta de la aplicación</value>
   </data>
@@ -925,6 +970,12 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_BatchImageAnalysis" xml:space="preserve">
     <value>Análisis de imágenes por lote</value>
+  </data>
+  <data name="Label_BitCellCount" xml:space="preserve">
+    <value>Recuento de celdas de bits</value>
+  </data>
+  <data name="Label_BitCellMode" xml:space="preserve">
+    <value>Modo de celda de bits</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Despl. bit</value>
@@ -1286,6 +1337,9 @@ Archivo de imagen: '{1}'
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Sectores ocultos</value>
   </data>
+  <data name="Label_Hole" xml:space="preserve">
+    <value>Orificio</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Imagen</value>
   </data>
@@ -1330,6 +1384,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_InterfaceType" xml:space="preserve">
     <value>Tipo de interfaz</value>
+  </data>
+  <data name="Label_IndexHole" xml:space="preserve">
+    <value>Orificio de índice</value>
   </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Información</value>
@@ -1583,6 +1640,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Retrying" xml:space="preserve">
     <value>Reintentando</value>
   </data>
+  <data name="Label_ReverseEndian" xml:space="preserve">
+    <value>Endian invertido</value>
+  </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>Revs</value>
   </data>
@@ -1597,6 +1657,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Carpeta raíz</value>
+  </data>
+  <data name="Label_RPMSlowdown" xml:space="preserve">
+    <value>Reducción de RPM</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Guardar</value>
@@ -1696,6 +1759,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>Quitar la ruta de los registros</value>
+  </data>
+  <data name="Label_SurfaceData" xml:space="preserve">
+    <value>Datos de superficie</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>Sincronizar FATs</value>
@@ -1817,6 +1883,9 @@ Archivo de imagen: '{1}'
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Escribir el disquete</value>
   </data>
+  <data name="Label_WriteProtect" xml:space="preserve">
+    <value>Protección contra escritura</value>
+  </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Empalmes de escritura</value>
   </data>
@@ -1825,6 +1894,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Yes" xml:space="preserve">
     <value>Sí</value>
+  </data>
+  <data name="Label_ZoneType" xml:space="preserve">
+    <value>Tipo de zona</value>
   </data>
   <data name="MainMenu_Disk" xml:space="preserve">
     <value>&amp;Disco</value>

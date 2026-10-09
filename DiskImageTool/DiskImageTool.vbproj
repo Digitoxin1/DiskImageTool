@@ -598,6 +598,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ImageForms\ImageFormShared.vb" />
+    <Compile Include="Forms\ImageForms\D86FImageForm.Designer.vb">
+      <DependentUpon>D86FImageForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImageForms\D86FImageForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\UndeleteForm.Designer.vb">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
     </Compile>
@@ -791,6 +797,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageForms\HFEImageForm.resx">
       <DependentUpon>HFEImageForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImageForms\D86FImageForm.resx">
+      <DependentUpon>D86FImageForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.resx">

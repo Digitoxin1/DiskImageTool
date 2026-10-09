@@ -855,7 +855,7 @@ Public Class MainForm
             MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
             MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
             MenuReportsImageAnalysis.Enabled = CheckSize
-            MenuEditImageProperties.Enabled = Disk.Image.ImageType = FloppyImageType.TranscopyImage OrElse Disk.Image.ImageType = FloppyImageType.MFMImage OrElse Disk.Image.ImageType = FloppyImageType.HFEImage
+            MenuEditImageProperties.Enabled = Disk.Image.ImageType = FloppyImageType.TranscopyImage OrElse Disk.Image.ImageType = FloppyImageType.MFMImage OrElse Disk.Image.ImageType = FloppyImageType.HFEImage OrElse Disk.Image.ImageType = FloppyImageType.D86FImage
             SetButtonStateSaveAs(True)
             MenuGreaseweazleWrite.Enabled = CheckSize
         Else
@@ -2229,6 +2229,8 @@ Public Class MainForm
             Updated = MFMImageForm.Display(FilePanelMain.CurrentImage.Disk)
         ElseIf FilePanelMain.CurrentImage.Disk.Image.ImageType = FloppyImageType.HFEImage Then
             Updated = HFEImageForm.Display(FilePanelMain.CurrentImage.Disk)
+        ElseIf FilePanelMain.CurrentImage.Disk.Image.ImageType = FloppyImageType.D86FImage Then
+            Updated = D86FImageForm.Display(FilePanelMain.CurrentImage.Disk)
         Else
             Updated = TransCopyImageForm.Display(FilePanelMain.CurrentImage.Disk)
         End If

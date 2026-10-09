@@ -30,14 +30,6 @@ Partial Class HFEImageForm
         Me.LblRPM = New System.Windows.Forms.Label()
         Me.TxtRPM = New System.Windows.Forms.TextBox()
         Me.CboInterfaceType = New System.Windows.Forms.ComboBox()
-        Me.LblReserved = New System.Windows.Forms.Label()
-        Me.TxtReserved = New System.Windows.Forms.TextBox()
-        Me.LblTrackListOffset = New System.Windows.Forms.Label()
-        Me.TxtTrackListOffset = New System.Windows.Forms.TextBox()
-        Me.LblWriteAllowed = New System.Windows.Forms.Label()
-        Me.CboWriteAllowed = New System.Windows.Forms.ComboBox()
-        Me.LblSingleStep = New System.Windows.Forms.Label()
-        Me.TxtSingleStep = New System.Windows.Forms.TextBox()
         Me.LblTrack0Side0Alt = New System.Windows.Forms.Label()
         Me.TxtTrack0Side0Alt = New System.Windows.Forms.TextBox()
         Me.LblTrack0Side1Alt = New System.Windows.Forms.Label()
@@ -47,14 +39,22 @@ Partial Class HFEImageForm
         Me.LblSides = New System.Windows.Forms.Label()
         Me.TxtSides = New System.Windows.Forms.TextBox()
         Me.LblInterfaceType = New System.Windows.Forms.Label()
-        Me.LblTrack0Side0Encoding = New System.Windows.Forms.Label()
-        Me.TxtTrack0Side0Encoding = New System.Windows.Forms.TextBox()
-        Me.LblTrack0Side1Encoding = New System.Windows.Forms.Label()
-        Me.TxtTrack0Side1Encoding = New System.Windows.Forms.TextBox()
         Me.LblBitRate = New System.Windows.Forms.Label()
         Me.TxtBitRate = New System.Windows.Forms.TextBox()
         Me.LblTrackEncoding = New System.Windows.Forms.Label()
         Me.TxtTrackEncoding = New System.Windows.Forms.TextBox()
+        Me.LblTrack0Side0Encoding = New System.Windows.Forms.Label()
+        Me.LblTrack0Side1Encoding = New System.Windows.Forms.Label()
+        Me.TxtTrack0Side0Encoding = New System.Windows.Forms.TextBox()
+        Me.TxtTrack0Side1Encoding = New System.Windows.Forms.TextBox()
+        Me.LblTrackListOffset = New System.Windows.Forms.Label()
+        Me.LblWriteAllowed = New System.Windows.Forms.Label()
+        Me.TxtTrackListOffset = New System.Windows.Forms.TextBox()
+        Me.CboWriteAllowed = New System.Windows.Forms.ComboBox()
+        Me.LblReserved = New System.Windows.Forms.Label()
+        Me.LblSingleStep = New System.Windows.Forms.Label()
+        Me.TxtReserved = New System.Windows.Forms.TextBox()
+        Me.TxtSingleStep = New System.Windows.Forms.TextBox()
         PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         PanelMain = New System.Windows.Forms.Panel()
         PanelBottom.SuspendLayout()
@@ -137,45 +137,43 @@ Partial Class HFEImageForm
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblSignature, 0, 0)
         Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSignature, 1, 0)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTracks, 0, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackCount, 1, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblRPM, 0, 6)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtRPM, 1, 6)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.CboInterfaceType, 1, 7)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side0Alt, 0, 12)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side0Alt, 1, 12)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side1Alt, 0, 14)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side1Alt, 1, 14)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTracks, 0, 1)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackCount, 1, 1)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblRPM, 0, 2)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtRPM, 1, 2)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.CboInterfaceType, 1, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side0Alt, 0, 6)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side0Alt, 1, 6)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side1Alt, 0, 7)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side1Alt, 1, 7)
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblFormatRevision, 2, 0)
         Me.TableLayoutPanelHeader.Controls.Add(Me.TxtFormatRevision, 3, 0)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSides, 2, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSides, 3, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblInterfaceType, 0, 7)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblBitRate, 2, 6)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtBitRate, 3, 6)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackEncoding, 2, 7)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackEncoding, 3, 7)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side0Encoding, 2, 12)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side1Encoding, 2, 14)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side0Encoding, 3, 12)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side1Encoding, 3, 14)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackListOffset, 0, 10)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblWriteAllowed, 0, 9)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackListOffset, 1, 10)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.CboWriteAllowed, 1, 9)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblReserved, 2, 10)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSingleStep, 2, 9)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtReserved, 3, 10)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSingleStep, 3, 9)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSides, 2, 1)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSides, 3, 1)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblInterfaceType, 0, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblBitRate, 2, 2)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtBitRate, 3, 2)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackEncoding, 2, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackEncoding, 3, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side0Encoding, 2, 6)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrack0Side1Encoding, 2, 7)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side0Encoding, 3, 6)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrack0Side1Encoding, 3, 7)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackListOffset, 0, 5)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblWriteAllowed, 0, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackListOffset, 1, 5)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.CboWriteAllowed, 1, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblReserved, 2, 5)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSingleStep, 2, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtReserved, 3, 5)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSingleStep, 3, 4)
         Me.TableLayoutPanelHeader.Dock = System.Windows.Forms.DockStyle.Top
         Me.TableLayoutPanelHeader.Location = New System.Drawing.Point(12, 12)
         Me.TableLayoutPanelHeader.Name = "TableLayoutPanelHeader"
         Me.TableLayoutPanelHeader.Padding = New System.Windows.Forms.Padding(0, 0, 0, 16)
-        Me.TableLayoutPanelHeader.RowCount = 16
+        Me.TableLayoutPanelHeader.RowCount = 8
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
@@ -184,14 +182,8 @@ Partial Class HFEImageForm
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableLayoutPanelHeader.Size = New System.Drawing.Size(680, 226)
         Me.TableLayoutPanelHeader.TabIndex = 0
         '
@@ -243,7 +235,7 @@ Partial Class HFEImageForm
         Me.LblRPM.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblRPM.Name = "LblRPM"
         Me.LblRPM.Size = New System.Drawing.Size(39, 13)
-        Me.LblRPM.TabIndex = 12
+        Me.LblRPM.TabIndex = 8
         Me.LblRPM.Text = "{RPM}"
         '
         'TxtRPM
@@ -253,7 +245,7 @@ Partial Class HFEImageForm
         Me.TxtRPM.MaxLength = 5
         Me.TxtRPM.Name = "TxtRPM"
         Me.TxtRPM.Size = New System.Drawing.Size(64, 20)
-        Me.TxtRPM.TabIndex = 13
+        Me.TxtRPM.TabIndex = 9
         '
         'CboInterfaceType
         '
@@ -263,88 +255,7 @@ Partial Class HFEImageForm
         Me.CboInterfaceType.Location = New System.Drawing.Point(120, 81)
         Me.CboInterfaceType.Name = "CboInterfaceType"
         Me.CboInterfaceType.Size = New System.Drawing.Size(164, 21)
-        Me.CboInterfaceType.TabIndex = 15
-        '
-        'LblReserved
-        '
-        Me.LblReserved.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblReserved.AutoSize = True
-        Me.LblReserved.Location = New System.Drawing.Point(290, 138)
-        Me.LblReserved.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblReserved.Name = "LblReserved"
-        Me.LblReserved.Size = New System.Drawing.Size(61, 13)
-        Me.LblReserved.TabIndex = 16
-        Me.LblReserved.Text = "{Reserved}"
-        '
-        'TxtReserved
-        '
-        Me.TxtReserved.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtReserved.Location = New System.Drawing.Point(410, 135)
-        Me.TxtReserved.Name = "TxtReserved"
-        Me.TxtReserved.ReadOnly = True
-        Me.TxtReserved.Size = New System.Drawing.Size(64, 20)
-        Me.TxtReserved.TabIndex = 17
-        '
-        'LblTrackListOffset
-        '
-        Me.LblTrackListOffset.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblTrackListOffset.AutoSize = True
-        Me.LblTrackListOffset.Location = New System.Drawing.Point(3, 138)
-        Me.LblTrackListOffset.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblTrackListOffset.Name = "LblTrackListOffset"
-        Me.LblTrackListOffset.Size = New System.Drawing.Size(93, 13)
-        Me.LblTrackListOffset.TabIndex = 18
-        Me.LblTrackListOffset.Text = "{Track List Offset}"
-        '
-        'TxtTrackListOffset
-        '
-        Me.TxtTrackListOffset.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrackListOffset.Location = New System.Drawing.Point(120, 135)
-        Me.TxtTrackListOffset.Name = "TxtTrackListOffset"
-        Me.TxtTrackListOffset.ReadOnly = True
-        Me.TxtTrackListOffset.Size = New System.Drawing.Size(64, 20)
-        Me.TxtTrackListOffset.TabIndex = 19
-        '
-        'LblWriteAllowed
-        '
-        Me.LblWriteAllowed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblWriteAllowed.AutoSize = True
-        Me.LblWriteAllowed.Location = New System.Drawing.Point(3, 112)
-        Me.LblWriteAllowed.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblWriteAllowed.Name = "LblWriteAllowed"
-        Me.LblWriteAllowed.Size = New System.Drawing.Size(80, 13)
-        Me.LblWriteAllowed.TabIndex = 20
-        Me.LblWriteAllowed.Text = "{Write Allowed}"
-        '
-        'CboWriteAllowed
-        '
-        Me.CboWriteAllowed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.CboWriteAllowed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CboWriteAllowed.FormattingEnabled = True
-        Me.CboWriteAllowed.Location = New System.Drawing.Point(120, 108)
-        Me.CboWriteAllowed.Name = "CboWriteAllowed"
-        Me.CboWriteAllowed.Size = New System.Drawing.Size(164, 21)
-        Me.CboWriteAllowed.TabIndex = 21
-        '
-        'LblSingleStep
-        '
-        Me.LblSingleStep.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblSingleStep.AutoSize = True
-        Me.LblSingleStep.Location = New System.Drawing.Point(290, 112)
-        Me.LblSingleStep.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblSingleStep.Name = "LblSingleStep"
-        Me.LblSingleStep.Size = New System.Drawing.Size(37, 13)
-        Me.LblSingleStep.TabIndex = 22
-        Me.LblSingleStep.Text = "{Step}"
-        '
-        'TxtSingleStep
-        '
-        Me.TxtSingleStep.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtSingleStep.Location = New System.Drawing.Point(410, 108)
-        Me.TxtSingleStep.Name = "TxtSingleStep"
-        Me.TxtSingleStep.ReadOnly = True
-        Me.TxtSingleStep.Size = New System.Drawing.Size(164, 20)
-        Me.TxtSingleStep.TabIndex = 23
+        Me.CboInterfaceType.TabIndex = 13
         '
         'LblTrack0Side0Alt
         '
@@ -434,48 +345,8 @@ Partial Class HFEImageForm
         Me.LblInterfaceType.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblInterfaceType.Name = "LblInterfaceType"
         Me.LblInterfaceType.Size = New System.Drawing.Size(84, 13)
-        Me.LblInterfaceType.TabIndex = 14
+        Me.LblInterfaceType.TabIndex = 12
         Me.LblInterfaceType.Text = "{Interface Type}"
-        '
-        'LblTrack0Side0Encoding
-        '
-        Me.LblTrack0Side0Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblTrack0Side0Encoding.AutoSize = True
-        Me.LblTrack0Side0Encoding.Location = New System.Drawing.Point(290, 164)
-        Me.LblTrack0Side0Encoding.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblTrack0Side0Encoding.Name = "LblTrack0Side0Encoding"
-        Me.LblTrack0Side0Encoding.Size = New System.Drawing.Size(109, 13)
-        Me.LblTrack0Side0Encoding.TabIndex = 26
-        Me.LblTrack0Side0Encoding.Text = "{Track 0.0 Encoding}"
-        '
-        'TxtTrack0Side0Encoding
-        '
-        Me.TxtTrack0Side0Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrack0Side0Encoding.Location = New System.Drawing.Point(410, 161)
-        Me.TxtTrack0Side0Encoding.Name = "TxtTrack0Side0Encoding"
-        Me.TxtTrack0Side0Encoding.ReadOnly = True
-        Me.TxtTrack0Side0Encoding.Size = New System.Drawing.Size(164, 20)
-        Me.TxtTrack0Side0Encoding.TabIndex = 27
-        '
-        'LblTrack0Side1Encoding
-        '
-        Me.LblTrack0Side1Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblTrack0Side1Encoding.AutoSize = True
-        Me.LblTrack0Side1Encoding.Location = New System.Drawing.Point(290, 190)
-        Me.LblTrack0Side1Encoding.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblTrack0Side1Encoding.Name = "LblTrack0Side1Encoding"
-        Me.LblTrack0Side1Encoding.Size = New System.Drawing.Size(109, 13)
-        Me.LblTrack0Side1Encoding.TabIndex = 30
-        Me.LblTrack0Side1Encoding.Text = "{Track 0.1 Encoding}"
-        '
-        'TxtTrack0Side1Encoding
-        '
-        Me.TxtTrack0Side1Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrack0Side1Encoding.Location = New System.Drawing.Point(410, 187)
-        Me.TxtTrack0Side1Encoding.Name = "TxtTrack0Side1Encoding"
-        Me.TxtTrack0Side1Encoding.ReadOnly = True
-        Me.TxtTrack0Side1Encoding.Size = New System.Drawing.Size(164, 20)
-        Me.TxtTrack0Side1Encoding.TabIndex = 31
         '
         'LblBitRate
         '
@@ -505,7 +376,7 @@ Partial Class HFEImageForm
         Me.LblTrackEncoding.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblTrackEncoding.Name = "LblTrackEncoding"
         Me.LblTrackEncoding.Size = New System.Drawing.Size(91, 13)
-        Me.LblTrackEncoding.TabIndex = 8
+        Me.LblTrackEncoding.TabIndex = 14
         Me.LblTrackEncoding.Text = "{Track Encoding}"
         '
         'TxtTrackEncoding
@@ -515,7 +386,128 @@ Partial Class HFEImageForm
         Me.TxtTrackEncoding.Name = "TxtTrackEncoding"
         Me.TxtTrackEncoding.ReadOnly = True
         Me.TxtTrackEncoding.Size = New System.Drawing.Size(164, 20)
-        Me.TxtTrackEncoding.TabIndex = 9
+        Me.TxtTrackEncoding.TabIndex = 15
+        '
+        'LblTrack0Side0Encoding
+        '
+        Me.LblTrack0Side0Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblTrack0Side0Encoding.AutoSize = True
+        Me.LblTrack0Side0Encoding.Location = New System.Drawing.Point(290, 164)
+        Me.LblTrack0Side0Encoding.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblTrack0Side0Encoding.Name = "LblTrack0Side0Encoding"
+        Me.LblTrack0Side0Encoding.Size = New System.Drawing.Size(109, 13)
+        Me.LblTrack0Side0Encoding.TabIndex = 26
+        Me.LblTrack0Side0Encoding.Text = "{Track 0.0 Encoding}"
+        '
+        'LblTrack0Side1Encoding
+        '
+        Me.LblTrack0Side1Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblTrack0Side1Encoding.AutoSize = True
+        Me.LblTrack0Side1Encoding.Location = New System.Drawing.Point(290, 190)
+        Me.LblTrack0Side1Encoding.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblTrack0Side1Encoding.Name = "LblTrack0Side1Encoding"
+        Me.LblTrack0Side1Encoding.Size = New System.Drawing.Size(109, 13)
+        Me.LblTrack0Side1Encoding.TabIndex = 30
+        Me.LblTrack0Side1Encoding.Text = "{Track 0.1 Encoding}"
+        '
+        'TxtTrack0Side0Encoding
+        '
+        Me.TxtTrack0Side0Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtTrack0Side0Encoding.Location = New System.Drawing.Point(410, 161)
+        Me.TxtTrack0Side0Encoding.Name = "TxtTrack0Side0Encoding"
+        Me.TxtTrack0Side0Encoding.ReadOnly = True
+        Me.TxtTrack0Side0Encoding.Size = New System.Drawing.Size(164, 20)
+        Me.TxtTrack0Side0Encoding.TabIndex = 27
+        '
+        'TxtTrack0Side1Encoding
+        '
+        Me.TxtTrack0Side1Encoding.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtTrack0Side1Encoding.Location = New System.Drawing.Point(410, 187)
+        Me.TxtTrack0Side1Encoding.Name = "TxtTrack0Side1Encoding"
+        Me.TxtTrack0Side1Encoding.ReadOnly = True
+        Me.TxtTrack0Side1Encoding.Size = New System.Drawing.Size(164, 20)
+        Me.TxtTrack0Side1Encoding.TabIndex = 31
+        '
+        'LblTrackListOffset
+        '
+        Me.LblTrackListOffset.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblTrackListOffset.AutoSize = True
+        Me.LblTrackListOffset.Location = New System.Drawing.Point(3, 138)
+        Me.LblTrackListOffset.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblTrackListOffset.Name = "LblTrackListOffset"
+        Me.LblTrackListOffset.Size = New System.Drawing.Size(93, 13)
+        Me.LblTrackListOffset.TabIndex = 20
+        Me.LblTrackListOffset.Text = "{Track List Offset}"
+        '
+        'LblWriteAllowed
+        '
+        Me.LblWriteAllowed.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblWriteAllowed.AutoSize = True
+        Me.LblWriteAllowed.Location = New System.Drawing.Point(3, 112)
+        Me.LblWriteAllowed.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblWriteAllowed.Name = "LblWriteAllowed"
+        Me.LblWriteAllowed.Size = New System.Drawing.Size(80, 13)
+        Me.LblWriteAllowed.TabIndex = 16
+        Me.LblWriteAllowed.Text = "{Write Allowed}"
+        '
+        'TxtTrackListOffset
+        '
+        Me.TxtTrackListOffset.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtTrackListOffset.Location = New System.Drawing.Point(120, 135)
+        Me.TxtTrackListOffset.Name = "TxtTrackListOffset"
+        Me.TxtTrackListOffset.ReadOnly = True
+        Me.TxtTrackListOffset.Size = New System.Drawing.Size(64, 20)
+        Me.TxtTrackListOffset.TabIndex = 21
+        '
+        'CboWriteAllowed
+        '
+        Me.CboWriteAllowed.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.CboWriteAllowed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboWriteAllowed.FormattingEnabled = True
+        Me.CboWriteAllowed.Location = New System.Drawing.Point(120, 108)
+        Me.CboWriteAllowed.Name = "CboWriteAllowed"
+        Me.CboWriteAllowed.Size = New System.Drawing.Size(164, 21)
+        Me.CboWriteAllowed.TabIndex = 17
+        '
+        'LblReserved
+        '
+        Me.LblReserved.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblReserved.AutoSize = True
+        Me.LblReserved.Location = New System.Drawing.Point(290, 138)
+        Me.LblReserved.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblReserved.Name = "LblReserved"
+        Me.LblReserved.Size = New System.Drawing.Size(61, 13)
+        Me.LblReserved.TabIndex = 22
+        Me.LblReserved.Text = "{Reserved}"
+        '
+        'LblSingleStep
+        '
+        Me.LblSingleStep.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblSingleStep.AutoSize = True
+        Me.LblSingleStep.Location = New System.Drawing.Point(290, 112)
+        Me.LblSingleStep.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblSingleStep.Name = "LblSingleStep"
+        Me.LblSingleStep.Size = New System.Drawing.Size(37, 13)
+        Me.LblSingleStep.TabIndex = 18
+        Me.LblSingleStep.Text = "{Step}"
+        '
+        'TxtReserved
+        '
+        Me.TxtReserved.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtReserved.Location = New System.Drawing.Point(410, 135)
+        Me.TxtReserved.Name = "TxtReserved"
+        Me.TxtReserved.ReadOnly = True
+        Me.TxtReserved.Size = New System.Drawing.Size(64, 20)
+        Me.TxtReserved.TabIndex = 23
+        '
+        'TxtSingleStep
+        '
+        Me.TxtSingleStep.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtSingleStep.Location = New System.Drawing.Point(410, 108)
+        Me.TxtSingleStep.Name = "TxtSingleStep"
+        Me.TxtSingleStep.ReadOnly = True
+        Me.TxtSingleStep.Size = New System.Drawing.Size(164, 20)
+        Me.TxtSingleStep.TabIndex = 19
         '
         'HFEImageForm
         '

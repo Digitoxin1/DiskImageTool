@@ -274,6 +274,48 @@
   <data name="CopyHexFormatted" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\CopyHexFormatted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="D86F_DiskType_FixedRPM" xml:space="preserve">
+    <value>Fixed RPM</value>
+  </data>
+  <data name="D86F_DiskType_Zoned" xml:space="preserve">
+    <value>Zoned</value>
+  </data>
+  <data name="D86F_Encoding_FM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="D86F_Encoding_GCR" xml:space="preserve">
+    <value>GCR</value>
+  </data>
+  <data name="D86F_Encoding_M2FM" xml:space="preserve">
+    <value>M2FM</value>
+  </data>
+  <data name="D86F_Encoding_MFM" xml:space="preserve">
+    <value>MFM</value>
+  </data>
+  <data name="D86F_Hole_DD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="D86F_Hole_ED" xml:space="preserve">
+    <value>ED</value>
+  </data>
+  <data name="D86F_Hole_ED2000" xml:space="preserve">
+    <value>ED 2000 kbps</value>
+  </data>
+  <data name="D86F_Hole_HD" xml:space="preserve">
+    <value>HD</value>
+  </data>
+  <data name="D86F_Zone_Apple" xml:space="preserve">
+    <value>Apple</value>
+  </data>
+  <data name="D86F_Zone_Commodore64" xml:space="preserve">
+    <value>Commodore 64</value>
+  </data>
+  <data name="D86F_Zone_PreApple1" xml:space="preserve">
+    <value>Pre-Apple #1</value>
+  </data>
+  <data name="D86F_Zone_PreApple2" xml:space="preserve">
+    <value>Pre-Apple #2</value>
+  </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>Please enter a valid 8-bit binary value</value>
   </data>
@@ -1042,6 +1084,9 @@ Do you wish to overwrite?</value>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>All Tracks</value>
   </data>
+  <data name="Label_AlternateBitCell" xml:space="preserve">
+    <value>Alternate Calculation</value>
+  </data>
   <data name="Label_ApplicationPath" xml:space="preserve">
     <value>Application Path</value>
   </data>
@@ -1071,6 +1116,12 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_BatchImageAnalysis" xml:space="preserve">
     <value>Batch Image Analysis</value>
+  </data>
+  <data name="Label_BitCellCount" xml:space="preserve">
+    <value>Bit Cell Count</value>
+  </data>
+  <data name="Label_BitCellMode" xml:space="preserve">
+    <value>Bit Cell Mode</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Bit Offset</value>
@@ -1440,6 +1491,9 @@ Do you wish to overwrite?</value>
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Hidden Sectors</value>
   </data>
+  <data name="Label_Hole" xml:space="preserve">
+    <value>Hole</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -1484,6 +1538,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_InterfaceType" xml:space="preserve">
     <value>Interface Type</value>
+  </data>
+  <data name="Label_IndexHole" xml:space="preserve">
+    <value>Index Hole</value>
   </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Info</value>
@@ -1737,6 +1794,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Retrying" xml:space="preserve">
     <value>Retrying</value>
   </data>
+  <data name="Label_ReverseEndian" xml:space="preserve">
+    <value>Reverse Endian</value>
+  </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>Revs</value>
   </data>
@@ -1751,6 +1811,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Root Folder</value>
+  </data>
+  <data name="Label_RPMSlowdown" xml:space="preserve">
+    <value>RPM Slowdown</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Save</value>
@@ -1850,6 +1913,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>Strip Path from Logs</value>
+  </data>
+  <data name="Label_SurfaceData" xml:space="preserve">
+    <value>Surface Data</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>Sync FATs</value>
@@ -1983,6 +2049,9 @@ Do you wish to overwrite?</value>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Write Disk</value>
   </data>
+  <data name="Label_WriteProtect" xml:space="preserve">
+    <value>Write Protect</value>
+  </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Write Splices</value>
   </data>
@@ -1991,6 +2060,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Yes" xml:space="preserve">
     <value>Yes</value>
+  </data>
+  <data name="Label_ZoneType" xml:space="preserve">
+    <value>Zone Type</value>
   </data>
   <data name="MainMenu_Disk" xml:space="preserve">
     <value>&amp;Disk</value>

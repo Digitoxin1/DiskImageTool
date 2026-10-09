@@ -30,9 +30,11 @@ Friend Module ImageFormShared
             .SortMode = DataGridViewColumnSortMode.NotSortable
         }
         Column.DefaultCellStyle.Alignment = Alignment
+
         If Format <> "" Then
             Column.DefaultCellStyle.Format = Format
         End If
+
         Grid.Columns.Add(Column)
     End Sub
 
