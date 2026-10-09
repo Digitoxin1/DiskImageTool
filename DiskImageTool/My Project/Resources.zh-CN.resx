@@ -962,6 +962,9 @@ Flux 映像集：“{0}”
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>清洗磁盘</value>
   </data>
+  <data name="Label_CheckSequence" xml:space="preserve">
+    <value>校验序号</value>
+  </data>
   <data name="Label_Comment" xml:space="preserve">
     <value>注释</value>
   </data>
@@ -979,6 +982,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Compressed" xml:space="preserve">
     <value>已压缩</value>
+  </data>
+  <data name="Label_Compression" xml:space="preserve">
+    <value>压缩</value>
   </data>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>控制台输出</value>
@@ -1016,6 +1022,9 @@ Flux 映像集：“{0}”
   <data name="Label_Cylinders" xml:space="preserve">
     <value>柱面</value>
   </data>
+  <data name="Label_Cylinder" xml:space="preserve">
+    <value>柱面</value>
+  </data>
   <data name="Label_Data" xml:space="preserve">
     <value>数据</value>
   </data>
@@ -1024,6 +1033,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Database" xml:space="preserve">
     <value>数据库</value>
+  </data>
+  <data name="Label_DataRate" xml:space="preserve">
+    <value>数据速率</value>
   </data>
   <data name="Label_Date" xml:space="preserve">
     <value>日期</value>
@@ -1088,6 +1100,9 @@ Flux 映像集：“{0}”
   <data name="Label_DropMessage" xml:space="preserve">
     <value>将软盘映像拖放到此处</value>
   </data>
+  <data name="Label_DosAllocation" xml:space="preserve">
+    <value>DOS 分配</value>
+  </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>编码</value>
   </data>
@@ -1147,6 +1162,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>下一簇</value>
+  </data>
+  <data name="Label_FM" xml:space="preserve">
+    <value>FM</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>文件</value>
@@ -1252,6 +1270,12 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Gap" xml:space="preserve">
     <value>间隙</value>
+  </data>
+  <data name="Label_Head" xml:space="preserve">
+    <value>磁头</value>
+  </data>
+  <data name="Label_HeaderDriveType" xml:space="preserve">
+    <value>驱动器类型</value>
   </data>
   <data name="Label_Hex" xml:space="preserve">
     <value>十六进制</value>
@@ -1646,6 +1670,9 @@ Flux 映像集：“{0}”
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>选择磁道</value>
   </data>
+  <data name="Label_Sequence" xml:space="preserve">
+    <value>序号</value>
+  </data>
   <data name="Label_Side" xml:space="preserve">
     <value>面</value>
   </data>
@@ -1654,6 +1681,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Signature" xml:space="preserve">
     <value>签名</value>
+  </data>
+  <data name="Label_SingleDensity" xml:space="preserve">
+    <value>单密度</value>
   </data>
   <data name="Label_SingleStep" xml:space="preserve">
     <value>步</value>
@@ -1685,6 +1715,9 @@ Flux 映像集：“{0}”
   <data name="Label_Status" xml:space="preserve">
     <value>状态</value>
   </data>
+  <data name="Label_Stepping" xml:space="preserve">
+    <value>步进</value>
+  </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>从日志中去除路径</value>
   </data>
@@ -1708,6 +1741,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_ToggleSequence" xml:space="preserve">
     <value>切换序号标记</value>
+  </data>
+  <data name="Label_Timestamp" xml:space="preserve">
+    <value>时间戳</value>
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>磁道</value>
@@ -2377,6 +2413,66 @@ Flux 映像集：“{0}”
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>年份</value>
+  </data>
+  <data name="TD0_Compression_LZHUF" xml:space="preserve">
+    <value>LZSS-Huffman</value>
+  </data>
+  <data name="TD0_Compression_LZW" xml:space="preserve">
+    <value>LZW</value>
+  </data>
+  <data name="TD0_Compression_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="TD0_DataRate_250" xml:space="preserve">
+    <value>250 kbps</value>
+  </data>
+  <data name="TD0_DataRate_300" xml:space="preserve">
+    <value>300 kbps</value>
+  </data>
+  <data name="TD0_DataRate_500" xml:space="preserve">
+    <value>500 kbps</value>
+  </data>
+  <data name="TD0_Drive_1200K" xml:space="preserve">
+    <value>1.2M</value>
+  </data>
+  <data name="TD0_Drive_1440K" xml:space="preserve">
+    <value>1.44M</value>
+  </data>
+  <data name="TD0_Drive_35Unknown" xml:space="preserve">
+    <value>3.5" 未知</value>
+  </data>
+  <data name="TD0_Drive_360K" xml:space="preserve">
+    <value>360K</value>
+  </data>
+  <data name="TD0_Drive_52596Tpi" xml:space="preserve">
+    <value>5.25" 96 tpi</value>
+  </data>
+  <data name="TD0_Drive_720K" xml:space="preserve">
+    <value>720K</value>
+  </data>
+  <data name="TD0_Drive_8Inch" xml:space="preserve">
+    <value>8"</value>
+  </data>
+  <data name="TD0_SectorFlag_CrcError" xml:space="preserve">
+    <value>CRC 错误</value>
+  </data>
+  <data name="TD0_SectorFlag_DataNoId" xml:space="preserve">
+    <value>无标识</value>
+  </data>
+  <data name="TD0_SectorFlag_DeletedData" xml:space="preserve">
+    <value>已删除数据</value>
+  </data>
+  <data name="TD0_SectorFlag_DosSkipped" xml:space="preserve">
+    <value>跳过</value>
+  </data>
+  <data name="TD0_SectorFlag_Duplicated" xml:space="preserve">
+    <value>重复</value>
+  </data>
+  <data name="TD0_SectorFlag_NoData" xml:space="preserve">
+    <value>无数据</value>
+  </data>
+  <data name="TD0_Stepping_EvenOnly" xml:space="preserve">
+    <value>仅偶数</value>
   </data>
   <data name="WriteAllowed_Unprotected" xml:space="preserve">
     <value>未保护</value>

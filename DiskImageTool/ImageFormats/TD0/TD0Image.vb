@@ -22,6 +22,10 @@ Namespace ImageFormats.TD0
             End Get
         End Property
 
+        Public Sub SetComment(Comment As TD0Comment)
+            _Comment = Comment
+        End Sub
+
         Public ReadOnly Property Header As TD0Header
             Get
                 Return _Header

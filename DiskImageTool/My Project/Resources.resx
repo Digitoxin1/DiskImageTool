@@ -1208,6 +1208,9 @@ Do you wish to overwrite?</value>
     <value>Cluster</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="Label_CheckSequence" xml:space="preserve">
+    <value>Check Sequence</value>
+  </data>
   <data name="Label_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
@@ -1225,6 +1228,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Compressed" xml:space="preserve">
     <value>Compressed</value>
+  </data>
+  <data name="Label_Compression" xml:space="preserve">
+    <value>Compression</value>
   </data>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Console Output</value>
@@ -1266,6 +1272,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Cylinders" xml:space="preserve">
     <value>Cylinders</value>
   </data>
+  <data name="Label_Cylinder" xml:space="preserve">
+    <value>Cylinder</value>
+  </data>
   <data name="Label_Data" xml:space="preserve">
     <value>Data</value>
   </data>
@@ -1274,6 +1283,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Database" xml:space="preserve">
     <value>Database</value>
+  </data>
+  <data name="Label_DataRate" xml:space="preserve">
+    <value>Data Rate</value>
   </data>
   <data name="Label_Date" xml:space="preserve">
     <value>Date</value>
@@ -1338,6 +1350,9 @@ Do you wish to overwrite?</value>
   <data name="Label_DropMessage" xml:space="preserve">
     <value>Drag &amp;&amp; Drop Floppy Disk Images Here</value>
   </data>
+  <data name="Label_DosAllocation" xml:space="preserve">
+    <value>DOS Allocation</value>
+  </data>
   <data name="Label_Encoding" xml:space="preserve">
     <value>Encoding</value>
   </data>
@@ -1397,6 +1412,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="Label_FM" xml:space="preserve">
+    <value>FM</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>File</value>
@@ -1502,6 +1520,12 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Gap" xml:space="preserve">
     <value>Gap</value>
+  </data>
+  <data name="Label_Head" xml:space="preserve">
+    <value>Head</value>
+  </data>
+  <data name="Label_HeaderDriveType" xml:space="preserve">
+    <value>Drive Type</value>
   </data>
   <data name="Label_Hex" xml:space="preserve">
     <value>Hex</value>
@@ -1896,6 +1920,9 @@ Do you wish to overwrite?</value>
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>Select Tracks</value>
   </data>
+  <data name="Label_Sequence" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
   <data name="Label_Side" xml:space="preserve">
     <value>Side</value>
   </data>
@@ -1904,6 +1931,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Signature" xml:space="preserve">
     <value>Signature</value>
+  </data>
+  <data name="Label_SingleDensity" xml:space="preserve">
+    <value>Single Density</value>
   </data>
   <data name="Label_SingleStep" xml:space="preserve">
     <value>Step</value>
@@ -1934,6 +1964,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Label_Stepping" xml:space="preserve">
+    <value>Stepping</value>
   </data>
   <data name="Label_StripLogPath" xml:space="preserve">
     <value>Strip Path from Logs</value>
@@ -1966,6 +1999,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_ToggleSequence" xml:space="preserve">
     <value>Toggle Sequence Token</value>
+  </data>
+  <data name="Label_Timestamp" xml:space="preserve">
+    <value>Timestamp</value>
   </data>
   <data name="Label_Track" xml:space="preserve">
     <value>Track</value>
@@ -2745,6 +2781,66 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Web" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Web.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TD0_Compression_LZHUF" xml:space="preserve">
+    <value>LZSS-Huffman</value>
+  </data>
+  <data name="TD0_Compression_LZW" xml:space="preserve">
+    <value>LZW</value>
+  </data>
+  <data name="TD0_Compression_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="TD0_DataRate_250" xml:space="preserve">
+    <value>250 kbps</value>
+  </data>
+  <data name="TD0_DataRate_300" xml:space="preserve">
+    <value>300 kbps</value>
+  </data>
+  <data name="TD0_DataRate_500" xml:space="preserve">
+    <value>500 kbps</value>
+  </data>
+  <data name="TD0_Drive_1200K" xml:space="preserve">
+    <value>1.2M</value>
+  </data>
+  <data name="TD0_Drive_1440K" xml:space="preserve">
+    <value>1.44M</value>
+  </data>
+  <data name="TD0_Drive_35Unknown" xml:space="preserve">
+    <value>3.5" unknown</value>
+  </data>
+  <data name="TD0_Drive_360K" xml:space="preserve">
+    <value>360K</value>
+  </data>
+  <data name="TD0_Drive_52596Tpi" xml:space="preserve">
+    <value>5.25" 96 tpi</value>
+  </data>
+  <data name="TD0_Drive_720K" xml:space="preserve">
+    <value>720K</value>
+  </data>
+  <data name="TD0_Drive_8Inch" xml:space="preserve">
+    <value>8"</value>
+  </data>
+  <data name="TD0_SectorFlag_CrcError" xml:space="preserve">
+    <value>CRC Error</value>
+  </data>
+  <data name="TD0_SectorFlag_DataNoId" xml:space="preserve">
+    <value>No ID</value>
+  </data>
+  <data name="TD0_SectorFlag_DeletedData" xml:space="preserve">
+    <value>Deleted Data</value>
+  </data>
+  <data name="TD0_SectorFlag_DosSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="TD0_SectorFlag_Duplicated" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="TD0_SectorFlag_NoData" xml:space="preserve">
+    <value>No Data</value>
+  </data>
+  <data name="TD0_Stepping_EvenOnly" xml:space="preserve">
+    <value>Even only</value>
   </data>
   <data name="WriteAllowed_Unprotected" xml:space="preserve">
     <value>Unprotected</value>

@@ -25,9 +25,21 @@
             End Get
         End Property
 
+        Public ReadOnly Property SectorCount As Byte
+            Get
+                Return _TrackHeader.SectorCount
+            End Get
+        End Property
+
         Public ReadOnly Property IsFM As Boolean
             Get
                 Return _TrackHeader.IsFMTrack OrElse _IsSingleDensityGlobal
+            End Get
+        End Property
+
+        Public ReadOnly Property IsFMTrack As Boolean
+            Get
+                Return _TrackHeader.IsFMTrack
             End Get
         End Property
 

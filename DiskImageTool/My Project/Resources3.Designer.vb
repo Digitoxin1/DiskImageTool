@@ -3131,6 +3131,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Check Sequence.
+        '''</summary>
+        Friend ReadOnly Property Label_CheckSequence() As String
+            Get
+                Return ResourceManager.GetString("Label_CheckSequence", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Checksum.
         '''</summary>
         Friend ReadOnly Property Label_Checksum() As String
@@ -3172,15 +3181,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_CleanDisk() As String
             Get
                 Return ResourceManager.GetString("Label_CleanDisk", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Check Sequence.
-        '''</summary>
-        Friend ReadOnly Property Label_CheckSequence() As String
-            Get
-                Return ResourceManager.GetString("Label_CheckSequence", resourceCulture)
             End Get
         End Property
         
@@ -3244,15 +3244,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Compressed() As String
             Get
                 Return ResourceManager.GetString("Label_Compressed", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Compression.
-        '''</summary>
-        Friend ReadOnly Property Label_Compression() As String
-            Get
-                Return ResourceManager.GetString("Label_Compression", resourceCulture)
             End Get
         End Property
         
@@ -3554,6 +3545,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to DOS Allocation.
+        '''</summary>
+        Friend ReadOnly Property Label_DosAllocation() As String
+            Get
+                Return ResourceManager.GetString("Label_DosAllocation", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Double-step.
         '''</summary>
         Friend ReadOnly Property Label_DoubleStep() As String
@@ -3595,15 +3595,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_DriveType() As String
             Get
                 Return ResourceManager.GetString("Label_DriveType", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to DOS Allocation.
-        '''</summary>
-        Friend ReadOnly Property Label_DosAllocation() As String
-            Get
-                Return ResourceManager.GetString("Label_DosAllocation", resourceCulture)
             End Get
         End Property
         
@@ -4126,15 +4117,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Head() As String
             Get
                 Return ResourceManager.GetString("Label_Head", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Drive Type.
-        '''</summary>
-        Friend ReadOnly Property Label_HeaderDriveType() As String
-            Get
-                Return ResourceManager.GetString("Label_HeaderDriveType", resourceCulture)
             End Get
         End Property
         
@@ -7755,33 +7737,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to LZSS-Huffman.
-        '''</summary>
-        Friend ReadOnly Property TD0_Compression_LZHUF() As String
-            Get
-                Return ResourceManager.GetString("TD0_Compression_LZHUF", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to LZW.
-        '''</summary>
-        Friend ReadOnly Property TD0_Compression_LZW() As String
-            Get
-                Return ResourceManager.GetString("TD0_Compression_LZW", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to None.
-        '''</summary>
-        Friend ReadOnly Property TD0_Compression_None() As String
-            Get
-                Return ResourceManager.GetString("TD0_Compression_None", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to 250 kbps.
         '''</summary>
         Friend ReadOnly Property TD0_DataRate_250() As String
@@ -7868,60 +7823,6 @@ Namespace My.Resources
         Friend ReadOnly Property TD0_Drive_8Inch() As String
             Get
                 Return ResourceManager.GetString("TD0_Drive_8Inch", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to CRC Error.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_CrcError() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_CrcError", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to No ID.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_DataNoId() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_DataNoId", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Deleted Data.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_DeletedData() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_DeletedData", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Skipped.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_DosSkipped() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_DosSkipped", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Duplicate.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_Duplicated() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_Duplicated", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to No Data.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_NoData() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_NoData", resourceCulture)
             End Get
         End Property
         

@@ -20,7 +20,7 @@ Friend Module ImageFormShared
         AddHandler Box.LostFocus, AddressOf NumericTextBox_LostFocus
     End Sub
 
-    Public Sub AddTextColumn(Grid As DataGridView, Name As String, HeaderText As String, Width As Integer, Alignment As DataGridViewContentAlignment, Optional Format As String = "")
+    Public Sub AddTextColumn(Grid As DataGridView, Name As String, HeaderText As String, Width As Integer, Alignment As DataGridViewContentAlignment, Optional Format As String = "", Optional Padding As Integer = 0)
         Dim Column As New DataGridViewTextBoxColumn With {
             .Name = Name,
             .HeaderText = HeaderText,
@@ -33,6 +33,10 @@ Friend Module ImageFormShared
 
         If Format <> "" Then
             Column.DefaultCellStyle.Format = Format
+        End If
+
+        If Padding <> 0 Then
+            Column.DefaultCellStyle.Padding = New Padding(0, 0, Padding, 0)
         End If
 
         Grid.Columns.Add(Column)

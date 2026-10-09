@@ -7,6 +7,11 @@ Namespace ImageFormats.TD0
     Public Class TD0FloppyImage
         Inherits MappedFloppyImage
         Implements IFloppyImage
+        Implements IImageFieldSource
+
+        Private Enum TD0ImageField As UShort
+            CommentBlock = 1
+        End Enum
 
         Private ReadOnly _Image As TD0Image
 
@@ -45,6 +50,61 @@ Namespace ImageFormats.TD0
             Using h As SHA1 = SHA1.Create()
                 Return CalculateHash(h)
             End Using
+        End Function
+
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            If IsTrackField OrElse CType(FieldId, TD0ImageField) <> TD0ImageField.CommentBlock Then
+                Exit Sub
+            End If
+
+            Dim CommentBytes = TryCast(Value, Byte())
+            If CommentBytes Is Nothing Then
+                _Image.SetComment(Nothing)
+                _Image.Header.HasCommentBlock = False
+            Else
+                _Image.SetComment(New TD0Comment(CommentBytes, 0))
+                _Image.Header.HasCommentBlock = True
+            End If
+
+            _Image.Header.RefreshStoredCrc16()
+        End Sub
+
+        Public Function UpdateComment(CommentBytes As Byte()) As Boolean
+            Dim Original = CommentSnapshot(_Image.Comment)
+            If SameBytes(Original, CommentBytes) Then
+                Return False
+            End If
+
+            Dim Changes As New List(Of ImageFieldChange) From {
+                New ImageFieldChange(False, 0, 0, TD0ImageField.CommentBlock, Original, CommentBytes)
+            }
+            Return History.CommitImageFields(Changes)
+        End Function
+
+        Private Shared Function CommentSnapshot(Comment As TD0Comment) As Byte()
+            If Comment Is Nothing Then
+                Return Nothing
+            End If
+
+            Return Comment.GetBytes()
+        End Function
+
+        Private Shared Function SameBytes(Left As Byte(), Right As Byte()) As Boolean
+            If Left Is Nothing AndAlso Right Is Nothing Then
+                Return True
+            End If
+
+            If Left Is Nothing OrElse Right Is Nothing OrElse Left.Length <> Right.Length Then
+                Return False
+            End If
+
+            For Index = 0 To Left.Length - 1
+                If Left(Index) <> Right(Index) Then
+                    Return False
+                End If
+            Next
+
+            Return True
         End Function
 
         Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
