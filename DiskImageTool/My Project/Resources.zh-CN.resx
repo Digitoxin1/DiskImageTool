@@ -1727,18 +1727,6 @@ Flux 映像集：“{0}”
   <data name="Label_Track" xml:space="preserve">
     <value>磁道</value>
   </data>
-  <data name="Label_Track0Side0Alt" xml:space="preserve">
-    <value>磁道 0.0 备用</value>
-  </data>
-  <data name="Label_Track0Side0Encoding" xml:space="preserve">
-    <value>磁道 0.0 编码</value>
-  </data>
-  <data name="Label_Track0Side1Alt" xml:space="preserve">
-    <value>磁道 0.1 备用</value>
-  </data>
-  <data name="Label_Track0Side1Encoding" xml:space="preserve">
-    <value>磁道 0.1 编码</value>
-  </data>
   <data name="Label_TrackEncoding" xml:space="preserve">
     <value>磁道编码</value>
   </data>
@@ -2384,24 +2372,6 @@ Flux 映像集：“{0}”
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>年份</value>
   </data>
-  <data name="IMD_Mode_FM250" xml:space="preserve">
-    <value>FM 250 kbps</value>
-  </data>
-  <data name="IMD_Mode_FM300" xml:space="preserve">
-    <value>FM 300 kbps</value>
-  </data>
-  <data name="IMD_Mode_FM500" xml:space="preserve">
-    <value>FM 500 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM250" xml:space="preserve">
-    <value>MFM 250 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM300" xml:space="preserve">
-    <value>MFM 300 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM500" xml:space="preserve">
-    <value>MFM 500 kbps</value>
-  </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>无</value>
   </data>
@@ -2413,15 +2383,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="PSI_Encoding_HighDensity" xml:space="preserve">
     <value>高密度</value>
-  </data>
-  <data name="TD0_DataRate_250" xml:space="preserve">
-    <value>250 kbps</value>
-  </data>
-  <data name="TD0_DataRate_300" xml:space="preserve">
-    <value>300 kbps</value>
-  </data>
-  <data name="TD0_DataRate_500" xml:space="preserve">
-    <value>500 kbps</value>
   </data>
   <data name="TD0_Drive_35Unknown" xml:space="preserve">
     <value>3.5" 未知</value>
@@ -2467,5 +2428,14 @@ Flux 映像集：“{0}”
   </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>{0} 扇区镜像属性</value>
+  </data>
+  <data name="Label_kbps" xml:space="preserve">
+    <value>{0} kbps</value>
+  </data>
+  <data name="Label_TrackNumEncoding" xml:space="preserve">
+    <value>磁道 {0} 编码</value>
+  </data>
+  <data name="Label_TrackNumAlt" xml:space="preserve">
+    <value>磁道 {0} 备用</value>
   </data>
 </root>

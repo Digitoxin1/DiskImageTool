@@ -123,13 +123,13 @@
                 Case FloppyImageType.PRIImage
                     Return String.Format(My.Resources.FloppyImageType_BitstreamImage, My.Resources.FloppyImageType_PCE)
                 Case FloppyImageType.TranscopyImage
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_Transcopy)
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC)
                 Case FloppyImageType.D86FImage
                     Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F)
                 Case FloppyImageType.IMDImage
-                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_ImageDisk)
+                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_IMD)
                 Case FloppyImageType.TD0Image
-                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_TeleDisk)
+                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_TD0)
                 Case Else
                     Return My.Resources.Label_Unknown
             End Select

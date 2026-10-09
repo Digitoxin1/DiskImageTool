@@ -14,7 +14,7 @@ Public Class IMDImageForm
         _Disk = Disk
 
         ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
-        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_ImageDisk)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_IMD)
         LblHeader.Text = My.Resources.Label_Header
         LblComment.Text = My.Resources.Label_Comment
         LblTracks.Text = My.Resources.Label_Tracks
@@ -46,17 +46,17 @@ Public Class IMDImageForm
     Private Shared Function ModeCaption(Mode As TrackMode) As String
         Select Case Mode
             Case TrackMode.FM500kbps
-                Return My.Resources.IMD_Mode_FM500
+                Return String.Format(My.Resources.Label_kbps, "FM 500")
             Case TrackMode.FM300kbps
-                Return My.Resources.IMD_Mode_FM300
+                Return String.Format(My.Resources.Label_kbps, "FM 300")
             Case TrackMode.FM250kbps
-                Return My.Resources.IMD_Mode_FM250
+                Return String.Format(My.Resources.Label_kbps, "FM 250")
             Case TrackMode.MFM500kbps
-                Return My.Resources.IMD_Mode_MFM500
+                Return String.Format(My.Resources.Label_kbps, "MFM 500")
             Case TrackMode.MFM300kbps
-                Return My.Resources.IMD_Mode_MFM300
+                Return String.Format(My.Resources.Label_kbps, "MFM 300")
             Case TrackMode.MFM250kbps
-                Return My.Resources.IMD_Mode_MFM250
+                Return String.Format(My.Resources.Label_kbps, "MFM 250")
             Case Else
                 Return CByte(Mode).ToString("X2")
         End Select

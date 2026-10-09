@@ -1993,18 +1993,6 @@ Do you wish to overwrite?</value>
   <data name="Label_Track" xml:space="preserve">
     <value>Track</value>
   </data>
-  <data name="Label_Track0Side0Alt" xml:space="preserve">
-    <value>Track 0.0 Alternate</value>
-  </data>
-  <data name="Label_Track0Side0Encoding" xml:space="preserve">
-    <value>Track 0.0 Encoding</value>
-  </data>
-  <data name="Label_Track0Side1Alt" xml:space="preserve">
-    <value>Track 0.1 Alternate</value>
-  </data>
-  <data name="Label_Track0Side1Encoding" xml:space="preserve">
-    <value>Track 0.1 Encoding</value>
-  </data>
   <data name="Label_TrackEncoding" xml:space="preserve">
     <value>Track Encoding</value>
   </data>
@@ -2760,24 +2748,6 @@ Do you wish to overwrite?</value>
   <data name="Web" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Web.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="IMD_Mode_FM250" xml:space="preserve">
-    <value>FM 250 kbps</value>
-  </data>
-  <data name="IMD_Mode_FM300" xml:space="preserve">
-    <value>FM 300 kbps</value>
-  </data>
-  <data name="IMD_Mode_FM500" xml:space="preserve">
-    <value>FM 500 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM250" xml:space="preserve">
-    <value>MFM 250 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM300" xml:space="preserve">
-    <value>MFM 300 kbps</value>
-  </data>
-  <data name="IMD_Mode_MFM500" xml:space="preserve">
-    <value>MFM 500 kbps</value>
-  </data>
   <data name="TD0_Compression_LZHUF" xml:space="preserve">
     <value>LZSS-Huffman</value>
     <comment>@Invariant</comment>
@@ -2817,15 +2787,6 @@ Do you wish to overwrite?</value>
   <data name="PSI_Format_MacintoshGcr" xml:space="preserve">
     <value>Macintosh GCR</value>
     <comment>@Invariant</comment>
-  </data>
-  <data name="TD0_DataRate_250" xml:space="preserve">
-    <value>250 kbps</value>
-  </data>
-  <data name="TD0_DataRate_300" xml:space="preserve">
-    <value>300 kbps</value>
-  </data>
-  <data name="TD0_DataRate_500" xml:space="preserve">
-    <value>500 kbps</value>
   </data>
   <data name="TD0_Drive_1200K" xml:space="preserve">
     <value>1.2M</value>
@@ -2893,11 +2854,11 @@ Do you wish to overwrite?</value>
     <value>PCE</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="FloppyImageType_TeleDisk" xml:space="preserve">
+  <data name="FloppyImageType_TD0" xml:space="preserve">
     <value>TeleDisk</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="FloppyImageType_ImageDisk" xml:space="preserve">
+  <data name="FloppyImageType_IMD" xml:space="preserve">
     <value>ImageDisk</value>
     <comment>@Invariant</comment>
   </data>
@@ -2905,7 +2866,7 @@ Do you wish to overwrite?</value>
     <value>86Box 86F</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="FloppyImageType_Transcopy" xml:space="preserve">
+  <data name="FloppyImageType_TC" xml:space="preserve">
     <value>Transcopy</value>
     <comment>@Invariant</comment>
   </data>
@@ -2921,7 +2882,7 @@ Do you wish to overwrite?</value>
     <value>HxC HFE(v1)</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="FloppyImageType_AppleSauce" xml:space="preserve">
+  <data name="FloppyImageType_A2R" xml:space="preserve">
     <value>Applesauce FDC</value>
     <comment>@Invariant</comment>
   </data>
@@ -2933,5 +2894,14 @@ Do you wish to overwrite?</value>
   </data>
   <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
     <value>{0} Bitstream Image Properties</value>
+  </data>
+  <data name="Label_kbps" xml:space="preserve">
+    <value>{0} kbps</value>
+  </data>
+  <data name="Label_TrackNumEncoding" xml:space="preserve">
+    <value>Track {0} Encoding</value>
+  </data>
+  <data name="Label_TrackNumAlt" xml:space="preserve">
+    <value>Track {0} Alternate</value>
   </data>
 </root>

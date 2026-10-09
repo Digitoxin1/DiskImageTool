@@ -2318,9 +2318,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Applesauce FDC.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_AppleSauce() As String
+        Friend ReadOnly Property FloppyImageType_A2R() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_AppleSauce", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_A2R", resourceCulture)
             End Get
         End Property
         
@@ -2370,20 +2370,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to ImageDisk.
-        '''</summary>
-        Friend ReadOnly Property FloppyImageType_ImageDisk() As String
-            Get
-                Return ResourceManager.GetString("FloppyImageType_ImageDisk", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to {0} Image Properties.
         '''</summary>
         Friend ReadOnly Property FloppyImageType_ImageProperties() As String
             Get
                 Return ResourceManager.GetString("FloppyImageType_ImageProperties", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to ImageDisk.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_IMD() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_IMD", resourceCulture)
             End Get
         End Property
         
@@ -2442,20 +2442,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to TeleDisk.
+        '''  Looks up a localized string similar to Transcopy.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_TeleDisk() As String
+        Friend ReadOnly Property FloppyImageType_TC() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_TeleDisk", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_TC", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Transcopy.
+        '''  Looks up a localized string similar to TeleDisk.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_Transcopy() As String
+        Friend ReadOnly Property FloppyImageType_TD0() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_Transcopy", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_TD0", resourceCulture)
             End Get
         End Property
         
@@ -2685,60 +2685,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("ImageProperties", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to FM 250 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_FM250() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_FM250", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to FM 300 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_FM300() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_FM300", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to FM 500 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_FM500() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_FM500", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to MFM 250 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_MFM250() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_MFM250", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to MFM 300 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_MFM300() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_MFM300", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to MFM 500 kbps.
-        '''</summary>
-        Friend ReadOnly Property IMD_Mode_MFM500() As String
-            Get
-                Return ResourceManager.GetString("IMD_Mode_MFM500", resourceCulture)
             End Get
         End Property
         
@@ -4527,6 +4473,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to {0} kbps.
+        '''</summary>
+        Friend ReadOnly Property Label_kbps() As String
+            Get
+                Return ResourceManager.GetString("Label_kbps", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Keep Data.
         '''</summary>
         Friend ReadOnly Property Label_KeepData() As String
@@ -5724,42 +5679,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Track 0.0 Alternate.
-        '''</summary>
-        Friend ReadOnly Property Label_Track0Side0Alt() As String
-            Get
-                Return ResourceManager.GetString("Label_Track0Side0Alt", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Track 0.0 Encoding.
-        '''</summary>
-        Friend ReadOnly Property Label_Track0Side0Encoding() As String
-            Get
-                Return ResourceManager.GetString("Label_Track0Side0Encoding", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Track 0.1 Alternate.
-        '''</summary>
-        Friend ReadOnly Property Label_Track0Side1Alt() As String
-            Get
-                Return ResourceManager.GetString("Label_Track0Side1Alt", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Track 0.1 Encoding.
-        '''</summary>
-        Friend ReadOnly Property Label_Track0Side1Encoding() As String
-            Get
-                Return ResourceManager.GetString("Label_Track0Side1Encoding", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Track Encoding.
         '''</summary>
         Friend ReadOnly Property Label_TrackEncoding() As String
@@ -5792,6 +5711,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_TrackListOffset() As String
             Get
                 Return ResourceManager.GetString("Label_TrackListOffset", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track {0} Alternate.
+        '''</summary>
+        Friend ReadOnly Property Label_TrackNumAlt() As String
+            Get
+                Return ResourceManager.GetString("Label_TrackNumAlt", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track {0} Encoding.
+        '''</summary>
+        Friend ReadOnly Property Label_TrackNumEncoding() As String
+            Get
+                Return ResourceManager.GetString("Label_TrackNumEncoding", resourceCulture)
             End Get
         End Property
         
@@ -7977,33 +7914,6 @@ Namespace My.Resources
         Friend ReadOnly Property TD0_Compression_None() As String
             Get
                 Return ResourceManager.GetString("TD0_Compression_None", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to 250 kbps.
-        '''</summary>
-        Friend ReadOnly Property TD0_DataRate_250() As String
-            Get
-                Return ResourceManager.GetString("TD0_DataRate_250", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to 300 kbps.
-        '''</summary>
-        Friend ReadOnly Property TD0_DataRate_300() As String
-            Get
-                Return ResourceManager.GetString("TD0_DataRate_300", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to 500 kbps.
-        '''</summary>
-        Friend ReadOnly Property TD0_DataRate_500() As String
-            Get
-                Return ResourceManager.GetString("TD0_DataRate_500", resourceCulture)
             End Get
         End Property
         

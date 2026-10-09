@@ -48,13 +48,13 @@
                 Case FluxFileTypeEnum.F86
                     Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F)
                 Case FluxFileTypeEnum.TC
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_Transcopy)
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC)
                 Case FluxFileTypeEnum.SCP
                     Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_SCP)
                 Case FluxFileTypeEnum.RAW
                     Return My.Resources.FloppyImageType_RAWImage
                 Case FluxFileTypeEnum.A2R
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_AppleSauce)
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_A2R)
                 Case Else
                     Return ""
             End Select

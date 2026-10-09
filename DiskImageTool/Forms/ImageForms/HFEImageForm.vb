@@ -168,10 +168,10 @@ Public Class HFEImageForm
         LblTrackListOffset.Text = My.Resources.Label_TrackListOffset
         LblWriteAllowed.Text = My.Resources.Label_WriteAllowed
         LblSingleStep.Text = My.Resources.Label_SingleStep
-        LblTrack0Side0Alt.Text = My.Resources.Label_Track0Side0Alt
-        LblTrack0Side0Encoding.Text = My.Resources.Label_Track0Side0Encoding
-        LblTrack0Side1Alt.Text = My.Resources.Label_Track0Side1Alt
-        LblTrack0Side1Encoding.Text = My.Resources.Label_Track0Side1Encoding
+        LblTrack0Side0Alt.Text = String.Format(My.Resources.Label_TrackNumAlt, "0.0")
+        LblTrack0Side0Encoding.Text = String.Format(My.Resources.Label_TrackNumEncoding, "0.0")
+        LblTrack0Side1Alt.Text = String.Format(My.Resources.Label_TrackNumAlt, "0.1")
+        LblTrack0Side1Encoding.Text = String.Format(My.Resources.Label_TrackNumEncoding, "0.1")
     End Sub
 
     Private Sub PopulateHeader(Image As HFEImage)

@@ -1727,18 +1727,6 @@ Voulez-vous écraser ?</value>
   <data name="Label_Track" xml:space="preserve">
     <value>Piste</value>
   </data>
-  <data name="Label_Track0Side0Alt" xml:space="preserve">
-    <value>Piste 0.0 Alternatif</value>
-  </data>
-  <data name="Label_Track0Side0Encoding" xml:space="preserve">
-    <value>Piste 0.0 Encodage</value>
-  </data>
-  <data name="Label_Track0Side1Alt" xml:space="preserve">
-    <value>Piste 0.1 Alternatif</value>
-  </data>
-  <data name="Label_Track0Side1Encoding" xml:space="preserve">
-    <value>Piste 0.1 Encodage</value>
-  </data>
   <data name="Label_TrackEncoding" xml:space="preserve">
     <value>Encodage de piste</value>
   </data>
@@ -2384,24 +2372,6 @@ Voulez-vous écraser ?</value>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Année</value>
   </data>
-  <data name="IMD_Mode_FM250" xml:space="preserve">
-    <value>FM 250 kbit/s</value>
-  </data>
-  <data name="IMD_Mode_FM300" xml:space="preserve">
-    <value>FM 300 kbit/s</value>
-  </data>
-  <data name="IMD_Mode_FM500" xml:space="preserve">
-    <value>FM 500 kbit/s</value>
-  </data>
-  <data name="IMD_Mode_MFM250" xml:space="preserve">
-    <value>MFM 250 kbit/s</value>
-  </data>
-  <data name="IMD_Mode_MFM300" xml:space="preserve">
-    <value>MFM 300 kbit/s</value>
-  </data>
-  <data name="IMD_Mode_MFM500" xml:space="preserve">
-    <value>MFM 500 kbit/s</value>
-  </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Aucune</value>
   </data>
@@ -2413,15 +2383,6 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="PSI_Encoding_HighDensity" xml:space="preserve">
     <value>Haute densité</value>
-  </data>
-  <data name="TD0_DataRate_250" xml:space="preserve">
-    <value>250 kbit/s</value>
-  </data>
-  <data name="TD0_DataRate_300" xml:space="preserve">
-    <value>300 kbit/s</value>
-  </data>
-  <data name="TD0_DataRate_500" xml:space="preserve">
-    <value>500 kbit/s</value>
   </data>
   <data name="TD0_Drive_35Unknown" xml:space="preserve">
     <value>3,5" inconnu</value>
@@ -2467,5 +2428,14 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>Propriétés de l’image de secteurs {0}</value>
+  </data>
+  <data name="Label_kbps" xml:space="preserve">
+    <value>{0} kbit/s</value>
+  </data>
+  <data name="Label_TrackNumEncoding" xml:space="preserve">
+    <value>Piste {0} Encodage</value>
+  </data>
+  <data name="Label_TrackNumAlt" xml:space="preserve">
+    <value>Piste {0} Alternatif</value>
   </data>
 </root>

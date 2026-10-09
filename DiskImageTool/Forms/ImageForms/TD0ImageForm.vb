@@ -67,11 +67,11 @@ Public Class TD0ImageForm
     Private Shared Function DataRateCaption(Rate As TD0DataRate) As String
         Select Case Rate
             Case TD0DataRate.Rate250Kbps
-                Return My.Resources.TD0_DataRate_250
+                Return String.Format(My.Resources.Label_kbps, "250")
             Case TD0DataRate.Rate300Kbps
-                Return My.Resources.TD0_DataRate_300
+                Return String.Format(My.Resources.Label_kbps, "300")
             Case TD0DataRate.Rate500Kbps
-                Return My.Resources.TD0_DataRate_500
+                Return String.Format(My.Resources.Label_kbps, "500")
             Case Else
                 Return CByte(Rate).ToString("X2")
         End Select
@@ -279,7 +279,7 @@ Public Class TD0ImageForm
 
     Private Sub LocalizeForm()
         ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
-        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_TeleDisk)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_TD0)
         LblCompression.Text = My.Resources.Label_Compression
         LblVersion.Text = My.Resources.Label_Version
         LblSequence.Text = My.Resources.Label_Sequence
