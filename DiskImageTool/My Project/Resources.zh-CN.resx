@@ -129,6 +129,12 @@
   <data name="Action_Skip" xml:space="preserve">
     <value>跳过</value>
   </data>
+  <data name="AltEncoding_Unused" xml:space="preserve">
+    <value>未使用</value>
+  </data>
+  <data name="AltEncoding_Use" xml:space="preserve">
+    <value>使用备用</value>
+  </data>
   <data name="Bitstream_AddressChecksum" xml:space="preserve">
     <value>地址校验和</value>
   </data>
@@ -1256,6 +1262,9 @@ Flux 映像集：“{0}”
   <data name="Label_FormatDisk" xml:space="preserve">
     <value>格式化磁盘</value>
   </data>
+  <data name="Label_FormatRevision" xml:space="preserve">
+    <value>格式修订</value>
+  </data>
   <data name="Label_Formatting" xml:space="preserve">
     <value>正在格式化</value>
   </data>
@@ -1652,6 +1661,12 @@ Flux 映像集：“{0}”
   <data name="Label_Sides" xml:space="preserve">
     <value>面数</value>
   </data>
+  <data name="Label_Signature" xml:space="preserve">
+    <value>签名</value>
+  </data>
+  <data name="Label_SingleStep" xml:space="preserve">
+    <value>步</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>大小</value>
   </data>
@@ -1703,11 +1718,29 @@ Flux 映像集：“{0}”
   <data name="Label_Track" xml:space="preserve">
     <value>磁道</value>
   </data>
+  <data name="Label_Track0Side0Alt" xml:space="preserve">
+    <value>磁道 0.0 备用</value>
+  </data>
+  <data name="Label_Track0Side0Encoding" xml:space="preserve">
+    <value>磁道 0.0 编码</value>
+  </data>
+  <data name="Label_Track0Side1Alt" xml:space="preserve">
+    <value>磁道 0.1 备用</value>
+  </data>
+  <data name="Label_Track0Side1Encoding" xml:space="preserve">
+    <value>磁道 0.1 编码</value>
+  </data>
+  <data name="Label_TrackEncoding" xml:space="preserve">
+    <value>磁道编码</value>
+  </data>
   <data name="Label_TrackIncrement" xml:space="preserve">
     <value>磁道增量</value>
   </data>
   <data name="Label_TrackType" xml:space="preserve">
     <value>磁道类型</value>
+  </data>
+  <data name="Label_TrackListOffset" xml:space="preserve">
+    <value>磁道列表偏移</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>磁道</value>
@@ -1777,6 +1810,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Write" xml:space="preserve">
     <value>写入</value>
+  </data>
+  <data name="Label_WriteAllowed" xml:space="preserve">
+    <value>允许写入</value>
   </data>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>写入磁盘</value>
@@ -2231,6 +2267,12 @@ Flux 映像集：“{0}”
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>与 Flux 集相同的文件夹</value>
   </data>
+  <data name="StepMode_Double" xml:space="preserve">
+    <value>双</value>
+  </data>
+  <data name="StepMode_Single" xml:space="preserve">
+    <value>单</value>
+  </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>备用 OEM 名称</value>
   </data>
@@ -2335,5 +2377,20 @@ Flux 映像集：“{0}”
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>年份</value>
+  </data>
+  <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
+    <value>Amiga MFM</value>
+  </data>
+  <data name="TrackEncoding_EmuFm" xml:space="preserve">
+    <value>Emu FM</value>
+  </data>
+  <data name="TrackEncoding_IbmFm" xml:space="preserve">
+    <value>IBM FM</value>
+  </data>
+  <data name="TrackEncoding_IbmMfm" xml:space="preserve">
+    <value>IBM MFM</value>
+  </data>
+  <data name="WriteAllowed_Unprotected" xml:space="preserve">
+    <value>未保护</value>
   </data>
 </root>

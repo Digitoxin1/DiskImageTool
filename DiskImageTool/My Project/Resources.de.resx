@@ -129,6 +129,12 @@
   <data name="Action_Skip" xml:space="preserve">
     <value>Überspringen</value>
   </data>
+  <data name="AltEncoding_Unused" xml:space="preserve">
+    <value>Unbenutzt</value>
+  </data>
+  <data name="AltEncoding_Use" xml:space="preserve">
+    <value>Alternative verwenden</value>
+  </data>
   <data name="Bitstream_AddressChecksum" xml:space="preserve">
     <value>Adress-Prüfsumme</value>
   </data>
@@ -1256,6 +1262,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_FormatDisk" xml:space="preserve">
     <value>Diskette formatieren</value>
   </data>
+  <data name="Label_FormatRevision" xml:space="preserve">
+    <value>Formatrevision</value>
+  </data>
   <data name="Label_Formatting" xml:space="preserve">
     <value>Formatierung</value>
   </data>
@@ -1652,6 +1661,12 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Sides" xml:space="preserve">
     <value>Seiten</value>
   </data>
+  <data name="Label_Signature" xml:space="preserve">
+    <value>Signatur</value>
+  </data>
+  <data name="Label_SingleStep" xml:space="preserve">
+    <value>Schritt</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Größe</value>
   </data>
@@ -1703,11 +1718,29 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Track" xml:space="preserve">
     <value>Spur</value>
   </data>
+  <data name="Label_Track0Side0Alt" xml:space="preserve">
+    <value>Spur 0.0 Alternativ</value>
+  </data>
+  <data name="Label_Track0Side0Encoding" xml:space="preserve">
+    <value>Spur 0.0 Codierung</value>
+  </data>
+  <data name="Label_Track0Side1Alt" xml:space="preserve">
+    <value>Spur 0.1 Alternativ</value>
+  </data>
+  <data name="Label_Track0Side1Encoding" xml:space="preserve">
+    <value>Spur 0.1 Codierung</value>
+  </data>
+  <data name="Label_TrackEncoding" xml:space="preserve">
+    <value>Spurcodierung</value>
+  </data>
   <data name="Label_TrackIncrement" xml:space="preserve">
     <value>Spurinkrement</value>
   </data>
   <data name="Label_TrackType" xml:space="preserve">
     <value>Spurtyp</value>
+  </data>
+  <data name="Label_TrackListOffset" xml:space="preserve">
+    <value>Offset der Spurliste</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>Spuren</value>
@@ -1777,6 +1810,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Write" xml:space="preserve">
     <value>Schreiben</value>
+  </data>
+  <data name="Label_WriteAllowed" xml:space="preserve">
+    <value>Schreiben erlaubt</value>
   </data>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Diskette schreiben</value>
@@ -2231,6 +2267,12 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Gleicher Ordner wie das Flux-Set</value>
   </data>
+  <data name="StepMode_Double" xml:space="preserve">
+    <value>Doppelt</value>
+  </data>
+  <data name="StepMode_Single" xml:space="preserve">
+    <value>Einfach</value>
+  </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>Alternativer OEM-Name</value>
   </data>
@@ -2335,5 +2377,20 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Jahr</value>
+  </data>
+  <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
+    <value>Amiga MFM</value>
+  </data>
+  <data name="TrackEncoding_EmuFm" xml:space="preserve">
+    <value>Emu FM</value>
+  </data>
+  <data name="TrackEncoding_IbmFm" xml:space="preserve">
+    <value>IBM FM</value>
+  </data>
+  <data name="TrackEncoding_IbmMfm" xml:space="preserve">
+    <value>IBM MFM</value>
+  </data>
+  <data name="WriteAllowed_Unprotected" xml:space="preserve">
+    <value>Ungeschützt</value>
   </data>
 </root>

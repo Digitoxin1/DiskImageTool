@@ -129,6 +129,12 @@
   <data name="Action_Skip" xml:space="preserve">
     <value>Ignorer</value>
   </data>
+  <data name="AltEncoding_Unused" xml:space="preserve">
+    <value>Inutilisé</value>
+  </data>
+  <data name="AltEncoding_Use" xml:space="preserve">
+    <value>Utiliser l’Alternative</value>
+  </data>
   <data name="Bitstream_AddressChecksum" xml:space="preserve">
     <value>Somme de contrôle d’adresse</value>
   </data>
@@ -1256,6 +1262,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_FormatDisk" xml:space="preserve">
     <value>Formater la disquette</value>
   </data>
+  <data name="Label_FormatRevision" xml:space="preserve">
+    <value>Révision du format</value>
+  </data>
   <data name="Label_Formatting" xml:space="preserve">
     <value>Formatage</value>
   </data>
@@ -1652,6 +1661,12 @@ Voulez-vous écraser ?</value>
   <data name="Label_Sides" xml:space="preserve">
     <value>Faces</value>
   </data>
+  <data name="Label_Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="Label_SingleStep" xml:space="preserve">
+    <value>Pas</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Taille</value>
   </data>
@@ -1703,11 +1718,29 @@ Voulez-vous écraser ?</value>
   <data name="Label_Track" xml:space="preserve">
     <value>Piste</value>
   </data>
+  <data name="Label_Track0Side0Alt" xml:space="preserve">
+    <value>Piste 0.0 Alternatif</value>
+  </data>
+  <data name="Label_Track0Side0Encoding" xml:space="preserve">
+    <value>Piste 0.0 Encodage</value>
+  </data>
+  <data name="Label_Track0Side1Alt" xml:space="preserve">
+    <value>Piste 0.1 Alternatif</value>
+  </data>
+  <data name="Label_Track0Side1Encoding" xml:space="preserve">
+    <value>Piste 0.1 Encodage</value>
+  </data>
+  <data name="Label_TrackEncoding" xml:space="preserve">
+    <value>Encodage de piste</value>
+  </data>
   <data name="Label_TrackIncrement" xml:space="preserve">
     <value>Incrément de piste</value>
   </data>
   <data name="Label_TrackType" xml:space="preserve">
     <value>Type de piste</value>
+  </data>
+  <data name="Label_TrackListOffset" xml:space="preserve">
+    <value>Décalage de la liste de pistes</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>Pistes</value>
@@ -1777,6 +1810,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_Write" xml:space="preserve">
     <value>Écrire</value>
+  </data>
+  <data name="Label_WriteAllowed" xml:space="preserve">
+    <value>Écriture autorisée</value>
   </data>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Écrire le disque</value>
@@ -2231,6 +2267,12 @@ Voulez-vous écraser ?</value>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Même dossier que l’ensemble flux</value>
   </data>
+  <data name="StepMode_Double" xml:space="preserve">
+    <value>Double</value>
+  </data>
+  <data name="StepMode_Single" xml:space="preserve">
+    <value>Simple</value>
+  </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>Nom OEM alternatif</value>
   </data>
@@ -2335,5 +2377,20 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Année</value>
+  </data>
+  <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
+    <value>Amiga MFM</value>
+  </data>
+  <data name="TrackEncoding_EmuFm" xml:space="preserve">
+    <value>Emu FM</value>
+  </data>
+  <data name="TrackEncoding_IbmFm" xml:space="preserve">
+    <value>IBM FM</value>
+  </data>
+  <data name="TrackEncoding_IbmMfm" xml:space="preserve">
+    <value>IBM MFM</value>
+  </data>
+  <data name="WriteAllowed_Unprotected" xml:space="preserve">
+    <value>Non protégé</value>
   </data>
 </root>

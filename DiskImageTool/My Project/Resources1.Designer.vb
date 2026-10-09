@@ -136,7 +136,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Use Alternate.
+        '''  Looks up a localized string similar to Use alternate.
         '''</summary>
         Friend ReadOnly Property AltEncoding_Use() As String
             Get
@@ -5084,7 +5084,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Step.
+        '''  Looks up a localized string similar to Single Step.
         '''</summary>
         Friend ReadOnly Property Label_SingleStep() As String
             Get
@@ -5264,7 +5264,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Track 0.0 Alternate.
+        '''  Looks up a localized string similar to Track 0 Side 0 Alternate.
         '''</summary>
         Friend ReadOnly Property Label_Track0Side0Alt() As String
             Get
@@ -5273,7 +5273,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Track 0.0 Encoding.
+        '''  Looks up a localized string similar to Track 0 Side 0 Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Track0Side0Encoding() As String
             Get
@@ -5282,7 +5282,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Track 0.1 Alternate.
+        '''  Looks up a localized string similar to Track 0 Side 1 Alternate.
         '''</summary>
         Friend ReadOnly Property Label_Track0Side1Alt() As String
             Get
@@ -5291,7 +5291,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Track 0.1 Encoding.
+        '''  Looks up a localized string similar to Track 0 Side 1 Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Track0Side1Encoding() As String
             Get
@@ -7088,7 +7088,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Double.
+        '''  Looks up a localized string similar to Double step.
         '''</summary>
         Friend ReadOnly Property StepMode_Double() As String
             Get
@@ -7097,7 +7097,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Single.
+        '''  Looks up a localized string similar to Single step.
         '''</summary>
         Friend ReadOnly Property StepMode_Single() As String
             Get
@@ -7461,42 +7461,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Amiga MFM.
-        '''</summary>
-        Friend ReadOnly Property TrackEncoding_AmigaMfm() As String
-            Get
-                Return ResourceManager.GetString("TrackEncoding_AmigaMfm", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Emu FM.
-        '''</summary>
-        Friend ReadOnly Property TrackEncoding_EmuFm() As String
-            Get
-                Return ResourceManager.GetString("TrackEncoding_EmuFm", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to IBM FM.
-        '''</summary>
-        Friend ReadOnly Property TrackEncoding_IbmFm() As String
-            Get
-                Return ResourceManager.GetString("TrackEncoding_IbmFm", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to IBM MFM.
-        '''</summary>
-        Friend ReadOnly Property TrackEncoding_IbmMfm() As String
-            Get
-                Return ResourceManager.GetString("TrackEncoding_IbmMfm", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property Undo() As System.Drawing.Bitmap
@@ -7559,15 +7523,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("Web", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Unprotected.
-        '''</summary>
-        Friend ReadOnly Property WriteAllowed_Unprotected() As String
-            Get
-                Return ResourceManager.GetString("WriteAllowed_Unprotected", resourceCulture)
             End Get
         End Property
     End Module

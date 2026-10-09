@@ -1,24 +1,28 @@
 Imports DiskImageTool.DiskImage
-Imports DiskImageTool.ImageFormats.MFM
+Imports DiskImageTool.ImageFormats.HFE
 
-Public Class MFMImageForm
+Public Class HFEImageForm
     Private Const GRID_COLUMN_TRACK As String = "GridTrack"
-    Private Const GRID_COLUMN_SIDE As String = "GridSide"
     Private Const GRID_COLUMN_OFFSET As String = "GridOffset"
     Private Const GRID_COLUMN_LENGTH As String = "GridLength"
-    Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
-    Private Const GRID_COLUMN_RPM As String = "GridRPM"
-    Private Const ADVANCED_TRACK_LIST As Byte = &H80
     Private Const INTERFACE_MODE_DISABLED As Byte = &HFE
+    Private Const WRITE_ALLOWED As Byte = &HFF
+    Private Const WRITE_PROTECTED As Byte = &H0
+    Private Const SINGLE_STEP As Byte = &HFF
+    Private Const DOUBLE_STEP As Byte = &H0
+    Private Const ALT_ENCODING_USE As Byte = &H0
+    Private Const ALT_ENCODING_UNUSED As Byte = &HFF
 
     Private Shared ReadOnly InterfaceModes() As Byte = {
         &H0, &H1, &H8, &H2, &H3, &H4, &H5, &H6, &H7, &H9, &HA, &HB, &HC, &HD, &HE, &HF, &H10, INTERFACE_MODE_DISABLED
     }
 
-    Private ReadOnly _FloppyImage As MFMFloppyImage
+    Private Shared ReadOnly WriteAllowedValues() As Byte = {WRITE_ALLOWED, WRITE_PROTECTED}
+
+    Private ReadOnly _FloppyImage As HFEFloppyImage
     Private _Updated As Boolean
 
-    Public Sub New(FloppyImage As MFMFloppyImage)
+    Public Sub New(FloppyImage As HFEFloppyImage)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -34,52 +38,71 @@ Public Class MFMImageForm
         _FloppyImage = FloppyImage
         Dim Image = FloppyImage.Image
         LocalizeForm()
-        InitializeGridColumns(Image)
+        InitializeGridColumns()
         PopulateHeader(Image)
         DataGridViewTracks.DataSource = GetTrackTable(Image)
     End Sub
 
     Public Shared Function Display(Disk As Disk) As Boolean
-        If Disk Is Nothing OrElse Disk.Image Is Nothing OrElse Disk.Image.ImageType <> FloppyImageType.MFMImage Then
+        If Disk Is Nothing OrElse Disk.Image Is Nothing OrElse Disk.Image.ImageType <> FloppyImageType.HFEImage Then
             Return False
         End If
 
-        Dim FloppyImage = DirectCast(Disk.Image, MFMFloppyImage)
-        Using dlg As New MFMImageForm(FloppyImage)
+        Dim FloppyImage = DirectCast(Disk.Image, HFEFloppyImage)
+        Using dlg As New HFEImageForm(FloppyImage)
             dlg.ShowDialog(App.CurrentFormInstance)
             Return dlg._Updated
         End Using
     End Function
 
     Private Sub LocalizeForm()
-        Me.Text = "MFM " & WithoutHotkey(My.Resources.Menu_ImageProperties)
+        Me.Text = "HFE " & WithoutHotkey(My.Resources.Menu_ImageProperties)
         BtnCancel.Text = My.Resources.Menu_Cancel
         BtnUpdate.Text = My.Resources.Menu_Update
+        LblSignature.Text = My.Resources.Label_Signature
+        LblFormatRevision.Text = My.Resources.Label_FormatRevision
         LblTracks.Text = My.Resources.Label_Tracks
         LblSides.Text = My.Resources.Label_Sides
+        LblTrackEncoding.Text = My.Resources.Label_TrackEncoding
         LblRPM.Text = My.Resources.SummaryPanel_RPM
         LblBitRate.Text = My.Resources.SummaryPanel_Bitrate
         LblInterfaceType.Text = My.Resources.Label_InterfaceType
-        ChkPerTrackRates.Text = My.Resources.Label_PerTrackRates
+        LblReserved.Text = My.Resources.Label_Reserved
+        LblTrackListOffset.Text = My.Resources.Label_TrackListOffset
+        LblWriteAllowed.Text = My.Resources.Label_WriteAllowed
+        LblSingleStep.Text = My.Resources.Label_SingleStep
+        LblTrack0Side0Alt.Text = My.Resources.Label_Track0Side0Alt
+        LblTrack0Side0Encoding.Text = My.Resources.Label_Track0Side0Encoding
+        LblTrack0Side1Alt.Text = My.Resources.Label_Track0Side1Alt
+        LblTrack0Side1Encoding.Text = My.Resources.Label_Track0Side1Encoding
     End Sub
 
-    Private Sub PopulateHeader(Image As MFMImage)
+    Private Sub PopulateHeader(Image As HFEImage)
+        TxtSignature.Text = Image.Signature
+        TxtFormatRevision.Text = Image.FormatRevision.ToString()
         TxtTrackCount.Text = Image.TrackCount.ToString()
         TxtSides.Text = Image.SideCount.ToString()
+        TxtTrackEncoding.Text = TrackEncodingCaption(CByte(Image.TrackEncoding))
         TxtRPM.Text = Image.RPM.ToString()
         TxtBitRate.Text = Image.BitRate.ToString()
-        ChkPerTrackRates.Checked = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
-        PopulateInterfaceTypes(Image)
+        TxtReserved.Text = Image.DNU.ToString("X2")
+        TxtTrackListOffset.Text = Image.TrackListOffset.ToString("X4")
+        TxtSingleStep.Text = SingleStepCaption(Image.SingleStep)
+        TxtTrack0Side0Alt.Text = AlternateEncodingCaption(Image.Track0S0_AltEncoding)
+        TxtTrack0Side0Encoding.Text = TrackEncodingCaption(Image.Track0S0_Encoding)
+        TxtTrack0Side1Alt.Text = AlternateEncodingCaption(Image.Track0S1_AltEncoding)
+        TxtTrack0Side1Encoding.Text = TrackEncodingCaption(Image.Track0S1_Encoding)
+        PopulateInterfaceTypes(CByte(Image.FloppyInterfaceMode))
+        PopulateWriteAllowed(Image.WriteAllowed)
     End Sub
 
-    Private Sub PopulateInterfaceTypes(Image As MFMImage)
+    Private Sub PopulateInterfaceTypes(ModeToSelect As Byte)
         CboInterfaceType.BeginUpdate()
         CboInterfaceType.Items.Clear()
 
-        Dim ModeToSelect = InterfaceModeToSelect(Image.IFType)
-        Dim Selected As InterfaceTypeItem = Nothing
+        Dim Selected As ByteItem = Nothing
         For Each InterfaceMode In InterfaceModes
-            Dim Item As New InterfaceTypeItem(InterfaceMode, InterfaceModeCaption(InterfaceMode))
+            Dim Item As New ByteItem(InterfaceMode, InterfaceModeCaption(InterfaceMode))
             CboInterfaceType.Items.Add(Item)
             If InterfaceMode = ModeToSelect Then
                 Selected = Item
@@ -87,7 +110,7 @@ Public Class MFMImageForm
         Next
 
         If Selected Is Nothing Then
-            Selected = New InterfaceTypeItem(ModeToSelect, ModeToSelect.ToString("X2"))
+            Selected = New ByteItem(ModeToSelect, ModeToSelect.ToString("X2"))
             CboInterfaceType.Items.Insert(0, Selected)
         End If
 
@@ -95,13 +118,27 @@ Public Class MFMImageForm
         CboInterfaceType.EndUpdate()
     End Sub
 
-    Private Shared Function InterfaceModeToSelect(InterfaceType As Byte) As Byte
-        If InterfaceType = INTERFACE_MODE_DISABLED Then
-            Return INTERFACE_MODE_DISABLED
+    Private Sub PopulateWriteAllowed(ValueToSelect As Byte)
+        CboWriteAllowed.BeginUpdate()
+        CboWriteAllowed.Items.Clear()
+
+        Dim Selected As ByteItem = Nothing
+        For Each WriteAllowedValue In WriteAllowedValues
+            Dim Item As New ByteItem(WriteAllowedValue, WriteAllowedCaption(WriteAllowedValue))
+            CboWriteAllowed.Items.Add(Item)
+            If WriteAllowedValue = ValueToSelect Then
+                Selected = Item
+            End If
+        Next
+
+        If Selected Is Nothing Then
+            Selected = New ByteItem(ValueToSelect, ValueToSelect.ToString("X2"))
+            CboWriteAllowed.Items.Insert(0, Selected)
         End If
 
-        Return InterfaceType And &H7F
-    End Function
+        CboWriteAllowed.SelectedItem = Selected
+        CboWriteAllowed.EndUpdate()
+    End Sub
 
     Private Shared Function InterfaceModeCaption(Mode As Byte) As String
         Select Case Mode
@@ -146,6 +183,56 @@ Public Class MFMImageForm
         End Select
     End Function
 
+    Private Shared Function TrackEncodingCaption(TrackEncoding As Byte) As String
+        Select Case TrackEncoding
+            Case &H0
+                Return My.Resources.TrackEncoding_IbmMfm
+            Case &H1
+                Return My.Resources.TrackEncoding_AmigaMfm
+            Case &H2
+                Return My.Resources.TrackEncoding_IbmFm
+            Case &H3
+                Return My.Resources.TrackEncoding_EmuFm
+            Case &HFF
+                Return My.Resources.Label_Unknown
+            Case Else
+                Return TrackEncoding.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function WriteAllowedCaption(Value As Byte) As String
+        Select Case Value
+            Case WRITE_ALLOWED
+                Return My.Resources.WriteAllowed_Unprotected
+            Case WRITE_PROTECTED
+                Return My.Resources.SummaryPanel_WriteProtected
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function SingleStepCaption(Value As Byte) As String
+        Select Case Value
+            Case SINGLE_STEP
+                Return My.Resources.StepMode_Single
+            Case DOUBLE_STEP
+                Return My.Resources.StepMode_Double
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function AlternateEncodingCaption(Value As Byte) As String
+        Select Case Value
+            Case ALT_ENCODING_USE
+                Return My.Resources.AltEncoding_Use
+            Case ALT_ENCODING_UNUSED
+                Return My.Resources.AltEncoding_Unused
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
     Private Function ApplyUpdates() As Boolean
         Dim RPM As UShort
         Dim BitRate As UShort
@@ -159,12 +246,13 @@ Public Class MFMImageForm
             Return False
         End If
 
-        Dim Item = TryCast(CboInterfaceType.SelectedItem, InterfaceTypeItem)
-        If Item Is Nothing Then
+        Dim InterfaceItem = TryCast(CboInterfaceType.SelectedItem, ByteItem)
+        Dim WriteAllowedItem = TryCast(CboWriteAllowed.SelectedItem, ByteItem)
+        If InterfaceItem Is Nothing OrElse WriteAllowedItem Is Nothing Then
             Return False
         End If
 
-        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, Item.Mode)
+        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, InterfaceItem.Value, WriteAllowedItem.Value)
         Return True
     End Function
 
@@ -206,18 +294,13 @@ Public Class MFMImageForm
         End If
     End Sub
 
-    Private Sub InitializeGridColumns(Image As MFMImage)
+    Private Sub InitializeGridColumns()
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
         AddTextColumn(GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
+        AddTextColumn(GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X4")
         AddTextColumn(GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
-        If (Image.IFType And ADVANCED_TRACK_LIST) <> 0 Then
-            AddTextColumn(GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
-            AddTextColumn(GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
-        End If
     End Sub
 
     Private Sub AddTextColumn(Name As String, HeaderText As String, Width As Integer, Alignment As DataGridViewContentAlignment, Optional Format As String = "")
@@ -236,39 +319,23 @@ Public Class MFMImageForm
         DataGridViewTracks.Columns.Add(Column)
     End Sub
 
-    Private Function GetTrackTable(Image As MFMImage) As DataTable
-        Dim TrackTable As New DataTable("MFMTracks")
-        Dim Advanced = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
+    Private Function GetTrackTable(Image As HFEImage) As DataTable
+        Dim TrackTable As New DataTable("HFETracks")
 
-        AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(UShort))
-        AddDataColumn(TrackTable, GRID_COLUMN_SIDE, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UInteger))
+        AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(Byte))
+        AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UShort))
         AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
-        If Advanced Then
-            AddDataColumn(TrackTable, GRID_COLUMN_BITRATE, GetType(UShort))
-            AddDataColumn(TrackTable, GRID_COLUMN_RPM, GetType(UShort))
-        End If
 
         If Image.SideCount > 0 Then
             For Track As Integer = 0 To Image.TrackCount - 1
-                For Side As Integer = 0 To Image.SideCount - 1
-                    Dim Row = TrackTable.NewRow()
-                    Dim TrackData = Image.GetTrack(CUShort(Track), CByte(Side))
-                    If TrackData Is Nothing Then
-                        Row(GRID_COLUMN_TRACK) = CUShort(Track)
-                        Row(GRID_COLUMN_SIDE) = CByte(Side)
-                    Else
-                        Row(GRID_COLUMN_TRACK) = TrackData.Track
-                        Row(GRID_COLUMN_SIDE) = TrackData.Side
-                        Row(GRID_COLUMN_OFFSET) = TrackData.Offset
-                        Row(GRID_COLUMN_LENGTH) = CUInt(TrackData.Length)
-                        If Advanced Then
-                            Row(GRID_COLUMN_BITRATE) = TrackData.BitRate
-                            Row(GRID_COLUMN_RPM) = TrackData.RPM
-                        End If
-                    End If
-                    TrackTable.Rows.Add(Row)
-                Next
+                Dim Row = TrackTable.NewRow()
+                Dim TrackData = Image.GetTrack(CByte(Track), 0)
+                Row(GRID_COLUMN_TRACK) = CByte(Track)
+                If TrackData IsNot Nothing Then
+                    Row(GRID_COLUMN_OFFSET) = TrackData.TrackListOffset
+                    Row(GRID_COLUMN_LENGTH) = CUInt(TrackData.TrackListLength)
+                End If
+                TrackTable.Rows.Add(Row)
             Next
         End If
 
@@ -279,17 +346,13 @@ Public Class MFMImageForm
         Table.Columns.Add(New DataColumn(Name, DataType))
     End Sub
 
-    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
-        'DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-    End Sub
-
-    Private Class InterfaceTypeItem
-        Public Sub New(Mode As Byte, Caption As String)
-            Me.Mode = Mode
+    Private Class ByteItem
+        Public Sub New(Value As Byte, Caption As String)
+            Me.Value = Value
             _Caption = Caption
         End Sub
 
-        Public ReadOnly Property Mode As Byte
+        Public ReadOnly Property Value As Byte
 
         Public Overrides Function ToString() As String
             Return _Caption

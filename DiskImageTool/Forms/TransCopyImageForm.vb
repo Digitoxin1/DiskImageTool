@@ -54,7 +54,7 @@ Public Class TransCopyImageForm
     End Function
 
     Private Sub LocalizeForm()
-        Me.Text = WithoutHotkey(My.Resources.Menu_ImageProperties)
+        Me.Text = "TransCopy " & WithoutHotkey(My.Resources.Menu_ImageProperties)
         BtnCancel.Text = My.Resources.Menu_Cancel
         BtnUpdate.Text = My.Resources.Menu_Update
         LblComment.Text = My.Resources.Label_Comment

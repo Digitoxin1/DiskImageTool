@@ -136,6 +136,12 @@
   <data name="AdjustOffset" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\AdjustOffset.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="AltEncoding_Unused" xml:space="preserve">
+    <value>Unused</value>
+  </data>
+  <data name="AltEncoding_Use" xml:space="preserve">
+    <value>Use Alternate</value>
+  </data>
   <data name="AppIconLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\AppIconLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -1410,6 +1416,9 @@ Do you wish to overwrite?</value>
   <data name="Label_FormatDisk" xml:space="preserve">
     <value>Format Disk</value>
   </data>
+  <data name="Label_FormatRevision" xml:space="preserve">
+    <value>Format Revision</value>
+  </data>
   <data name="Label_Formatting" xml:space="preserve">
     <value>Formatting</value>
   </data>
@@ -1806,6 +1815,12 @@ Do you wish to overwrite?</value>
   <data name="Label_Sides" xml:space="preserve">
     <value>Sides</value>
   </data>
+  <data name="Label_Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="Label_SingleStep" xml:space="preserve">
+    <value>Step</value>
+  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Size</value>
   </data>
@@ -1865,6 +1880,21 @@ Do you wish to overwrite?</value>
   <data name="Label_Track" xml:space="preserve">
     <value>Track</value>
   </data>
+  <data name="Label_Track0Side0Alt" xml:space="preserve">
+    <value>Track 0.0 Alternate</value>
+  </data>
+  <data name="Label_Track0Side0Encoding" xml:space="preserve">
+    <value>Track 0.0 Encoding</value>
+  </data>
+  <data name="Label_Track0Side1Alt" xml:space="preserve">
+    <value>Track 0.1 Alternate</value>
+  </data>
+  <data name="Label_Track0Side1Encoding" xml:space="preserve">
+    <value>Track 0.1 Encoding</value>
+  </data>
+  <data name="Label_TrackEncoding" xml:space="preserve">
+    <value>Track Encoding</value>
+  </data>
   <data name="Label_TrackIncrement" xml:space="preserve">
     <value>Track Increment</value>
   </data>
@@ -1874,6 +1904,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Tracklayout" xml:space="preserve">
     <value>Tracklayout</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="Label_TrackListOffset" xml:space="preserve">
+    <value>Track List Offset</value>
   </data>
   <data name="Label_Tracks" xml:space="preserve">
     <value>Tracks</value>
@@ -1943,6 +1976,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Write" xml:space="preserve">
     <value>Write</value>
+  </data>
+  <data name="Label_WriteAllowed" xml:space="preserve">
+    <value>Write Allowed</value>
   </data>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Write Disk</value>
@@ -2450,6 +2486,12 @@ Do you wish to overwrite?</value>
   <data name="SelectTrack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\SelectTrack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="StepMode_Double" xml:space="preserve">
+    <value>Double</value>
+  </data>
+  <data name="StepMode_Single" xml:space="preserve">
+    <value>Single</value>
+  </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>Alternative OEM Name</value>
   </data>
@@ -2567,6 +2609,18 @@ Do you wish to overwrite?</value>
   <data name="TextFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\TextFile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
+    <value>Amiga MFM</value>
+  </data>
+  <data name="TrackEncoding_EmuFm" xml:space="preserve">
+    <value>Emu FM</value>
+  </data>
+  <data name="TrackEncoding_IbmFm" xml:space="preserve">
+    <value>IBM FM</value>
+  </data>
+  <data name="TrackEncoding_IbmMfm" xml:space="preserve">
+    <value>IBM MFM</value>
+  </data>
   <data name="Undo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Undo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -2591,6 +2645,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Web" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Web.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WriteAllowed_Unprotected" xml:space="preserve">
+    <value>Unprotected</value>
   </data>
   <data name="_Exit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Exit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

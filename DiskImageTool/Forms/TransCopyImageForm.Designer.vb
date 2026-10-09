@@ -107,20 +107,21 @@ Partial Class TransCopyImageForm
         Me.DataGridViewTracks.BackgroundColor = System.Drawing.SystemColors.Window
         Me.DataGridViewTracks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridViewTracks.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DataGridViewTracks.Location = New System.Drawing.Point(12, 158)
+        Me.DataGridViewTracks.Location = New System.Drawing.Point(12, 159)
         Me.DataGridViewTracks.MultiSelect = False
         Me.DataGridViewTracks.Name = "DataGridViewTracks"
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(960, 393)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(960, 392)
         Me.DataGridViewTracks.TabIndex = 1
         '
         'TableLayoutPanelHeader
         '
         Me.TableLayoutPanelHeader.AutoSize = True
         Me.TableLayoutPanelHeader.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.TableLayoutPanelHeader.ColumnCount = 4
+        Me.TableLayoutPanelHeader.ColumnCount = 5
+        Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelHeader.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
@@ -132,13 +133,13 @@ Partial Class TransCopyImageForm
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblDiskType, 0, 2)
         Me.TableLayoutPanelHeader.Controls.Add(Me.CboDiskType, 1, 2)
         Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackStart, 0, 3)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackStart, 3, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackEnd, 0, 4)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackEnd, 1, 3)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSides, 2, 2)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSides, 3, 3)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackIncrement, 2, 3)
-        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackIncrement, 1, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackStart, 1, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackIncrement, 2, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackIncrement, 3, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblSides, 0, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.LblTrackEnd, 2, 3)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtSides, 1, 4)
+        Me.TableLayoutPanelHeader.Controls.Add(Me.TxtTrackEnd, 3, 3)
         Me.TableLayoutPanelHeader.Dock = System.Windows.Forms.DockStyle.Top
         Me.TableLayoutPanelHeader.Location = New System.Drawing.Point(12, 12)
         Me.TableLayoutPanelHeader.Name = "TableLayoutPanelHeader"
@@ -149,7 +150,7 @@ Partial Class TransCopyImageForm
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelHeader.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelHeader.Size = New System.Drawing.Size(960, 146)
+        Me.TableLayoutPanelHeader.Size = New System.Drawing.Size(960, 147)
         Me.TableLayoutPanelHeader.TabIndex = 0
         '
         'LblComment
@@ -166,7 +167,7 @@ Partial Class TransCopyImageForm
         'TxtComment
         '
         Me.TxtComment.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanelHeader.SetColumnSpan(Me.TxtComment, 3)
+        Me.TableLayoutPanelHeader.SetColumnSpan(Me.TxtComment, 4)
         Me.TxtComment.Location = New System.Drawing.Point(96, 3)
         Me.TxtComment.MaxLength = 32
         Me.TxtComment.Name = "TxtComment"
@@ -187,7 +188,7 @@ Partial Class TransCopyImageForm
         'TxtComment2
         '
         Me.TxtComment2.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanelHeader.SetColumnSpan(Me.TxtComment2, 3)
+        Me.TableLayoutPanelHeader.SetColumnSpan(Me.TxtComment2, 4)
         Me.TxtComment2.Location = New System.Drawing.Point(96, 29)
         Me.TxtComment2.MaxLength = 32
         Me.TxtComment2.Name = "TxtComment2"
@@ -198,7 +199,7 @@ Partial Class TransCopyImageForm
         '
         Me.LblDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblDiskType.AutoSize = True
-        Me.LblDiskType.Location = New System.Drawing.Point(3, 58)
+        Me.LblDiskType.Location = New System.Drawing.Point(3, 59)
         Me.LblDiskType.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblDiskType.Name = "LblDiskType"
         Me.LblDiskType.Size = New System.Drawing.Size(63, 13)
@@ -207,19 +208,20 @@ Partial Class TransCopyImageForm
         '
         'CboDiskType
         '
-        Me.CboDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.CboDiskType.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.TableLayoutPanelHeader.SetColumnSpan(Me.CboDiskType, 3)
         Me.CboDiskType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CboDiskType.FormattingEnabled = True
-        Me.CboDiskType.Location = New System.Drawing.Point(96, 54)
+        Me.CboDiskType.Location = New System.Drawing.Point(96, 55)
         Me.CboDiskType.Name = "CboDiskType"
-        Me.CboDiskType.Size = New System.Drawing.Size(200, 21)
+        Me.CboDiskType.Size = New System.Drawing.Size(206, 21)
         Me.CboDiskType.TabIndex = 5
         '
         'LblTrackStart
         '
         Me.LblTrackStart.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblTrackStart.AutoSize = True
-        Me.LblTrackStart.Location = New System.Drawing.Point(3, 84)
+        Me.LblTrackStart.Location = New System.Drawing.Point(3, 85)
         Me.LblTrackStart.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblTrackStart.Name = "LblTrackStart"
         Me.LblTrackStart.Size = New System.Drawing.Size(82, 13)
@@ -229,7 +231,7 @@ Partial Class TransCopyImageForm
         'TxtTrackStart
         '
         Me.TxtTrackStart.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrackStart.Location = New System.Drawing.Point(406, 55)
+        Me.TxtTrackStart.Location = New System.Drawing.Point(96, 82)
         Me.TxtTrackStart.Name = "TxtTrackStart"
         Me.TxtTrackStart.ReadOnly = True
         Me.TxtTrackStart.Size = New System.Drawing.Size(48, 20)
@@ -239,7 +241,7 @@ Partial Class TransCopyImageForm
         '
         Me.LblTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblTrackEnd.AutoSize = True
-        Me.LblTrackEnd.Location = New System.Drawing.Point(3, 110)
+        Me.LblTrackEnd.Location = New System.Drawing.Point(150, 85)
         Me.LblTrackEnd.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblTrackEnd.Name = "LblTrackEnd"
         Me.LblTrackEnd.Size = New System.Drawing.Size(79, 13)
@@ -249,7 +251,7 @@ Partial Class TransCopyImageForm
         'TxtTrackEnd
         '
         Me.TxtTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrackEnd.Location = New System.Drawing.Point(96, 81)
+        Me.TxtTrackEnd.Location = New System.Drawing.Point(254, 82)
         Me.TxtTrackEnd.Name = "TxtTrackEnd"
         Me.TxtTrackEnd.ReadOnly = True
         Me.TxtTrackEnd.Size = New System.Drawing.Size(48, 20)
@@ -259,7 +261,7 @@ Partial Class TransCopyImageForm
         '
         Me.LblSides.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblSides.AutoSize = True
-        Me.LblSides.Location = New System.Drawing.Point(302, 58)
+        Me.LblSides.Location = New System.Drawing.Point(3, 111)
         Me.LblSides.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblSides.Name = "LblSides"
         Me.LblSides.Size = New System.Drawing.Size(41, 13)
@@ -269,7 +271,7 @@ Partial Class TransCopyImageForm
         'TxtSides
         '
         Me.TxtSides.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtSides.Location = New System.Drawing.Point(406, 81)
+        Me.TxtSides.Location = New System.Drawing.Point(96, 108)
         Me.TxtSides.Name = "TxtSides"
         Me.TxtSides.ReadOnly = True
         Me.TxtSides.Size = New System.Drawing.Size(48, 20)
@@ -279,7 +281,7 @@ Partial Class TransCopyImageForm
         '
         Me.LblTrackIncrement.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblTrackIncrement.AutoSize = True
-        Me.LblTrackIncrement.Location = New System.Drawing.Point(302, 84)
+        Me.LblTrackIncrement.Location = New System.Drawing.Point(150, 111)
         Me.LblTrackIncrement.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
         Me.LblTrackIncrement.Name = "LblTrackIncrement"
         Me.LblTrackIncrement.Size = New System.Drawing.Size(93, 13)
@@ -289,7 +291,7 @@ Partial Class TransCopyImageForm
         'TxtTrackIncrement
         '
         Me.TxtTrackIncrement.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrackIncrement.Location = New System.Drawing.Point(96, 107)
+        Me.TxtTrackIncrement.Location = New System.Drawing.Point(254, 108)
         Me.TxtTrackIncrement.Name = "TxtTrackIncrement"
         Me.TxtTrackIncrement.ReadOnly = True
         Me.TxtTrackIncrement.Size = New System.Drawing.Size(48, 20)

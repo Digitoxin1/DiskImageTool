@@ -54,6 +54,10 @@ Namespace ImageFormats.HFE
 
         Public Property Track As UShort Implements IBitstreamTrack.Track
 
+        Public Property TrackListLength As UShort
+
+        Public Property TrackListOffset As UShort
+
         Private ReadOnly Property IBitstreamTrack_SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
             Get
                 Return Nothing
