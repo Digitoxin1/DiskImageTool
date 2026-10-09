@@ -3077,6 +3077,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Bit Clock.
+        '''</summary>
+        Friend ReadOnly Property Label_BitClock() As String
+            Get
+                Return ResourceManager.GetString("Label_BitClock", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Bit Offset.
         '''</summary>
         Friend ReadOnly Property Label_BitOffset() As String

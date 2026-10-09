@@ -911,6 +911,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_BitCellMode" xml:space="preserve">
     <value>Mode cellule de bits</value>
   </data>
+  <data name="Label_BitClock" xml:space="preserve">
+    <value>Horloge de bit</value>
+  </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Déc. bit</value>
   </data>
@@ -1498,9 +1501,6 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_NTExtensions" xml:space="preserve">
     <value>Extensions NT</value>
-  </data>
-  <data name="Label_NULL" xml:space="preserve">
-    <value>NULL</value>
   </data>
   <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Nombre de FAT</value>

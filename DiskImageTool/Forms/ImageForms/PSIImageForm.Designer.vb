@@ -241,7 +241,7 @@ Partial Class PSIImageForm
         Me.TxtComment.Multiline = True
         Me.TxtComment.Name = "TxtComment"
         Me.TxtComment.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.TxtComment.Size = New System.Drawing.Size(420, 88)
+        Me.TxtComment.Size = New System.Drawing.Size(609, 88)
         Me.TxtComment.TabIndex = 5
         '
         'PSIImageForm

@@ -1153,6 +1153,9 @@ Do you wish to overwrite?</value>
   <data name="Label_BitCellMode" xml:space="preserve">
     <value>Bit Cell Mode</value>
   </data>
+  <data name="Label_BitClock" xml:space="preserve">
+    <value>Bit Clock</value>
+  </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Bit Offset</value>
   </data>
@@ -1759,6 +1762,7 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_NULL" xml:space="preserve">
     <value>NULL</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Number of FATs</value>

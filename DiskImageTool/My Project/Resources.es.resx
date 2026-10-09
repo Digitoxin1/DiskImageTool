@@ -911,6 +911,9 @@ Archivo de imagen: '{1}'
   <data name="Label_BitCellMode" xml:space="preserve">
     <value>Modo de celda de bits</value>
   </data>
+  <data name="Label_BitClock" xml:space="preserve">
+    <value>Reloj de bit</value>
+  </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>Despl. bit</value>
   </data>
@@ -1498,9 +1501,6 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_NTExtensions" xml:space="preserve">
     <value>Extensiones NT</value>
-  </data>
-  <data name="Label_NULL" xml:space="preserve">
-    <value>NULL</value>
   </data>
   <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Número de FATs</value>

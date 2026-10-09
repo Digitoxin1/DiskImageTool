@@ -911,6 +911,9 @@ Flux 映像集：“{0}”
   <data name="Label_BitCellMode" xml:space="preserve">
     <value>位单元模式</value>
   </data>
+  <data name="Label_BitClock" xml:space="preserve">
+    <value>位时钟</value>
+  </data>
   <data name="Label_BitOffset" xml:space="preserve">
     <value>位偏移</value>
   </data>
@@ -1498,9 +1501,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_NTExtensions" xml:space="preserve">
     <value>NT 扩展</value>
-  </data>
-  <data name="Label_NULL" xml:space="preserve">
-    <value>NULL</value>
   </data>
   <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>FAT 数量</value>

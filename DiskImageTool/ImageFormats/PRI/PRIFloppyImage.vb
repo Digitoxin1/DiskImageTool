@@ -6,6 +6,11 @@ Namespace ImageFormats.PRI
     Public Class PRIFloppyImage
         Inherits MappedFloppyImage
         Implements IFloppyImage
+        Implements IImageFieldSource
+
+        Private Enum PRIImageField As UShort
+            Comment = 1
+        End Enum
 
         Private ReadOnly _Image As PRIImage
 
@@ -57,6 +62,22 @@ Namespace ImageFormats.PRI
             Using Hasher As SHA1 = SHA1.Create()
                 Return BitstreamCalculateHash(_Image, Hasher)
             End Using
+        End Function
+
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            If Not IsTrackField AndAlso CType(FieldId, PRIImageField) = PRIImageField.Comment AndAlso TypeOf Value Is String Then
+                _Image.Comment = CStr(Value)
+            End If
+        End Sub
+
+        Public Function UpdateProperties(Comment As String) As Boolean
+            Dim OriginalComment = If(_Image.Comment, "")
+            Dim NewComment = If(Comment, "")
+            If String.Equals(OriginalComment, NewComment, StringComparison.Ordinal) Then
+                Return False
+            End If
+
+            Return History.CommitImageFields({New ImageFieldChange(False, 0, 0, 0, PRIImageField.Comment, OriginalComment, NewComment)})
         End Function
     End Class
 End Namespace
