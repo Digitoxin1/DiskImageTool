@@ -123,6 +123,46 @@ Namespace DiskImage
             RaiseEvent DataChanged(Me, EventArgs.Empty)
         End Sub
 
+        Public Function CommitImageFields(Changes As IEnumerable(Of ImageFieldChange)) As Boolean
+            If Not _Enabled OrElse _IgnoreChange OrElse Changes Is Nothing Then
+                Return False
+            End If
+
+            Dim Source = TryCast(_FloppyImage, IImageFieldSource)
+            If Source Is Nothing Then
+                Return False
+            End If
+
+            Dim Pending As New List(Of ImageFieldChange)
+            For Each Change In Changes
+                If Change Is Nothing OrElse Object.Equals(Change.OriginalValue, Change.NewValue) Then
+                    Continue For
+                End If
+                Pending.Add(Change)
+            Next
+
+            If Pending.Count = 0 Then
+                Return False
+            End If
+
+            Dim StartedBatch = Not _BatchEditMode
+            If StartedBatch Then
+                BatchEditMode = True
+            End If
+
+            For Each Change In Pending
+                Source.SetImageField(Change.IsTrackField, Change.Track, Change.Side, Change.FieldId, Change.NewValue)
+                RecordImageField(Change)
+            Next
+
+            If StartedBatch Then
+                BatchEditMode = False
+            End If
+
+            RaiseEvent DataChanged(Me, EventArgs.Empty)
+            Return True
+        End Function
+
         Public Sub ApplyModifications(Modifications As Stack(Of DataChange()))
             If Not _Enabled Then Exit Sub
 
@@ -138,6 +178,9 @@ Namespace DiskImage
                         ApplyBitstreamChange(Item.Offset, Item.NewValue)
                         AddBitstreamChange(TrackFromOffset(Item.Offset), SideFromOffset(Item.Offset), Item.OriginalValue, Item.NewValue)
                         HasBitstreamChange = True
+                    ElseIf Item.Type = DataChangeType.ImageField Then
+                        ApplyImageField(Item.ImageField, True)
+                        RecordImageField(Item.ImageField)
                     End If
                 Next
                 RebuildMappedSectorsIfNeeded(HasBitstreamChange)
@@ -165,6 +208,8 @@ Namespace DiskImage
                 ElseIf Item.Type = DataChangeType.Bitstream Then
                     ApplyBitstreamChange(Item.Offset, Item.NewValue)
                     HasBitstreamChange = True
+                ElseIf Item.Type = DataChangeType.ImageField Then
+                    ApplyImageField(Item.ImageField, True)
                 End If
             Next
             _IgnoreChange = False
@@ -184,11 +229,41 @@ Namespace DiskImage
                 ElseIf Item.Type = DataChangeType.Bitstream Then
                     ApplyBitstreamChange(Item.Offset, Item.OriginalValue)
                     HasBitstreamChange = True
+                ElseIf Item.Type = DataChangeType.ImageField Then
+                    ApplyImageField(Item.ImageField, False)
                 End If
             Next
             _IgnoreChange = False
             RebuildMappedSectorsIfNeeded(HasBitstreamChange)
             _RedoChanges.Push(DataChange)
+        End Sub
+
+        Private Sub ApplyImageField(Field As ImageFieldChange, UseNewValue As Boolean)
+            If Field Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim Source = TryCast(_FloppyImage, IImageFieldSource)
+            If Source Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim Value = If(UseNewValue, Field.NewValue, Field.OriginalValue)
+            Source.SetImageField(Field.IsTrackField, Field.Track, Field.Side, Field.FieldId, Value)
+        End Sub
+
+        Private Sub RecordImageField(Field As ImageFieldChange)
+            If Not _Enabled OrElse _IgnoreChange OrElse Field Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim DataChange As New DataChange(Field)
+            If _BatchEditMode Then
+                _PendingChanges.Add(DataChange)
+            Else
+                _Changes.Push({DataChange})
+                _RedoChanges.Clear()
+            End If
         End Sub
 
         Private Sub ApplyBitstreamChange(Offset As UInteger, Bits As Object)

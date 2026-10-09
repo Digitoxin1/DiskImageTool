@@ -17,10 +17,10 @@ Public Class TransCopyImageForm
     Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
     Private Const GRID_COLUMN_RPM As String = "GridRPM"
 
-    Private ReadOnly _Image As TransCopyImage
+    Private ReadOnly _FloppyImage As TranscopyFloppyImage
     Private _Updated As Boolean
 
-    Public Sub New(Image As TransCopyImage)
+    Public Sub New(FloppyImage As TranscopyFloppyImage)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -33,7 +33,8 @@ Public Class TransCopyImageForm
             New Object() {True})
 
         ' Add any initialization after the InitializeComponent() call.
-        _Image = Image
+        _FloppyImage = FloppyImage
+        Dim Image = FloppyImage.Image
         LocalizeForm()
         InitializeGridColumns()
         PopulateHeader(Image)
@@ -45,8 +46,8 @@ Public Class TransCopyImageForm
             Return False
         End If
 
-        Dim Image As TransCopyImage = DirectCast(Disk.Image, TranscopyFloppyImage).Image
-        Using dlg As New TransCopyImageForm(Image)
+        Dim FloppyImage = DirectCast(Disk.Image, TranscopyFloppyImage)
+        Using dlg As New TransCopyImageForm(FloppyImage)
             dlg.ShowDialog(App.CurrentFormInstance)
             Return dlg._Updated
         End Using
@@ -99,20 +100,8 @@ Public Class TransCopyImageForm
 
     Private Sub ApplyUpdates()
         Dim Item = TryCast(CboDiskType.SelectedItem, DiskTypeItem)
-        If Item IsNot Nothing AndAlso _Image.DiskType <> Item.DiskType Then
-            _Image.DiskType = Item.DiskType
-            _Updated = True
-        End If
-
-        If _Image.Comment <> TxtComment.Text Then
-            _Image.Comment = TxtComment.Text
-            _Updated = True
-        End If
-
-        If _Image.Comment2 <> TxtComment2.Text Then
-            _Image.Comment2 = TxtComment2.Text
-            _Updated = True
-        End If
+        Dim DiskType = If(Item Is Nothing, _FloppyImage.Image.DiskType, Item.DiskType)
+        _Updated = _FloppyImage.UpdateHeader(TxtComment.Text, TxtComment2.Text, DiskType)
     End Sub
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click

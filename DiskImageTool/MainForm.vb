@@ -2225,7 +2225,7 @@ Public Class MainForm
         End If
 
         If TransCopyImageForm.Display(FilePanelMain.CurrentImage.Disk) Then
-            SummaryPopulate(FilePanelMain.CurrentImage)
+            DiskImageRefresh(FilePanelMain)
         End If
     End Sub
 

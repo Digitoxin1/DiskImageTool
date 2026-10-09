@@ -469,6 +469,7 @@
     <Compile Include="DiskImage\FATTables.vb" />
     <Compile Include="DiskImage\Modules\FloppyDiskFunctions.vb" />
     <Compile Include="DiskImage\Interfaces\IFloppyImage.vb" />
+    <Compile Include="DiskImage\Interfaces\IImageFieldSource.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
