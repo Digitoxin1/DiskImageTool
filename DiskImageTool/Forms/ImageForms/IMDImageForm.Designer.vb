@@ -46,7 +46,7 @@ Partial Class IMDImageForm
         PanelBottom.Controls.Add(Me.BtnCancel)
         PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-        PanelBottom.Location = New System.Drawing.Point(0, 554)
+        PanelBottom.Location = New System.Drawing.Point(0, 514)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(12, 6, 12, 12)
         PanelBottom.Size = New System.Drawing.Size(809, 47)
@@ -81,7 +81,7 @@ Partial Class IMDImageForm
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(12, 12, 12, 6)
-        PanelMain.Size = New System.Drawing.Size(809, 554)
+        PanelMain.Size = New System.Drawing.Size(809, 514)
         PanelMain.TabIndex = 0
         '
         'TableLayoutPanelGrids
@@ -100,7 +100,7 @@ Partial Class IMDImageForm
         Me.TableLayoutPanelGrids.RowCount = 2
         Me.TableLayoutPanelGrids.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelGrids.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanelGrids.Size = New System.Drawing.Size(785, 416)
+        Me.TableLayoutPanelGrids.Size = New System.Drawing.Size(785, 376)
         Me.TableLayoutPanelGrids.TabIndex = 1
         '
         'LblTracks
@@ -138,7 +138,7 @@ Partial Class IMDImageForm
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(412, 399)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(412, 359)
         Me.DataGridViewTracks.TabIndex = 2
         '
         'DataGridViewSectors
@@ -156,7 +156,7 @@ Partial Class IMDImageForm
         Me.DataGridViewSectors.Name = "DataGridViewSectors"
         Me.DataGridViewSectors.RowHeadersVisible = False
         Me.DataGridViewSectors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewSectors.Size = New System.Drawing.Size(357, 399)
+        Me.DataGridViewSectors.Size = New System.Drawing.Size(357, 359)
         Me.DataGridViewSectors.TabIndex = 3
         '
         'TableLayoutPanelHeader
@@ -224,11 +224,11 @@ Partial Class IMDImageForm
         Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(809, 601)
+        Me.ClientSize = New System.Drawing.Size(809, 561)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(720, 640)
+        Me.MinimumSize = New System.Drawing.Size(720, 480)
         Me.Name = "IMDImageForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False

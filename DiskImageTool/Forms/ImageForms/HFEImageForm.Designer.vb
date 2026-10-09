@@ -69,7 +69,7 @@ Partial Class HFEImageForm
         PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        PanelBottom.Location = New System.Drawing.Point(0, 558)
+        PanelBottom.Location = New System.Drawing.Point(0, 518)
         PanelBottom.Margin = New System.Windows.Forms.Padding(0)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
@@ -108,7 +108,7 @@ Partial Class HFEImageForm
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(12, 12, 12, 6)
-        PanelMain.Size = New System.Drawing.Size(704, 558)
+        PanelMain.Size = New System.Drawing.Size(704, 518)
         PanelMain.TabIndex = 0
         '
         'DataGridViewTracks
@@ -125,7 +125,7 @@ Partial Class HFEImageForm
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(680, 314)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(680, 274)
         Me.DataGridViewTracks.TabIndex = 1
         '
         'TableLayoutPanelHeader
@@ -514,11 +514,11 @@ Partial Class HFEImageForm
         Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(704, 601)
+        Me.ClientSize = New System.Drawing.Size(704, 561)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(720, 640)
+        Me.MinimumSize = New System.Drawing.Size(720, 480)
         Me.Name = "HFEImageForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False

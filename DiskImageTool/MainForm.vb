@@ -856,6 +856,7 @@ Public Class MainForm
             MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
             MenuReportsImageAnalysis.Enabled = CheckSize
             MenuEditImageProperties.Enabled = TypeOf Disk.Image Is IImageFieldSource
+            ToolStripImageProperties.Enabled = TypeOf Disk.Image Is IImageFieldSource
             SetButtonStateSaveAs(True)
             MenuGreaseweazleWrite.Enabled = CheckSize
         Else
@@ -872,6 +873,7 @@ Public Class MainForm
             MenuReportsModifications.Enabled = False
             MenuReportsImageAnalysis.Enabled = False
             MenuEditImageProperties.Enabled = False
+            ToolStripImageProperties.Enabled = False
             SetButtonStateSaveAs(False)
             MenuGreaseweazleWrite.Enabled = False
         End If
@@ -1057,6 +1059,7 @@ Public Class MainForm
         ToolStripClose.Text = WithoutHotkey(My.Resources.Menu_Close)
         ToolStripCloseAll.Text = WithoutHotkey(My.Resources.Menu_CloseAll)
         ToolStripFileProperties.Text = WithoutHotkey(My.Resources.Menu_FileProperties)
+        ToolStripImageProperties.Text = My.Resources.Menu_ImageProperties
         ToolStripOpen.Text = WithoutHotkey(My.Resources.Menu_Open)
         ToolStripRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripSave.Text = WithoutHotkey(My.Resources.Menu_Save)
@@ -2219,7 +2222,7 @@ Public Class MainForm
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.FileProperties)
     End Sub
 
-    Private Sub MenuEditImageProperties_Click(sender As Object, e As EventArgs) Handles MenuEditImageProperties.Click
+    Private Sub MenuEditImageProperties_Click(sender As Object, e As EventArgs) Handles MenuEditImageProperties.Click, ToolStripImageProperties.Click
         If FilePanelMain.CurrentImage Is Nothing Then
             Exit Sub
         End If

@@ -155,6 +155,8 @@ Partial Class MainForm
         Me.ToolStripSaveAll = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripClose = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripCloseAll = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripImageProperties = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripFileProperties = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripExportFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripImportFiles = New System.Windows.Forms.ToolStripButton()
@@ -1113,7 +1115,7 @@ Partial Class MainForm
         '
         Me.ToolStripTop.CanOverflow = False
         Me.ToolStripTop.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, Me.ToolStripImportFiles, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT})
+        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripImageProperties, Me.ToolStripSeparator3, Me.ToolStripFileProperties, Me.ToolStripExportFile, Me.ToolStripImportFiles, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT})
         Me.ToolStripTop.Location = New System.Drawing.Point(0, 24)
         Me.ToolStripTop.Name = "ToolStripTop"
         Me.ToolStripTop.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
@@ -1173,6 +1175,19 @@ Partial Class MainForm
         Me.ToolStripCloseAll.Name = "ToolStripCloseAll"
         Me.ToolStripCloseAll.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripCloseAll.Size = New System.Drawing.Size(23, 22)
+        '
+        'ToolStripImageProperties
+        '
+        Me.ToolStripImageProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripImageProperties.Image = Global.DiskImageTool.My.Resources.Resources.ImageProperties
+        Me.ToolStripImageProperties.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripImageProperties.Name = "ToolStripImageProperties"
+        Me.ToolStripImageProperties.Size = New System.Drawing.Size(23, 22)
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripFileProperties
         '
@@ -1489,4 +1504,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuTools As ToolStripMenuItem
     Friend WithEvents MainMenuView As ToolStripMenuItem
     Friend WithEvents MenuEditSeparatorImage As ToolStripSeparator
+    Friend WithEvents ToolStripImageProperties As ToolStripButton
+    Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
 End Class

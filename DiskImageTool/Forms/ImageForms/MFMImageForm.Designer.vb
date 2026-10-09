@@ -27,13 +27,13 @@ Partial Class MFMImageForm
         Me.TxtTrackCount = New System.Windows.Forms.TextBox()
         Me.LblSides = New System.Windows.Forms.Label()
         Me.TxtSides = New System.Windows.Forms.TextBox()
+        Me.LblRPM = New System.Windows.Forms.Label()
+        Me.TxtRPM = New System.Windows.Forms.TextBox()
         Me.LblInterfaceType = New System.Windows.Forms.Label()
         Me.CboInterfaceType = New System.Windows.Forms.ComboBox()
         Me.ChkPerTrackRates = New System.Windows.Forms.CheckBox()
-        Me.TxtBitRate = New System.Windows.Forms.TextBox()
         Me.LblBitRate = New System.Windows.Forms.Label()
-        Me.TxtRPM = New System.Windows.Forms.TextBox()
-        Me.LblRPM = New System.Windows.Forms.Label()
+        Me.TxtBitRate = New System.Windows.Forms.TextBox()
         PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         PanelMain = New System.Windows.Forms.Panel()
         PanelBottom.SuspendLayout()
@@ -48,7 +48,7 @@ Partial Class MFMImageForm
         PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        PanelBottom.Location = New System.Drawing.Point(0, 398)
+        PanelBottom.Location = New System.Drawing.Point(0, 518)
         PanelBottom.Margin = New System.Windows.Forms.Padding(0)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
@@ -87,7 +87,7 @@ Partial Class MFMImageForm
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(12, 12, 12, 6)
-        PanelMain.Size = New System.Drawing.Size(704, 398)
+        PanelMain.Size = New System.Drawing.Size(704, 518)
         PanelMain.TabIndex = 0
         '
         'DataGridViewTracks
@@ -104,7 +104,7 @@ Partial Class MFMImageForm
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(680, 259)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(680, 379)
         Me.DataGridViewTracks.TabIndex = 1
         '
         'TableLayoutPanelHeader
@@ -180,6 +180,26 @@ Partial Class MFMImageForm
         Me.TxtSides.Size = New System.Drawing.Size(64, 20)
         Me.TxtSides.TabIndex = 3
         '
+        'LblRPM
+        '
+        Me.LblRPM.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblRPM.AutoSize = True
+        Me.LblRPM.Location = New System.Drawing.Point(3, 32)
+        Me.LblRPM.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblRPM.Name = "LblRPM"
+        Me.LblRPM.Size = New System.Drawing.Size(39, 13)
+        Me.LblRPM.TabIndex = 4
+        Me.LblRPM.Text = "{RPM}"
+        '
+        'TxtRPM
+        '
+        Me.TxtRPM.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtRPM.Location = New System.Drawing.Point(98, 29)
+        Me.TxtRPM.MaxLength = 5
+        Me.TxtRPM.Name = "TxtRPM"
+        Me.TxtRPM.Size = New System.Drawing.Size(64, 20)
+        Me.TxtRPM.TabIndex = 5
+        '
         'LblInterfaceType
         '
         Me.LblInterfaceType.Anchor = System.Windows.Forms.AnchorStyles.Left
@@ -215,15 +235,6 @@ Partial Class MFMImageForm
         Me.ChkPerTrackRates.Text = "{Per-track RPM and bit rate}"
         Me.ChkPerTrackRates.UseVisualStyleBackColor = True
         '
-        'TxtBitRate
-        '
-        Me.TxtBitRate.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtBitRate.Location = New System.Drawing.Point(224, 29)
-        Me.TxtBitRate.MaxLength = 5
-        Me.TxtBitRate.Name = "TxtBitRate"
-        Me.TxtBitRate.Size = New System.Drawing.Size(64, 20)
-        Me.TxtBitRate.TabIndex = 7
-        '
         'LblBitRate
         '
         Me.LblBitRate.Anchor = System.Windows.Forms.AnchorStyles.Left
@@ -235,32 +246,21 @@ Partial Class MFMImageForm
         Me.LblBitRate.TabIndex = 6
         Me.LblBitRate.Text = "{Bitrate}"
         '
-        'TxtRPM
+        'TxtBitRate
         '
-        Me.TxtRPM.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtRPM.Location = New System.Drawing.Point(98, 29)
-        Me.TxtRPM.MaxLength = 5
-        Me.TxtRPM.Name = "TxtRPM"
-        Me.TxtRPM.Size = New System.Drawing.Size(64, 20)
-        Me.TxtRPM.TabIndex = 5
-        '
-        'LblRPM
-        '
-        Me.LblRPM.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblRPM.AutoSize = True
-        Me.LblRPM.Location = New System.Drawing.Point(3, 32)
-        Me.LblRPM.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblRPM.Name = "LblRPM"
-        Me.LblRPM.Size = New System.Drawing.Size(39, 13)
-        Me.LblRPM.TabIndex = 4
-        Me.LblRPM.Text = "{RPM}"
+        Me.TxtBitRate.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtBitRate.Location = New System.Drawing.Point(224, 29)
+        Me.TxtBitRate.MaxLength = 5
+        Me.TxtBitRate.Name = "TxtBitRate"
+        Me.TxtBitRate.Size = New System.Drawing.Size(64, 20)
+        Me.TxtBitRate.TabIndex = 7
         '
         'MFMImageForm
         '
         Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(704, 441)
+        Me.ClientSize = New System.Drawing.Size(704, 561)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MinimizeBox = False

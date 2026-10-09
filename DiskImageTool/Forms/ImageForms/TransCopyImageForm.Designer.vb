@@ -36,12 +36,12 @@ Partial Class TransCopyImageForm
         Me.CboDiskType = New System.Windows.Forms.ComboBox()
         Me.LblTrackStart = New System.Windows.Forms.Label()
         Me.TxtTrackStart = New System.Windows.Forms.TextBox()
-        Me.LblTrackEnd = New System.Windows.Forms.Label()
-        Me.TxtTrackEnd = New System.Windows.Forms.TextBox()
-        Me.LblSides = New System.Windows.Forms.Label()
-        Me.TxtSides = New System.Windows.Forms.TextBox()
         Me.LblTrackIncrement = New System.Windows.Forms.Label()
         Me.TxtTrackIncrement = New System.Windows.Forms.TextBox()
+        Me.LblSides = New System.Windows.Forms.Label()
+        Me.LblTrackEnd = New System.Windows.Forms.Label()
+        Me.TxtSides = New System.Windows.Forms.TextBox()
+        Me.TxtTrackEnd = New System.Windows.Forms.TextBox()
         PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         PanelMain = New System.Windows.Forms.Panel()
         PanelBottom.SuspendLayout()
@@ -56,7 +56,7 @@ Partial Class TransCopyImageForm
         PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        PanelBottom.Location = New System.Drawing.Point(0, 557)
+        PanelBottom.Location = New System.Drawing.Point(0, 518)
         PanelBottom.Margin = New System.Windows.Forms.Padding(0)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
@@ -96,7 +96,7 @@ Partial Class TransCopyImageForm
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(12, 12, 12, 6)
-        PanelMain.Size = New System.Drawing.Size(984, 557)
+        PanelMain.Size = New System.Drawing.Size(984, 518)
         PanelMain.TabIndex = 0
         '
         'DataGridViewTracks
@@ -113,7 +113,7 @@ Partial Class TransCopyImageForm
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(960, 392)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(960, 353)
         Me.DataGridViewTracks.TabIndex = 1
         '
         'TableLayoutPanelHeader
@@ -237,46 +237,6 @@ Partial Class TransCopyImageForm
         Me.TxtTrackStart.Size = New System.Drawing.Size(48, 20)
         Me.TxtTrackStart.TabIndex = 7
         '
-        'LblTrackEnd
-        '
-        Me.LblTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblTrackEnd.AutoSize = True
-        Me.LblTrackEnd.Location = New System.Drawing.Point(150, 85)
-        Me.LblTrackEnd.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblTrackEnd.Name = "LblTrackEnd"
-        Me.LblTrackEnd.Size = New System.Drawing.Size(79, 13)
-        Me.LblTrackEnd.TabIndex = 8
-        Me.LblTrackEnd.Text = "{Ending Track}"
-        '
-        'TxtTrackEnd
-        '
-        Me.TxtTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtTrackEnd.Location = New System.Drawing.Point(254, 82)
-        Me.TxtTrackEnd.Name = "TxtTrackEnd"
-        Me.TxtTrackEnd.ReadOnly = True
-        Me.TxtTrackEnd.Size = New System.Drawing.Size(48, 20)
-        Me.TxtTrackEnd.TabIndex = 9
-        '
-        'LblSides
-        '
-        Me.LblSides.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblSides.AutoSize = True
-        Me.LblSides.Location = New System.Drawing.Point(3, 111)
-        Me.LblSides.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
-        Me.LblSides.Name = "LblSides"
-        Me.LblSides.Size = New System.Drawing.Size(41, 13)
-        Me.LblSides.TabIndex = 10
-        Me.LblSides.Text = "{Sides}"
-        '
-        'TxtSides
-        '
-        Me.TxtSides.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtSides.Location = New System.Drawing.Point(96, 108)
-        Me.TxtSides.Name = "TxtSides"
-        Me.TxtSides.ReadOnly = True
-        Me.TxtSides.Size = New System.Drawing.Size(48, 20)
-        Me.TxtSides.TabIndex = 11
-        '
         'LblTrackIncrement
         '
         Me.LblTrackIncrement.Anchor = System.Windows.Forms.AnchorStyles.Left
@@ -297,12 +257,52 @@ Partial Class TransCopyImageForm
         Me.TxtTrackIncrement.Size = New System.Drawing.Size(48, 20)
         Me.TxtTrackIncrement.TabIndex = 13
         '
+        'LblSides
+        '
+        Me.LblSides.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblSides.AutoSize = True
+        Me.LblSides.Location = New System.Drawing.Point(3, 111)
+        Me.LblSides.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblSides.Name = "LblSides"
+        Me.LblSides.Size = New System.Drawing.Size(41, 13)
+        Me.LblSides.TabIndex = 10
+        Me.LblSides.Text = "{Sides}"
+        '
+        'LblTrackEnd
+        '
+        Me.LblTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblTrackEnd.AutoSize = True
+        Me.LblTrackEnd.Location = New System.Drawing.Point(150, 85)
+        Me.LblTrackEnd.Margin = New System.Windows.Forms.Padding(3, 0, 8, 0)
+        Me.LblTrackEnd.Name = "LblTrackEnd"
+        Me.LblTrackEnd.Size = New System.Drawing.Size(79, 13)
+        Me.LblTrackEnd.TabIndex = 8
+        Me.LblTrackEnd.Text = "{Ending Track}"
+        '
+        'TxtSides
+        '
+        Me.TxtSides.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtSides.Location = New System.Drawing.Point(96, 108)
+        Me.TxtSides.Name = "TxtSides"
+        Me.TxtSides.ReadOnly = True
+        Me.TxtSides.Size = New System.Drawing.Size(48, 20)
+        Me.TxtSides.TabIndex = 11
+        '
+        'TxtTrackEnd
+        '
+        Me.TxtTrackEnd.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtTrackEnd.Location = New System.Drawing.Point(254, 82)
+        Me.TxtTrackEnd.Name = "TxtTrackEnd"
+        Me.TxtTrackEnd.ReadOnly = True
+        Me.TxtTrackEnd.Size = New System.Drawing.Size(48, 20)
+        Me.TxtTrackEnd.TabIndex = 9
+        '
         'TransCopyImageForm
         '
         Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(984, 600)
+        Me.ClientSize = New System.Drawing.Size(984, 561)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MinimizeBox = False

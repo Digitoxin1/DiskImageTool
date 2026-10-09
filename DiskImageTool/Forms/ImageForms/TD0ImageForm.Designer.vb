@@ -67,7 +67,7 @@ Partial Class TD0ImageForm
         PanelBottom.Controls.Add(Me.BtnUpdate)
         PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
         PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        PanelBottom.Location = New System.Drawing.Point(0, 558)
+        PanelBottom.Location = New System.Drawing.Point(0, 518)
         PanelBottom.Margin = New System.Windows.Forms.Padding(0)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
@@ -106,7 +106,7 @@ Partial Class TD0ImageForm
         PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
         PanelMain.Padding = New System.Windows.Forms.Padding(12, 12, 12, 6)
-        PanelMain.Size = New System.Drawing.Size(809, 558)
+        PanelMain.Size = New System.Drawing.Size(809, 518)
         PanelMain.TabIndex = 0
         '
         'TableLayoutPanelGrids
@@ -125,7 +125,7 @@ Partial Class TD0ImageForm
         Me.TableLayoutPanelGrids.RowCount = 2
         Me.TableLayoutPanelGrids.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelGrids.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanelGrids.Size = New System.Drawing.Size(785, 290)
+        Me.TableLayoutPanelGrids.Size = New System.Drawing.Size(785, 250)
         Me.TableLayoutPanelGrids.TabIndex = 1
         '
         'LblTracks
@@ -163,7 +163,7 @@ Partial Class TD0ImageForm
         Me.DataGridViewTracks.ReadOnly = True
         Me.DataGridViewTracks.RowHeadersVisible = False
         Me.DataGridViewTracks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewTracks.Size = New System.Drawing.Size(292, 273)
+        Me.DataGridViewTracks.Size = New System.Drawing.Size(292, 233)
         Me.DataGridViewTracks.TabIndex = 1
         '
         'DataGridViewSectors
@@ -181,7 +181,7 @@ Partial Class TD0ImageForm
         Me.DataGridViewSectors.Name = "DataGridViewSectors"
         Me.DataGridViewSectors.RowHeadersVisible = False
         Me.DataGridViewSectors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.DataGridViewSectors.Size = New System.Drawing.Size(477, 273)
+        Me.DataGridViewSectors.Size = New System.Drawing.Size(477, 233)
         Me.DataGridViewSectors.TabIndex = 2
         '
         'TableLayoutPanelHeader
@@ -483,11 +483,11 @@ Partial Class TD0ImageForm
         Me.AcceptButton = Me.BtnUpdate
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(809, 601)
+        Me.ClientSize = New System.Drawing.Size(809, 561)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(720, 640)
+        Me.MinimumSize = New System.Drawing.Size(720, 480)
         Me.Name = "TD0ImageForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
