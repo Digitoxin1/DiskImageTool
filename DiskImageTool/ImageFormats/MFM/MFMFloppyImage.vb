@@ -6,6 +6,16 @@ Namespace ImageFormats.MFM
     Public Class MFMFloppyImage
         Inherits MappedFloppyImage
         Implements IFloppyImage
+        Implements IImageFieldSource
+
+        Private Enum MFMImageField As UShort
+            RPM = 1
+            BitRate = 2
+            InterfaceType = 3
+        End Enum
+
+        Private Const ADVANCED_TRACK_LIST As Byte = &H80
+        Private Const INTERFACE_MODE_DISABLED As Byte = &HFE
 
         Private ReadOnly _Image As MFMImage
 
@@ -45,6 +55,48 @@ Namespace ImageFormats.MFM
             Using Hasher As SHA1 = SHA1.Create()
                 Return BitstreamCalculateHash(_Image, Hasher)
             End Using
+        End Function
+
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            If IsTrackField Then
+                Exit Sub
+            End If
+
+            Select Case CType(FieldId, MFMImageField)
+                Case MFMImageField.RPM
+                    _Image.RPM = CUShort(Value)
+                Case MFMImageField.BitRate
+                    _Image.BitRate = CUShort(Value)
+                Case MFMImageField.InterfaceType
+                    _Image.IFType = CByte(Value)
+            End Select
+        End Sub
+
+        Public Function UpdateHeader(RPM As UShort, BitRate As UShort, InterfaceMode As Byte) As Boolean
+            Dim Changes As New List(Of ImageFieldChange)
+            Dim InterfaceType = CombineInterfaceType(InterfaceMode)
+
+            If _Image.RPM <> RPM Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.RPM, _Image.RPM, RPM))
+            End If
+
+            If _Image.BitRate <> BitRate Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.BitRate, _Image.BitRate, BitRate))
+            End If
+
+            If _Image.IFType <> InterfaceType Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.InterfaceType, _Image.IFType, InterfaceType))
+            End If
+
+            Return History.CommitImageFields(Changes)
+        End Function
+
+        Private Function CombineInterfaceType(InterfaceMode As Byte) As Byte
+            If InterfaceMode = INTERFACE_MODE_DISABLED Then
+                Return INTERFACE_MODE_DISABLED
+            End If
+
+            Return CByte((InterfaceMode And &H7F) Or (_Image.IFType And ADVANCED_TRACK_LIST))
         End Function
     End Class
 End Namespace

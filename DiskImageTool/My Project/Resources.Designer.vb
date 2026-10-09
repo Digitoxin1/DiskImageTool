@@ -2307,6 +2307,168 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Amiga DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_AmigaDd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_AmigaDd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Amiga HD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_AmigaHd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_AmigaHd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Atari ST DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_AtariStDd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_AtariStDd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Atari ST HD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_AtariStHd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_AtariStHd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to C64 DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_C64Dd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_C64Dd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to CPC DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_CpcDd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_CpcDd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Disabled.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_Disabled() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_Disabled", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Emu Shugart.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_EmuShugart() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_EmuShugart", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to IBM PC Auto.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_IbmPcAuto() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_IbmPcAuto", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to IBM PC DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_IbmPcDd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_IbmPcDd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to IBM PC ED.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_IbmPcEd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_IbmPcEd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to IBM PC HD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_IbmPcHd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_IbmPcHd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to MSX2 DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_Msx2Dd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_Msx2Dd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to QuickDisk.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_QuickDisk() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_QuickDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Akai S950 Auto.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_S950Auto() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_S950Auto", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Akai S950 DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_S950Dd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_S950Dd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Akai S950 HD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_S950Hd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_S950Hd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Generic Shugart DD.
+        '''</summary>
+        Friend ReadOnly Property FloppyInterface_ShugartDd() As String
+            Get
+                Return ResourceManager.GetString("FloppyInterface_ShugartDd", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property FolderHex() As System.Drawing.Bitmap
@@ -3887,6 +4049,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Interface Type.
+        '''</summary>
+        Friend ReadOnly Property Label_InterfaceType() As String
+            Get
+                Return ResourceManager.GetString("Label_InterfaceType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Info.
         '''</summary>
         Friend ReadOnly Property Label_Info() As String
@@ -4405,6 +4576,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_PadFile() As String
             Get
                 Return ResourceManager.GetString("Label_PadFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Per-track RPM and bit rate.
+        '''</summary>
+        Friend ReadOnly Property Label_PerTrackRates() As String
+            Get
+                Return ResourceManager.GetString("Label_PerTrackRates", resourceCulture)
             End Get
         End Property
         

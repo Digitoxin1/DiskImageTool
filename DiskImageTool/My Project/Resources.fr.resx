@@ -770,6 +770,60 @@ Voulez-vous écraser ?</value>
   <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
     <value>Transcopy Image</value>
   </data>
+  <data name="FloppyInterface_AmigaDd" xml:space="preserve">
+    <value>Amiga DD</value>
+  </data>
+  <data name="FloppyInterface_AmigaHd" xml:space="preserve">
+    <value>Amiga HD</value>
+  </data>
+  <data name="FloppyInterface_AtariStDd" xml:space="preserve">
+    <value>Atari ST DD</value>
+  </data>
+  <data name="FloppyInterface_AtariStHd" xml:space="preserve">
+    <value>Atari ST HD</value>
+  </data>
+  <data name="FloppyInterface_C64Dd" xml:space="preserve">
+    <value>C64 DD</value>
+  </data>
+  <data name="FloppyInterface_CpcDd" xml:space="preserve">
+    <value>CPC DD</value>
+  </data>
+  <data name="FloppyInterface_Disabled" xml:space="preserve">
+    <value>Désactivé</value>
+  </data>
+  <data name="FloppyInterface_EmuShugart" xml:space="preserve">
+    <value>Emu Shugart</value>
+  </data>
+  <data name="FloppyInterface_IbmPcAuto" xml:space="preserve">
+    <value>IBM PC automatique</value>
+  </data>
+  <data name="FloppyInterface_IbmPcDd" xml:space="preserve">
+    <value>IBM PC DD</value>
+  </data>
+  <data name="FloppyInterface_IbmPcEd" xml:space="preserve">
+    <value>IBM PC ED</value>
+  </data>
+  <data name="FloppyInterface_IbmPcHd" xml:space="preserve">
+    <value>IBM PC HD</value>
+  </data>
+  <data name="FloppyInterface_Msx2Dd" xml:space="preserve">
+    <value>MSX2 DD</value>
+  </data>
+  <data name="FloppyInterface_QuickDisk" xml:space="preserve">
+    <value>QuickDisk</value>
+  </data>
+  <data name="FloppyInterface_S950Auto" xml:space="preserve">
+    <value>Akai S950 automatique</value>
+  </data>
+  <data name="FloppyInterface_S950Dd" xml:space="preserve">
+    <value>Akai S950 DD</value>
+  </data>
+  <data name="FloppyInterface_S950Hd" xml:space="preserve">
+    <value>Akai S950 HD</value>
+  </data>
+  <data name="FloppyInterface_ShugartDd" xml:space="preserve">
+    <value>Shugart DD générique</value>
+  </data>
   <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
     <value>Sélectionnez un exécutable Greaseweazle</value>
   </data>
@@ -1265,6 +1319,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_ImportIntoDirectory" xml:space="preserve">
     <value>Importer dans le dossier</value>
   </data>
+  <data name="Label_InterfaceType" xml:space="preserve">
+    <value>Type d’interface</value>
+  </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Infos</value>
   </data>
@@ -1438,6 +1495,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_PadFile" xml:space="preserve">
     <value>Remplir le fichier avec</value>
+  </data>
+  <data name="Label_PerTrackRates" xml:space="preserve">
+    <value>RPM et débit binaire par piste</value>
   </data>
   <data name="Label_Passes" xml:space="preserve">
     <value>Passes</value>

@@ -112,7 +112,8 @@ Namespace ImageFormats
 
             Dim MFM As New MFM.MFMImage(TrackCount, Params.BPBParams.NumberOfHeads, 1) With {
                 .BitRate = Params.BitRateKbps,
-                .RPM = Params.RPM
+                .RPM = Params.RPM,
+                .IFType = CByte(GetHFEFloppyInterfaceMode(DiskFormat))
             }
 
             For Track As UShort = 0 To TrackCount - 1
@@ -424,6 +425,7 @@ Namespace ImageFormats
                         If Track = 0 And Side = 0 Then
                             MFM.BitRate = DriveSpeed.BitRate
                             MFM.RPM = DriveSpeed.RPM
+                            MFM.IFType = CByte(GetHFEFloppyInterfaceMode(GetTrackFormat(BitstreamTrack.Bitstream.Length)))
                         End If
 
                         MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
