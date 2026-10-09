@@ -2,21 +2,21 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.ImageFormats.TD0
 
 Public Class TD0ImageForm
-    Private Const GRID_COLUMN_CYLINDER As String = "GridCylinder"
-    Private Const GRID_COLUMN_HEAD As String = "GridHead"
-    Private Const GRID_COLUMN_SECTORS As String = "GridSectors"
-    Private Const GRID_COLUMN_FM As String = "GridFM"
-    Private Const GRID_COLUMN_SECTOR As String = "GridSector"
-    Private Const GRID_COLUMN_SIZE As String = "GridSize"
-    Private Const GRID_COLUMN_DUPLICATE As String = "GridDuplicate"
     Private Const GRID_COLUMN_CRC_ERROR As String = "GridCrcError"
+    Private Const GRID_COLUMN_CYLINDER As String = "GridCylinder"
     Private Const GRID_COLUMN_DELETED As String = "GridDeleted"
-    Private Const GRID_COLUMN_SKIPPED As String = "GridSkipped"
+    Private Const GRID_COLUMN_DUPLICATE As String = "GridDuplicate"
+    Private Const GRID_COLUMN_FM As String = "GridFM"
+    Private Const GRID_COLUMN_HEAD As String = "GridHead"
     Private Const GRID_COLUMN_NO_DATA As String = "GridNoData"
     Private Const GRID_COLUMN_NO_ID As String = "GridNoId"
+    Private Const GRID_COLUMN_SECTOR As String = "GridSector"
+    Private Const GRID_COLUMN_SECTORS As String = "GridSectors"
+    Private Const GRID_COLUMN_SIZE As String = "GridSize"
+    Private Const GRID_COLUMN_SKIPPED As String = "GridSkipped"
 
-    Private ReadOnly _FloppyImage As TD0FloppyImage
     Private ReadOnly _CrcErrorEdits As New Dictionary(Of Long, Boolean)
+    Private ReadOnly _FloppyImage As TD0FloppyImage
     Private _LoadingSectors As Boolean
     Private _Updated As Boolean
 
@@ -50,65 +50,6 @@ Public Class TD0ImageForm
             dlg.ShowDialog(App.CurrentFormInstance)
             Return dlg._Updated
         End Using
-    End Function
-
-    Private Sub LocalizeForm()
-        Me.Text = "TD0 " & WithoutHotkey(My.Resources.Menu_ImageProperties)
-        BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnUpdate.Text = My.Resources.Menu_Update
-        LblCompression.Text = My.Resources.Label_Compression
-        LblVersion.Text = My.Resources.Label_Version
-        LblSequence.Text = My.Resources.Label_Sequence
-        LblCheckSequence.Text = My.Resources.Label_CheckSequence
-        LblDataRate.Text = My.Resources.Label_DataRate
-        LblSingleDensity.Text = My.Resources.Label_SingleDensity
-        LblDriveType.Text = My.Resources.Label_HeaderDriveType
-        LblStepping.Text = My.Resources.Label_Stepping
-        LblDosAllocation.Text = My.Resources.Label_DosAllocation
-        LblSides.Text = My.Resources.Label_Sides
-        LblComment.Text = My.Resources.Label_Comment
-        LblTimestamp.Text = My.Resources.Label_Timestamp
-        LblTracks.Text = My.Resources.Label_Tracks
-        LblSectors.Text = My.Resources.Label_Sectors
-    End Sub
-
-    Private Sub PopulateHeader(Image As TD0Image)
-        Dim Header = Image.Header
-        TxtCompression.Text = CompressionCaption(Header)
-        TxtVersion.Text = Header.VersionString
-        TxtSequence.Text = Header.Sequence.ToString()
-        TxtCheckSequence.Text = Header.CheckSequence.ToString()
-        TxtDataRate.Text = DataRateCaption(Header.DataRate)
-        TxtSingleDensity.Text = YesNo(Header.IsSingleDensity)
-        TxtDriveType.Text = DriveTypeCaption(Header.DriveType)
-        TxtStepping.Text = SteppingCaption(Header.Stepping)
-        TxtDosAllocation.Text = Header.DosAllocationFlag.ToString("X2")
-        TxtSides.Text = If(Header.Sides = 1, My.Resources.StepMode_Single, My.Resources.StepMode_Double)
-        PopulateComment(Image.Comment)
-    End Sub
-
-    Private Sub PopulateComment(Comment As TD0Comment)
-        TxtComment.Text = ""
-        DtpTimestamp.Checked = False
-
-        If Comment Is Nothing Then
-            Exit Sub
-        End If
-
-        TxtComment.Text = Comment.Text
-        Dim Timestamp = Comment.GetTimestamp()
-        If Timestamp.HasValue AndAlso Timestamp.Value >= DtpTimestamp.MinDate AndAlso Timestamp.Value <= DtpTimestamp.MaxDate Then
-            DtpTimestamp.Value = Timestamp.Value
-            DtpTimestamp.Checked = True
-        End If
-    End Sub
-
-    Private Shared Function YesNo(Value As Boolean) As String
-        If Value Then
-            Return My.Resources.Label_Yes
-        Else
-            Return My.Resources.Label_No
-        End If
     End Function
 
     Private Shared Function CompressionCaption(Header As TD0Header) As String
@@ -170,6 +111,13 @@ Public Class TD0ImageForm
         End Select
     End Function
 
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ImageForm.CommitDirtyCheckBox(DataGridViewSectors)
+
+        _Updated = _FloppyImage.UpdateProperties(BuildCommentSnapshot(), CollectCrcChanges())
+        DialogResult = DialogResult.OK
+    End Sub
+
     Private Function BuildCommentSnapshot() As Byte()
         Dim Text = TxtComment.Text
         If Text.Length = 0 Then
@@ -199,118 +147,17 @@ Public Class TD0ImageForm
         Return Comment.GetBytes()
     End Function
 
-    Private Function TimestampChanged(Existing As TD0Comment) As Boolean
-        If Not DtpTimestamp.Checked Then
-            Return False
-        End If
-
-        Dim Stored = Existing.GetTimestamp()
-        If Not Stored.HasValue Then
-            Return True
-        End If
-
-        Dim Picked = DtpTimestamp.Value
-        Return Stored.Value.Year <> Picked.Year OrElse
-            Stored.Value.Month <> Picked.Month OrElse
-            Stored.Value.Day <> Picked.Day OrElse
-            Stored.Value.Hour <> Picked.Hour OrElse
-            Stored.Value.Minute <> Picked.Minute OrElse
-            Stored.Value.Second <> Picked.Second
-    End Function
-
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        If DataGridViewSectors.IsCurrentCellDirty Then
-            DataGridViewSectors.CommitEdit(DataGridViewDataErrorContexts.Commit)
-        End If
-
-        _Updated = _FloppyImage.UpdateProperties(BuildCommentSnapshot(), CollectCrcChanges())
-        DialogResult = DialogResult.OK
-    End Sub
-
-    Private Sub InitializeGridColumns()
-        DataGridViewTracks.DefaultCellStyle.Padding = New Padding(0, 0, 5, 0)
-        DataGridViewTracks.AutoGenerateColumns = False
-        DataGridViewTracks.Columns.Clear()
-
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SECTORS, My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_FM, My.Resources.Label_FM, 50, DataGridViewContentAlignment.MiddleLeft)
-
-        DataGridViewSectors.AutoGenerateColumns = False
-        DataGridViewSectors.Columns.Clear()
-        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SECTOR, My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SIZE, My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight, "N0", Padding:=5)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DUPLICATE, My.Resources.TD0_SectorFlag_Duplicated)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError, Editable:=True)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DELETED, My.Resources.Label_Deleted)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_SKIPPED, My.Resources.TD0_SectorFlag_DosSkipped)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_DATA, My.Resources.TD0_SectorFlag_NoData)
-        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_ID, My.Resources.TD0_SectorFlag_DataNoId)
-    End Sub
-
-    Private Function GetTrackTable(Image As TD0Image) As DataTable
-        Dim TrackTable As New DataTable("TD0Tracks")
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_CYLINDER, GetType(Byte))
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_HEAD, GetType(Byte))
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_SECTORS, GetType(Byte))
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_FM, GetType(String))
-
-        For Each Track In Image.Tracks
-            Dim Row = TrackTable.NewRow()
-            Row(GRID_COLUMN_CYLINDER) = Track.Cylinder
-            Row(GRID_COLUMN_HEAD) = Track.Head
-            Row(GRID_COLUMN_SECTORS) = Track.SectorCount
-            Row(GRID_COLUMN_FM) = YesNo(Track.IsFMTrack)
-            TrackTable.Rows.Add(Row)
+    Private Function CollectCrcChanges() As List(Of TD0FloppyImage.TD0CrcErrorEdit)
+        Dim Changes As New List(Of TD0FloppyImage.TD0CrcErrorEdit)
+        For Each Entry In _CrcErrorEdits
+            Dim TrackIndex As Integer
+            Dim SectorIndex As Integer
+            ImageForm.UnpackSectorEditKey(Entry.Key, TrackIndex, SectorIndex)
+            Changes.Add(New TD0FloppyImage.TD0CrcErrorEdit(TrackIndex, SectorIndex, Entry.Value))
         Next
 
-        Return TrackTable
+        Return Changes
     End Function
-
-    Private Sub DataGridViewTracks_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewTracks.SelectionChanged
-        If _FloppyImage Is Nothing Then
-            Exit Sub
-        End If
-
-        ShowSelectedSectors()
-    End Sub
-
-    Private Sub ShowSelectedSectors()
-        Dim Tracks = _FloppyImage.Image.Tracks
-        Dim Row = DataGridViewTracks.CurrentRow
-        Dim Track As TD0Track = Nothing
-        If Row IsNot Nothing AndAlso Row.Index >= 0 AndAlso Row.Index < Tracks.Count Then
-            Track = Tracks(Row.Index)
-        End If
-
-        _LoadingSectors = True
-        DataGridViewSectors.DataSource = GetSectorTable(Track, TrackIndex())
-        _LoadingSectors = False
-    End Sub
-
-    Private Function TrackIndex() As Integer
-        Dim Row = DataGridViewTracks.CurrentRow
-        If Row Is Nothing OrElse Row.Index < 0 Then
-            Return -1
-        End If
-
-        Return Row.Index
-    End Function
-
-    Private Sub DataGridViewSectors_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewSectors.CurrentCellDirtyStateChanged
-        If Not DataGridViewSectors.IsCurrentCellDirty Then
-            Exit Sub
-        End If
-
-        If DataGridViewSectors.CurrentCell Is Nothing OrElse DataGridViewSectors.CurrentCell.OwningColumn.Name <> GRID_COLUMN_CRC_ERROR Then
-            Exit Sub
-        End If
-
-        DataGridViewSectors.CommitEdit(DataGridViewDataErrorContexts.Commit)
-    End Sub
 
     Private Sub DataGridViewSectors_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewSectors.CellValueChanged
         If _LoadingSectors OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then
@@ -328,22 +175,29 @@ Public Class TD0ImageForm
 
         Dim Value = DataGridViewSectors.Rows(e.RowIndex).Cells(e.ColumnIndex).Value
         If TypeOf Value Is Boolean Then
-            _CrcErrorEdits(CrcEditKey(Index, e.RowIndex)) = CBool(Value)
+            _CrcErrorEdits(ImageForm.SectorEditKey(Index, e.RowIndex)) = CBool(Value)
         End If
     End Sub
 
-    Private Function CollectCrcChanges() As List(Of TD0FloppyImage.TD0CrcErrorEdit)
-        Dim Changes As New List(Of TD0FloppyImage.TD0CrcErrorEdit)
-        For Each Entry In _CrcErrorEdits
-            Changes.Add(New TD0FloppyImage.TD0CrcErrorEdit(CInt(Entry.Key >> 16), CInt(Entry.Key And &HFFFF), Entry.Value))
-        Next
+    Private Sub DataGridViewSectors_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewSectors.CurrentCellDirtyStateChanged
+        ImageForm.CommitDirtyCheckBox(DataGridViewSectors, GRID_COLUMN_CRC_ERROR)
+    End Sub
 
-        Return Changes
-    End Function
+    Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete
+        ImageForm.AutoSizeGrid(DataGridViewSectors)
+    End Sub
 
-    Private Shared Function CrcEditKey(TrackIndex As Integer, SectorIndex As Integer) As Long
-        Return (CLng(TrackIndex) << 16) Or SectorIndex
-    End Function
+    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
+        ImageForm.AutoSizeGrid(DataGridViewTracks, FitWidth:=True)
+    End Sub
+
+    Private Sub DataGridViewTracks_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewTracks.SelectionChanged
+        If _FloppyImage Is Nothing Then
+            Exit Sub
+        End If
+
+        ShowSelectedSectors()
+    End Sub
 
     Private Function GetSectorTable(Track As TD0Track, TrackIndex As Integer) As DataTable
         Dim SectorTable As New DataTable("TD0Sectors")
@@ -369,14 +223,9 @@ Public Class TD0ImageForm
             Row(GRID_COLUMN_HEAD) = Sector.Header.Head
             Row(GRID_COLUMN_SECTOR) = Sector.Header.SectorId
             Dim Flags = Sector.Header.Flags
-            Dim CrcError = (Flags And TD0SectorFlags.CrcError) <> 0
-            Dim EditedCrcError As Boolean
-            If TrackIndex >= 0 AndAlso _CrcErrorEdits.TryGetValue(CrcEditKey(TrackIndex, SectorIndex), EditedCrcError) Then
-                CrcError = EditedCrcError
-            End If
             Row(GRID_COLUMN_SIZE) = Sector.Header.GetSectorSizeBytes()
             Row(GRID_COLUMN_DUPLICATE) = (Flags And TD0SectorFlags.Duplicated) <> 0
-            Row(GRID_COLUMN_CRC_ERROR) = CrcError
+            Row(GRID_COLUMN_CRC_ERROR) = ImageForm.EditedFlag(_CrcErrorEdits, TrackIndex, SectorIndex, (Flags And TD0SectorFlags.CrcError) <> 0)
             Row(GRID_COLUMN_DELETED) = (Flags And TD0SectorFlags.DeletedData) <> 0
             Row(GRID_COLUMN_SKIPPED) = (Flags And TD0SectorFlags.DosSkipped) <> 0
             Row(GRID_COLUMN_NO_DATA) = (Flags And TD0SectorFlags.NoData) <> 0
@@ -387,12 +236,132 @@ Public Class TD0ImageForm
         Return SectorTable
     End Function
 
-    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
-        DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-        ImageForm.ResizeGridWidth(DataGridViewTracks)
+    Private Function GetTrackTable(Image As TD0Image) As DataTable
+        Dim TrackTable As New DataTable("TD0Tracks")
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_CYLINDER, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_HEAD, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_SECTORS, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_FM, GetType(String))
+
+        For Each Track In Image.Tracks
+            Dim Row = TrackTable.NewRow()
+            Row(GRID_COLUMN_CYLINDER) = Track.Cylinder
+            Row(GRID_COLUMN_HEAD) = Track.Head
+            Row(GRID_COLUMN_SECTORS) = Track.SectorCount
+            Row(GRID_COLUMN_FM) = ImageForm.YesNo(Track.IsFMTrack)
+            TrackTable.Rows.Add(Row)
+        Next
+
+        Return TrackTable
+    End Function
+
+    Private Sub InitializeGridColumns()
+        DataGridViewTracks.DefaultCellStyle.Padding = New Padding(0, 0, 5, 0)
+        ImageForm.PrepareGrid(DataGridViewTracks)
+
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SECTORS, My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_FM, My.Resources.Label_FM, 50, DataGridViewContentAlignment.MiddleLeft)
+
+        ImageForm.PrepareGrid(DataGridViewSectors)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SECTOR, My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SIZE, My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight, "N0", Padding:=5)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DUPLICATE, My.Resources.TD0_SectorFlag_Duplicated)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError, Editable:=True)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DELETED, My.Resources.Label_Deleted)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_SKIPPED, My.Resources.TD0_SectorFlag_DosSkipped)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_DATA, My.Resources.TD0_SectorFlag_NoData)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_ID, My.Resources.TD0_SectorFlag_DataNoId)
     End Sub
 
-    Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete
-        DataGridViewSectors.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
+    Private Sub LocalizeForm()
+        ImageForm.LocalizeButtons(Me, "TD0", BtnUpdate, BtnCancel)
+        LblCompression.Text = My.Resources.Label_Compression
+        LblVersion.Text = My.Resources.Label_Version
+        LblSequence.Text = My.Resources.Label_Sequence
+        LblCheckSequence.Text = My.Resources.Label_CheckSequence
+        LblDataRate.Text = My.Resources.Label_DataRate
+        LblSingleDensity.Text = My.Resources.Label_SingleDensity
+        LblDriveType.Text = My.Resources.Label_HeaderDriveType
+        LblStepping.Text = My.Resources.Label_Stepping
+        LblDosAllocation.Text = My.Resources.Label_DosAllocation
+        LblSides.Text = My.Resources.Label_Sides
+        LblComment.Text = My.Resources.Label_Comment
+        LblTimestamp.Text = My.Resources.Label_Timestamp
+        LblTracks.Text = My.Resources.Label_Tracks
+        LblSectors.Text = My.Resources.Label_Sectors
     End Sub
+
+    Private Sub PopulateComment(Comment As TD0Comment)
+        TxtComment.Text = ""
+        DtpTimestamp.Checked = False
+
+        If Comment Is Nothing Then
+            Exit Sub
+        End If
+
+        TxtComment.Text = Comment.Text
+        Dim Timestamp = Comment.GetTimestamp()
+        If Timestamp.HasValue AndAlso Timestamp.Value >= DtpTimestamp.MinDate AndAlso Timestamp.Value <= DtpTimestamp.MaxDate Then
+            DtpTimestamp.Value = Timestamp.Value
+            DtpTimestamp.Checked = True
+        End If
+    End Sub
+
+    Private Sub PopulateHeader(Image As TD0Image)
+        Dim Header = Image.Header
+        TxtCompression.Text = CompressionCaption(Header)
+        TxtVersion.Text = Header.VersionString
+        TxtSequence.Text = Header.Sequence.ToString()
+        TxtCheckSequence.Text = Header.CheckSequence.ToString()
+        TxtDataRate.Text = DataRateCaption(Header.DataRate)
+        TxtSingleDensity.Text = ImageForm.YesNo(Header.IsSingleDensity)
+        TxtDriveType.Text = DriveTypeCaption(Header.DriveType)
+        TxtStepping.Text = SteppingCaption(Header.Stepping)
+        TxtDosAllocation.Text = Header.DosAllocationFlag.ToString("X2")
+        TxtSides.Text = If(Header.Sides = 1, My.Resources.StepMode_Single, My.Resources.StepMode_Double)
+        PopulateComment(Image.Comment)
+    End Sub
+    Private Sub ShowSelectedSectors()
+        Dim Tracks = _FloppyImage.Image.Tracks
+        Dim Row = DataGridViewTracks.CurrentRow
+        Dim Track As TD0Track = Nothing
+        If Row IsNot Nothing AndAlso Row.Index >= 0 AndAlso Row.Index < Tracks.Count Then
+            Track = Tracks(Row.Index)
+        End If
+
+        _LoadingSectors = True
+        DataGridViewSectors.DataSource = GetSectorTable(Track, TrackIndex())
+        _LoadingSectors = False
+    End Sub
+
+    Private Function TimestampChanged(Existing As TD0Comment) As Boolean
+        If Not DtpTimestamp.Checked Then
+            Return False
+        End If
+
+        Dim Stored = Existing.GetTimestamp()
+        If Not Stored.HasValue Then
+            Return True
+        End If
+
+        Dim Picked = DtpTimestamp.Value
+        Return Stored.Value.Year <> Picked.Year OrElse
+            Stored.Value.Month <> Picked.Month OrElse
+            Stored.Value.Day <> Picked.Day OrElse
+            Stored.Value.Hour <> Picked.Hour OrElse
+            Stored.Value.Minute <> Picked.Minute OrElse
+            Stored.Value.Second <> Picked.Second
+    End Function
+    Private Function TrackIndex() As Integer
+        Dim Row = DataGridViewTracks.CurrentRow
+        If Row Is Nothing OrElse Row.Index < 0 Then
+            Return -1
+        End If
+
+        Return Row.Index
+    End Function
 End Class

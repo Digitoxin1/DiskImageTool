@@ -2,13 +2,13 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.ImageFormats.MFM
 
 Public Class MFMImageForm
-    Private Const GRID_COLUMN_TRACK As String = "GridTrack"
-    Private Const GRID_COLUMN_SIDE As String = "GridSide"
-    Private Const GRID_COLUMN_OFFSET As String = "GridOffset"
-    Private Const GRID_COLUMN_LENGTH As String = "GridLength"
-    Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
-    Private Const GRID_COLUMN_RPM As String = "GridRPM"
     Private Const ADVANCED_TRACK_LIST As Byte = &H80
+    Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
+    Private Const GRID_COLUMN_LENGTH As String = "GridLength"
+    Private Const GRID_COLUMN_OFFSET As String = "GridOffset"
+    Private Const GRID_COLUMN_RPM As String = "GridRPM"
+    Private Const GRID_COLUMN_SIDE As String = "GridSide"
+    Private Const GRID_COLUMN_TRACK As String = "GridTrack"
 
     Private ReadOnly _FloppyImage As MFMFloppyImage
     Private _Updated As Boolean
@@ -43,27 +43,6 @@ Public Class MFMImageForm
         End Using
     End Function
 
-    Private Sub LocalizeForm()
-        Me.Text = "MFM " & WithoutHotkey(My.Resources.Menu_ImageProperties)
-        BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnUpdate.Text = My.Resources.Menu_Update
-        LblTracks.Text = My.Resources.Label_Tracks
-        LblSides.Text = My.Resources.Label_Sides
-        LblRPM.Text = My.Resources.SummaryPanel_RPM
-        LblBitRate.Text = My.Resources.SummaryPanel_Bitrate
-        LblInterfaceType.Text = My.Resources.Label_InterfaceType
-        ChkPerTrackRates.Text = My.Resources.Label_PerTrackRates
-    End Sub
-
-    Private Sub PopulateHeader(Image As MFMImage)
-        TxtTrackCount.Text = Image.TrackCount.ToString()
-        TxtSides.Text = Image.SideCount.ToString()
-        TxtRPM.Text = Image.RPM.ToString()
-        TxtBitRate.Text = Image.BitRate.ToString()
-        ChkPerTrackRates.Checked = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
-        ImageForm.PopulateByteCombo(CboInterfaceType, ImageForm.InterfaceModes, InterfaceModeToSelect(Image.IFType), AddressOf ImageForm.InterfaceModeCaption)
-    End Sub
-
     Private Shared Function InterfaceModeToSelect(InterfaceType As Byte) As Byte
         If InterfaceType = ImageForm.InterfaceModeDisabled Then
             Return ImageForm.InterfaceModeDisabled
@@ -75,13 +54,7 @@ Public Class MFMImageForm
     Private Function ApplyUpdates() As Boolean
         Dim RPM As UShort
         Dim BitRate As UShort
-        If Not UShort.TryParse(TxtRPM.Text, RPM) Then
-            TxtRPM.Focus()
-            Return False
-        End If
-
-        If Not UShort.TryParse(TxtBitRate.Text, BitRate) Then
-            TxtBitRate.Focus()
+        If Not ImageForm.TryReadUShort(TxtRPM, RPM) OrElse Not ImageForm.TryReadUShort(TxtBitRate, BitRate) Then
             Return False
         End If
 
@@ -100,20 +73,6 @@ Public Class MFMImageForm
         End If
 
         DialogResult = DialogResult.OK
-    End Sub
-
-    Private Sub InitializeGridColumns(Image As MFMImage)
-        DataGridViewTracks.AutoGenerateColumns = False
-        DataGridViewTracks.Columns.Clear()
-
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
-        If (Image.IFType And ADVANCED_TRACK_LIST) <> 0 Then
-            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
-            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
-        End If
     End Sub
 
     Private Function GetTrackTable(Image As MFMImage) As DataTable
@@ -154,4 +113,36 @@ Public Class MFMImageForm
 
         Return TrackTable
     End Function
+
+    Private Sub InitializeGridColumns(Image As MFMImage)
+        ImageForm.PrepareGrid(DataGridViewTracks)
+
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
+        If (Image.IFType And ADVANCED_TRACK_LIST) <> 0 Then
+            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
+            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
+        End If
+    End Sub
+
+    Private Sub LocalizeForm()
+        ImageForm.LocalizeButtons(Me, "MFM", BtnUpdate, BtnCancel)
+        LblTracks.Text = My.Resources.Label_Tracks
+        LblSides.Text = My.Resources.Label_Sides
+        LblRPM.Text = My.Resources.SummaryPanel_RPM
+        LblBitRate.Text = My.Resources.SummaryPanel_Bitrate
+        LblInterfaceType.Text = My.Resources.Label_InterfaceType
+        ChkPerTrackRates.Text = My.Resources.Label_PerTrackRates
+    End Sub
+
+    Private Sub PopulateHeader(Image As MFMImage)
+        TxtTrackCount.Text = Image.TrackCount.ToString()
+        TxtSides.Text = Image.SideCount.ToString()
+        TxtRPM.Text = Image.RPM.ToString()
+        TxtBitRate.Text = Image.BitRate.ToString()
+        ChkPerTrackRates.Checked = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
+        ImageForm.PopulateByteCombo(CboInterfaceType, ImageForm.InterfaceModes, InterfaceModeToSelect(Image.IFType), AddressOf ImageForm.InterfaceModeCaption)
+    End Sub
 End Class

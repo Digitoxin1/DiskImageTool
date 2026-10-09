@@ -2,8 +2,9 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.ImageFormats.IMD
 
 Public Class IMDImageForm
-    Private ReadOnly _Disk As Disk
     Private ReadOnly _ChecksumErrorEdits As New Dictionary(Of Long, Boolean)
+    Private ReadOnly _Disk As Disk
+
     Private _LoadingSectors As Boolean
     Private _Updated As Boolean
 
@@ -12,14 +13,11 @@ Public Class IMDImageForm
 
         _Disk = Disk
 
-        Text = "IMD " & WithoutHotkey(My.Resources.Menu_ImageProperties)
-
+        ImageForm.LocalizeButtons(Me, "IMD", BtnUpdate, BtnCancel)
         LblHeader.Text = My.Resources.Label_Header
         LblComment.Text = My.Resources.Label_Comment
         LblTracks.Text = My.Resources.Label_Tracks
         LblSectors.Text = My.Resources.Label_Sectors
-        BtnUpdate.Text = My.Resources.Menu_Update
-        BtnCancel.Text = My.Resources.Menu_Cancel
 
         TxtComment.AcceptsReturn = True
         TxtComment.ScrollBars = ScrollBars.Vertical
@@ -44,8 +42,47 @@ Public Class IMDImageForm
         End Using
     End Function
 
+    Private Shared Function ModeCaption(Mode As TrackMode) As String
+        Select Case Mode
+            Case TrackMode.FM500kbps
+                Return My.Resources.IMD_Mode_FM500
+            Case TrackMode.FM300kbps
+                Return My.Resources.IMD_Mode_FM300
+            Case TrackMode.FM250kbps
+                Return My.Resources.IMD_Mode_FM250
+            Case TrackMode.MFM500kbps
+                Return My.Resources.IMD_Mode_MFM500
+            Case TrackMode.MFM300kbps
+                Return My.Resources.IMD_Mode_MFM300
+            Case TrackMode.MFM250kbps
+                Return My.Resources.IMD_Mode_MFM250
+            Case Else
+                Return CByte(Mode).ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function SectorSizeCaption(Bytes As UShort, Size As SectorSize) As String
+        If Bytes = 0 Then
+            Return CByte(Size).ToString("X2")
+        End If
+
+        Return Bytes.ToString("N0")
+    End Function
+
+    Private Sub AddSectorColumns()
+        ImageForm.PrepareGrid(DataGridViewSectors)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Head", My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Sector", My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "ChecksumError", My.Resources.Label_ChecksumError, 90, True)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Deleted", My.Resources.Label_Deleted, 90)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Unavailable", My.Resources.Label_Unavailable, 90)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Compressed", My.Resources.Label_Compressed, 90)
+    End Sub
+
     Private Sub AddTrackColumns()
         DataGridViewTracks.DefaultCellStyle.Padding = New Padding(0, 0, 5, 0)
+        ImageForm.PrepareGrid(DataGridViewTracks)
 
         ImageForm.AddTextColumn(DataGridViewTracks, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
         ImageForm.AddTextColumn(DataGridViewTracks, "Head", My.Resources.Label_Head, 50, DataGridViewContentAlignment.MiddleRight)
@@ -54,14 +91,54 @@ Public Class IMDImageForm
         ImageForm.AddTextColumn(DataGridViewTracks, "SectorSize", My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight)
     End Sub
 
-    Private Sub AddSectorColumns()
-        ImageForm.AddTextColumn(DataGridViewSectors, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddTextColumn(DataGridViewSectors, "Head", My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddTextColumn(DataGridViewSectors, "Sector", My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        ImageForm.AddCheckColumn(DataGridViewSectors, "ChecksumError", My.Resources.Label_ChecksumError, 90, True)
-        ImageForm.AddCheckColumn(DataGridViewSectors, "Deleted", My.Resources.Label_Deleted, 90)
-        ImageForm.AddCheckColumn(DataGridViewSectors, "Unavailable", My.Resources.Label_Unavailable, 90)
-        ImageForm.AddCheckColumn(DataGridViewSectors, "Compressed", My.Resources.Label_Compressed, 90)
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ImageForm.CommitDirtyCheckBox(DataGridViewSectors)
+        _Updated = DirectCast(_Disk.Image, IMDFloppyImage).UpdateProperties(TxtComment.Text, CollectChecksumChanges())
+        DialogResult = DialogResult.OK
+    End Sub
+
+    Private Function CollectChecksumChanges() As List(Of IMDFloppyImage.IMDChecksumErrorEdit)
+        Dim Changes As New List(Of IMDFloppyImage.IMDChecksumErrorEdit)
+        For Each Item In _ChecksumErrorEdits
+            Dim TrackIndex As Integer
+            Dim SectorIndex As Integer
+            ImageForm.UnpackSectorEditKey(Item.Key, TrackIndex, SectorIndex)
+            Changes.Add(New IMDFloppyImage.IMDChecksumErrorEdit(TrackIndex, SectorIndex, Item.Value))
+        Next
+
+        Return Changes
+    End Function
+
+    Private Sub DataGridViewSectors_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewSectors.CellValueChanged
+        If _LoadingSectors OrElse e.RowIndex < 0 OrElse DataGridViewTracks.CurrentRow Is Nothing Then
+            Exit Sub
+        End If
+
+        If DataGridViewSectors.Columns(e.ColumnIndex).Name <> "ChecksumError" Then
+            Exit Sub
+        End If
+
+        _ChecksumErrorEdits(ImageForm.SectorEditKey(DataGridViewTracks.CurrentRow.Index, e.RowIndex)) = CBool(DataGridViewSectors.Rows(e.RowIndex).Cells(e.ColumnIndex).Value)
+    End Sub
+
+    Private Sub DataGridViewSectors_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewSectors.CurrentCellDirtyStateChanged
+        ImageForm.CommitDirtyCheckBox(DataGridViewSectors, "ChecksumError")
+    End Sub
+
+    Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete
+        ImageForm.AutoSizeGrid(DataGridViewSectors)
+    End Sub
+
+    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
+        ImageForm.AutoSizeGrid(DataGridViewTracks, FitWidth:=True)
+    End Sub
+
+    Private Sub DataGridViewTracks_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewTracks.SelectionChanged
+        If DataGridViewTracks.CurrentRow Is Nothing Then
+            PopulateSectors(-1)
+        Else
+            PopulateSectors(DataGridViewTracks.CurrentRow.Index)
+        End If
     End Sub
 
     Private Sub Populate()
@@ -116,7 +193,7 @@ Public Class IMDImageForm
                 Row("Cylinder") = Sector.Track.ToString()
                 Row("Head") = Sector.Side.ToString()
                 Row("Sector") = Sector.SectorId.ToString()
-                Row("ChecksumError") = ChecksumErrorValue(TrackIndex, SectorIndex, Sector.ChecksumError)
+                Row("ChecksumError") = ImageForm.EditedFlag(_ChecksumErrorEdits, TrackIndex, SectorIndex, Sector.ChecksumError)
                 Row("Deleted") = Sector.Deleted
                 Row("Unavailable") = Sector.Unavailable
                 Row("Compressed") = Sector.Compressed
@@ -127,96 +204,5 @@ Public Class IMDImageForm
 
         DataGridViewSectors.DataSource = Table
         _LoadingSectors = False
-    End Sub
-
-    Private Function ChecksumErrorValue(TrackIndex As Integer, SectorIndex As Integer, Stored As Boolean) As Boolean
-        Dim Edited As Boolean
-        If _ChecksumErrorEdits.TryGetValue(EditKey(TrackIndex, SectorIndex), Edited) Then
-            Return Edited
-        End If
-
-        Return Stored
-    End Function
-
-    Private Shared Function EditKey(TrackIndex As Integer, SectorIndex As Integer) As Long
-        Return (CLng(TrackIndex) << 16) Or CUInt(SectorIndex)
-    End Function
-
-    Private Shared Function ModeCaption(Mode As TrackMode) As String
-        Select Case Mode
-            Case TrackMode.FM500kbps
-                Return My.Resources.IMD_Mode_FM500
-            Case TrackMode.FM300kbps
-                Return My.Resources.IMD_Mode_FM300
-            Case TrackMode.FM250kbps
-                Return My.Resources.IMD_Mode_FM250
-            Case TrackMode.MFM500kbps
-                Return My.Resources.IMD_Mode_MFM500
-            Case TrackMode.MFM300kbps
-                Return My.Resources.IMD_Mode_MFM300
-            Case TrackMode.MFM250kbps
-                Return My.Resources.IMD_Mode_MFM250
-            Case Else
-                Return CByte(Mode).ToString("X2")
-        End Select
-    End Function
-
-    Private Shared Function SectorSizeCaption(Bytes As UShort, Size As SectorSize) As String
-        If Bytes = 0 Then
-            Return CByte(Size).ToString("X2")
-        End If
-
-        Return Bytes.ToString("N0")
-    End Function
-
-    Private Function CollectChecksumChanges() As List(Of IMDFloppyImage.IMDChecksumErrorEdit)
-        Dim Changes As New List(Of IMDFloppyImage.IMDChecksumErrorEdit)
-        For Each Item In _ChecksumErrorEdits
-            Dim TrackIndex = CInt(Item.Key >> 16)
-            Dim SectorIndex = CInt(Item.Key And &HFFFF)
-            Changes.Add(New IMDFloppyImage.IMDChecksumErrorEdit(TrackIndex, SectorIndex, Item.Value))
-        Next
-
-        Return Changes
-    End Function
-
-    Private Sub DataGridViewSectors_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewSectors.CurrentCellDirtyStateChanged
-        If DataGridViewSectors.IsCurrentCellDirty Then
-            DataGridViewSectors.CommitEdit(DataGridViewDataErrorContexts.Commit)
-        End If
-    End Sub
-
-    Private Sub DataGridViewSectors_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewSectors.CellValueChanged
-        If _LoadingSectors OrElse e.RowIndex < 0 OrElse DataGridViewTracks.CurrentRow Is Nothing Then
-            Exit Sub
-        End If
-
-        If DataGridViewSectors.Columns(e.ColumnIndex).Name <> "ChecksumError" Then
-            Exit Sub
-        End If
-
-        _ChecksumErrorEdits(EditKey(DataGridViewTracks.CurrentRow.Index, e.RowIndex)) = CBool(DataGridViewSectors.Rows(e.RowIndex).Cells(e.ColumnIndex).Value)
-    End Sub
-
-    Private Sub DataGridViewTracks_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewTracks.SelectionChanged
-        If DataGridViewTracks.CurrentRow Is Nothing Then
-            PopulateSectors(-1)
-        Else
-            PopulateSectors(DataGridViewTracks.CurrentRow.Index)
-        End If
-    End Sub
-
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        _Updated = DirectCast(_Disk.Image, IMDFloppyImage).UpdateProperties(TxtComment.Text, CollectChecksumChanges())
-        DialogResult = DialogResult.OK
-    End Sub
-
-    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
-        DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-        ImageForm.ResizeGridWidth(DataGridViewTracks)
-    End Sub
-
-    Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete
-        DataGridViewSectors.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
     End Sub
 End Class

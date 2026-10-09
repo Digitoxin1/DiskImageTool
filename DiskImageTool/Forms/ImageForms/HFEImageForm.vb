@@ -2,15 +2,15 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.ImageFormats.HFE
 
 Public Class HFEImageForm
-    Private Const GRID_COLUMN_TRACK As String = "GridTrack"
-    Private Const GRID_COLUMN_OFFSET As String = "GridOffset"
+    Private Const ALT_ENCODING_UNUSED As Byte = &HFF
+    Private Const ALT_ENCODING_USE As Byte = &H0
+    Private Const DOUBLE_STEP As Byte = &H0
     Private Const GRID_COLUMN_LENGTH As String = "GridLength"
+    Private Const GRID_COLUMN_OFFSET As String = "GridOffset"
+    Private Const GRID_COLUMN_TRACK As String = "GridTrack"
+    Private Const SINGLE_STEP As Byte = &HFF
     Private Const WRITE_ALLOWED As Byte = &HFF
     Private Const WRITE_PROTECTED As Byte = &H0
-    Private Const SINGLE_STEP As Byte = &HFF
-    Private Const DOUBLE_STEP As Byte = &H0
-    Private Const ALT_ENCODING_USE As Byte = &H0
-    Private Const ALT_ENCODING_UNUSED As Byte = &HFF
 
     Private Shared ReadOnly WriteAllowedValues() As Byte = {WRITE_ALLOWED, WRITE_PROTECTED}
 
@@ -47,10 +47,114 @@ Public Class HFEImageForm
         End Using
     End Function
 
+    Private Shared Function AlternateEncodingCaption(Value As Byte) As String
+        Select Case Value
+            Case ALT_ENCODING_USE
+                Return My.Resources.AltEncoding_Use
+            Case ALT_ENCODING_UNUSED
+                Return My.Resources.AltEncoding_Unused
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function SingleStepCaption(Value As Byte) As String
+        Select Case Value
+            Case SINGLE_STEP
+                Return My.Resources.StepMode_Single
+            Case DOUBLE_STEP
+                Return My.Resources.StepMode_Double
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function TrackEncodingCaption(TrackEncoding As Byte) As String
+        Select Case TrackEncoding
+            Case &H0
+                Return My.Resources.TrackEncoding_IbmMfm
+            Case &H1
+                Return My.Resources.TrackEncoding_AmigaMfm
+            Case &H2
+                Return My.Resources.TrackEncoding_IbmFm
+            Case &H3
+                Return My.Resources.TrackEncoding_EmuFm
+            Case &HFF
+                Return My.Resources.Label_Unknown
+            Case Else
+                Return TrackEncoding.ToString("X2")
+        End Select
+    End Function
+
+    Private Shared Function WriteAllowedCaption(Value As Byte) As String
+        Select Case Value
+            Case WRITE_ALLOWED
+                Return My.Resources.WriteAllowed_Unprotected
+            Case WRITE_PROTECTED
+                Return My.Resources.SummaryPanel_WriteProtected
+            Case Else
+                Return Value.ToString("X2")
+        End Select
+    End Function
+
+    Private Function ApplyUpdates() As Boolean
+        Dim RPM As UShort
+        Dim BitRate As UShort
+        If Not ImageForm.TryReadUShort(TxtRPM, RPM) OrElse Not ImageForm.TryReadUShort(TxtBitRate, BitRate) Then
+            Return False
+        End If
+
+        Dim InterfaceItem = TryCast(CboInterfaceType.SelectedItem, ImageForm.ByteListItem)
+        Dim WriteAllowedItem = TryCast(CboWriteAllowed.SelectedItem, ImageForm.ByteListItem)
+        If InterfaceItem Is Nothing OrElse WriteAllowedItem Is Nothing Then
+            Return False
+        End If
+
+        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, InterfaceItem.Value, WriteAllowedItem.Value)
+        Return True
+    End Function
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        If Not ApplyUpdates() Then
+            Exit Sub
+        End If
+
+        DialogResult = DialogResult.OK
+    End Sub
+
+    Private Function GetTrackTable(Image As HFEImage) As DataTable
+        Dim TrackTable As New DataTable("HFETracks")
+
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UShort))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
+
+        If Image.SideCount > 0 Then
+            For Track As Integer = 0 To Image.TrackCount - 1
+                Dim Row = TrackTable.NewRow()
+                Dim TrackData = Image.GetTrack(CByte(Track), 0)
+                Row(GRID_COLUMN_TRACK) = CByte(Track)
+                If TrackData IsNot Nothing Then
+                    Row(GRID_COLUMN_OFFSET) = TrackData.TrackListOffset
+                    Row(GRID_COLUMN_LENGTH) = CUInt(TrackData.TrackListLength)
+                End If
+                TrackTable.Rows.Add(Row)
+            Next
+        End If
+
+        Return TrackTable
+    End Function
+
+    Private Sub InitializeGridColumns()
+        ImageForm.PrepareGrid(DataGridViewTracks)
+
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X4")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
+    End Sub
+
     Private Sub LocalizeForm()
-        Me.Text = "HFE " & WithoutHotkey(My.Resources.Menu_ImageProperties)
-        BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnUpdate.Text = My.Resources.Menu_Update
+        ImageForm.LocalizeButtons(Me, "HFE", BtnUpdate, BtnCancel)
         LblSignature.Text = My.Resources.Label_Signature
         LblFormatRevision.Text = My.Resources.Label_FormatRevision
         LblTracks.Text = My.Resources.Label_Tracks
@@ -87,117 +191,4 @@ Public Class HFEImageForm
         ImageForm.PopulateByteCombo(CboInterfaceType, ImageForm.InterfaceModes, CByte(Image.FloppyInterfaceMode), AddressOf ImageForm.InterfaceModeCaption)
         ImageForm.PopulateByteCombo(CboWriteAllowed, WriteAllowedValues, Image.WriteAllowed, AddressOf WriteAllowedCaption)
     End Sub
-
-    Private Shared Function TrackEncodingCaption(TrackEncoding As Byte) As String
-        Select Case TrackEncoding
-            Case &H0
-                Return My.Resources.TrackEncoding_IbmMfm
-            Case &H1
-                Return My.Resources.TrackEncoding_AmigaMfm
-            Case &H2
-                Return My.Resources.TrackEncoding_IbmFm
-            Case &H3
-                Return My.Resources.TrackEncoding_EmuFm
-            Case &HFF
-                Return My.Resources.Label_Unknown
-            Case Else
-                Return TrackEncoding.ToString("X2")
-        End Select
-    End Function
-
-    Private Shared Function WriteAllowedCaption(Value As Byte) As String
-        Select Case Value
-            Case WRITE_ALLOWED
-                Return My.Resources.WriteAllowed_Unprotected
-            Case WRITE_PROTECTED
-                Return My.Resources.SummaryPanel_WriteProtected
-            Case Else
-                Return Value.ToString("X2")
-        End Select
-    End Function
-
-    Private Shared Function SingleStepCaption(Value As Byte) As String
-        Select Case Value
-            Case SINGLE_STEP
-                Return My.Resources.StepMode_Single
-            Case DOUBLE_STEP
-                Return My.Resources.StepMode_Double
-            Case Else
-                Return Value.ToString("X2")
-        End Select
-    End Function
-
-    Private Shared Function AlternateEncodingCaption(Value As Byte) As String
-        Select Case Value
-            Case ALT_ENCODING_USE
-                Return My.Resources.AltEncoding_Use
-            Case ALT_ENCODING_UNUSED
-                Return My.Resources.AltEncoding_Unused
-            Case Else
-                Return Value.ToString("X2")
-        End Select
-    End Function
-
-    Private Function ApplyUpdates() As Boolean
-        Dim RPM As UShort
-        Dim BitRate As UShort
-        If Not UShort.TryParse(TxtRPM.Text, RPM) Then
-            TxtRPM.Focus()
-            Return False
-        End If
-
-        If Not UShort.TryParse(TxtBitRate.Text, BitRate) Then
-            TxtBitRate.Focus()
-            Return False
-        End If
-
-        Dim InterfaceItem = TryCast(CboInterfaceType.SelectedItem, ImageForm.ByteListItem)
-        Dim WriteAllowedItem = TryCast(CboWriteAllowed.SelectedItem, ImageForm.ByteListItem)
-        If InterfaceItem Is Nothing OrElse WriteAllowedItem Is Nothing Then
-            Return False
-        End If
-
-        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, InterfaceItem.Value, WriteAllowedItem.Value)
-        Return True
-    End Function
-
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        If Not ApplyUpdates() Then
-            Exit Sub
-        End If
-
-        DialogResult = DialogResult.OK
-    End Sub
-
-    Private Sub InitializeGridColumns()
-        DataGridViewTracks.AutoGenerateColumns = False
-        DataGridViewTracks.Columns.Clear()
-
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X4")
-        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
-    End Sub
-
-    Private Function GetTrackTable(Image As HFEImage) As DataTable
-        Dim TrackTable As New DataTable("HFETracks")
-
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(Byte))
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UShort))
-        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
-
-        If Image.SideCount > 0 Then
-            For Track As Integer = 0 To Image.TrackCount - 1
-                Dim Row = TrackTable.NewRow()
-                Dim TrackData = Image.GetTrack(CByte(Track), 0)
-                Row(GRID_COLUMN_TRACK) = CByte(Track)
-                If TrackData IsNot Nothing Then
-                    Row(GRID_COLUMN_OFFSET) = TrackData.TrackListOffset
-                    Row(GRID_COLUMN_LENGTH) = CUInt(TrackData.TrackListLength)
-                End If
-                TrackTable.Rows.Add(Row)
-            Next
-        End If
-
-        Return TrackTable
-    End Function
 End Class
