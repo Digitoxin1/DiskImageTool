@@ -2933,15 +2933,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Additional Header.
-        '''</summary>
-        Friend ReadOnly Property Label_AdditionalHeader() As String
-            Get
-                Return ResourceManager.GetString("Label_AdditionalHeader", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to All Tracks.
         '''</summary>
         Friend ReadOnly Property Label_AllTracks() As String
@@ -3532,15 +3523,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Deleted() As String
             Get
                 Return ResourceManager.GetString("Label_Deleted", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Deleted DAM.
-        '''</summary>
-        Friend ReadOnly Property Label_DeletedDam() As String
-            Get
-                Return ResourceManager.GetString("Label_DeletedDam", resourceCulture)
             End Get
         End Property
         
@@ -4292,15 +4274,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to ID CRC Error.
-        '''</summary>
-        Friend ReadOnly Property Label_IdCrcError() As String
-            Get
-                Return ResourceManager.GetString("Label_IdCrcError", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Image.
         '''</summary>
         Friend ReadOnly Property Label_Image() As String
@@ -4675,15 +4648,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Missing() As String
             Get
                 Return ResourceManager.GetString("Label_Missing", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Missing DAM.
-        '''</summary>
-        Friend ReadOnly Property Label_MissingDam() As String
-            Get
-                Return ResourceManager.GetString("Label_MissingDam", resourceCulture)
             End Get
         End Property
         
@@ -7435,33 +7399,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("PropertiesFolderClosed", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Double Density.
-        '''</summary>
-        Friend ReadOnly Property PSI_Encoding_DoubleDensity() As String
-            Get
-                Return ResourceManager.GetString("PSI_Encoding_DoubleDensity", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Extra Density.
-        '''</summary>
-        Friend ReadOnly Property PSI_Encoding_ExtraDensity() As String
-            Get
-                Return ResourceManager.GetString("PSI_Encoding_ExtraDensity", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to High Density.
-        '''</summary>
-        Friend ReadOnly Property PSI_Encoding_HighDensity() As String
-            Get
-                Return ResourceManager.GetString("PSI_Encoding_HighDensity", resourceCulture)
             End Get
         End Property
         

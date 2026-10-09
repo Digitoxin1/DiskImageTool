@@ -1105,8 +1105,14 @@ Do you wish to overwrite?</value>
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>Additional Data</value>
   </data>
+  <data name="Label_AdditionalHeader" xml:space="preserve">
+    <value>Additional Header</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>All Tracks</value>
+  </data>
+  <data name="Label_Alternate" xml:space="preserve">
+    <value>Alternate</value>
   </data>
   <data name="Label_AlternateBitCell" xml:space="preserve">
     <value>Alternate Calculation</value>
@@ -1287,6 +1293,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>Database</value>
   </data>
+  <data name="Label_DataCrcError" xml:space="preserve">
+    <value>Data CRC Error</value>
+  </data>
   <data name="Label_DataRate" xml:space="preserve">
     <value>Data Rate</value>
   </data>
@@ -1298,6 +1307,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Deleted</value>
+  </data>
+  <data name="Label_DeletedDam" xml:space="preserve">
+    <value>Deleted DAM</value>
   </data>
   <data name="Label_Details" xml:space="preserve">
     <value>Details</value>
@@ -1550,6 +1562,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Hole" xml:space="preserve">
     <value>Hole</value>
   </data>
+  <data name="Label_IdCrcError" xml:space="preserve">
+    <value>ID CRC Error</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -1675,6 +1690,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Missing</value>
+  </data>
+  <data name="Label_MissingDam" xml:space="preserve">
+    <value>Missing DAM</value>
   </data>
   <data name="Label_Mode" xml:space="preserve">
     <value>Mode</value>
@@ -2824,6 +2842,35 @@ Do you wish to overwrite?</value>
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>None</value>
+  </data>
+  <data name="PSI_Encoding_DoubleDensity" xml:space="preserve">
+    <value>Double Density</value>
+  </data>
+  <data name="PSI_Encoding_ExtraDensity" xml:space="preserve">
+    <value>Extra Density</value>
+  </data>
+  <data name="PSI_Encoding_HighDensity" xml:space="preserve">
+    <value>High Density</value>
+  </data>
+  <data name="PSI_Format_IbmFm" xml:space="preserve">
+    <value>IBM FM</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="PSI_Format_IbmMfmDd" xml:space="preserve">
+    <value>IBM MFM DD</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="PSI_Format_IbmMfmEd" xml:space="preserve">
+    <value>IBM MFM ED</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="PSI_Format_IbmMfmHd" xml:space="preserve">
+    <value>IBM MFM HD</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="PSI_Format_MacintoshGcr" xml:space="preserve">
+    <value>Macintosh GCR</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_DataRate_250" xml:space="preserve">
     <value>250 kbps</value>

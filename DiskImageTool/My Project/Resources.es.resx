@@ -863,8 +863,14 @@ Archivo de imagen: '{1}'
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>Datos Adicionales</value>
   </data>
+  <data name="Label_AdditionalHeader" xml:space="preserve">
+    <value>Encabezado adicional</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Todas las Pistas</value>
+  </data>
+  <data name="Label_Alternate" xml:space="preserve">
+    <value>Alternativo</value>
   </data>
   <data name="Label_AlternateBitCell" xml:space="preserve">
     <value>Cálculo alternativo</value>
@@ -1037,6 +1043,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Database" xml:space="preserve">
     <value>Versión BD</value>
   </data>
+  <data name="Label_DataCrcError" xml:space="preserve">
+    <value>Error de CRC de datos</value>
+  </data>
   <data name="Label_DataRate" xml:space="preserve">
     <value>Velocidad de datos</value>
   </data>
@@ -1048,6 +1057,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Eliminado</value>
+  </data>
+  <data name="Label_DeletedDam" xml:space="preserve">
+    <value>DAM eliminada</value>
   </data>
   <data name="Label_Details" xml:space="preserve">
     <value>Detalles</value>
@@ -1292,6 +1304,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Hole" xml:space="preserve">
     <value>Orificio</value>
   </data>
+  <data name="Label_IdCrcError" xml:space="preserve">
+    <value>Error de CRC de ID</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Imagen</value>
   </data>
@@ -1417,6 +1432,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Faltante</value>
+  </data>
+  <data name="Label_MissingDam" xml:space="preserve">
+    <value>DAM ausente</value>
   </data>
   <data name="Label_Mode" xml:space="preserve">
     <value>Modo</value>
@@ -2440,6 +2458,15 @@ Archivo de imagen: '{1}'
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Ninguna</value>
+  </data>
+  <data name="PSI_Encoding_DoubleDensity" xml:space="preserve">
+    <value>Doble densidad</value>
+  </data>
+  <data name="PSI_Encoding_ExtraDensity" xml:space="preserve">
+    <value>Extra densidad</value>
+  </data>
+  <data name="PSI_Encoding_HighDensity" xml:space="preserve">
+    <value>Alta densidad</value>
   </data>
   <data name="TD0_DataRate_250" xml:space="preserve">
     <value>250 kbps</value>

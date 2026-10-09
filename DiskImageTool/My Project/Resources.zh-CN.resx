@@ -863,8 +863,14 @@ Flux 映像集：“{0}”
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>附加数据</value>
   </data>
+  <data name="Label_AdditionalHeader" xml:space="preserve">
+    <value>附加头</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>所有磁道</value>
+  </data>
+  <data name="Label_Alternate" xml:space="preserve">
+    <value>备用</value>
   </data>
   <data name="Label_AlternateBitCell" xml:space="preserve">
     <value>备用计算</value>
@@ -1037,6 +1043,9 @@ Flux 映像集：“{0}”
   <data name="Label_Database" xml:space="preserve">
     <value>数据库</value>
   </data>
+  <data name="Label_DataCrcError" xml:space="preserve">
+    <value>数据 CRC 错误</value>
+  </data>
   <data name="Label_DataRate" xml:space="preserve">
     <value>数据速率</value>
   </data>
@@ -1048,6 +1057,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>已删除</value>
+  </data>
+  <data name="Label_DeletedDam" xml:space="preserve">
+    <value>已删除 DAM</value>
   </data>
   <data name="Label_Details" xml:space="preserve">
     <value>详细信息</value>
@@ -1292,6 +1304,9 @@ Flux 映像集：“{0}”
   <data name="Label_Hole" xml:space="preserve">
     <value>盘孔</value>
   </data>
+  <data name="Label_IdCrcError" xml:space="preserve">
+    <value>标识 CRC 错误</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>映像</value>
   </data>
@@ -1417,6 +1432,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>缺失</value>
+  </data>
+  <data name="Label_MissingDam" xml:space="preserve">
+    <value>缺少 DAM</value>
   </data>
   <data name="Label_Mode" xml:space="preserve">
     <value>模式</value>
@@ -2440,6 +2458,15 @@ Flux 映像集：“{0}”
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>无</value>
+  </data>
+  <data name="PSI_Encoding_DoubleDensity" xml:space="preserve">
+    <value>双密度</value>
+  </data>
+  <data name="PSI_Encoding_ExtraDensity" xml:space="preserve">
+    <value>超高密度</value>
+  </data>
+  <data name="PSI_Encoding_HighDensity" xml:space="preserve">
+    <value>高密度</value>
   </data>
   <data name="TD0_DataRate_250" xml:space="preserve">
     <value>250 kbps</value>

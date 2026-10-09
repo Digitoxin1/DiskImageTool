@@ -6,6 +6,22 @@ Namespace ImageFormats.PSI
     Public Class PSIFloppyImage
         Inherits MappedFloppyImage
         Implements IFloppyImage
+        Implements IImageFieldSource
+
+        Private Enum PSIImageField As UShort
+            Comment = 1
+            DataCrcError = 2
+        End Enum
+
+        Public Structure PSIDataCrcErrorEdit
+            Public SectorIndex As Integer
+            Public Value As Boolean
+
+            Public Sub New(SectorIndex As Integer, Value As Boolean)
+                Me.SectorIndex = SectorIndex
+                Me.Value = Value
+            End Sub
+        End Structure
 
         Private ReadOnly _Image As PSISectorImage
 
@@ -60,9 +76,62 @@ Namespace ImageFormats.PSI
             End Using
         End Function
 
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            Dim Field = CType(FieldId, PSIImageField)
+            Dim RefreshMap As Boolean
+
+            If Field = PSIImageField.DataCrcError Then
+                If IsTrackField AndAlso TypeOf Value Is Boolean Then
+                    SetDataCrcError(Sector, CBool(Value))
+                    RefreshMap = True
+                End If
+            ElseIf Not IsTrackField AndAlso Field = PSIImageField.Comment AndAlso TypeOf Value Is String Then
+                _Image.Comment = CStr(Value)
+            End If
+
+            If RefreshMap Then
+                BuildSectorMap()
+                InitProtectedSectors()
+            End If
+        End Sub
+
+        Public Function UpdateProperties(Comment As String, DataCrcErrors As IEnumerable(Of PSIDataCrcErrorEdit)) As Boolean
+            Dim Changes As New List(Of ImageFieldChange)
+            Dim OriginalComment = If(_Image.Comment, "")
+            Dim NewComment = If(Comment, "")
+            If Not String.Equals(OriginalComment, NewComment, StringComparison.Ordinal) Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, PSIImageField.Comment, OriginalComment, NewComment))
+            End If
+
+            If DataCrcErrors IsNot Nothing Then
+                For Each Edit In DataCrcErrors
+                    If Edit.SectorIndex < 0 OrElse Edit.SectorIndex >= _Image.Sectors.Count OrElse Edit.SectorIndex > UShort.MaxValue Then
+                        Continue For
+                    End If
+
+                    Dim Sector = _Image.Sectors(Edit.SectorIndex)
+                    If Sector.HasDataCRCError = Edit.Value Then
+                        Continue For
+                    End If
+
+                    Changes.Add(New ImageFieldChange(True, Sector.Track, Sector.Side, CUShort(Edit.SectorIndex), PSIImageField.DataCrcError, Sector.HasDataCRCError, Edit.Value))
+                Next
+            End If
+
+            Return History.CommitImageFields(Changes)
+        End Function
+
         Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
             Return _Image.Export(FilePath)
         End Function
+
+        Private Sub SetDataCrcError(SectorIndex As UShort, Value As Boolean)
+            If SectorIndex >= _Image.Sectors.Count Then
+                Exit Sub
+            End If
+
+            _Image.Sectors(SectorIndex).HasDataCRCError = Value
+        End Sub
 
         Private Sub BuildSectorMap()
             Dim TrackInfo As PSITrackInfo

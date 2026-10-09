@@ -863,8 +863,14 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>Zusätzliche Daten</value>
   </data>
+  <data name="Label_AdditionalHeader" xml:space="preserve">
+    <value>Zusätzlicher Header</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Alle Spuren</value>
+  </data>
+  <data name="Label_Alternate" xml:space="preserve">
+    <value>Alternativ</value>
   </data>
   <data name="Label_AlternateBitCell" xml:space="preserve">
     <value>Alternative Berechnung</value>
@@ -1037,6 +1043,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>DB-Version</value>
   </data>
+  <data name="Label_DataCrcError" xml:space="preserve">
+    <value>Daten-CRC-Fehler</value>
+  </data>
   <data name="Label_DataRate" xml:space="preserve">
     <value>Datenrate</value>
   </data>
@@ -1048,6 +1057,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Gelöscht</value>
+  </data>
+  <data name="Label_DeletedDam" xml:space="preserve">
+    <value>Gelöschte DAM</value>
   </data>
   <data name="Label_Details" xml:space="preserve">
     <value>Details</value>
@@ -1292,6 +1304,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Hole" xml:space="preserve">
     <value>Loch</value>
   </data>
+  <data name="Label_IdCrcError" xml:space="preserve">
+    <value>ID-CRC-Fehler</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Abbild</value>
   </data>
@@ -1417,6 +1432,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Fehlt</value>
+  </data>
+  <data name="Label_MissingDam" xml:space="preserve">
+    <value>Fehlende DAM</value>
   </data>
   <data name="Label_Mode" xml:space="preserve">
     <value>Modus</value>
@@ -2440,6 +2458,15 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Keine</value>
+  </data>
+  <data name="PSI_Encoding_DoubleDensity" xml:space="preserve">
+    <value>Doppelte Dichte</value>
+  </data>
+  <data name="PSI_Encoding_ExtraDensity" xml:space="preserve">
+    <value>Extra-Dichte</value>
+  </data>
+  <data name="PSI_Encoding_HighDensity" xml:space="preserve">
+    <value>Hohe Dichte</value>
   </data>
   <data name="TD0_DataRate_250" xml:space="preserve">
     <value>250 kbit/s</value>

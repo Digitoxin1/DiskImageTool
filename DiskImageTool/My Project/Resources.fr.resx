@@ -863,8 +863,14 @@ Voulez-vous écraser ?</value>
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>Données supplémentaires</value>
   </data>
+  <data name="Label_AdditionalHeader" xml:space="preserve">
+    <value>En-tête supplémentaire</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Toutes les pistes</value>
+  </data>
+  <data name="Label_Alternate" xml:space="preserve">
+    <value>Alternatif</value>
   </data>
   <data name="Label_AlternateBitCell" xml:space="preserve">
     <value>Calcul alternatif</value>
@@ -1037,6 +1043,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>Version BD</value>
   </data>
+  <data name="Label_DataCrcError" xml:space="preserve">
+    <value>Erreur CRC des données</value>
+  </data>
   <data name="Label_DataRate" xml:space="preserve">
     <value>Débit</value>
   </data>
@@ -1048,6 +1057,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Supprimé</value>
+  </data>
+  <data name="Label_DeletedDam" xml:space="preserve">
+    <value>DAM supprimée</value>
   </data>
   <data name="Label_Details" xml:space="preserve">
     <value>Détails</value>
@@ -1292,6 +1304,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Hole" xml:space="preserve">
     <value>Trou</value>
   </data>
+  <data name="Label_IdCrcError" xml:space="preserve">
+    <value>Erreur CRC d’ID</value>
+  </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -1417,6 +1432,9 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Manquant</value>
+  </data>
+  <data name="Label_MissingDam" xml:space="preserve">
+    <value>DAM manquante</value>
   </data>
   <data name="Label_Mode" xml:space="preserve">
     <value>Mode</value>
@@ -2440,6 +2458,15 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Aucune</value>
+  </data>
+  <data name="PSI_Encoding_DoubleDensity" xml:space="preserve">
+    <value>Double densité</value>
+  </data>
+  <data name="PSI_Encoding_ExtraDensity" xml:space="preserve">
+    <value>Extra densité</value>
+  </data>
+  <data name="PSI_Encoding_HighDensity" xml:space="preserve">
+    <value>Haute densité</value>
   </data>
   <data name="TD0_DataRate_250" xml:space="preserve">
     <value>250 kbit/s</value>
