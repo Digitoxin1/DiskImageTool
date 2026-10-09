@@ -255,35 +255,8 @@
   <data name="D86F_DiskType_Zoned" xml:space="preserve">
     <value>Zoné</value>
   </data>
-  <data name="D86F_Encoding_FM" xml:space="preserve">
-    <value>FM</value>
-  </data>
-  <data name="D86F_Encoding_GCR" xml:space="preserve">
-    <value>GCR</value>
-  </data>
-  <data name="D86F_Encoding_M2FM" xml:space="preserve">
-    <value>M2FM</value>
-  </data>
-  <data name="D86F_Encoding_MFM" xml:space="preserve">
-    <value>MFM</value>
-  </data>
-  <data name="D86F_Hole_DD" xml:space="preserve">
-    <value>DD</value>
-  </data>
-  <data name="D86F_Hole_ED" xml:space="preserve">
-    <value>ED</value>
-  </data>
   <data name="D86F_Hole_ED2000" xml:space="preserve">
     <value>ED 2000 kbit/s</value>
-  </data>
-  <data name="D86F_Hole_HD" xml:space="preserve">
-    <value>HD</value>
-  </data>
-  <data name="D86F_Zone_Apple" xml:space="preserve">
-    <value>Apple</value>
-  </data>
-  <data name="D86F_Zone_Commodore64" xml:space="preserve">
-    <value>Commodore 64</value>
   </data>
   <data name="D86F_Zone_PreApple1" xml:space="preserve">
     <value>Pré-Apple #1</value>
@@ -779,9 +752,6 @@ Voulez-vous écraser ?</value>
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Fichiers modifiés</value>
   </data>
-  <data name="Filter_OEMName_Windows9x" xml:space="preserve">
-    <value>Windows 9x</value>
-  </data>
   <data name="FloppyImageType_A2RImage" xml:space="preserve">
     <value>Applesauce FDC Image</value>
   </data>
@@ -818,56 +788,14 @@ Voulez-vous écraser ?</value>
   <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
     <value>Transcopy Image</value>
   </data>
-  <data name="FloppyInterface_AmigaDd" xml:space="preserve">
-    <value>Amiga DD</value>
-  </data>
-  <data name="FloppyInterface_AmigaHd" xml:space="preserve">
-    <value>Amiga HD</value>
-  </data>
-  <data name="FloppyInterface_AtariStDd" xml:space="preserve">
-    <value>Atari ST DD</value>
-  </data>
-  <data name="FloppyInterface_AtariStHd" xml:space="preserve">
-    <value>Atari ST HD</value>
-  </data>
-  <data name="FloppyInterface_C64Dd" xml:space="preserve">
-    <value>C64 DD</value>
-  </data>
-  <data name="FloppyInterface_CpcDd" xml:space="preserve">
-    <value>CPC DD</value>
-  </data>
   <data name="FloppyInterface_Disabled" xml:space="preserve">
     <value>Désactivé</value>
   </data>
-  <data name="FloppyInterface_EmuShugart" xml:space="preserve">
-    <value>Emu Shugart</value>
-  </data>
   <data name="FloppyInterface_IbmPcAuto" xml:space="preserve">
-    <value>IBM PC automatique</value>
-  </data>
-  <data name="FloppyInterface_IbmPcDd" xml:space="preserve">
-    <value>IBM PC DD</value>
-  </data>
-  <data name="FloppyInterface_IbmPcEd" xml:space="preserve">
-    <value>IBM PC ED</value>
-  </data>
-  <data name="FloppyInterface_IbmPcHd" xml:space="preserve">
-    <value>IBM PC HD</value>
-  </data>
-  <data name="FloppyInterface_Msx2Dd" xml:space="preserve">
-    <value>MSX2 DD</value>
-  </data>
-  <data name="FloppyInterface_QuickDisk" xml:space="preserve">
-    <value>QuickDisk</value>
+    <value>IBM PC auto</value>
   </data>
   <data name="FloppyInterface_S950Auto" xml:space="preserve">
-    <value>Akai S950 automatique</value>
-  </data>
-  <data name="FloppyInterface_S950Dd" xml:space="preserve">
-    <value>Akai S950 DD</value>
-  </data>
-  <data name="FloppyInterface_S950Hd" xml:space="preserve">
-    <value>Akai S950 HD</value>
+    <value>Akai S950 auto</value>
   </data>
   <data name="FloppyInterface_ShugartDd" xml:space="preserve">
     <value>Shugart DD générique</value>
@@ -2449,18 +2377,6 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Année</value>
-  </data>
-  <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
-    <value>Amiga MFM</value>
-  </data>
-  <data name="TrackEncoding_EmuFm" xml:space="preserve">
-    <value>Emu FM</value>
-  </data>
-  <data name="TrackEncoding_IbmFm" xml:space="preserve">
-    <value>IBM FM</value>
-  </data>
-  <data name="TrackEncoding_IbmMfm" xml:space="preserve">
-    <value>IBM MFM</value>
   </data>
   <data name="WriteAllowed_Unprotected" xml:space="preserve">
     <value>Non protégé</value>

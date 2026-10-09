@@ -282,33 +282,42 @@
   </data>
   <data name="D86F_Encoding_FM" xml:space="preserve">
     <value>FM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Encoding_GCR" xml:space="preserve">
     <value>GCR</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Encoding_M2FM" xml:space="preserve">
     <value>M2FM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Encoding_MFM" xml:space="preserve">
     <value>MFM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Hole_DD" xml:space="preserve">
     <value>DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Hole_ED" xml:space="preserve">
     <value>ED</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Hole_ED2000" xml:space="preserve">
     <value>ED 2000 kbps</value>
   </data>
   <data name="D86F_Hole_HD" xml:space="preserve">
     <value>HD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Zone_Apple" xml:space="preserve">
     <value>Apple</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Zone_Commodore64" xml:space="preserve">
     <value>Commodore 64</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="D86F_Zone_PreApple1" xml:space="preserve">
     <value>Pre-Apple #1</value>
@@ -897,6 +906,7 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Windows 9x</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FindNext" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\FindNext.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -939,54 +949,68 @@ Do you wish to overwrite?</value>
   </data>
   <data name="FloppyInterface_AmigaDd" xml:space="preserve">
     <value>Amiga DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_AmigaHd" xml:space="preserve">
     <value>Amiga HD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_AtariStDd" xml:space="preserve">
     <value>Atari ST DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_AtariStHd" xml:space="preserve">
     <value>Atari ST HD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_C64Dd" xml:space="preserve">
     <value>C64 DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_CpcDd" xml:space="preserve">
     <value>CPC DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_Disabled" xml:space="preserve">
     <value>Disabled</value>
   </data>
   <data name="FloppyInterface_EmuShugart" xml:space="preserve">
     <value>Emu Shugart</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_IbmPcAuto" xml:space="preserve">
     <value>IBM PC Auto</value>
   </data>
   <data name="FloppyInterface_IbmPcDd" xml:space="preserve">
     <value>IBM PC DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_IbmPcEd" xml:space="preserve">
     <value>IBM PC ED</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_IbmPcHd" xml:space="preserve">
     <value>IBM PC HD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_Msx2Dd" xml:space="preserve">
     <value>MSX2 DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_QuickDisk" xml:space="preserve">
     <value>QuickDisk</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_S950Auto" xml:space="preserve">
     <value>Akai S950 Auto</value>
   </data>
   <data name="FloppyInterface_S950Dd" xml:space="preserve">
     <value>Akai S950 DD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_S950Hd" xml:space="preserve">
     <value>Akai S950 HD</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FloppyInterface_ShugartDd" xml:space="preserve">
     <value>Generic Shugart DD</value>
@@ -2683,15 +2707,19 @@ Do you wish to overwrite?</value>
   </data>
   <data name="TrackEncoding_AmigaMfm" xml:space="preserve">
     <value>Amiga MFM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TrackEncoding_EmuFm" xml:space="preserve">
     <value>Emu FM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TrackEncoding_IbmFm" xml:space="preserve">
     <value>IBM FM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TrackEncoding_IbmMfm" xml:space="preserve">
     <value>IBM MFM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Undo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\Undo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
