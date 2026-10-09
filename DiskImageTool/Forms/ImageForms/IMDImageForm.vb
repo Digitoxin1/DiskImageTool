@@ -24,8 +24,8 @@ Public Class IMDImageForm
         TxtComment.AcceptsReturn = True
         TxtComment.ScrollBars = ScrollBars.Vertical
 
-        EnableDoubleBuffer(DataGridViewTracks)
-        EnableDoubleBuffer(DataGridViewSectors)
+        ImageForm.EnableDoubleBuffer(DataGridViewTracks)
+        ImageForm.EnableDoubleBuffer(DataGridViewSectors)
         AddTrackColumns()
         AddSectorColumns()
         Populate()
@@ -47,36 +47,21 @@ Public Class IMDImageForm
     Private Sub AddTrackColumns()
         DataGridViewTracks.DefaultCellStyle.Padding = New Padding(0, 0, 5, 0)
 
-        AddTextColumn(DataGridViewTracks, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, "Head", My.Resources.Label_Head, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, "SectorCount", My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, "Mode", My.Resources.Label_Mode, 110, DataGridViewContentAlignment.MiddleLeft)
-        AddTextColumn(DataGridViewTracks, "SectorSize", My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, "Head", My.Resources.Label_Head, 50, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, "SectorCount", My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, "Mode", My.Resources.Label_Mode, 110, DataGridViewContentAlignment.MiddleLeft)
+        ImageForm.AddTextColumn(DataGridViewTracks, "SectorSize", My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight)
     End Sub
 
     Private Sub AddSectorColumns()
-        AddTextColumn(DataGridViewSectors, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddTextColumn(DataGridViewSectors, "Head", My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddTextColumn(DataGridViewSectors, "Sector", My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddFlagColumn("ChecksumError", My.Resources.Label_ChecksumError, False)
-        AddFlagColumn("Deleted", My.Resources.Label_Deleted, True)
-        AddFlagColumn("Unavailable", My.Resources.Label_Unavailable, True)
-        AddFlagColumn("Compressed", My.Resources.Label_Compressed, True)
-    End Sub
-
-    Private Sub AddFlagColumn(Name As String, HeaderText As String, IsReadOnly As Boolean)
-        Dim Column As New DataGridViewCheckBoxColumn With {
-            .Name = Name,
-            .HeaderText = HeaderText,
-            .DataPropertyName = Name,
-            .ReadOnly = IsReadOnly,
-            .Width = 90,
-            .MinimumWidth = 60,
-            .AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader,
-            .SortMode = DataGridViewColumnSortMode.NotSortable
-        }
-        Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-        DataGridViewSectors.Columns.Add(Column)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Cylinder", My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Head", My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, "Sector", My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "ChecksumError", My.Resources.Label_ChecksumError, 90, True)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Deleted", My.Resources.Label_Deleted, 90)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Unavailable", My.Resources.Label_Unavailable, 90)
+        ImageForm.AddCheckColumn(DataGridViewSectors, "Compressed", My.Resources.Label_Compressed, 90)
     End Sub
 
     Private Sub Populate()
@@ -86,11 +71,11 @@ Public Class IMDImageForm
         TxtComment.Text = If(Image.Comment, "")
 
         Dim Table = New DataTable
-        AddDataColumn(Table, "Cylinder", GetType(String))
-        AddDataColumn(Table, "Head", GetType(String))
-        AddDataColumn(Table, "SectorCount", GetType(String))
-        AddDataColumn(Table, "Mode", GetType(String))
-        AddDataColumn(Table, "SectorSize", GetType(String))
+        ImageForm.AddDataColumn(Table, "Cylinder", GetType(String))
+        ImageForm.AddDataColumn(Table, "Head", GetType(String))
+        ImageForm.AddDataColumn(Table, "SectorCount", GetType(String))
+        ImageForm.AddDataColumn(Table, "Mode", GetType(String))
+        ImageForm.AddDataColumn(Table, "SectorSize", GetType(String))
 
         For Each Track In Image.Tracks
             Dim Row = Table.NewRow()
@@ -115,13 +100,13 @@ Public Class IMDImageForm
         _LoadingSectors = True
 
         Dim Table = New DataTable
-        AddDataColumn(Table, "Cylinder", GetType(String))
-        AddDataColumn(Table, "Head", GetType(String))
-        AddDataColumn(Table, "Sector", GetType(String))
-        AddDataColumn(Table, "ChecksumError", GetType(Boolean))
-        AddDataColumn(Table, "Deleted", GetType(Boolean))
-        AddDataColumn(Table, "Unavailable", GetType(Boolean))
-        AddDataColumn(Table, "Compressed", GetType(Boolean))
+        ImageForm.AddDataColumn(Table, "Cylinder", GetType(String))
+        ImageForm.AddDataColumn(Table, "Head", GetType(String))
+        ImageForm.AddDataColumn(Table, "Sector", GetType(String))
+        ImageForm.AddDataColumn(Table, "ChecksumError", GetType(Boolean))
+        ImageForm.AddDataColumn(Table, "Deleted", GetType(Boolean))
+        ImageForm.AddDataColumn(Table, "Unavailable", GetType(Boolean))
+        ImageForm.AddDataColumn(Table, "Compressed", GetType(Boolean))
 
         Dim Image = DirectCast(_Disk.Image, IMDFloppyImage).Image
         If TrackIndex >= 0 AndAlso TrackIndex < Image.Tracks.Count Then
@@ -228,7 +213,7 @@ Public Class IMDImageForm
 
     Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
         DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-        ResizeGridWidth(DataGridViewTracks)
+        ImageForm.ResizeGridWidth(DataGridViewTracks)
     End Sub
 
     Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete

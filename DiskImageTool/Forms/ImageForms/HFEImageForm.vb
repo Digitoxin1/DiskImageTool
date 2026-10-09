@@ -22,7 +22,7 @@ Public Class HFEImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        EnableDoubleBuffer(DataGridViewTracks)
+        ImageForm.EnableDoubleBuffer(DataGridViewTracks)
 
         ' Add any initialization after the InitializeComponent() call.
         _FloppyImage = FloppyImage
@@ -31,8 +31,8 @@ Public Class HFEImageForm
         InitializeGridColumns()
         PopulateHeader(Image)
         DataGridViewTracks.DataSource = GetTrackTable(Image)
-        AttachNumericTextBox(TxtRPM)
-        AttachNumericTextBox(TxtBitRate)
+        ImageForm.AttachNumericTextBox(TxtRPM)
+        ImageForm.AttachNumericTextBox(TxtBitRate)
     End Sub
 
     Public Shared Function Display(Disk As Disk) As Boolean
@@ -84,8 +84,8 @@ Public Class HFEImageForm
         TxtTrack0Side0Encoding.Text = TrackEncodingCaption(Image.Track0S0_Encoding)
         TxtTrack0Side1Alt.Text = AlternateEncodingCaption(Image.Track0S1_AltEncoding)
         TxtTrack0Side1Encoding.Text = TrackEncodingCaption(Image.Track0S1_Encoding)
-        PopulateByteCombo(CboInterfaceType, InterfaceModes, CByte(Image.FloppyInterfaceMode), AddressOf InterfaceModeCaption)
-        PopulateByteCombo(CboWriteAllowed, WriteAllowedValues, Image.WriteAllowed, AddressOf WriteAllowedCaption)
+        ImageForm.PopulateByteCombo(CboInterfaceType, ImageForm.InterfaceModes, CByte(Image.FloppyInterfaceMode), AddressOf ImageForm.InterfaceModeCaption)
+        ImageForm.PopulateByteCombo(CboWriteAllowed, WriteAllowedValues, Image.WriteAllowed, AddressOf WriteAllowedCaption)
     End Sub
 
     Private Shared Function TrackEncodingCaption(TrackEncoding As Byte) As String
@@ -151,8 +151,8 @@ Public Class HFEImageForm
             Return False
         End If
 
-        Dim InterfaceItem = TryCast(CboInterfaceType.SelectedItem, ByteListItem)
-        Dim WriteAllowedItem = TryCast(CboWriteAllowed.SelectedItem, ByteListItem)
+        Dim InterfaceItem = TryCast(CboInterfaceType.SelectedItem, ImageForm.ByteListItem)
+        Dim WriteAllowedItem = TryCast(CboWriteAllowed.SelectedItem, ImageForm.ByteListItem)
         If InterfaceItem Is Nothing OrElse WriteAllowedItem Is Nothing Then
             Return False
         End If
@@ -173,17 +173,17 @@ Public Class HFEImageForm
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X4")
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X4")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
     End Sub
 
     Private Function GetTrackTable(Image As HFEImage) As DataTable
         Dim TrackTable As New DataTable("HFETracks")
 
-        AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UShort))
-        AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UShort))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
 
         If Image.SideCount > 0 Then
             For Track As Integer = 0 To Image.TrackCount - 1

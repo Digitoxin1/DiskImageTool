@@ -25,8 +25,8 @@ Public Class TD0ImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        EnableDoubleBuffer(DataGridViewTracks)
-        EnableDoubleBuffer(DataGridViewSectors)
+        ImageForm.EnableDoubleBuffer(DataGridViewTracks)
+        ImageForm.EnableDoubleBuffer(DataGridViewSectors)
         DtpTimestamp.MinDate = New DateTime(1900, 1, 1)
         DtpTimestamp.MaxDate = New DateTime(2155, 12, 31, 23, 59, 59)
 
@@ -232,45 +232,31 @@ Public Class TD0ImageForm
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SECTORS, My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_FM, My.Resources.Label_FM, 50, DataGridViewContentAlignment.MiddleLeft)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SECTORS, My.Resources.Label_Sectors, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_FM, My.Resources.Label_FM, 50, DataGridViewContentAlignment.MiddleLeft)
 
         DataGridViewSectors.AutoGenerateColumns = False
         DataGridViewSectors.Columns.Clear()
-        AddTextColumn(DataGridViewSectors, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddTextColumn(DataGridViewSectors, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddTextColumn(DataGridViewSectors, GRID_COLUMN_SECTOR, My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
-        AddTextColumn(DataGridViewSectors, GRID_COLUMN_SIZE, My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight, "N0", Padding:=5)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DUPLICATE, My.Resources.TD0_SectorFlag_Duplicated)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError, True)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DELETED, My.Resources.Label_Deleted)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_SKIPPED, My.Resources.TD0_SectorFlag_DosSkipped)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_DATA, My.Resources.TD0_SectorFlag_NoData)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_ID, My.Resources.TD0_SectorFlag_DataNoId)
-    End Sub
-
-    Private Shared Sub AddCheckColumn(Grid As DataGridView, Name As String, HeaderText As String, Optional Editable As Boolean = False)
-        Dim Column As New DataGridViewCheckBoxColumn With {
-            .Name = Name,
-            .HeaderText = HeaderText,
-            .ReadOnly = Not Editable,
-            .DataPropertyName = Name,
-            .SortMode = DataGridViewColumnSortMode.NotSortable,
-            .AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader,
-            .MinimumWidth = 60
-        }
-        Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-        Grid.Columns.Add(Column)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_CYLINDER, My.Resources.Label_Cylinder, 70, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_HEAD, My.Resources.Label_Head, 55, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SECTOR, My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
+        ImageForm.AddTextColumn(DataGridViewSectors, GRID_COLUMN_SIZE, My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight, "N0", Padding:=5)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DUPLICATE, My.Resources.TD0_SectorFlag_Duplicated)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError, Editable:=True)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DELETED, My.Resources.Label_Deleted)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_SKIPPED, My.Resources.TD0_SectorFlag_DosSkipped)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_DATA, My.Resources.TD0_SectorFlag_NoData)
+        ImageForm.AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_ID, My.Resources.TD0_SectorFlag_DataNoId)
     End Sub
 
     Private Function GetTrackTable(Image As TD0Image) As DataTable
         Dim TrackTable As New DataTable("TD0Tracks")
-        AddDataColumn(TrackTable, GRID_COLUMN_CYLINDER, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_HEAD, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_SECTORS, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_FM, GetType(String))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_CYLINDER, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_HEAD, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_SECTORS, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_FM, GetType(String))
 
         For Each Track In Image.Tracks
             Dim Row = TrackTable.NewRow()
@@ -361,16 +347,16 @@ Public Class TD0ImageForm
 
     Private Function GetSectorTable(Track As TD0Track, TrackIndex As Integer) As DataTable
         Dim SectorTable As New DataTable("TD0Sectors")
-        AddDataColumn(SectorTable, GRID_COLUMN_CYLINDER, GetType(Byte))
-        AddDataColumn(SectorTable, GRID_COLUMN_HEAD, GetType(Byte))
-        AddDataColumn(SectorTable, GRID_COLUMN_SECTOR, GetType(Byte))
-        AddDataColumn(SectorTable, GRID_COLUMN_SIZE, GetType(Integer))
-        AddDataColumn(SectorTable, GRID_COLUMN_DUPLICATE, GetType(Boolean))
-        AddDataColumn(SectorTable, GRID_COLUMN_CRC_ERROR, GetType(Boolean))
-        AddDataColumn(SectorTable, GRID_COLUMN_DELETED, GetType(Boolean))
-        AddDataColumn(SectorTable, GRID_COLUMN_SKIPPED, GetType(Boolean))
-        AddDataColumn(SectorTable, GRID_COLUMN_NO_DATA, GetType(Boolean))
-        AddDataColumn(SectorTable, GRID_COLUMN_NO_ID, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_CYLINDER, GetType(Byte))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_HEAD, GetType(Byte))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_SECTOR, GetType(Byte))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_SIZE, GetType(Integer))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_DUPLICATE, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_CRC_ERROR, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_DELETED, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_SKIPPED, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_NO_DATA, GetType(Boolean))
+        ImageForm.AddDataColumn(SectorTable, GRID_COLUMN_NO_ID, GetType(Boolean))
 
         If Track Is Nothing Then
             Return SectorTable
@@ -403,7 +389,7 @@ Public Class TD0ImageForm
 
     Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
         DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-        ResizeGridWidth(DataGridViewTracks)
+        ImageForm.ResizeGridWidth(DataGridViewTracks)
     End Sub
 
     Private Sub DataGridViewSectors_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewSectors.DataBindingComplete

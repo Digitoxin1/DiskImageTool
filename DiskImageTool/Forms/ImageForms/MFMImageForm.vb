@@ -18,7 +18,7 @@ Public Class MFMImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        EnableDoubleBuffer(DataGridViewTracks)
+        ImageForm.EnableDoubleBuffer(DataGridViewTracks)
 
         ' Add any initialization after the InitializeComponent() call.
         _FloppyImage = FloppyImage
@@ -27,8 +27,8 @@ Public Class MFMImageForm
         InitializeGridColumns(Image)
         PopulateHeader(Image)
         DataGridViewTracks.DataSource = GetTrackTable(Image)
-        AttachNumericTextBox(TxtRPM)
-        AttachNumericTextBox(TxtBitRate)
+        ImageForm.AttachNumericTextBox(TxtRPM)
+        ImageForm.AttachNumericTextBox(TxtBitRate)
     End Sub
 
     Public Shared Function Display(Disk As Disk) As Boolean
@@ -61,12 +61,12 @@ Public Class MFMImageForm
         TxtRPM.Text = Image.RPM.ToString()
         TxtBitRate.Text = Image.BitRate.ToString()
         ChkPerTrackRates.Checked = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
-        PopulateByteCombo(CboInterfaceType, InterfaceModes, InterfaceModeToSelect(Image.IFType), AddressOf InterfaceModeCaption)
+        ImageForm.PopulateByteCombo(CboInterfaceType, ImageForm.InterfaceModes, InterfaceModeToSelect(Image.IFType), AddressOf ImageForm.InterfaceModeCaption)
     End Sub
 
     Private Shared Function InterfaceModeToSelect(InterfaceType As Byte) As Byte
-        If InterfaceType = InterfaceModeDisabled Then
-            Return InterfaceModeDisabled
+        If InterfaceType = ImageForm.InterfaceModeDisabled Then
+            Return ImageForm.InterfaceModeDisabled
         End If
 
         Return InterfaceType And &H7F
@@ -85,7 +85,7 @@ Public Class MFMImageForm
             Return False
         End If
 
-        Dim Item = TryCast(CboInterfaceType.SelectedItem, ByteListItem)
+        Dim Item = TryCast(CboInterfaceType.SelectedItem, ImageForm.ByteListItem)
         If Item Is Nothing Then
             Return False
         End If
@@ -106,13 +106,13 @@ Public Class MFMImageForm
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
         If (Image.IFType And ADVANCED_TRACK_LIST) <> 0 Then
-            AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
-            AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
+            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
+            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
         End If
     End Sub
 
@@ -120,13 +120,13 @@ Public Class MFMImageForm
         Dim TrackTable As New DataTable("MFMTracks")
         Dim Advanced = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
 
-        AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(UShort))
-        AddDataColumn(TrackTable, GRID_COLUMN_SIDE, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UInteger))
-        AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(UShort))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_SIDE, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UInteger))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_LENGTH, GetType(UInteger))
         If Advanced Then
-            AddDataColumn(TrackTable, GRID_COLUMN_BITRATE, GetType(UShort))
-            AddDataColumn(TrackTable, GRID_COLUMN_RPM, GetType(UShort))
+            ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_BITRATE, GetType(UShort))
+            ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_RPM, GetType(UShort))
         End If
 
         If Image.SideCount > 0 Then

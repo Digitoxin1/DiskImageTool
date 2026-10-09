@@ -22,7 +22,7 @@ Public Class D86FImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        EnableDoubleBuffer(DataGridViewTracks)
+        ImageForm.EnableDoubleBuffer(DataGridViewTracks)
 
         ' Add any initialization after the InitializeComponent() call.
         _FloppyImage = FloppyImage
@@ -67,8 +67,8 @@ Public Class D86FImageForm
         TxtSignature.Text = FILE_SIGNATURE
         TxtVersion.Text = Image.MajorVersion.ToString() & "." & Image.MinorVersion.ToString()
         TxtSides.Text = Image.SideCount.ToString()
-        PopulateByteCombo(CboHole, HoleValues, CByte(Image.Hole), AddressOf HoleCaption)
-        PopulateByteCombo(CboWriteProtect, WriteProtectValues, If(Image.WriteProtect, CByte(1), CByte(0)), AddressOf WriteProtectCaption)
+        ImageForm.PopulateByteCombo(CboHole, HoleValues, CByte(Image.Hole), AddressOf HoleCaption)
+        ImageForm.PopulateByteCombo(CboWriteProtect, WriteProtectValues, If(Image.WriteProtect, CByte(1), CByte(0)), AddressOf WriteProtectCaption)
         TxtRPMSlowdown.Text = RPMSlowdownCaption(D86FFloppyImage.RPMSlowdownCode(Image))
         TxtBitCellMode.Text = YesNo(Image.BitcellMode)
         TxtAlternateBitCell.Text = YesNo(Image.AlternateBitcellCalculation)
@@ -192,8 +192,8 @@ Public Class D86FImageForm
     End Function
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        Dim WriteProtect = TryCast(CboWriteProtect.SelectedItem, ByteListItem)
-        Dim Hole = TryCast(CboHole.SelectedItem, ByteListItem)
+        Dim WriteProtect = TryCast(CboWriteProtect.SelectedItem, ImageForm.ByteListItem)
+        Dim Hole = TryCast(CboHole.SelectedItem, ImageForm.ByteListItem)
         If WriteProtect Is Nothing OrElse Hole Is Nothing Then
             Exit Sub
         End If
@@ -206,15 +206,15 @@ Public Class D86FImageForm
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 90, DataGridViewContentAlignment.MiddleRight, "X8")
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_ENCODING, My.Resources.Label_Encoding, 80, DataGridViewContentAlignment.MiddleLeft)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 70, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(DataGridViewTracks, GRID_COLUMN_INDEX_HOLE, My.Resources.Label_IndexHole, 100, DataGridViewContentAlignment.MiddleRight, "X8")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 90, DataGridViewContentAlignment.MiddleRight, "X8")
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_ENCODING, My.Resources.Label_Encoding, 80, DataGridViewContentAlignment.MiddleLeft)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 70, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight)
+        ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_INDEX_HOLE, My.Resources.Label_IndexHole, 100, DataGridViewContentAlignment.MiddleRight, "X8")
         If Image.BitcellMode Then
-            AddTextColumn(DataGridViewTracks, GRID_COLUMN_BIT_CELL_COUNT, My.Resources.Label_BitCellCount, 100, DataGridViewContentAlignment.MiddleRight, "N0")
+            ImageForm.AddTextColumn(DataGridViewTracks, GRID_COLUMN_BIT_CELL_COUNT, My.Resources.Label_BitCellCount, 100, DataGridViewContentAlignment.MiddleRight, "N0")
         End If
     End Sub
 
@@ -222,15 +222,15 @@ Public Class D86FImageForm
         Dim TrackTable As New DataTable("D86FTracks")
         Dim ShowBitCellCount = Image.BitcellMode
 
-        AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(UShort))
-        AddDataColumn(TrackTable, GRID_COLUMN_SIDE, GetType(Byte))
-        AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UInteger))
-        AddDataColumn(TrackTable, GRID_COLUMN_ENCODING, GetType(String))
-        AddDataColumn(TrackTable, GRID_COLUMN_BITRATE, GetType(String))
-        AddDataColumn(TrackTable, GRID_COLUMN_RPM, GetType(String))
-        AddDataColumn(TrackTable, GRID_COLUMN_INDEX_HOLE, GetType(UInteger))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_TRACK, GetType(UShort))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_SIDE, GetType(Byte))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_OFFSET, GetType(UInteger))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_ENCODING, GetType(String))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_BITRATE, GetType(String))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_RPM, GetType(String))
+        ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_INDEX_HOLE, GetType(UInteger))
         If ShowBitCellCount Then
-            AddDataColumn(TrackTable, GRID_COLUMN_BIT_CELL_COUNT, GetType(UInteger))
+            ImageForm.AddDataColumn(TrackTable, GRID_COLUMN_BIT_CELL_COUNT, GetType(UInteger))
         End If
 
         If Image.SideCount > 0 Then
