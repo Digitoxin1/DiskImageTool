@@ -8147,6 +8147,96 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to File name cannot end with a period..
+        '''</summary>
+        Friend ReadOnly Property Validation_FileNameEndsWithPeriod() As String
+            Get
+                Return ResourceManager.GetString("Validation_FileNameEndsWithPeriod", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File name contains an invalid character: {0}.
+        '''</summary>
+        Friend ReadOnly Property Validation_FileNameInvalidCharacter() As String
+            Get
+                Return ResourceManager.GetString("Validation_FileNameInvalidCharacter", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File name is a reserved system name..
+        '''</summary>
+        Friend ReadOnly Property Validation_FileNameReserved() As String
+            Get
+                Return ResourceManager.GetString("Validation_FileNameReserved", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Drive-relative paths like &apos;C:folder&apos; are ambiguous. Use &apos;C:\folder&apos; instead..
+        '''</summary>
+        Friend ReadOnly Property Validation_PathDriveRelative() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathDriveRelative", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Path contains an invalid character: {0}.
+        '''</summary>
+        Friend ReadOnly Property Validation_PathInvalidCharacter() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathInvalidCharacter", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Path must be absolute (e.g., C:\Folder or \\Server\Share)..
+        '''</summary>
+        Friend ReadOnly Property Validation_PathMustBeAbsolute() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathMustBeAbsolute", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Path is not valid: {0}.
+        '''</summary>
+        Friend ReadOnly Property Validation_PathNotValid() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathNotValid", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Path contains a reserved name segment: {0}.
+        '''</summary>
+        Friend ReadOnly Property Validation_PathReservedSegment() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathReservedSegment", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to A path folder/file segment cannot end with a space or period..
+        '''</summary>
+        Friend ReadOnly Property Validation_PathSegmentTrailing() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathSegmentTrailing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to UNC paths must look like \\Server\Share\Optional\Path..
+        '''</summary>
+        Friend ReadOnly Property Validation_PathUncFormat() As String
+            Get
+                Return ResourceManager.GetString("Validation_PathUncFormat", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property VolumeSerialNumber() As System.Drawing.Bitmap

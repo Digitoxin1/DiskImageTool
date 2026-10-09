@@ -2438,4 +2438,34 @@ Flux 映像集：“{0}”
   <data name="Label_TrackNumAlt" xml:space="preserve">
     <value>磁道 {0} 备用</value>
   </data>
+  <data name="Validation_FileNameEndsWithPeriod" xml:space="preserve">
+    <value>文件名不能以句点结尾。</value>
+  </data>
+  <data name="Validation_FileNameInvalidCharacter" xml:space="preserve">
+    <value>文件名包含无效字符：{0}</value>
+  </data>
+  <data name="Validation_FileNameReserved" xml:space="preserve">
+    <value>文件名是系统保留名称。</value>
+  </data>
+  <data name="Validation_PathDriveRelative" xml:space="preserve">
+    <value>驱动器相对路径（如 'C:folder'）含义不明确。请改用 'C:\folder'。</value>
+  </data>
+  <data name="Validation_PathInvalidCharacter" xml:space="preserve">
+    <value>路径包含无效字符：{0}</value>
+  </data>
+  <data name="Validation_PathMustBeAbsolute" xml:space="preserve">
+    <value>路径必须为绝对路径（例如 C:\Folder 或 \\Server\Share）。</value>
+  </data>
+  <data name="Validation_PathNotValid" xml:space="preserve">
+    <value>路径无效：{0}</value>
+  </data>
+  <data name="Validation_PathReservedSegment" xml:space="preserve">
+    <value>路径包含系统保留名称段：{0}</value>
+  </data>
+  <data name="Validation_PathSegmentTrailing" xml:space="preserve">
+    <value>路径中的文件夹或文件名不能以空格或句点结尾。</value>
+  </data>
+  <data name="Validation_PathUncFormat" xml:space="preserve">
+    <value>UNC 路径的格式必须为 \\Server\Share\Optional\Path。</value>
+  </data>
 </root>

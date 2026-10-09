@@ -2904,4 +2904,34 @@ Do you wish to overwrite?</value>
   <data name="Label_TrackNumAlt" xml:space="preserve">
     <value>Track {0} Alternate</value>
   </data>
+  <data name="Validation_FileNameEndsWithPeriod" xml:space="preserve">
+    <value>File name cannot end with a period.</value>
+  </data>
+  <data name="Validation_FileNameInvalidCharacter" xml:space="preserve">
+    <value>File name contains an invalid character: {0}</value>
+  </data>
+  <data name="Validation_FileNameReserved" xml:space="preserve">
+    <value>File name is a reserved system name.</value>
+  </data>
+  <data name="Validation_PathDriveRelative" xml:space="preserve">
+    <value>Drive-relative paths like 'C:folder' are ambiguous. Use 'C:\folder' instead.</value>
+  </data>
+  <data name="Validation_PathInvalidCharacter" xml:space="preserve">
+    <value>Path contains an invalid character: {0}</value>
+  </data>
+  <data name="Validation_PathMustBeAbsolute" xml:space="preserve">
+    <value>Path must be absolute (e.g., C:\Folder or \\Server\Share).</value>
+  </data>
+  <data name="Validation_PathNotValid" xml:space="preserve">
+    <value>Path is not valid: {0}</value>
+  </data>
+  <data name="Validation_PathReservedSegment" xml:space="preserve">
+    <value>Path contains a reserved name segment: {0}</value>
+  </data>
+  <data name="Validation_PathSegmentTrailing" xml:space="preserve">
+    <value>A path folder/file segment cannot end with a space or period.</value>
+  </data>
+  <data name="Validation_PathUncFormat" xml:space="preserve">
+    <value>UNC paths must look like \\Server\Share\Optional\Path.</value>
+  </data>
 </root>

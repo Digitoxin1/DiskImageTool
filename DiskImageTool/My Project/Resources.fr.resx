@@ -2438,4 +2438,34 @@ Voulez-vous écraser ?</value>
   <data name="Label_TrackNumAlt" xml:space="preserve">
     <value>Piste {0} Alternatif</value>
   </data>
+  <data name="Validation_FileNameEndsWithPeriod" xml:space="preserve">
+    <value>Le nom de fichier ne peut pas se terminer par un point.</value>
+  </data>
+  <data name="Validation_FileNameInvalidCharacter" xml:space="preserve">
+    <value>Le nom de fichier contient un caractère non valide : {0}</value>
+  </data>
+  <data name="Validation_FileNameReserved" xml:space="preserve">
+    <value>Le nom de fichier est un nom réservé du système.</value>
+  </data>
+  <data name="Validation_PathDriveRelative" xml:space="preserve">
+    <value>Les chemins relatifs au lecteur, tels que 'C:folder', sont ambigus. Utilisez plutôt 'C:\folder'.</value>
+  </data>
+  <data name="Validation_PathInvalidCharacter" xml:space="preserve">
+    <value>Le chemin contient un caractère non valide : {0}</value>
+  </data>
+  <data name="Validation_PathMustBeAbsolute" xml:space="preserve">
+    <value>Le chemin doit être absolu (par exemple, C:\Folder ou \\Server\Share).</value>
+  </data>
+  <data name="Validation_PathNotValid" xml:space="preserve">
+    <value>Le chemin n’est pas valide : {0}</value>
+  </data>
+  <data name="Validation_PathReservedSegment" xml:space="preserve">
+    <value>Le chemin contient un segment de nom réservé : {0}</value>
+  </data>
+  <data name="Validation_PathSegmentTrailing" xml:space="preserve">
+    <value>Un segment de dossier ou de fichier du chemin ne peut pas se terminer par un espace ou un point.</value>
+  </data>
+  <data name="Validation_PathUncFormat" xml:space="preserve">
+    <value>Les chemins UNC doivent ressembler à \\Server\Share\Optional\Path.</value>
+  </data>
 </root>

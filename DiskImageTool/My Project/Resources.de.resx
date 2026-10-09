@@ -2438,4 +2438,34 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_TrackNumAlt" xml:space="preserve">
     <value>Spur {0} Alternativ</value>
   </data>
+  <data name="Validation_FileNameEndsWithPeriod" xml:space="preserve">
+    <value>Der Dateiname darf nicht mit einem Punkt enden.</value>
+  </data>
+  <data name="Validation_FileNameInvalidCharacter" xml:space="preserve">
+    <value>Der Dateiname enthält ein ungültiges Zeichen: {0}</value>
+  </data>
+  <data name="Validation_FileNameReserved" xml:space="preserve">
+    <value>Der Dateiname ist ein reservierter Systemname.</value>
+  </data>
+  <data name="Validation_PathDriveRelative" xml:space="preserve">
+    <value>Laufwerksrelative Pfade wie 'C:folder' sind mehrdeutig. Verwenden Sie stattdessen 'C:\folder'.</value>
+  </data>
+  <data name="Validation_PathInvalidCharacter" xml:space="preserve">
+    <value>Der Pfad enthält ein ungültiges Zeichen: {0}</value>
+  </data>
+  <data name="Validation_PathMustBeAbsolute" xml:space="preserve">
+    <value>Der Pfad muss absolut sein (z. B. C:\Folder oder \\Server\Share).</value>
+  </data>
+  <data name="Validation_PathNotValid" xml:space="preserve">
+    <value>Der Pfad ist ungültig: {0}</value>
+  </data>
+  <data name="Validation_PathReservedSegment" xml:space="preserve">
+    <value>Der Pfad enthält ein reserviertes Namenssegment: {0}</value>
+  </data>
+  <data name="Validation_PathSegmentTrailing" xml:space="preserve">
+    <value>Ein Ordner- oder Dateisegment im Pfad darf nicht mit einem Leerzeichen oder Punkt enden.</value>
+  </data>
+  <data name="Validation_PathUncFormat" xml:space="preserve">
+    <value>UNC-Pfade müssen folgendem Muster entsprechen: \\Server\Share\Optional\Path.</value>
+  </data>
 </root>

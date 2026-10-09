@@ -770,13 +770,13 @@ Namespace Flux
             name = name.Trim
 
             If name.EndsWith(".") Then
-                Return "File name cannot end with a period."
+                Return My.Resources.Validation_FileNameEndsWithPeriod
             End If
 
             ' Check Windows filename invalid characters
             For Each c In IO.Path.GetInvalidFileNameChars()
                 If name.Contains(c) Then
-                    Return $"File name contains an invalid character: {c}"
+                    Return String.Format(My.Resources.Validation_FileNameInvalidCharacter, c)
                 End If
             Next
 
@@ -784,7 +784,7 @@ Namespace Flux
             Dim baseName = IO.Path.GetFileNameWithoutExtension(name).ToUpperInvariant()
 
             If RESERVED_FILE_NAMES.Contains(baseName) Then
-                Return "File name is a reserved system name."
+                Return My.Resources.Validation_FileNameReserved
             End If
 
             Return ""
@@ -800,7 +800,7 @@ Namespace Flux
             ' Quick invalid char check for *path* (note: differs from filename)
             For Each c In IO.Path.GetInvalidPathChars()
                 If p.IndexOf(c) >= 0 Then
-                    Return $"Path contains an invalid character: {c}"
+                    Return String.Format(My.Resources.Validation_PathInvalidCharacter, c)
                 End If
             Next
 
@@ -810,7 +810,7 @@ Namespace Flux
 
             For Each c In extraInvalid
                 If p.Contains(c) Then
-                    Return $"Path contains an invalid character: {c}"
+                    Return String.Format(My.Resources.Validation_PathInvalidCharacter, c)
                 End If
             Next
 
@@ -819,7 +819,7 @@ Namespace Flux
             For Each seg In segments
                 If seg.Length = 0 Then Continue For ' allows leading \\ and repeated slashes like C:\\ (we'll catch some later)
                 If seg.EndsWith(" ") OrElse seg.EndsWith(".") Then
-                    Return "A path folder/file segment cannot end with a space or period."
+                    Return My.Resources.Validation_PathSegmentTrailing
                 End If
             Next
 
@@ -829,18 +829,18 @@ Namespace Flux
             Dim isDriveRelative = (p.Length >= 2 AndAlso Char.IsLetter(p(0)) AndAlso p(1) = ":"c AndAlso (p.Length = 2 OrElse (p(2) <> "\"c AndAlso p(2) <> "/"c)))
 
             If isDriveRelative Then
-                Return "Drive-relative paths like 'C:folder' are ambiguous. Use 'C:\folder' instead."
+                Return My.Resources.Validation_PathDriveRelative
             End If
 
             If Not allowRelative AndAlso Not isUnc AndAlso Not isDriveRooted AndAlso Not IO.Path.IsPathRooted(p) Then
-                Return "Path must be absolute (e.g., C:\Folder or \\Server\Share)."
+                Return My.Resources.Validation_PathMustBeAbsolute
             End If
 
             ' UNC needs at least \\server\share
             If isUnc Then
                 Dim uncParts = p.TrimStart("\"c).Split("\"c)
                 If uncParts.Length < 2 OrElse String.IsNullOrWhiteSpace(uncParts(0)) OrElse String.IsNullOrWhiteSpace(uncParts(1)) Then
-                    Return "UNC paths must look like \\Server\Share\Optional\Path."
+                    Return My.Resources.Validation_PathUncFormat
                 End If
             End If
 
@@ -864,7 +864,7 @@ Namespace Flux
 
                 Dim baseName = IO.Path.GetFileNameWithoutExtension(seg).ToUpperInvariant()
                 If RESERVED_FILE_NAMES.Contains(baseName) Then
-                    Return $"Path contains a reserved name segment: {seg}"
+                    Return String.Format(My.Resources.Validation_PathReservedSegment, seg)
                 End If
             Next
 
@@ -878,7 +878,7 @@ Namespace Flux
                     IO.Path.GetFullPath(IO.Path.Combine(Environment.CurrentDirectory, p.Replace("/"c, "\"c)))
                 End If
             Catch ex As Exception
-                Return "Path is not valid: " & ex.Message
+                Return String.Format(My.Resources.Validation_PathNotValid, ex.Message)
             End Try
 
             Return ""

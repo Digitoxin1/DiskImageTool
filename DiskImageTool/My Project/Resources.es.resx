@@ -2438,4 +2438,34 @@ Archivo de imagen: '{1}'
   <data name="Label_TrackNumAlt" xml:space="preserve">
     <value>Pista {0} Alternativa</value>
   </data>
+  <data name="Validation_FileNameEndsWithPeriod" xml:space="preserve">
+    <value>El nombre de archivo no puede terminar con un punto.</value>
+  </data>
+  <data name="Validation_FileNameInvalidCharacter" xml:space="preserve">
+    <value>El nombre de archivo contiene un carácter no válido: {0}</value>
+  </data>
+  <data name="Validation_FileNameReserved" xml:space="preserve">
+    <value>El nombre de archivo es un nombre reservado del sistema.</value>
+  </data>
+  <data name="Validation_PathDriveRelative" xml:space="preserve">
+    <value>Las rutas relativas a la unidad, como 'C:folder', son ambiguas. Use 'C:\folder' en su lugar.</value>
+  </data>
+  <data name="Validation_PathInvalidCharacter" xml:space="preserve">
+    <value>La ruta contiene un carácter no válido: {0}</value>
+  </data>
+  <data name="Validation_PathMustBeAbsolute" xml:space="preserve">
+    <value>La ruta debe ser absoluta (por ejemplo, C:\Folder o \\Server\Share).</value>
+  </data>
+  <data name="Validation_PathNotValid" xml:space="preserve">
+    <value>La ruta no es válida: {0}</value>
+  </data>
+  <data name="Validation_PathReservedSegment" xml:space="preserve">
+    <value>La ruta contiene un segmento de nombre reservado: {0}</value>
+  </data>
+  <data name="Validation_PathSegmentTrailing" xml:space="preserve">
+    <value>Un segmento de carpeta o archivo de la ruta no puede terminar con un espacio o un punto.</value>
+  </data>
+  <data name="Validation_PathUncFormat" xml:space="preserve">
+    <value>Las rutas UNC deben tener la forma \\Server\Share\Optional\Path.</value>
+  </data>
 </root>
