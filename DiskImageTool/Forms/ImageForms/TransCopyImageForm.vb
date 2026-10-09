@@ -25,12 +25,7 @@ Public Class TransCopyImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        GetType(DataGridView).InvokeMember(
-            "DoubleBuffered",
-            Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.SetProperty,
-            Nothing,
-            DataGridViewTracks,
-            New Object() {True})
+        EnableDoubleBuffer(DataGridViewTracks)
 
         ' Add any initialization after the InitializeComponent() call.
         _FloppyImage = FloppyImage
@@ -112,36 +107,20 @@ Public Class TransCopyImageForm
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
-        AddTextColumn(GRID_COLUMN_SKEW, My.Resources.Label_Skew, 60, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_LENGTH, My.Resources.Label_Length, 65, DataGridViewContentAlignment.MiddleRight, "N0")
-        AddTextColumn(GRID_COLUMN_TRACK_TYPE, My.Resources.Label_TrackType, 180, DataGridViewContentAlignment.MiddleLeft)
-        AddTextColumn(GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SKEW, My.Resources.Label_Skew, 60, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 65, DataGridViewContentAlignment.MiddleRight, "N0")
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK_TYPE, My.Resources.Label_TrackType, 180, DataGridViewContentAlignment.MiddleLeft)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight)
         AddCheckColumn(GRID_COLUMN_COPY_ACROSS_INDEX, My.Resources.Label_CopyAcrossIndex, 120)
         AddCheckColumn(GRID_COLUMN_COPY_WEAK_BITS, My.Resources.Label_CopyWeakBits, 115)
         AddCheckColumn(GRID_COLUMN_KEEP_TRACK_LENGTH, My.Resources.Label_KeepTrackLength, 120)
         AddCheckColumn(GRID_COLUMN_LENGTH_TOLERANCE, My.Resources.Label_LengthTolerance, 115)
         AddCheckColumn(GRID_COLUMN_NO_ADDRESS_MARKS, My.Resources.Label_NoAddressMarks, 125)
         AddCheckColumn(GRID_COLUMN_VERIFY_WRITE, My.Resources.Label_VerifyWrites, 95)
-    End Sub
-
-    Private Sub AddTextColumn(Name As String, HeaderText As String, Width As Integer, Alignment As DataGridViewContentAlignment, Optional Format As String = "")
-        Dim Column As New DataGridViewTextBoxColumn With {
-            .Name = Name,
-            .HeaderText = HeaderText,
-            .ReadOnly = True,
-            .DataPropertyName = Name,
-            .Width = Width,
-            .SortMode = DataGridViewColumnSortMode.NotSortable
-        }
-        Column.DefaultCellStyle.Alignment = Alignment
-        If Format <> "" Then
-            Column.DefaultCellStyle.Format = Format
-        End If
-        DataGridViewTracks.Columns.Add(Column)
     End Sub
 
     Private Sub AddCheckColumn(Name As String, HeaderText As String, Width As Integer)

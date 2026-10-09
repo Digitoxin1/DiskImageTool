@@ -9,11 +9,6 @@ Public Class MFMImageForm
     Private Const GRID_COLUMN_BITRATE As String = "GridBitRate"
     Private Const GRID_COLUMN_RPM As String = "GridRPM"
     Private Const ADVANCED_TRACK_LIST As Byte = &H80
-    Private Const INTERFACE_MODE_DISABLED As Byte = &HFE
-
-    Private Shared ReadOnly InterfaceModes() As Byte = {
-        &H0, &H1, &H8, &H2, &H3, &H4, &H5, &H6, &H7, &H9, &HA, &HB, &HC, &HD, &HE, &HF, &H10, INTERFACE_MODE_DISABLED
-    }
 
     Private ReadOnly _FloppyImage As MFMFloppyImage
     Private _Updated As Boolean
@@ -23,12 +18,7 @@ Public Class MFMImageForm
         ' This call is required by the designer.
         InitializeComponent()
 
-        GetType(DataGridView).InvokeMember(
-            "DoubleBuffered",
-            Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.SetProperty,
-            Nothing,
-            DataGridViewTracks,
-            New Object() {True})
+        EnableDoubleBuffer(DataGridViewTracks)
 
         ' Add any initialization after the InitializeComponent() call.
         _FloppyImage = FloppyImage
@@ -37,6 +27,8 @@ Public Class MFMImageForm
         InitializeGridColumns(Image)
         PopulateHeader(Image)
         DataGridViewTracks.DataSource = GetTrackTable(Image)
+        AttachNumericTextBox(TxtRPM)
+        AttachNumericTextBox(TxtBitRate)
     End Sub
 
     Public Shared Function Display(Disk As Disk) As Boolean
@@ -69,81 +61,15 @@ Public Class MFMImageForm
         TxtRPM.Text = Image.RPM.ToString()
         TxtBitRate.Text = Image.BitRate.ToString()
         ChkPerTrackRates.Checked = (Image.IFType And ADVANCED_TRACK_LIST) <> 0
-        PopulateInterfaceTypes(Image)
-    End Sub
-
-    Private Sub PopulateInterfaceTypes(Image As MFMImage)
-        CboInterfaceType.BeginUpdate()
-        CboInterfaceType.Items.Clear()
-
-        Dim ModeToSelect = InterfaceModeToSelect(Image.IFType)
-        Dim Selected As InterfaceTypeItem = Nothing
-        For Each InterfaceMode In InterfaceModes
-            Dim Item As New InterfaceTypeItem(InterfaceMode, InterfaceModeCaption(InterfaceMode))
-            CboInterfaceType.Items.Add(Item)
-            If InterfaceMode = ModeToSelect Then
-                Selected = Item
-            End If
-        Next
-
-        If Selected Is Nothing Then
-            Selected = New InterfaceTypeItem(ModeToSelect, ModeToSelect.ToString("X2"))
-            CboInterfaceType.Items.Insert(0, Selected)
-        End If
-
-        CboInterfaceType.SelectedItem = Selected
-        CboInterfaceType.EndUpdate()
+        PopulateByteCombo(CboInterfaceType, InterfaceModes, InterfaceModeToSelect(Image.IFType), AddressOf InterfaceModeCaption)
     End Sub
 
     Private Shared Function InterfaceModeToSelect(InterfaceType As Byte) As Byte
-        If InterfaceType = INTERFACE_MODE_DISABLED Then
-            Return INTERFACE_MODE_DISABLED
+        If InterfaceType = InterfaceModeDisabled Then
+            Return InterfaceModeDisabled
         End If
 
         Return InterfaceType And &H7F
-    End Function
-
-    Private Shared Function InterfaceModeCaption(Mode As Byte) As String
-        Select Case Mode
-            Case &H0
-                Return My.Resources.FloppyInterface_IbmPcDd
-            Case &H1
-                Return My.Resources.FloppyInterface_IbmPcHd
-            Case &H2
-                Return My.Resources.FloppyInterface_AtariStDd
-            Case &H3
-                Return My.Resources.FloppyInterface_AtariStHd
-            Case &H4
-                Return My.Resources.FloppyInterface_AmigaDd
-            Case &H5
-                Return My.Resources.FloppyInterface_AmigaHd
-            Case &H6
-                Return My.Resources.FloppyInterface_CpcDd
-            Case &H7
-                Return My.Resources.FloppyInterface_ShugartDd
-            Case &H8
-                Return My.Resources.FloppyInterface_IbmPcEd
-            Case &H9
-                Return My.Resources.FloppyInterface_Msx2Dd
-            Case &HA
-                Return My.Resources.FloppyInterface_C64Dd
-            Case &HB
-                Return My.Resources.FloppyInterface_EmuShugart
-            Case &HC
-                Return My.Resources.FloppyInterface_S950Dd
-            Case &HD
-                Return My.Resources.FloppyInterface_S950Hd
-            Case &HE
-                Return My.Resources.FloppyInterface_S950Auto
-            Case &HF
-                Return My.Resources.FloppyInterface_IbmPcAuto
-            Case &H10
-                Return My.Resources.FloppyInterface_QuickDisk
-            Case INTERFACE_MODE_DISABLED
-                Return My.Resources.FloppyInterface_Disabled
-            Case Else
-                Return Mode.ToString("X2")
-        End Select
     End Function
 
     Private Function ApplyUpdates() As Boolean
@@ -159,12 +85,12 @@ Public Class MFMImageForm
             Return False
         End If
 
-        Dim Item = TryCast(CboInterfaceType.SelectedItem, InterfaceTypeItem)
+        Dim Item = TryCast(CboInterfaceType.SelectedItem, ByteListItem)
         If Item Is Nothing Then
             Return False
         End If
 
-        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, Item.Mode)
+        _Updated = _FloppyImage.UpdateHeader(RPM, BitRate, Item.Value)
         Return True
     End Function
 
@@ -176,64 +102,18 @@ Public Class MFMImageForm
         DialogResult = DialogResult.OK
     End Sub
 
-    Private Sub NumericTextBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtRPM.KeyPress, TxtBitRate.KeyPress
-        If Not Char.IsDigit(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) Then
-            e.Handled = True
-        End If
-    End Sub
-
-    Private Sub NumericTextBox_TextChanged(sender As Object, e As EventArgs) Handles TxtRPM.TextChanged, TxtBitRate.TextChanged
-        Dim Box = DirectCast(sender, TextBox)
-        Dim Digits = New String(Box.Text.Where(Function(Character) Char.IsDigit(Character)).ToArray())
-        If Digits = Box.Text Then
-            Exit Sub
-        End If
-
-        Dim SelectionStart = Math.Min(Box.SelectionStart, Digits.Length)
-        Box.Text = Digits
-        Box.SelectionStart = SelectionStart
-    End Sub
-
-    Private Sub NumericTextBox_LostFocus(sender As Object, e As EventArgs) Handles TxtRPM.LostFocus, TxtBitRate.LostFocus
-        Dim Box = DirectCast(sender, TextBox)
-        Dim Value As ULong
-        If Not ULong.TryParse(Box.Text, Value) Then
-            Exit Sub
-        End If
-
-        If Value > UShort.MaxValue Then
-            Box.Text = UShort.MaxValue.ToString()
-        End If
-    End Sub
-
     Private Sub InitializeGridColumns(Image As MFMImage)
         DataGridViewTracks.AutoGenerateColumns = False
         DataGridViewTracks.Columns.Clear()
 
-        AddTextColumn(GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
-        AddTextColumn(GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
-        AddTextColumn(GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_TRACK, My.Resources.Label_Track, 55, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_SIDE, My.Resources.Label_Side, 50, DataGridViewContentAlignment.MiddleRight)
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_OFFSET, My.Resources.Label_OffsetHex, 80, DataGridViewContentAlignment.MiddleRight, "X8")
+        AddTextColumn(DataGridViewTracks, GRID_COLUMN_LENGTH, My.Resources.Label_Length, 80, DataGridViewContentAlignment.MiddleRight, "N0")
         If (Image.IFType And ADVANCED_TRACK_LIST) <> 0 Then
-            AddTextColumn(GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
-            AddTextColumn(GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
+            AddTextColumn(DataGridViewTracks, GRID_COLUMN_BITRATE, My.Resources.SummaryPanel_Bitrate, 65, DataGridViewContentAlignment.MiddleRight, "N0")
+            AddTextColumn(DataGridViewTracks, GRID_COLUMN_RPM, My.Resources.SummaryPanel_RPM, 55, DataGridViewContentAlignment.MiddleRight, "N0")
         End If
-    End Sub
-
-    Private Sub AddTextColumn(Name As String, HeaderText As String, Width As Integer, Alignment As DataGridViewContentAlignment, Optional Format As String = "")
-        Dim Column As New DataGridViewTextBoxColumn With {
-            .Name = Name,
-            .HeaderText = HeaderText,
-            .ReadOnly = True,
-            .DataPropertyName = Name,
-            .Width = Width,
-            .SortMode = DataGridViewColumnSortMode.NotSortable
-        }
-        Column.DefaultCellStyle.Alignment = Alignment
-        If Format <> "" Then
-            Column.DefaultCellStyle.Format = Format
-        End If
-        DataGridViewTracks.Columns.Add(Column)
     End Sub
 
     Private Function GetTrackTable(Image As MFMImage) As DataTable
@@ -274,27 +154,4 @@ Public Class MFMImageForm
 
         Return TrackTable
     End Function
-
-    Private Sub AddDataColumn(Table As DataTable, Name As String, DataType As Type)
-        Table.Columns.Add(New DataColumn(Name, DataType))
-    End Sub
-
-    Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
-        'DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
-    End Sub
-
-    Private Class InterfaceTypeItem
-        Public Sub New(Mode As Byte, Caption As String)
-            Me.Mode = Mode
-            _Caption = Caption
-        End Sub
-
-        Public ReadOnly Property Mode As Byte
-
-        Public Overrides Function ToString() As String
-            Return _Caption
-        End Function
-
-        Private ReadOnly _Caption As String
-    End Class
 End Class

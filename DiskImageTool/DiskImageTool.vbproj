@@ -597,6 +597,7 @@
     <Compile Include="Forms\ImageForms\HFEImageForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\ImageForms\ImageFormShared.vb" />
     <Compile Include="Forms\UndeleteForm.Designer.vb">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
     </Compile>
