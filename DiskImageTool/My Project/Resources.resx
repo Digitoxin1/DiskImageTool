@@ -1412,12 +1412,14 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_FATShort" xml:space="preserve">
     <value>FAT</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Next</value>
   </data>
   <data name="Label_FM" xml:space="preserve">
     <value>FM</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>File</value>
@@ -2814,9 +2816,11 @@ Do you wish to overwrite?</value>
   </data>
   <data name="TD0_Compression_LZHUF" xml:space="preserve">
     <value>LZSS-Huffman</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Compression_LZW" xml:space="preserve">
     <value>LZW</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>None</value>
@@ -2832,24 +2836,29 @@ Do you wish to overwrite?</value>
   </data>
   <data name="TD0_Drive_1200K" xml:space="preserve">
     <value>1.2M</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Drive_1440K" xml:space="preserve">
     <value>1.44M</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Drive_35Unknown" xml:space="preserve">
     <value>3.5" unknown</value>
   </data>
   <data name="TD0_Drive_360K" xml:space="preserve">
     <value>360K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Drive_52596Tpi" xml:space="preserve">
     <value>5.25" 96 tpi</value>
   </data>
   <data name="TD0_Drive_720K" xml:space="preserve">
     <value>720K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_Drive_8Inch" xml:space="preserve">
     <value>8"</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="TD0_SectorFlag_CrcError" xml:space="preserve">
     <value>CRC Error</value>

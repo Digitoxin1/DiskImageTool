@@ -3185,6 +3185,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Check Sequence.
+        '''</summary>
+        Friend ReadOnly Property Label_CheckSequence() As String
+            Get
+                Return ResourceManager.GetString("Label_CheckSequence", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Checksum.
         '''</summary>
         Friend ReadOnly Property Label_Checksum() As String
@@ -3235,15 +3244,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_CleanDisk() As String
             Get
                 Return ResourceManager.GetString("Label_CleanDisk", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Check Sequence.
-        '''</summary>
-        Friend ReadOnly Property Label_CheckSequence() As String
-            Get
-                Return ResourceManager.GetString("Label_CheckSequence", resourceCulture)
             End Get
         End Property
         
@@ -3617,6 +3617,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to DOS Allocation.
+        '''</summary>
+        Friend ReadOnly Property Label_DosAllocation() As String
+            Get
+                Return ResourceManager.GetString("Label_DosAllocation", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Double-step.
         '''</summary>
         Friend ReadOnly Property Label_DoubleStep() As String
@@ -3658,15 +3667,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_DriveType() As String
             Get
                 Return ResourceManager.GetString("Label_DriveType", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to DOS Allocation.
-        '''</summary>
-        Friend ReadOnly Property Label_DosAllocation() As String
-            Get
-                Return ResourceManager.GetString("Label_DosAllocation", resourceCulture)
             End Get
         End Property
         

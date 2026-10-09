@@ -1160,14 +1160,8 @@ Voulez-vous écraser ?</value>
   <data name="Label_FAT" xml:space="preserve">
     <value>Table d’allocation de fichiers</value>
   </data>
-  <data name="Label_FATShort" xml:space="preserve">
-    <value>FAT</value>
-  </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Suivant</value>
-  </data>
-  <data name="Label_FM" xml:space="preserve">
-    <value>FM</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Fichier</value>
@@ -2444,12 +2438,6 @@ Voulez-vous écraser ?</value>
   <data name="IMD_Mode_MFM500" xml:space="preserve">
     <value>MFM 500 kbit/s</value>
   </data>
-  <data name="TD0_Compression_LZHUF" xml:space="preserve">
-    <value>LZSS-Huffman</value>
-  </data>
-  <data name="TD0_Compression_LZW" xml:space="preserve">
-    <value>LZW</value>
-  </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Aucune</value>
   </data>
@@ -2462,26 +2450,11 @@ Voulez-vous écraser ?</value>
   <data name="TD0_DataRate_500" xml:space="preserve">
     <value>500 kbit/s</value>
   </data>
-  <data name="TD0_Drive_1200K" xml:space="preserve">
-    <value>1,2 Mo</value>
-  </data>
-  <data name="TD0_Drive_1440K" xml:space="preserve">
-    <value>1,44 Mo</value>
-  </data>
   <data name="TD0_Drive_35Unknown" xml:space="preserve">
     <value>3,5" inconnu</value>
   </data>
-  <data name="TD0_Drive_360K" xml:space="preserve">
-    <value>360 Ko</value>
-  </data>
   <data name="TD0_Drive_52596Tpi" xml:space="preserve">
     <value>5,25" 96 tpi</value>
-  </data>
-  <data name="TD0_Drive_720K" xml:space="preserve">
-    <value>720 Ko</value>
-  </data>
-  <data name="TD0_Drive_8Inch" xml:space="preserve">
-    <value>8"</value>
   </data>
   <data name="TD0_SectorFlag_CrcError" xml:space="preserve">
     <value>Erreur CRC</value>

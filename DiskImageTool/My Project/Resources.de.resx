@@ -1160,14 +1160,8 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_FAT" xml:space="preserve">
     <value>Dateizuordnungstabelle</value>
   </data>
-  <data name="Label_FATShort" xml:space="preserve">
-    <value>FAT</value>
-  </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Nächste</value>
-  </data>
-  <data name="Label_FM" xml:space="preserve">
-    <value>FM</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Datei</value>
@@ -2444,12 +2438,6 @@ Möchten Sie ihn überschreiben?</value>
   <data name="IMD_Mode_MFM500" xml:space="preserve">
     <value>MFM 500 kbit/s</value>
   </data>
-  <data name="TD0_Compression_LZHUF" xml:space="preserve">
-    <value>LZSS-Huffman</value>
-  </data>
-  <data name="TD0_Compression_LZW" xml:space="preserve">
-    <value>LZW</value>
-  </data>
   <data name="TD0_Compression_None" xml:space="preserve">
     <value>Keine</value>
   </data>
@@ -2462,26 +2450,11 @@ Möchten Sie ihn überschreiben?</value>
   <data name="TD0_DataRate_500" xml:space="preserve">
     <value>500 kbit/s</value>
   </data>
-  <data name="TD0_Drive_1200K" xml:space="preserve">
-    <value>1,2M</value>
-  </data>
-  <data name="TD0_Drive_1440K" xml:space="preserve">
-    <value>1,44M</value>
-  </data>
   <data name="TD0_Drive_35Unknown" xml:space="preserve">
     <value>3,5" unbekannt</value>
   </data>
-  <data name="TD0_Drive_360K" xml:space="preserve">
-    <value>360K</value>
-  </data>
   <data name="TD0_Drive_52596Tpi" xml:space="preserve">
     <value>5,25" 96 tpi</value>
-  </data>
-  <data name="TD0_Drive_720K" xml:space="preserve">
-    <value>720K</value>
-  </data>
-  <data name="TD0_Drive_8Inch" xml:space="preserve">
-    <value>8"</value>
   </data>
   <data name="TD0_SectorFlag_CrcError" xml:space="preserve">
     <value>CRC-Fehler</value>
