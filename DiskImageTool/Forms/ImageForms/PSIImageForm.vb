@@ -139,7 +139,7 @@ Public Class PSIImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "PSI", BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_SectorImageProperties, My.Resources.FloppyImageType_PCE)
         LblVersion.Text = My.Resources.Label_Version
         LblFormat.Text = My.Resources.Label_Format
         LblComment.Text = My.Resources.Label_Comment

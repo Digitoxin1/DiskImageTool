@@ -153,7 +153,8 @@ Public Class TransCopyImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "TransCopy", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_Transcopy)
         LblComment.Text = My.Resources.Label_Comment
         LblComment2.Text = My.Resources.Label_Comment2
         LblDiskType.Text = My.Resources.SummaryPanel_DiskType

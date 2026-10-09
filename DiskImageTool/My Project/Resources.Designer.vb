@@ -90,15 +90,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Merge.
-        '''</summary>
-        Friend ReadOnly Property Action_Merge() As String
-            Get
-                Return ResourceManager.GetString("Action_Merge", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Rename.
         '''</summary>
         Friend ReadOnly Property Action_Rename() As String
@@ -305,15 +296,6 @@ Namespace My.Resources
         Friend ReadOnly Property Button_Add() As String
             Get
                 Return ResourceManager.GetString("Button_Add", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Byte Count.
-        '''</summary>
-        Friend ReadOnly Property Caption_ByteCount() As String
-            Get
-                Return ResourceManager.GetString("Caption_ByteCount", resourceCulture)
             End Get
         End Property
         
@@ -953,15 +935,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of bytes:.
-        '''</summary>
-        Friend ReadOnly Property Dialog_ByteCount() As String
-            Get
-                Return ResourceManager.GetString("Dialog_ByteCount", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to An error occurred while downloading the change log.  Please try again later..
         '''</summary>
         Friend ReadOnly Property Dialog_ChangeLogDownloadError() As String
@@ -1416,15 +1389,6 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_InsufficientDiskSpaceWarning() As String
             Get
                 Return ResourceManager.GetString("Dialog_InsufficientDiskSpaceWarning", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Application path is invalid..
-        '''</summary>
-        Friend ReadOnly Property Dialog_InvalidApplicationPath() As String
-            Get
-                Return ResourceManager.GetString("Dialog_InvalidApplicationPath", resourceCulture)
             End Get
         End Property
         
@@ -2343,11 +2307,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Applesauce FDC Image.
+        '''  Looks up a localized string similar to 86Box 86F.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_A2RImage() As String
+        Friend ReadOnly Property FloppyImageType_86F() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_A2RImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_86F", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Applesauce FDC.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_AppleSauce() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_AppleSauce", resourceCulture)
             End Get
         End Property
         
@@ -2361,56 +2334,74 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to 86Box 86F Image.
+        '''  Looks up a localized string similar to {0} Bitstream Image.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_D86FImage() As String
+        Friend ReadOnly Property FloppyImageType_BitstreamImage() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_D86FImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_BitstreamImage", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to HxC HFE (v1) Image.
+        '''  Looks up a localized string similar to {0} Bitstream Image Properties.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_HFEImage() As String
+        Friend ReadOnly Property FloppyImageType_BitstreamImageProperties() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_HFEImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_BitstreamImageProperties", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to ImageDisk Sector Image.
+        '''  Looks up a localized string similar to HxC HFE(v1).
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_IMDImage() As String
+        Friend ReadOnly Property FloppyImageType_HFE() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_IMDImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_HFE", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to HxC MFM Image.
+        '''  Looks up a localized string similar to {0} Image.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_MFMImage() As String
+        Friend ReadOnly Property FloppyImageType_Image() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_MFMImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_Image", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to PCE Bitstream Image.
+        '''  Looks up a localized string similar to ImageDisk.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_PRIImage() As String
+        Friend ReadOnly Property FloppyImageType_ImageDisk() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_PRIImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_ImageDisk", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to PCE Sector Image.
+        '''  Looks up a localized string similar to {0} Image Properties.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_PSIImage() As String
+        Friend ReadOnly Property FloppyImageType_ImageProperties() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_PSIImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_ImageProperties", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to HxC MFM.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_MFM() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_MFM", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to PCE.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_PCE() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_PCE", resourceCulture)
             End Get
         End Property
         
@@ -2424,29 +2415,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to SuperCard Pro Image.
+        '''  Looks up a localized string similar to SuperCard Pro.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_SCPImage() As String
+        Friend ReadOnly Property FloppyImageType_SCP() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_SCPImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_SCP", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to TeleDisk Sector Image.
+        '''  Looks up a localized string similar to {0} Sector Image.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_TD0Image() As String
+        Friend ReadOnly Property FloppyImageType_SectorImage() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_TD0Image", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_SectorImage", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Transcopy Image.
+        '''  Looks up a localized string similar to {0} Sector Image Properties.
         '''</summary>
-        Friend ReadOnly Property FloppyImageType_TranscopyImage() As String
+        Friend ReadOnly Property FloppyImageType_SectorImageProperties() As String
             Get
-                Return ResourceManager.GetString("FloppyImageType_TranscopyImage", resourceCulture)
+                Return ResourceManager.GetString("FloppyImageType_SectorImageProperties", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to TeleDisk.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_TeleDisk() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_TeleDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Transcopy.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_Transcopy() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_Transcopy", resourceCulture)
             End Get
         End Property
         
@@ -4896,15 +4905,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to NULL.
-        '''</summary>
-        Friend ReadOnly Property Label_NULL() As String
-            Get
-                Return ResourceManager.GetString("Label_NULL", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Number of FATs.
         '''</summary>
         Friend ReadOnly Property Label_NumberOfFATs() As String
@@ -5859,15 +5859,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Unformatted.
-        '''</summary>
-        Friend ReadOnly Property Label_Unformatted() As String
-            Get
-                Return ResourceManager.GetString("Label_Unformatted", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Unknown.
         '''</summary>
         Friend ReadOnly Property Label_Unknown() As String
@@ -6044,15 +6035,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_WriteProtect() As String
             Get
                 Return ResourceManager.GetString("Label_WriteProtect", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Write Splices.
-        '''</summary>
-        Friend ReadOnly Property Label_WriteSplices() As String
-            Get
-                Return ResourceManager.GetString("Label_WriteSplices", resourceCulture)
             End Get
         End Property
         
@@ -6660,15 +6642,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Delete {0} Bytes.
-        '''</summary>
-        Friend ReadOnly Property Menu_DeleteRegionBytes() As String
-            Get
-                Return ResourceManager.GetString("Menu_DeleteRegionBytes", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to &amp;Delete Selected Files.
         '''</summary>
         Friend ReadOnly Property Menu_DeleteSelected() As String
@@ -6872,15 +6845,6 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_InsertBytes() As String
             Get
                 Return ResourceManager.GetString("Menu_InsertBytes", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Insert {0} Bytes.
-        '''</summary>
-        Friend ReadOnly Property Menu_InsertRegionBytes() As String
-            Get
-                Return ResourceManager.GetString("Menu_InsertRegionBytes", resourceCulture)
             End Get
         End Property
         
@@ -8121,15 +8085,6 @@ Namespace My.Resources
         Friend ReadOnly Property TD0_SectorFlag_DataNoId() As String
             Get
                 Return ResourceManager.GetString("TD0_SectorFlag_DataNoId", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Deleted Data.
-        '''</summary>
-        Friend ReadOnly Property TD0_SectorFlag_DeletedData() As String
-            Get
-                Return ResourceManager.GetString("TD0_SectorFlag_DeletedData", resourceCulture)
             End Get
         End Property
         

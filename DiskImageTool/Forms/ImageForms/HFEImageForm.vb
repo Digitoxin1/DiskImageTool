@@ -154,7 +154,8 @@ Public Class HFEImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "HFE", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_SectorImageProperties, My.Resources.FloppyImageType_HFE)
         LblSignature.Text = My.Resources.Label_Signature
         LblFormatRevision.Text = My.Resources.Label_FormatRevision
         LblTracks.Text = My.Resources.Label_Tracks

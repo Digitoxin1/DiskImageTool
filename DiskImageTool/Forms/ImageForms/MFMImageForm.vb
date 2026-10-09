@@ -128,7 +128,8 @@ Public Class MFMImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "MFM", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_MFM)
         LblTracks.Text = My.Resources.Label_Tracks
         LblSides.Text = My.Resources.Label_Sides
         LblRPM.Text = My.Resources.SummaryPanel_RPM

@@ -40,7 +40,8 @@ Public Class PRIImageForm
     End Function
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "PRI", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_BitstreamImageProperties, My.Resources.FloppyImageType_PCE)
         LblVersion.Text = My.Resources.Label_Version
         LblReserved.Text = My.Resources.Label_Reserved
         LblComment.Text = My.Resources.Label_Comment

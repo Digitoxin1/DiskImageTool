@@ -278,7 +278,8 @@ Public Class TD0ImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "TD0", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_TeleDisk)
         LblCompression.Text = My.Resources.Label_Compression
         LblVersion.Text = My.Resources.Label_Version
         LblSequence.Text = My.Resources.Label_Sequence

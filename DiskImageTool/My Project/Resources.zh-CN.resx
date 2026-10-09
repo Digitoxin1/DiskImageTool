@@ -120,9 +120,6 @@
   <data name="Action_Add" xml:space="preserve">
     <value>添加</value>
   </data>
-  <data name="Action_Merge" xml:space="preserve">
-    <value>合并</value>
-  </data>
   <data name="Action_Rename" xml:space="preserve">
     <value>重命名</value>
   </data>
@@ -182,9 +179,6 @@
   </data>
   <data name="Button_Add" xml:space="preserve">
     <value>添加(&amp;A)</value>
-  </data>
-  <data name="Caption_ByteCount" xml:space="preserve">
-    <value>字节数</value>
   </data>
   <data name="Caption_ChangeLog" xml:space="preserve">
     <value>更新日志</value>
@@ -311,9 +305,6 @@
   </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>这是已验证的映像。确定要调整此映像的大小吗？</value>
-  </data>
-  <data name="Dialog_ByteCount" xml:space="preserve">
-    <value>字节数：</value>
   </data>
   <data name="Dialog_ChangeLogDownloadError" xml:space="preserve">
     <value>下载更新日志时出错。请稍后重试。</value>
@@ -478,9 +469,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
     <value>警告：磁盘空间不足{0}{0}已成功添加 {1} / {2} 个文件</value>
-  </data>
-  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
-    <value>应用程序路径无效。</value>
   </data>
   <data name="Dialog_InvalidCharacters" xml:space="preserve">
     <value>文件名不能包含以下任何字符</value>
@@ -752,41 +740,11 @@ Flux 映像集：“{0}”
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>已修改的文件</value>
   </data>
-  <data name="FloppyImageType_A2RImage" xml:space="preserve">
-    <value>Applesauce FDC 映像</value>
-  </data>
   <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
     <value>基本扇区映像</value>
   </data>
-  <data name="FloppyImageType_D86FImage" xml:space="preserve">
-    <value>86Box 86F 映像</value>
-  </data>
-  <data name="FloppyImageType_HFEImage" xml:space="preserve">
-    <value>HxC HFE (v1) 映像</value>
-  </data>
-  <data name="FloppyImageType_IMDImage" xml:space="preserve">
-    <value>ImageDisk 扇区映像</value>
-  </data>
-  <data name="FloppyImageType_MFMImage" xml:space="preserve">
-    <value>HxC MFM 映像</value>
-  </data>
-  <data name="FloppyImageType_PRIImage" xml:space="preserve">
-    <value>PCE 比特流映像</value>
-  </data>
-  <data name="FloppyImageType_PSIImage" xml:space="preserve">
-    <value>PCE 扇区映像</value>
-  </data>
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>原始 Flux 集</value>
-  </data>
-  <data name="FloppyImageType_SCPImage" xml:space="preserve">
-    <value>SuperCard Pro 映像</value>
-  </data>
-  <data name="FloppyImageType_TD0Image" xml:space="preserve">
-    <value>TeleDisk 扇区映像</value>
-  </data>
-  <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
-    <value>Transcopy 映像</value>
   </data>
   <data name="FloppyInterface_Disabled" xml:space="preserve">
     <value>禁用</value>
@@ -1811,9 +1769,6 @@ Flux 映像集：“{0}”
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>意外扇区</value>
   </data>
-  <data name="Label_Unformatted" xml:space="preserve">
-    <value>未格式化</value>
-  </data>
   <data name="Label_Unknown" xml:space="preserve">
     <value>未知</value>
   </data>
@@ -1873,9 +1828,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_WriteProtect" xml:space="preserve">
     <value>写保护</value>
-  </data>
-  <data name="Label_WriteSplices" xml:space="preserve">
-    <value>写入拼接</value>
   </data>
   <data name="Label_Writing" xml:space="preserve">
     <value>正在写入</value>
@@ -2078,9 +2030,6 @@ Flux 映像集：“{0}”
   <data name="Menu_DeleteFile" xml:space="preserve">
     <value>删除文件(&amp;D)</value>
   </data>
-  <data name="Menu_DeleteRegionBytes" xml:space="preserve">
-    <value>删除 {0} 字节</value>
-  </data>
   <data name="Menu_DeleteSelected" xml:space="preserve">
     <value>删除所选文件(&amp;D)</value>
   </data>
@@ -2143,9 +2092,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="Menu_InsertBytes" xml:space="preserve">
     <value>插入字节</value>
-  </data>
-  <data name="Menu_InsertRegionBytes" xml:space="preserve">
-    <value>插入 {0} 字节</value>
   </data>
   <data name="Menu_NewDirectory" xml:space="preserve">
     <value>新建目录(&amp;N)</value>
@@ -2489,9 +2435,6 @@ Flux 映像集：“{0}”
   <data name="TD0_SectorFlag_DataNoId" xml:space="preserve">
     <value>无标识</value>
   </data>
-  <data name="TD0_SectorFlag_DeletedData" xml:space="preserve">
-    <value>已删除数据</value>
-  </data>
   <data name="TD0_SectorFlag_DosSkipped" xml:space="preserve">
     <value>跳过</value>
   </data>
@@ -2506,5 +2449,23 @@ Flux 映像集：“{0}”
   </data>
   <data name="WriteAllowed_Unprotected" xml:space="preserve">
     <value>未保护</value>
+  </data>
+  <data name="FloppyImageType_Image" xml:space="preserve">
+    <value>{0} 映像</value>
+  </data>
+  <data name="FloppyImageType_SectorImage" xml:space="preserve">
+    <value>{0} 扇区映像</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImage" xml:space="preserve">
+    <value>{0} 比特流映像</value>
+  </data>
+  <data name="FloppyImageType_ImageProperties" xml:space="preserve">
+    <value>{0} 镜像属性</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>{0} 位流镜像属性</value>
+  </data>
+  <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
+    <value>{0} 扇区镜像属性</value>
   </data>
 </root>

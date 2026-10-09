@@ -120,9 +120,6 @@
   <data name="Action_Add" xml:space="preserve">
     <value>Agregar</value>
   </data>
-  <data name="Action_Merge" xml:space="preserve">
-    <value>Fusionar</value>
-  </data>
   <data name="Action_Rename" xml:space="preserve">
     <value>Renombrar</value>
   </data>
@@ -182,9 +179,6 @@
   </data>
   <data name="Button_Add" xml:space="preserve">
     <value>&amp;Agregar</value>
-  </data>
-  <data name="Caption_ByteCount" xml:space="preserve">
-    <value>Recuento de bytes</value>
   </data>
   <data name="Caption_ChangeLog" xml:space="preserve">
     <value>Registro de cambios</value>
@@ -311,9 +305,6 @@
   </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>Esta es una imagen verificada. ¿Desea ajustar el tamaño de la imagen para esta imagen?</value>
-  </data>
-  <data name="Dialog_ByteCount" xml:space="preserve">
-    <value>Número de bytes:</value>
   </data>
   <data name="Dialog_ChangeLogDownloadError" xml:space="preserve">
     <value>Ocurrió un error al descargar el registro de cambios. Por favor, intente más tarde.</value>
@@ -478,9 +469,6 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
     <value>Advertencia: espacio en disco insuficiente{0}{0}{1} de {2} archivo(s) agregados correctamente</value>
-  </data>
-  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
-    <value>La ruta de la aplicación no es válida.</value>
   </data>
   <data name="Dialog_InvalidCharacters" xml:space="preserve">
     <value>Un nombre de archivo no puede contener ninguno de los siguientes caracteres</value>
@@ -752,41 +740,11 @@ Archivo de imagen: '{1}'
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Archivos modificados</value>
   </data>
-  <data name="FloppyImageType_A2RImage" xml:space="preserve">
-    <value>Imagen Applesauce FDC</value>
-  </data>
   <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
     <value>Imagen de sector básica</value>
   </data>
-  <data name="FloppyImageType_D86FImage" xml:space="preserve">
-    <value>Imagen 86Box 86F</value>
-  </data>
-  <data name="FloppyImageType_HFEImage" xml:space="preserve">
-    <value>Imagen HxC HFE (v1)</value>
-  </data>
-  <data name="FloppyImageType_IMDImage" xml:space="preserve">
-    <value>Imagen de sectores de ImageDisk</value>
-  </data>
-  <data name="FloppyImageType_MFMImage" xml:space="preserve">
-    <value>Imagen HxC MFM</value>
-  </data>
-  <data name="FloppyImageType_PRIImage" xml:space="preserve">
-    <value>Imagen de flujo de bits PCE</value>
-  </data>
-  <data name="FloppyImageType_PSIImage" xml:space="preserve">
-    <value>Imagen de sectores PCE</value>
-  </data>
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>Conjunto de flujo sin procesar</value>
-  </data>
-  <data name="FloppyImageType_SCPImage" xml:space="preserve">
-    <value>Imagen SuperCard Pro</value>
-  </data>
-  <data name="FloppyImageType_TD0Image" xml:space="preserve">
-    <value>Imagen de sectores de TeleDisk</value>
-  </data>
-  <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
-    <value>Imagen Transcopy</value>
   </data>
   <data name="FloppyInterface_Disabled" xml:space="preserve">
     <value>Desactivado</value>
@@ -1811,9 +1769,6 @@ Archivo de imagen: '{1}'
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>Sectores inesperados</value>
   </data>
-  <data name="Label_Unformatted" xml:space="preserve">
-    <value>Sin formato</value>
-  </data>
   <data name="Label_Unknown" xml:space="preserve">
     <value>Desconocido</value>
   </data>
@@ -1873,9 +1828,6 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_WriteProtect" xml:space="preserve">
     <value>Protección contra escritura</value>
-  </data>
-  <data name="Label_WriteSplices" xml:space="preserve">
-    <value>Empalmes de escritura</value>
   </data>
   <data name="Label_Writing" xml:space="preserve">
     <value>Escribiendo</value>
@@ -2078,9 +2030,6 @@ Archivo de imagen: '{1}'
   <data name="Menu_DeleteFile" xml:space="preserve">
     <value>&amp;Eliminar Archivo</value>
   </data>
-  <data name="Menu_DeleteRegionBytes" xml:space="preserve">
-    <value>Eliminar {0} bytes</value>
-  </data>
   <data name="Menu_DeleteSelected" xml:space="preserve">
     <value>&amp;Eliminar Archivos Seleccionados</value>
   </data>
@@ -2143,9 +2092,6 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Menu_InsertBytes" xml:space="preserve">
     <value>Insertar Bytes</value>
-  </data>
-  <data name="Menu_InsertRegionBytes" xml:space="preserve">
-    <value>Insertar {0} bytes</value>
   </data>
   <data name="Menu_NewDirectory" xml:space="preserve">
     <value>&amp;Nuevo Directorio</value>
@@ -2489,9 +2435,6 @@ Archivo de imagen: '{1}'
   <data name="TD0_SectorFlag_DataNoId" xml:space="preserve">
     <value>Sin ID</value>
   </data>
-  <data name="TD0_SectorFlag_DeletedData" xml:space="preserve">
-    <value>Datos eliminados</value>
-  </data>
   <data name="TD0_SectorFlag_DosSkipped" xml:space="preserve">
     <value>Omitido</value>
   </data>
@@ -2506,5 +2449,23 @@ Archivo de imagen: '{1}'
   </data>
   <data name="WriteAllowed_Unprotected" xml:space="preserve">
     <value>Desprotegido</value>
+  </data>
+  <data name="FloppyImageType_Image" xml:space="preserve">
+    <value>Imagen {0}</value>
+  </data>
+  <data name="FloppyImageType_SectorImage" xml:space="preserve">
+    <value>Imagen de sectores {0}</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImage" xml:space="preserve">
+    <value>Imagen de flujo de bits {0}</value>
+  </data>
+  <data name="FloppyImageType_ImageProperties" xml:space="preserve">
+    <value>Propiedades de la imagen {0}</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>Propiedades de la imagen de flujo de bits {0}</value>
+  </data>
+  <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
+    <value>Propiedades de la imagen de sectores {0}</value>
   </data>
 </root>

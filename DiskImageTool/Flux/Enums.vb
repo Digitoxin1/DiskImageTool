@@ -42,19 +42,19 @@
                 Case FluxFileTypeEnum.SectorImage
                     Return My.Resources.FloppyImageType_BasicSectorImage
                 Case FluxFileTypeEnum.HFE
-                    Return My.Resources.FloppyImageType_HFEImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_HFE)
                 Case FluxFileTypeEnum.MFM
-                    Return My.Resources.FloppyImageType_MFMImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_MFM)
                 Case FluxFileTypeEnum.F86
-                    Return My.Resources.FloppyImageType_D86FImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F)
                 Case FluxFileTypeEnum.TC
-                    Return My.Resources.FloppyImageType_TranscopyImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_Transcopy)
                 Case FluxFileTypeEnum.SCP
-                    Return My.Resources.FloppyImageType_SCPImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_SCP)
                 Case FluxFileTypeEnum.RAW
                     Return My.Resources.FloppyImageType_RAWImage
                 Case FluxFileTypeEnum.A2R
-                    Return My.Resources.FloppyImageType_A2RImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_AppleSauce)
                 Case Else
                     Return ""
             End Select

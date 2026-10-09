@@ -13,7 +13,8 @@ Public Class IMDImageForm
 
         _Disk = Disk
 
-        ImageForm.LocalizeButtons(Me, "IMD", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_ImageDisk)
         LblHeader.Text = My.Resources.Label_Header
         LblComment.Text = My.Resources.Label_Comment
         LblTracks.Text = My.Resources.Label_Tracks

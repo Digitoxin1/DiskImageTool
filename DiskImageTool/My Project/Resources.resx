@@ -124,9 +124,6 @@
   <data name="Action_Add" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="Action_Merge" xml:space="preserve">
-    <value>Merge</value>
-  </data>
   <data name="Action_Rename" xml:space="preserve">
     <value>Rename</value>
   </data>
@@ -195,9 +192,6 @@
   </data>
   <data name="Button_Add" xml:space="preserve">
     <value>&amp;Add</value>
-  </data>
-  <data name="Caption_ByteCount" xml:space="preserve">
-    <value>Byte Count</value>
   </data>
   <data name="Caption_ChangeLog" xml:space="preserve">
     <value>Change Log</value>
@@ -432,9 +426,6 @@
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>This is a verified image.  Are you sure you wish to adjust the image size for this image?</value>
   </data>
-  <data name="Dialog_ByteCount" xml:space="preserve">
-    <value>Number of bytes:</value>
-  </data>
   <data name="Dialog_ChangeLogDownloadError" xml:space="preserve">
     <value>An error occurred while downloading the change log.  Please try again later.</value>
   </data>
@@ -598,9 +589,6 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
     <value>Warning: Insufficient Disk Space{0}{0}{1} of {2} file(s) added successfully</value>
-  </data>
-  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
-    <value>Application path is invalid.</value>
   </data>
   <data name="Dialog_InvalidCharacters" xml:space="preserve">
     <value>A file name can't contain any of the following characters</value>
@@ -911,41 +899,11 @@ Do you wish to overwrite?</value>
   <data name="FindNext" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\FindNext.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FloppyImageType_A2RImage" xml:space="preserve">
-    <value>Applesauce FDC Image</value>
-  </data>
   <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
     <value>Basic Sector Image</value>
   </data>
-  <data name="FloppyImageType_D86FImage" xml:space="preserve">
-    <value>86Box 86F Image</value>
-  </data>
-  <data name="FloppyImageType_HFEImage" xml:space="preserve">
-    <value>HxC HFE (v1) Image</value>
-  </data>
-  <data name="FloppyImageType_IMDImage" xml:space="preserve">
-    <value>ImageDisk Sector Image</value>
-  </data>
-  <data name="FloppyImageType_MFMImage" xml:space="preserve">
-    <value>HxC MFM Image</value>
-  </data>
-  <data name="FloppyImageType_PRIImage" xml:space="preserve">
-    <value>PCE Bitstream Image</value>
-  </data>
-  <data name="FloppyImageType_PSIImage" xml:space="preserve">
-    <value>PCE Sector Image</value>
-  </data>
   <data name="FloppyImageType_RAWImage" xml:space="preserve">
     <value>Raw Flux Set</value>
-  </data>
-  <data name="FloppyImageType_SCPImage" xml:space="preserve">
-    <value>SuperCard Pro Image</value>
-  </data>
-  <data name="FloppyImageType_TD0Image" xml:space="preserve">
-    <value>TeleDisk Sector Image</value>
-  </data>
-  <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
-    <value>Transcopy Image</value>
   </data>
   <data name="FloppyInterface_AmigaDd" xml:space="preserve">
     <value>Amiga DD</value>
@@ -1760,10 +1718,6 @@ Do you wish to overwrite?</value>
   <data name="Label_NTExtensions" xml:space="preserve">
     <value>NT Extensions</value>
   </data>
-  <data name="Label_NULL" xml:space="preserve">
-    <value>NULL</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Number of FATs</value>
   </data>
@@ -2085,9 +2039,6 @@ Do you wish to overwrite?</value>
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>Unexpected Sectors</value>
   </data>
-  <data name="Label_Unformatted" xml:space="preserve">
-    <value>Unformatted</value>
-  </data>
   <data name="Label_Unknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
@@ -2147,9 +2098,6 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_WriteProtect" xml:space="preserve">
     <value>Write Protect</value>
-  </data>
-  <data name="Label_WriteSplices" xml:space="preserve">
-    <value>Write Splices</value>
   </data>
   <data name="Label_Writing" xml:space="preserve">
     <value>Writing</value>
@@ -2352,9 +2300,6 @@ Do you wish to overwrite?</value>
   <data name="Menu_DeleteFile" xml:space="preserve">
     <value>&amp;Delete File</value>
   </data>
-  <data name="Menu_DeleteRegionBytes" xml:space="preserve">
-    <value>Delete {0} Bytes</value>
-  </data>
   <data name="Menu_DeleteSelected" xml:space="preserve">
     <value>&amp;Delete Selected Files</value>
   </data>
@@ -2425,9 +2370,6 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Menu_InsertBytes" xml:space="preserve">
     <value>Insert Bytes</value>
-  </data>
-  <data name="Menu_InsertRegionBytes" xml:space="preserve">
-    <value>Insert {0} Bytes</value>
   </data>
   <data name="Menu_NewDirectory" xml:space="preserve">
     <value>&amp;New Directory</value>
@@ -2917,9 +2859,6 @@ Do you wish to overwrite?</value>
   <data name="TD0_SectorFlag_DataNoId" xml:space="preserve">
     <value>No ID</value>
   </data>
-  <data name="TD0_SectorFlag_DeletedData" xml:space="preserve">
-    <value>Deleted Data</value>
-  </data>
   <data name="TD0_SectorFlag_DosSkipped" xml:space="preserve">
     <value>Skipped</value>
   </data>
@@ -2940,5 +2879,59 @@ Do you wish to overwrite?</value>
   </data>
   <data name="ImageProperties" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImageProperties.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FloppyImageType_Image" xml:space="preserve">
+    <value>{0} Image</value>
+  </data>
+  <data name="FloppyImageType_SectorImage" xml:space="preserve">
+    <value>{0} Sector Image</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImage" xml:space="preserve">
+    <value>{0} Bitstream Image</value>
+  </data>
+  <data name="FloppyImageType_PCE" xml:space="preserve">
+    <value>PCE</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_TeleDisk" xml:space="preserve">
+    <value>TeleDisk</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_ImageDisk" xml:space="preserve">
+    <value>ImageDisk</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_86F" xml:space="preserve">
+    <value>86Box 86F</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_Transcopy" xml:space="preserve">
+    <value>Transcopy</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_SCP" xml:space="preserve">
+    <value>SuperCard Pro</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_MFM" xml:space="preserve">
+    <value>HxC MFM</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_HFE" xml:space="preserve">
+    <value>HxC HFE(v1)</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_AppleSauce" xml:space="preserve">
+    <value>Applesauce FDC</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FloppyImageType_ImageProperties" xml:space="preserve">
+    <value>{0} Image Properties</value>
+  </data>
+  <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
+    <value>{0} Sector Image Properties</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>{0} Bitstream Image Properties</value>
   </data>
 </root>

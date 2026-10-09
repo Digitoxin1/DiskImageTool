@@ -142,8 +142,7 @@ Namespace ImageForm
             End Select
         End Function
 
-        Public Sub LocalizeButtons(Dialog As Form, Prefix As String, UpdateButton As Button, CancelButton As Button)
-            Dialog.Text = Prefix & " " & WithoutHotkey(My.Resources.Menu_ImageProperties)
+        Public Sub LocalizeButtons(UpdateButton As Button, CancelButton As Button)
             UpdateButton.Text = My.Resources.Menu_Update
             CancelButton.Text = My.Resources.Menu_Cancel
         End Sub

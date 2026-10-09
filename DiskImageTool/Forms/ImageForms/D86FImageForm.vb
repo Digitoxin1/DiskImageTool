@@ -218,7 +218,8 @@ Public Class D86FImageForm
     End Sub
 
     Private Sub LocalizeForm()
-        ImageForm.LocalizeButtons(Me, "86F", BtnUpdate, BtnCancel)
+        ImageForm.LocalizeButtons(BtnUpdate, BtnCancel)
+        Me.Text = String.Format(My.Resources.FloppyImageType_ImageProperties, My.Resources.FloppyImageType_86F)
         LblSignature.Text = My.Resources.Label_Signature
         LblVersion.Text = My.Resources.Label_Version
         LblSides.Text = My.Resources.Label_Sides

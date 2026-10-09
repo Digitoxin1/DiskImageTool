@@ -115,21 +115,21 @@
                 Case FloppyImageType.BasicSectorImage
                     Return My.Resources.FloppyImageType_BasicSectorImage
                 Case FloppyImageType.HFEImage
-                    Return My.Resources.FloppyImageType_HFEImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_HFE)
                 Case FloppyImageType.MFMImage
-                    Return My.Resources.FloppyImageType_MFMImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_MFM)
                 Case FloppyImageType.PSIImage
-                    Return My.Resources.FloppyImageType_PSIImage
+                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_PCE)
                 Case FloppyImageType.PRIImage
-                    Return My.Resources.FloppyImageType_PRIImage
+                    Return String.Format(My.Resources.FloppyImageType_BitstreamImage, My.Resources.FloppyImageType_PCE)
                 Case FloppyImageType.TranscopyImage
-                    Return My.Resources.FloppyImageType_TranscopyImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_Transcopy)
                 Case FloppyImageType.D86FImage
-                    Return My.Resources.FloppyImageType_D86FImage
+                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F)
                 Case FloppyImageType.IMDImage
-                    Return My.Resources.FloppyImageType_IMDImage
+                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_ImageDisk)
                 Case FloppyImageType.TD0Image
-                    Return My.Resources.FloppyImageType_TD0Image
+                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_TeleDisk)
                 Case Else
                     Return My.Resources.Label_Unknown
             End Select
