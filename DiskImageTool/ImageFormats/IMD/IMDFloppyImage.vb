@@ -6,6 +6,24 @@ Namespace ImageFormats.IMD
     Public Class IMDFloppyImage
         Inherits MappedFloppyImage
         Implements IFloppyImage
+        Implements IImageFieldSource
+
+        Private Enum IMDImageField As UShort
+            Comment = 1
+            ChecksumError = 2
+        End Enum
+
+        Public Structure IMDChecksumErrorEdit
+            Public TrackIndex As Integer
+            Public SectorIndex As Integer
+            Public Value As Boolean
+
+            Public Sub New(TrackIndex As Integer, SectorIndex As Integer, Value As Boolean)
+                Me.TrackIndex = TrackIndex
+                Me.SectorIndex = SectorIndex
+                Me.Value = Value
+            End Sub
+        End Structure
 
         Private ReadOnly _Image As IMDImage
 
@@ -47,6 +65,69 @@ Namespace ImageFormats.IMD
                 Return CalculateHash(Hasher)
             End Using
         End Function
+
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            Dim Field = CType(FieldId, IMDImageField)
+            Dim RefreshMap As Boolean
+
+            If Field = IMDImageField.ChecksumError Then
+                If IsTrackField AndAlso TypeOf Value Is Boolean Then
+                    SetChecksumError(Track, Sector, CBool(Value))
+                    RefreshMap = True
+                End If
+            ElseIf Not IsTrackField AndAlso Field = IMDImageField.Comment AndAlso TypeOf Value Is String Then
+                _Image.Comment = CStr(Value)
+            End If
+
+            If RefreshMap Then
+                BuildSectorMap()
+                InitProtectedSectors()
+            End If
+        End Sub
+
+        Public Function UpdateProperties(Comment As String, ChecksumErrors As IEnumerable(Of IMDChecksumErrorEdit)) As Boolean
+            Dim Changes As New List(Of ImageFieldChange)
+            Dim OriginalComment = If(_Image.Comment, "")
+            Dim NewComment = If(Comment, "")
+            If Not String.Equals(OriginalComment, NewComment, StringComparison.Ordinal) Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, IMDImageField.Comment, OriginalComment, NewComment))
+            End If
+
+            If ChecksumErrors IsNot Nothing Then
+                For Each Edit In ChecksumErrors
+                    If Edit.TrackIndex < 0 OrElse Edit.TrackIndex >= _Image.Tracks.Count OrElse Edit.TrackIndex > UShort.MaxValue Then
+                        Continue For
+                    End If
+
+                    Dim EditedTrack = _Image.Tracks(Edit.TrackIndex)
+                    If Edit.SectorIndex < 0 OrElse Edit.SectorIndex >= EditedTrack.Sectors.Count OrElse Edit.SectorIndex > UShort.MaxValue Then
+                        Continue For
+                    End If
+
+                    Dim Original = EditedTrack.Sectors(Edit.SectorIndex).ChecksumError
+                    If Original = Edit.Value Then
+                        Continue For
+                    End If
+
+                    Changes.Add(New ImageFieldChange(True, CUShort(Edit.TrackIndex), EditedTrack.Side, CUShort(Edit.SectorIndex), IMDImageField.ChecksumError, Original, Edit.Value))
+                Next
+            End If
+
+            Return History.CommitImageFields(Changes)
+        End Function
+
+        Private Sub SetChecksumError(TrackIndex As UShort, SectorIndex As UShort, Value As Boolean)
+            If TrackIndex >= _Image.Tracks.Count Then
+                Exit Sub
+            End If
+
+            Dim Sectors = _Image.Tracks(TrackIndex).Sectors
+            If SectorIndex >= Sectors.Count Then
+                Exit Sub
+            End If
+
+            Sectors(SectorIndex).ChecksumError = Value
+        End Sub
 
         Private Sub BuildSectorMap()
             Dim TrackData As TrackData

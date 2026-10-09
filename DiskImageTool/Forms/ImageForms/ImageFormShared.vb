@@ -68,6 +68,22 @@ Friend Module ImageFormShared
         Combo.EndUpdate()
     End Sub
 
+    Public Sub ResizeGridWidth(Grid As DataGridView)
+        Dim NewWidth As Integer = Grid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible)
+
+        If Grid.RowHeadersVisible Then
+            NewWidth += Grid.RowHeadersWidth
+        End If
+
+        If Grid.Controls.OfType(Of VScrollBar)().Any(Function(s) s.Visible) Then
+            NewWidth += SystemInformation.VerticalScrollBarWidth
+        End If
+
+        NewWidth += Grid.Width - Grid.ClientSize.Width
+
+        Grid.Width = NewWidth + 4
+    End Sub
+
     Public Function InterfaceModeCaption(Mode As Byte) As String
         Select Case Mode
             Case &H0

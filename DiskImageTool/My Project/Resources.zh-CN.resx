@@ -950,6 +950,9 @@ Flux 映像集：“{0}”
   <data name="Label_Checksum" xml:space="preserve">
     <value>校验和</value>
   </data>
+  <data name="Label_ChecksumError" xml:space="preserve">
+    <value>校验和错误</value>
+  </data>
   <data name="Label_ChooseDiskType" xml:space="preserve">
     <value>选择磁盘类型</value>
   </data>
@@ -1274,6 +1277,9 @@ Flux 映像集：“{0}”
   <data name="Label_Head" xml:space="preserve">
     <value>磁头</value>
   </data>
+  <data name="Label_Header" xml:space="preserve">
+    <value>文件头</value>
+  </data>
   <data name="Label_HeaderDriveType" xml:space="preserve">
     <value>驱动器类型</value>
   </data>
@@ -1417,6 +1423,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>缺失</value>
+  </data>
+  <data name="Label_Mode" xml:space="preserve">
+    <value>模式</value>
   </data>
   <data name="Label_Modifications" xml:space="preserve">
     <value>修改</value>
@@ -1777,6 +1786,9 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_Type" xml:space="preserve">
     <value>类型</value>
+  </data>
+  <data name="Label_Unavailable" xml:space="preserve">
+    <value>不可用</value>
   </data>
   <data name="Label_UndeleteFile" xml:space="preserve">
     <value>恢复文件</value>
@@ -2413,6 +2425,24 @@ Flux 映像集：“{0}”
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>年份</value>
+  </data>
+  <data name="IMD_Mode_FM250" xml:space="preserve">
+    <value>FM 250 kbps</value>
+  </data>
+  <data name="IMD_Mode_FM300" xml:space="preserve">
+    <value>FM 300 kbps</value>
+  </data>
+  <data name="IMD_Mode_FM500" xml:space="preserve">
+    <value>FM 500 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM250" xml:space="preserve">
+    <value>MFM 250 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM300" xml:space="preserve">
+    <value>MFM 300 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM500" xml:space="preserve">
+    <value>MFM 500 kbps</value>
   </data>
   <data name="TD0_Compression_LZHUF" xml:space="preserve">
     <value>LZSS-Huffman</value>

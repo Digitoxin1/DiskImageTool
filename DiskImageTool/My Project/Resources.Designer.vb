@@ -2670,6 +2670,60 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to FM 250 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_FM250() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_FM250", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to FM 300 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_FM300() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_FM300", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to FM 500 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_FM500() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_FM500", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to MFM 250 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_MFM250() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_MFM250", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to MFM 300 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_MFM300() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_MFM300", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to MFM 500 kbps.
+        '''</summary>
+        Friend ReadOnly Property IMD_Mode_MFM500() As String
+            Get
+                Return ResourceManager.GetString("IMD_Mode_MFM500", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property Import() As System.Drawing.Bitmap
@@ -3136,6 +3190,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Checksum() As String
             Get
                 Return ResourceManager.GetString("Label_Checksum", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Checksum Error.
+        '''</summary>
+        Friend ReadOnly Property Label_ChecksumError() As String
+            Get
+                Return ResourceManager.GetString("Label_ChecksumError", resourceCulture)
             End Get
         End Property
         
@@ -4130,6 +4193,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Header.
+        '''</summary>
+        Friend ReadOnly Property Label_Header() As String
+            Get
+                Return ResourceManager.GetString("Label_Header", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Drive Type.
         '''</summary>
         Friend ReadOnly Property Label_HeaderDriveType() As String
@@ -4558,6 +4630,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Missing() As String
             Get
                 Return ResourceManager.GetString("Label_Missing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Mode.
+        '''</summary>
+        Friend ReadOnly Property Label_Mode() As String
+            Get
+                Return ResourceManager.GetString("Label_Mode", resourceCulture)
             End Get
         End Property
         
@@ -5665,6 +5746,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Type() As String
             Get
                 Return ResourceManager.GetString("Label_Type", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unavailable.
+        '''</summary>
+        Friend ReadOnly Property Label_Unavailable() As String
+            Get
+                Return ResourceManager.GetString("Label_Unavailable", resourceCulture)
             End Get
         End Property
         

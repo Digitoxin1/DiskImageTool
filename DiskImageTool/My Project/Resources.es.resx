@@ -950,6 +950,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Checksum" xml:space="preserve">
     <value>Suma de comprobación</value>
   </data>
+  <data name="Label_ChecksumError" xml:space="preserve">
+    <value>Error de suma de comprobación</value>
+  </data>
   <data name="Label_ChooseDiskType" xml:space="preserve">
     <value>Elegir tipo de disco</value>
   </data>
@@ -1274,6 +1277,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Head" xml:space="preserve">
     <value>Cabeza</value>
   </data>
+  <data name="Label_Header" xml:space="preserve">
+    <value>Encabezado</value>
+  </data>
   <data name="Label_HeaderDriveType" xml:space="preserve">
     <value>Tipo de unidad</value>
   </data>
@@ -1417,6 +1423,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Faltante</value>
+  </data>
+  <data name="Label_Mode" xml:space="preserve">
+    <value>Modo</value>
   </data>
   <data name="Label_Modifications" xml:space="preserve">
     <value>Modificaciones</value>
@@ -1777,6 +1786,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Type" xml:space="preserve">
     <value>Tipo</value>
+  </data>
+  <data name="Label_Unavailable" xml:space="preserve">
+    <value>No disponible</value>
   </data>
   <data name="Label_UndeleteFile" xml:space="preserve">
     <value>Restaurar archivo</value>
@@ -2413,6 +2425,24 @@ Archivo de imagen: '{1}'
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Año</value>
+  </data>
+  <data name="IMD_Mode_FM250" xml:space="preserve">
+    <value>FM 250 kbps</value>
+  </data>
+  <data name="IMD_Mode_FM300" xml:space="preserve">
+    <value>FM 300 kbps</value>
+  </data>
+  <data name="IMD_Mode_FM500" xml:space="preserve">
+    <value>FM 500 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM250" xml:space="preserve">
+    <value>MFM 250 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM300" xml:space="preserve">
+    <value>MFM 300 kbps</value>
+  </data>
+  <data name="IMD_Mode_MFM500" xml:space="preserve">
+    <value>MFM 500 kbps</value>
   </data>
   <data name="TD0_Compression_LZHUF" xml:space="preserve">
     <value>LZSS-Huffman</value>

@@ -950,6 +950,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Checksum" xml:space="preserve">
     <value>Prüfsumme</value>
   </data>
+  <data name="Label_ChecksumError" xml:space="preserve">
+    <value>Prüfsummenfehler</value>
+  </data>
   <data name="Label_ChooseDiskType" xml:space="preserve">
     <value>Diskettentyp auswählen</value>
   </data>
@@ -1274,6 +1277,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Head" xml:space="preserve">
     <value>Kopf</value>
   </data>
+  <data name="Label_Header" xml:space="preserve">
+    <value>Kopfzeile</value>
+  </data>
   <data name="Label_HeaderDriveType" xml:space="preserve">
     <value>Laufwerkstyp</value>
   </data>
@@ -1417,6 +1423,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Missing" xml:space="preserve">
     <value>Fehlt</value>
+  </data>
+  <data name="Label_Mode" xml:space="preserve">
+    <value>Modus</value>
   </data>
   <data name="Label_Modifications" xml:space="preserve">
     <value>Änderungen</value>
@@ -1777,6 +1786,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Type" xml:space="preserve">
     <value>Typ</value>
+  </data>
+  <data name="Label_Unavailable" xml:space="preserve">
+    <value>Nicht verfügbar</value>
   </data>
   <data name="Label_UndeleteFile" xml:space="preserve">
     <value>Datei wiederherstellen</value>
@@ -2413,6 +2425,24 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Jahr</value>
+  </data>
+  <data name="IMD_Mode_FM250" xml:space="preserve">
+    <value>FM 250 kbit/s</value>
+  </data>
+  <data name="IMD_Mode_FM300" xml:space="preserve">
+    <value>FM 300 kbit/s</value>
+  </data>
+  <data name="IMD_Mode_FM500" xml:space="preserve">
+    <value>FM 500 kbit/s</value>
+  </data>
+  <data name="IMD_Mode_MFM250" xml:space="preserve">
+    <value>MFM 250 kbit/s</value>
+  </data>
+  <data name="IMD_Mode_MFM300" xml:space="preserve">
+    <value>MFM 300 kbit/s</value>
+  </data>
+  <data name="IMD_Mode_MFM500" xml:space="preserve">
+    <value>MFM 500 kbit/s</value>
   </data>
   <data name="TD0_Compression_LZHUF" xml:space="preserve">
     <value>LZSS-Huffman</value>

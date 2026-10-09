@@ -401,22 +401,6 @@ Public Class TD0ImageForm
         Return SectorTable
     End Function
 
-    Private Sub ResizeGridWidth(Grid As DataGridView)
-        Dim NewWidth As Integer = Grid.Columns.GetColumnsWidth(DataGridViewElementStates.Visible)
-
-        If Grid.RowHeadersVisible Then
-            NewWidth += Grid.RowHeadersWidth
-        End If
-
-        If Grid.Controls.OfType(Of VScrollBar)().Any(Function(s) s.Visible) Then
-            NewWidth += SystemInformation.VerticalScrollBarWidth
-        End If
-
-        NewWidth += Grid.Width - Grid.ClientSize.Width
-
-        Grid.Width = NewWidth + 4
-    End Sub
-
     Private Sub DataGridViewTracks_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs) Handles DataGridViewTracks.DataBindingComplete
         DataGridViewTracks.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells)
         ResizeGridWidth(DataGridViewTracks)

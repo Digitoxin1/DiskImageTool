@@ -174,12 +174,11 @@ Partial Class TD0ImageForm
         Me.DataGridViewSectors.BackgroundColor = System.Drawing.SystemColors.Window
         Me.DataGridViewSectors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridViewSectors.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DataGridViewSectors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.DataGridViewSectors.Location = New System.Drawing.Point(308, 17)
         Me.DataGridViewSectors.Margin = New System.Windows.Forms.Padding(8, 0, 0, 0)
         Me.DataGridViewSectors.MultiSelect = False
         Me.DataGridViewSectors.Name = "DataGridViewSectors"
-        Me.DataGridViewSectors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
-        Me.DataGridViewSectors.ReadOnly = False
         Me.DataGridViewSectors.RowHeadersVisible = False
         Me.DataGridViewSectors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.DataGridViewSectors.Size = New System.Drawing.Size(477, 273)

@@ -610,6 +610,12 @@
     <Compile Include="Forms\ImageForms\TD0ImageForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\ImageForms\IMDImageForm.Designer.vb">
+      <DependentUpon>IMDImageForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImageForms\IMDImageForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\UndeleteForm.Designer.vb">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
     </Compile>
@@ -807,6 +813,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageForms\D86FImageForm.resx">
       <DependentUpon>D86FImageForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImageForms\IMDImageForm.resx">
+      <DependentUpon>IMDImageForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageForms\TD0ImageForm.resx">
