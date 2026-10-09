@@ -1,10 +1,16 @@
 ﻿Imports System.ComponentModel
 Imports System.Windows.Forms.Design
+Imports System.Runtime.InteropServices
 
 <ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip), DebuggerStepThrough()>
 Public Class ToolStripSpringTextBox
     Inherits ToolStripTextBox
 
+    <DllImport("user32.dll", CharSet:=CharSet.Unicode)>
+    Private Shared Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As String) As IntPtr
+    End Function
+
+    Private Const EM_SETCUEBANNER As Integer = &H1501
     Private _MaxWidth As Single
 
     <Category("Layout")>
@@ -66,12 +72,14 @@ Public Class ToolStripSpringTextBox
 
         ' Retrieve the preferred size from the base class, but change the
         ' width to the calculated width. 
-        Dim preferredSize As Size = MyBase.GetPreferredSize(constrainingSize)
         If _MaxWidth > 0 And width > MaxWidth Then
             width = MaxWidth
         End If
-        preferredSize.Width = width
 
-        Return preferredSize
+        Return New Size(width, DefaultSize.Height)
     End Function
+
+    Public Sub SetPlaceholder(placeholder As String)
+        SendMessage(Me.TextBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, placeholder)
+    End Sub
 End Class

@@ -638,12 +638,14 @@ Public Class MainForm
         Dim TextBox As New ToolStripSpringTextBox With {
             .Alignment = ToolStripItemAlignment.Right,
             .BorderStyle = BorderStyle.FixedSingle,
-            .Margin = New Padding(1, 0, 0, 0),
+            .Margin = New Padding(8, 1, 0, 0),
             .MaxLength = 255,
             .MaxWidth = 195,
             .Overflow = ToolStripItemOverflow.Never,
             .Size = New Drawing.Size(195, 25)
         }
+
+        TextBox.SetPlaceholder(My.Resources.Label_Search)
 
         ToolStripTop.Items.Add(TextBox)
 
@@ -933,9 +935,9 @@ Public Class MainForm
         _ToolStripFatCombo = FATComboAdd()
 
         _ToolStripSearchText = FilterTextBoxAdd()
-        FilterLabelAdd(My.Resources.Label_Search)
+        'FilterLabelAdd(My.Resources.Label_Search)
 
-        _ToolStripOEMNameCombo = FilterComboAdd(125, True)
+        _ToolStripOEMNameCombo = FilterComboAdd(120, True)
         _ToolStripOEMNameLabel = FilterLabelAdd(My.Resources.Label_OEMName)
 
         _ToolStripDiskTypeCombo = FilterComboAdd(95, False)
