@@ -11,7 +11,20 @@ Namespace ImageFormats.TD0
 
         Private Enum TD0ImageField As UShort
             CommentBlock = 1
+            CrcError = 2
         End Enum
+
+        Public Structure TD0CrcErrorEdit
+            Public TrackIndex As Integer
+            Public SectorIndex As Integer
+            Public Value As Boolean
+
+            Public Sub New(TrackIndex As Integer, SectorIndex As Integer, Value As Boolean)
+                Me.TrackIndex = TrackIndex
+                Me.SectorIndex = SectorIndex
+                Me.Value = Value
+            End Sub
+        End Structure
 
         Private ReadOnly _Image As TD0Image
 
@@ -52,34 +65,76 @@ Namespace ImageFormats.TD0
             End Using
         End Function
 
-        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
-            If IsTrackField OrElse CType(FieldId, TD0ImageField) <> TD0ImageField.CommentBlock Then
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+            Dim Field = CType(FieldId, TD0ImageField)
+            Dim RefreshMap As Boolean
+
+            If Field = TD0ImageField.CrcError Then
+                If IsTrackField AndAlso TypeOf Value Is Boolean Then
+                    SetCrcError(Track, Sector, CBool(Value))
+                    RefreshMap = True
+                End If
+            ElseIf Not IsTrackField AndAlso Field = TD0ImageField.CommentBlock Then
+                Dim CommentBytes = TryCast(Value, Byte())
+                If CommentBytes Is Nothing Then
+                    _Image.SetComment(Nothing)
+                    _Image.Header.HasCommentBlock = False
+                Else
+                    _Image.SetComment(New TD0Comment(CommentBytes, 0))
+                    _Image.Header.HasCommentBlock = True
+                End If
+
+                _Image.Header.RefreshStoredCrc16()
+            End If
+
+            If RefreshMap Then
+                BuildSectorMap()
+                InitProtectedSectors()
+            End If
+        End Sub
+
+        Public Function UpdateProperties(CommentBytes As Byte(), CrcErrors As IEnumerable(Of TD0CrcErrorEdit)) As Boolean
+            Dim Changes As New List(Of ImageFieldChange)
+            Dim OriginalComment = CommentSnapshot(_Image.Comment)
+            If Not SameBytes(OriginalComment, CommentBytes) Then
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, TD0ImageField.CommentBlock, OriginalComment, CommentBytes))
+            End If
+
+            If CrcErrors IsNot Nothing Then
+                For Each Edit In CrcErrors
+                    If Edit.TrackIndex < 0 OrElse Edit.TrackIndex >= _Image.Tracks.Count OrElse Edit.TrackIndex > UShort.MaxValue Then
+                        Continue For
+                    End If
+
+                    Dim Track = _Image.Tracks(Edit.TrackIndex)
+                    If Edit.SectorIndex < 0 OrElse Edit.SectorIndex >= Track.Sectors.Count OrElse Edit.SectorIndex > UShort.MaxValue Then
+                        Continue For
+                    End If
+
+                    Dim Original = (Track.Sectors(Edit.SectorIndex).Header.Flags And TD0SectorFlags.CrcError) <> 0
+                    If Original = Edit.Value Then
+                        Continue For
+                    End If
+
+                    Changes.Add(New ImageFieldChange(True, CUShort(Edit.TrackIndex), Track.Head, CUShort(Edit.SectorIndex), TD0ImageField.CrcError, Original, Edit.Value))
+                Next
+            End If
+
+            Return History.CommitImageFields(Changes)
+        End Function
+
+        Private Sub SetCrcError(TrackIndex As UShort, SectorIndex As UShort, Value As Boolean)
+            If TrackIndex >= _Image.Tracks.Count Then
                 Exit Sub
             End If
 
-            Dim CommentBytes = TryCast(Value, Byte())
-            If CommentBytes Is Nothing Then
-                _Image.SetComment(Nothing)
-                _Image.Header.HasCommentBlock = False
-            Else
-                _Image.SetComment(New TD0Comment(CommentBytes, 0))
-                _Image.Header.HasCommentBlock = True
+            Dim Sectors = _Image.Tracks(TrackIndex).Sectors
+            If SectorIndex >= Sectors.Count Then
+                Exit Sub
             End If
 
-            _Image.Header.RefreshStoredCrc16()
+            Sectors(SectorIndex).Header.HasCrcError = Value
         End Sub
-
-        Public Function UpdateComment(CommentBytes As Byte()) As Boolean
-            Dim Original = CommentSnapshot(_Image.Comment)
-            If SameBytes(Original, CommentBytes) Then
-                Return False
-            End If
-
-            Dim Changes As New List(Of ImageFieldChange) From {
-                New ImageFieldChange(False, 0, 0, TD0ImageField.CommentBlock, Original, CommentBytes)
-            }
-            Return History.CommitImageFields(Changes)
-        End Function
 
         Private Shared Function CommentSnapshot(Comment As TD0Comment) As Byte()
             If Comment Is Nothing Then

@@ -541,7 +541,7 @@ Namespace DiskImage
             End If
         End Sub
 
-        Private Sub InitProtectedSectors()
+        Protected Sub InitProtectedSectors()
             _ProtectedSectors.Clear()
             _TranslatedSectors.Clear()
             _NonStandardTracks.Clear()

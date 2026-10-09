@@ -455,11 +455,6 @@ Partial Class MainForm
         MenuEditSeparator1.Name = "MenuEditSeparator1"
         MenuEditSeparator1.Size = New System.Drawing.Size(185, 6)
         '
-        'MenuEditSeparatorImage
-        '
-        Me.MenuEditSeparatorImage.Name = "MenuEditSeparatorImage"
-        Me.MenuEditSeparatorImage.Size = New System.Drawing.Size(185, 6)
-        '
         'MenuEditSeparator2
         '
         MenuEditSeparator2.Name = "MenuEditSeparator2"
@@ -508,6 +503,11 @@ Partial Class MainForm
         ToolStripSeparator9.Name = "ToolStripSeparator9"
         ToolStripSeparator9.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         ToolStripSeparator9.Size = New System.Drawing.Size(6, 25)
+        '
+        'MenuEditSeparatorImage
+        '
+        Me.MenuEditSeparatorImage.Name = "MenuEditSeparatorImage"
+        Me.MenuEditSeparatorImage.Size = New System.Drawing.Size(185, 6)
         '
         'MainMenuView
         '
@@ -867,6 +867,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(176, 70)
         '
         'MenuFiltersScanNew

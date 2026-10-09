@@ -57,7 +57,7 @@ Namespace ImageFormats.MFM
             End Using
         End Function
 
-        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
             If IsTrackField Then
                 Exit Sub
             End If
@@ -77,15 +77,15 @@ Namespace ImageFormats.MFM
             Dim InterfaceType = CombineInterfaceType(InterfaceMode)
 
             If _Image.RPM <> RPM Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.RPM, _Image.RPM, RPM))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, MFMImageField.RPM, _Image.RPM, RPM))
             End If
 
             If _Image.BitRate <> BitRate Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.BitRate, _Image.BitRate, BitRate))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, MFMImageField.BitRate, _Image.BitRate, BitRate))
             End If
 
             If _Image.IFType <> InterfaceType Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, MFMImageField.InterfaceType, _Image.IFType, InterfaceType))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, MFMImageField.InterfaceType, _Image.IFType, InterfaceType))
             End If
 
             Return History.CommitImageFields(Changes)

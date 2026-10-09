@@ -55,7 +55,7 @@ Namespace ImageFormats.HFE
             End Using
         End Function
 
-        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
             If IsTrackField Then
                 Exit Sub
             End If
@@ -77,19 +77,19 @@ Namespace ImageFormats.HFE
             Dim InterfaceType = CType(InterfaceMode, HFEFloppyinterfaceMode)
 
             If _Image.RPM <> RPM Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, HFEImageField.RPM, _Image.RPM, RPM))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, HFEImageField.RPM, _Image.RPM, RPM))
             End If
 
             If _Image.BitRate <> BitRate Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, HFEImageField.BitRate, _Image.BitRate, BitRate))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, HFEImageField.BitRate, _Image.BitRate, BitRate))
             End If
 
             If CByte(_Image.FloppyInterfaceMode) <> InterfaceMode Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, HFEImageField.InterfaceType, _Image.FloppyInterfaceMode, InterfaceType))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, HFEImageField.InterfaceType, _Image.FloppyInterfaceMode, InterfaceType))
             End If
 
             If _Image.WriteAllowed <> WriteAllowed Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, HFEImageField.WriteAllowed, _Image.WriteAllowed, WriteAllowed))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, HFEImageField.WriteAllowed, _Image.WriteAllowed, WriteAllowed))
             End If
 
             Return History.CommitImageFields(Changes)

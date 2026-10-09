@@ -7,10 +7,11 @@
     End Enum
 
     Public Class ImageFieldChange
-        Public Sub New(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, OriginalValue As Object, NewValue As Object)
+        Public Sub New(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, OriginalValue As Object, NewValue As Object)
             Me.IsTrackField = IsTrackField
             Me.Track = Track
             Me.Side = Side
+            Me.Sector = Sector
             Me.FieldId = FieldId
             Me.OriginalValue = OriginalValue
             Me.NewValue = NewValue
@@ -20,6 +21,7 @@
         Public ReadOnly Property IsTrackField As Boolean
         Public ReadOnly Property NewValue As Object
         Public ReadOnly Property OriginalValue As Object
+        Public ReadOnly Property Sector As UShort
         Public ReadOnly Property Side As Byte
         Public ReadOnly Property Track As UShort
     End Class

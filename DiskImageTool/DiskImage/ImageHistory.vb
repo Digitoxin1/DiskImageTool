@@ -151,7 +151,7 @@ Namespace DiskImage
             End If
 
             For Each Change In Pending
-                Source.SetImageField(Change.IsTrackField, Change.Track, Change.Side, Change.FieldId, Change.NewValue)
+                Source.SetImageField(Change.IsTrackField, Change.Track, Change.Side, Change.Sector, Change.FieldId, Change.NewValue)
                 RecordImageField(Change)
             Next
 
@@ -249,7 +249,7 @@ Namespace DiskImage
             End If
 
             Dim Value = If(UseNewValue, Field.NewValue, Field.OriginalValue)
-            Source.SetImageField(Field.IsTrackField, Field.Track, Field.Side, Field.FieldId, Value)
+            Source.SetImageField(Field.IsTrackField, Field.Track, Field.Side, Field.Sector, Field.FieldId, Value)
         End Sub
 
         Private Sub RecordImageField(Field As ImageFieldChange)

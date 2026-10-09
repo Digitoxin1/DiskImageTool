@@ -178,7 +178,8 @@ Partial Class TD0ImageForm
         Me.DataGridViewSectors.Margin = New System.Windows.Forms.Padding(8, 0, 0, 0)
         Me.DataGridViewSectors.MultiSelect = False
         Me.DataGridViewSectors.Name = "DataGridViewSectors"
-        Me.DataGridViewSectors.ReadOnly = True
+        Me.DataGridViewSectors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
+        Me.DataGridViewSectors.ReadOnly = False
         Me.DataGridViewSectors.RowHeadersVisible = False
         Me.DataGridViewSectors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.DataGridViewSectors.Size = New System.Drawing.Size(477, 273)

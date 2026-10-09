@@ -16,6 +16,8 @@ Public Class TD0ImageForm
     Private Const GRID_COLUMN_NO_ID As String = "GridNoId"
 
     Private ReadOnly _FloppyImage As TD0FloppyImage
+    Private ReadOnly _CrcErrorEdits As New Dictionary(Of Long, Boolean)
+    Private _LoadingSectors As Boolean
     Private _Updated As Boolean
 
     Public Sub New(FloppyImage As TD0FloppyImage)
@@ -217,7 +219,11 @@ Public Class TD0ImageForm
     End Function
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        _Updated = _FloppyImage.UpdateComment(BuildCommentSnapshot())
+        If DataGridViewSectors.IsCurrentCellDirty Then
+            DataGridViewSectors.CommitEdit(DataGridViewDataErrorContexts.Commit)
+        End If
+
+        _Updated = _FloppyImage.UpdateProperties(BuildCommentSnapshot(), CollectCrcChanges())
         DialogResult = DialogResult.OK
     End Sub
 
@@ -238,18 +244,18 @@ Public Class TD0ImageForm
         AddTextColumn(DataGridViewSectors, GRID_COLUMN_SECTOR, My.Resources.Label_Sector, 60, DataGridViewContentAlignment.MiddleRight, Padding:=5)
         AddTextColumn(DataGridViewSectors, GRID_COLUMN_SIZE, My.Resources.Label_Size, 70, DataGridViewContentAlignment.MiddleRight, "N0", Padding:=5)
         AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DUPLICATE, My.Resources.TD0_SectorFlag_Duplicated)
-        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError)
+        AddCheckColumn(DataGridViewSectors, GRID_COLUMN_CRC_ERROR, My.Resources.TD0_SectorFlag_CrcError, True)
         AddCheckColumn(DataGridViewSectors, GRID_COLUMN_DELETED, My.Resources.Label_Deleted)
         AddCheckColumn(DataGridViewSectors, GRID_COLUMN_SKIPPED, My.Resources.TD0_SectorFlag_DosSkipped)
         AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_DATA, My.Resources.TD0_SectorFlag_NoData)
         AddCheckColumn(DataGridViewSectors, GRID_COLUMN_NO_ID, My.Resources.TD0_SectorFlag_DataNoId)
     End Sub
 
-    Private Shared Sub AddCheckColumn(Grid As DataGridView, Name As String, HeaderText As String)
+    Private Shared Sub AddCheckColumn(Grid As DataGridView, Name As String, HeaderText As String, Optional Editable As Boolean = False)
         Dim Column As New DataGridViewCheckBoxColumn With {
             .Name = Name,
             .HeaderText = HeaderText,
-            .ReadOnly = True,
+            .ReadOnly = Not Editable,
             .DataPropertyName = Name,
             .SortMode = DataGridViewColumnSortMode.NotSortable,
             .AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader,
@@ -294,10 +300,66 @@ Public Class TD0ImageForm
             Track = Tracks(Row.Index)
         End If
 
-        DataGridViewSectors.DataSource = GetSectorTable(Track)
+        _LoadingSectors = True
+        DataGridViewSectors.DataSource = GetSectorTable(Track, TrackIndex())
+        _LoadingSectors = False
     End Sub
 
-    Private Function GetSectorTable(Track As TD0Track) As DataTable
+    Private Function TrackIndex() As Integer
+        Dim Row = DataGridViewTracks.CurrentRow
+        If Row Is Nothing OrElse Row.Index < 0 Then
+            Return -1
+        End If
+
+        Return Row.Index
+    End Function
+
+    Private Sub DataGridViewSectors_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewSectors.CurrentCellDirtyStateChanged
+        If Not DataGridViewSectors.IsCurrentCellDirty Then
+            Exit Sub
+        End If
+
+        If DataGridViewSectors.CurrentCell Is Nothing OrElse DataGridViewSectors.CurrentCell.OwningColumn.Name <> GRID_COLUMN_CRC_ERROR Then
+            Exit Sub
+        End If
+
+        DataGridViewSectors.CommitEdit(DataGridViewDataErrorContexts.Commit)
+    End Sub
+
+    Private Sub DataGridViewSectors_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewSectors.CellValueChanged
+        If _LoadingSectors OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then
+            Exit Sub
+        End If
+
+        If DataGridViewSectors.Columns(e.ColumnIndex).Name <> GRID_COLUMN_CRC_ERROR Then
+            Exit Sub
+        End If
+
+        Dim Index = TrackIndex()
+        If Index < 0 Then
+            Exit Sub
+        End If
+
+        Dim Value = DataGridViewSectors.Rows(e.RowIndex).Cells(e.ColumnIndex).Value
+        If TypeOf Value Is Boolean Then
+            _CrcErrorEdits(CrcEditKey(Index, e.RowIndex)) = CBool(Value)
+        End If
+    End Sub
+
+    Private Function CollectCrcChanges() As List(Of TD0FloppyImage.TD0CrcErrorEdit)
+        Dim Changes As New List(Of TD0FloppyImage.TD0CrcErrorEdit)
+        For Each Entry In _CrcErrorEdits
+            Changes.Add(New TD0FloppyImage.TD0CrcErrorEdit(CInt(Entry.Key >> 16), CInt(Entry.Key And &HFFFF), Entry.Value))
+        Next
+
+        Return Changes
+    End Function
+
+    Private Shared Function CrcEditKey(TrackIndex As Integer, SectorIndex As Integer) As Long
+        Return (CLng(TrackIndex) << 16) Or SectorIndex
+    End Function
+
+    Private Function GetSectorTable(Track As TD0Track, TrackIndex As Integer) As DataTable
         Dim SectorTable As New DataTable("TD0Sectors")
         AddDataColumn(SectorTable, GRID_COLUMN_CYLINDER, GetType(Byte))
         AddDataColumn(SectorTable, GRID_COLUMN_HEAD, GetType(Byte))
@@ -314,15 +376,21 @@ Public Class TD0ImageForm
             Return SectorTable
         End If
 
-        For Each Sector In Track.Sectors
+        For SectorIndex = 0 To Track.Sectors.Count - 1
+            Dim Sector = Track.Sectors(SectorIndex)
             Dim Row = SectorTable.NewRow()
             Row(GRID_COLUMN_CYLINDER) = Sector.Header.Cylinder
             Row(GRID_COLUMN_HEAD) = Sector.Header.Head
             Row(GRID_COLUMN_SECTOR) = Sector.Header.SectorId
             Dim Flags = Sector.Header.Flags
+            Dim CrcError = (Flags And TD0SectorFlags.CrcError) <> 0
+            Dim EditedCrcError As Boolean
+            If TrackIndex >= 0 AndAlso _CrcErrorEdits.TryGetValue(CrcEditKey(TrackIndex, SectorIndex), EditedCrcError) Then
+                CrcError = EditedCrcError
+            End If
             Row(GRID_COLUMN_SIZE) = Sector.Header.GetSectorSizeBytes()
             Row(GRID_COLUMN_DUPLICATE) = (Flags And TD0SectorFlags.Duplicated) <> 0
-            Row(GRID_COLUMN_CRC_ERROR) = (Flags And TD0SectorFlags.CrcError) <> 0
+            Row(GRID_COLUMN_CRC_ERROR) = CrcError
             Row(GRID_COLUMN_DELETED) = (Flags And TD0SectorFlags.DeletedData) <> 0
             Row(GRID_COLUMN_SKIPPED) = (Flags And TD0SectorFlags.DosSkipped) <> 0
             Row(GRID_COLUMN_NO_DATA) = (Flags And TD0SectorFlags.NoData) <> 0

@@ -54,7 +54,7 @@ Namespace ImageFormats.TC
             End Using
         End Function
 
-        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
             If IsTrackField Then
                 Exit Sub
             End If
@@ -73,15 +73,15 @@ Namespace ImageFormats.TC
             Dim Changes As New List(Of ImageFieldChange)
 
             If _Image.Comment <> Comment Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, TransCopyImageField.Comment, _Image.Comment, Comment))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, TransCopyImageField.Comment, _Image.Comment, Comment))
             End If
 
             If _Image.Comment2 <> Comment2 Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, TransCopyImageField.Comment2, _Image.Comment2, Comment2))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, TransCopyImageField.Comment2, _Image.Comment2, Comment2))
             End If
 
             If _Image.DiskType <> DiskType Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, TransCopyImageField.DiskType, _Image.DiskType, DiskType))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, TransCopyImageField.DiskType, _Image.DiskType, DiskType))
             End If
 
             Return History.CommitImageFields(Changes)

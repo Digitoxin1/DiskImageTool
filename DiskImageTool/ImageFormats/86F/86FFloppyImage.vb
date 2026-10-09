@@ -65,7 +65,7 @@ Namespace ImageFormats.D86F
             End Using
         End Function
 
-        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
+        Public Sub SetImageField(IsTrackField As Boolean, Track As UShort, Side As Byte, Sector As UShort, FieldId As UShort, Value As Object) Implements IImageFieldSource.SetImageField
             If IsTrackField Then
                 Exit Sub
             End If
@@ -81,12 +81,12 @@ Namespace ImageFormats.D86F
         Public Function UpdateHeader(WriteProtect As Boolean, Hole As Byte) As Boolean
             Dim Changes As New List(Of ImageFieldChange)
             If _Image.WriteProtect <> WriteProtect Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, D86FImageField.WriteProtect, _Image.WriteProtect, WriteProtect))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, D86FImageField.WriteProtect, _Image.WriteProtect, WriteProtect))
             End If
 
             Dim CurrentHole = CByte(_Image.Hole)
             If CurrentHole <> Hole Then
-                Changes.Add(New ImageFieldChange(False, 0, 0, D86FImageField.Hole, CurrentHole, Hole))
+                Changes.Add(New ImageFieldChange(False, 0, 0, 0, D86FImageField.Hole, CurrentHole, Hole))
             End If
 
             Return History.CommitImageFields(Changes)
