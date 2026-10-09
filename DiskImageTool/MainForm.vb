@@ -277,8 +277,8 @@ Public Class MainForm
         Dim OutputFile As String = Nothing
 
         Using sfd As New SaveFileDialog()
-            sfd.Title = "Save XML Report"
-            sfd.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
+            sfd.Title = My.Resources.Caption_SaveXMLReport
+            sfd.Filter = My.Resources.Label_XMLFiles & " (*.xml)|*.xml|All Files (*.*)|*.*"
             sfd.DefaultExt = "xml"
             sfd.AddExtension = True
             sfd.OverwritePrompt = True

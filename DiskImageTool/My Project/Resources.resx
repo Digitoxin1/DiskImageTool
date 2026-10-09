@@ -2934,4 +2934,29 @@ Do you wish to overwrite?</value>
   <data name="Validation_PathUncFormat" xml:space="preserve">
     <value>UNC paths must look like \\Server\Share\Optional\Path.</value>
   </data>
+  <data name="Label_OpenFluxImage" xml:space="preserve">
+    <value>Open Flux Image</value>
+  </data>
+  <data name="FloppyImageType_RAW" xml:space="preserve">
+    <value>KryoFlux RAW</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="Label_FluxDumps" xml:space="preserve">
+    <value>Flux dumps</value>
+  </data>
+  <data name="Caption_SaveXMLReport" xml:space="preserve">
+    <value>Save XML Report</value>
+  </data>
+  <data name="Label_XMLFiles" xml:space="preserve">
+    <value>XML Files</value>
+  </data>
+  <data name="Dialog_UnrecognisedDriveId" xml:space="preserve">
+    <value>Unrecognised drive id: {0}</value>
+  </data>
+  <data name="Dialog_UnrecognisedBusType" xml:space="preserve">
+    <value>Unrecognised drive bus type:  {0}</value>
+  </data>
+  <data name="Dialog_CommandFailed" xml:space="preserve">
+    <value>Command Failed: {0}</value>
+  </data>
 </root>

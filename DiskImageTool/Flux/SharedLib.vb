@@ -25,14 +25,14 @@ Namespace Flux
                 Response = GetFluxSetInfoSCP(FilePath)
                 If Not Response.Result Then
                     Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
-                    MsgBox(String.Format(ResourceString, "SuperCard Pro", ".scp"), MsgBoxStyle.Exclamation)
+                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_SCP, ".scp"), MsgBoxStyle.Exclamation)
                     Return Response
                 End If
             ElseIf AllowA2R AndAlso FileExt = ".a2r" Then
                 Response = GetFluxSetInfoA2R(FilePath)
                 If Not Response.Result Then
                     Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
-                    MsgBox(String.Format(ResourceString, "Applesauce FDC 3.x", ".a2r"), MsgBoxStyle.Exclamation)
+                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_A2R & " 3.x", ".a2r"), MsgBoxStyle.Exclamation)
                     Return Response
                 End If
             Else
@@ -395,7 +395,7 @@ Namespace Flux
 
         Public Function OpenFluxImage(AllowSCP As Boolean, AllowA2R As Boolean) As String
             Using dlg As New OpenFileDialog With {
-                .Title = "Open Flux Image",
+                .Title = My.Resources.Label_OpenFluxImage,
                 .FilterIndex = 1,
                 .CheckFileExists = True,
                 .AddExtension = True,
@@ -410,21 +410,21 @@ Namespace Flux
                         ExtList &= ";*.a2r"
                     End If
 
-                    Dim Filter As String = "Flux dumps (" & ExtList & ")|" & ExtList
+                    Dim Filter As String = My.Resources.Label_FluxDumps & " (" & ExtList & ")|" & ExtList
 
-                    Filter &= "|KryoFlux RAW (*.raw)|*.raw"
+                    Filter &= "|" & My.Resources.FloppyImageType_RAW & " (*.raw)|*.raw"
 
                     If AllowSCP Then
-                        Filter &= "|SuperCard Pro (*.scp)|*.scp"
+                        Filter &= "|" & My.Resources.FloppyImageType_SCP & " (*.scp)|*.scp"
                     End If
 
                     If AllowA2R Then
-                        Filter &= "|Applesauce FDC 3.x (*.a2r)|*.a2r"
+                        Filter &= "|" & My.Resources.FloppyImageType_A2R & " 3.x (*.a2r)|*.a2r"
                     End If
 
                     dlg.Filter = Filter
                 Else
-                    dlg.Filter = "KryoFlux RAW (*.raw)|*.raw"
+                    dlg.Filter = My.Resources.FloppyImageType_RAW & " (*.raw)|*.raw"
                 End If
 
                 If dlg.ShowDialog(App.CurrentFormInstance) = DialogResult.OK Then

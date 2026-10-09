@@ -453,6 +453,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Save XML Report.
+        '''</summary>
+        Friend ReadOnly Property Caption_SaveXMLReport() As String
+            Get
+                Return ResourceManager.GetString("Caption_SaveXMLReport", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Scan Files.
         '''</summary>
         Friend ReadOnly Property Caption_ScanFiles() As String
@@ -976,6 +985,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_CloseAll() As String
             Get
                 Return ResourceManager.GetString("Dialog_CloseAll", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Command Failed: {0}.
+        '''</summary>
+        Friend ReadOnly Property Dialog_CommandFailed() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CommandFailed", resourceCulture)
             End Get
         End Property
         
@@ -1699,6 +1717,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Unrecognised drive bus type:  {0}.
+        '''</summary>
+        Friend ReadOnly Property Dialog_UnrecognisedBusType() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UnrecognisedBusType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unrecognised drive id: {0}.
+        '''</summary>
+        Friend ReadOnly Property Dialog_UnrecognisedDriveId() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UnrecognisedDriveId", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Unsupported Disk Type..
         '''</summary>
         Friend ReadOnly Property Dialog_UnsupportedDiskType() As String
@@ -2402,6 +2438,15 @@ Namespace My.Resources
         Friend ReadOnly Property FloppyImageType_PCE() As String
             Get
                 Return ResourceManager.GetString("FloppyImageType_PCE", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to KryoFlux RAW.
+        '''</summary>
+        Friend ReadOnly Property FloppyImageType_RAW() As String
+            Get
+                Return ResourceManager.GetString("FloppyImageType_RAW", resourceCulture)
             End Get
         End Property
         
@@ -4113,6 +4158,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Flux dumps.
+        '''</summary>
+        Friend ReadOnly Property Label_FluxDumps() As String
+            Get
+                Return ResourceManager.GetString("Label_FluxDumps", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Flux Folder.
         '''</summary>
         Friend ReadOnly Property Label_FluxFolder() As String
@@ -4892,6 +4946,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_OffsetHex() As String
             Get
                 Return ResourceManager.GetString("Label_OffsetHex", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Open Flux Image.
+        '''</summary>
+        Friend ReadOnly Property Label_OpenFluxImage() As String
+            Get
+                Return ResourceManager.GetString("Label_OpenFluxImage", resourceCulture)
             End Get
         End Property
         
@@ -5981,6 +6044,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Writing() As String
             Get
                 Return ResourceManager.GetString("Label_Writing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to XML Files.
+        '''</summary>
+        Friend ReadOnly Property Label_XMLFiles() As String
+            Get
+                Return ResourceManager.GetString("Label_XMLFiles", resourceCulture)
             End Get
         End Property
         

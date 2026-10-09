@@ -38,7 +38,7 @@ Namespace Flux.Greaseweazle
                 })
                 Content = GreaseweazleFormatters.FormatBandwidth(Result)
             Catch ex As Exception
-                Content = "Command Failed: " & ex.Message
+                Content = String.Format(My.Resources.Dialog_CommandFailed, ex.Message)
             Finally
                 ParentForm.Cursor = Cursors.Default
             End Try
@@ -270,7 +270,7 @@ Namespace Flux.Greaseweazle
                 })
                 Content = FormatInfo(Result)
             Catch ex As Exception
-                Content = "Command Failed: " & ex.Message
+                Content = String.Format(My.Resources.Dialog_CommandFailed, ex.Message)
             End Try
 
             Return Content
@@ -307,7 +307,7 @@ Namespace Flux.Greaseweazle
                         .UnitId = Integer.Parse(id)
                     }
                 Case Else
-                    Throw New ArgumentException("Unrecognised drive id: " & id)
+                    Throw New ArgumentException(String.Format(My.Resources.Dialog_UnrecognisedDriveId, id))
             End Select
         End Function
 
@@ -318,7 +318,7 @@ Namespace Flux.Greaseweazle
                 Case UsbProtocol.BusType.Shugart
                     Return ds.UnitId.ToString()
                 Case Else
-                    Throw New ArgumentException("Unrecognised drive bus type: " & ds.Bus.ToString())
+                    Throw New ArgumentException(String.Format(My.Resources.Dialog_UnrecognisedBusType, ds.Bus.ToString()))
             End Select
         End Function
 

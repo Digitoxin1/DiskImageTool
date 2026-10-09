@@ -1,8 +1,12 @@
 ﻿Imports System.IO
 
 Module Dialogs
-    Public Function ShowSingleExtSaveDialog(SourceFilePath As String, InitialDirectory As String, FilterDescription As String, Optional Title As String = "Save As") As String
+    Public Function ShowSingleExtSaveDialog(SourceFilePath As String, InitialDirectory As String, FilterDescription As String, Optional Title As String = "") As String
         Dim ext As String = Path.GetExtension(SourceFilePath)
+
+        If String.IsNullOrEmpty(Title) Then
+            Title = WithoutHotkey(My.Resources.Menu_SaveAs)
+        End If
 
         If String.IsNullOrEmpty(ext) Then
             ext = ".bin"

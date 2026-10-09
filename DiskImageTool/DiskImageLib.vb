@@ -457,7 +457,7 @@ Module DiskImageLib
     Public Function MsgBoxSave(FileName As String) As MsgBoxResult
         Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
 
-        Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
+        Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, WithoutHotkey(My.Resources.Menu_Save))
     End Function
 
     Public Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult

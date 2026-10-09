@@ -2468,4 +2468,25 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Validation_PathUncFormat" xml:space="preserve">
     <value>UNC-Pfade müssen folgendem Muster entsprechen: \\Server\Share\Optional\Path.</value>
   </data>
+  <data name="Label_OpenFluxImage" xml:space="preserve">
+    <value>Flux-Image öffnen</value>
+  </data>
+  <data name="Label_FluxDumps" xml:space="preserve">
+    <value>Flux-Dumps</value>
+  </data>
+  <data name="Caption_SaveXMLReport" xml:space="preserve">
+    <value>XML-Bericht speichern</value>
+  </data>
+  <data name="Label_XMLFiles" xml:space="preserve">
+    <value>XML-Dateien</value>
+  </data>
+  <data name="Dialog_UnrecognisedDriveId" xml:space="preserve">
+    <value>Unbekannte Laufwerks-ID: {0}</value>
+  </data>
+  <data name="Dialog_UnrecognisedBusType" xml:space="preserve">
+    <value>Unbekannter Laufwerksbustyp: {0}</value>
+  </data>
+  <data name="Dialog_CommandFailed" xml:space="preserve">
+    <value>Befehl fehlgeschlagen: {0}</value>
+  </data>
 </root>

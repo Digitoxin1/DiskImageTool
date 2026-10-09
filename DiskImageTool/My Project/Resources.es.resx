@@ -2468,4 +2468,25 @@ Archivo de imagen: '{1}'
   <data name="Validation_PathUncFormat" xml:space="preserve">
     <value>Las rutas UNC deben tener la forma \\Server\Share\Optional\Path.</value>
   </data>
+  <data name="Label_OpenFluxImage" xml:space="preserve">
+    <value>Abrir imagen de flujo</value>
+  </data>
+  <data name="Label_FluxDumps" xml:space="preserve">
+    <value>Volcados de flujo</value>
+  </data>
+  <data name="Caption_SaveXMLReport" xml:space="preserve">
+    <value>Guardar informe XML</value>
+  </data>
+  <data name="Label_XMLFiles" xml:space="preserve">
+    <value>Archivos XML</value>
+  </data>
+  <data name="Dialog_UnrecognisedDriveId" xml:space="preserve">
+    <value>Identificador de unidad no reconocido: {0}</value>
+  </data>
+  <data name="Dialog_UnrecognisedBusType" xml:space="preserve">
+    <value>Tipo de bus de unidad no reconocido: {0}</value>
+  </data>
+  <data name="Dialog_CommandFailed" xml:space="preserve">
+    <value>Error al ejecutar el comando: {0}</value>
+  </data>
 </root>

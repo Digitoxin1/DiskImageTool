@@ -2468,4 +2468,25 @@ Voulez-vous écraser ?</value>
   <data name="Validation_PathUncFormat" xml:space="preserve">
     <value>Les chemins UNC doivent ressembler à \\Server\Share\Optional\Path.</value>
   </data>
+  <data name="Label_OpenFluxImage" xml:space="preserve">
+    <value>Ouvrir une image de flux</value>
+  </data>
+  <data name="Label_FluxDumps" xml:space="preserve">
+    <value>Dumps de flux</value>
+  </data>
+  <data name="Caption_SaveXMLReport" xml:space="preserve">
+    <value>Enregistrer le rapport XML</value>
+  </data>
+  <data name="Label_XMLFiles" xml:space="preserve">
+    <value>Fichiers XML</value>
+  </data>
+  <data name="Dialog_UnrecognisedDriveId" xml:space="preserve">
+    <value>Identifiant de lecteur non reconnu : {0}</value>
+  </data>
+  <data name="Dialog_UnrecognisedBusType" xml:space="preserve">
+    <value>Type de bus du lecteur non reconnu : {0}</value>
+  </data>
+  <data name="Dialog_CommandFailed" xml:space="preserve">
+    <value>Échec de la commande : {0}</value>
+  </data>
 </root>

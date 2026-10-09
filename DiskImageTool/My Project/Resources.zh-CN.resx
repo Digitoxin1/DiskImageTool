@@ -2468,4 +2468,25 @@ Flux 映像集：“{0}”
   <data name="Validation_PathUncFormat" xml:space="preserve">
     <value>UNC 路径的格式必须为 \\Server\Share\Optional\Path。</value>
   </data>
+  <data name="Label_OpenFluxImage" xml:space="preserve">
+    <value>打开磁通镜像</value>
+  </data>
+  <data name="Label_FluxDumps" xml:space="preserve">
+    <value>磁通转储</value>
+  </data>
+  <data name="Caption_SaveXMLReport" xml:space="preserve">
+    <value>保存 XML 报告</value>
+  </data>
+  <data name="Label_XMLFiles" xml:space="preserve">
+    <value>XML 文件</value>
+  </data>
+  <data name="Dialog_UnrecognisedDriveId" xml:space="preserve">
+    <value>无法识别的驱动器 ID：{0}</value>
+  </data>
+  <data name="Dialog_UnrecognisedBusType" xml:space="preserve">
+    <value>无法识别的驱动器总线类型：{0}</value>
+  </data>
+  <data name="Dialog_CommandFailed" xml:space="preserve">
+    <value>命令执行失败：{0}</value>
+  </data>
 </root>
