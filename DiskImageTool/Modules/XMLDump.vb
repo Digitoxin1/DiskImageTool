@@ -396,7 +396,9 @@ Module XMLDump
 
         xw.WriteStartElement("disk")
 
-        xw.WriteElementString("type", GetImageTypeName(Disk.Image.ImageType))
+        Dim Info = FloppyImageFormats.GetInfo(Disk.Image.ImageType)
+
+        xw.WriteElementString("type", Info.Name)
 
         If Disk.Image.ImageType = FloppyImageType.BasicSectorImage Then
             xw.WriteStartElement("sizeBytes")

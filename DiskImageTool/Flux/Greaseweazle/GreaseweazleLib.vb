@@ -202,8 +202,7 @@ Namespace Flux.Greaseweazle
             Dim Format As String = "ibm.scan"
 
             If ImageParams.HasValue Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
-                Format = GreaseweazleImageFormatString(ImageFormat)
+                Format = ImageParams.Value.Format.GetImageFormat().GetKey()
             End If
 
             Dim spec As New TrackSetSpec
@@ -336,7 +335,7 @@ Namespace Flux.Greaseweazle
                 End If
 
                 Dim opt As New DriveOption(id, t, Settings.Drives(index).Tracks) With {
-                    .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
+                    .Label = $"{labelPrefix}:   {t.GetDescription()}"
                 }
                 DriveList.Add(opt)
 
@@ -396,8 +395,7 @@ Namespace Flux.Greaseweazle
 
             Dim Format As String = "ibm.scan"
             If ImageParams.HasValue Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
-                Format = GreaseweazleImageFormatString(ImageFormat)
+                Format = ImageParams.Value.Format.GetImageFormat().GetKey()
             End If
 
             Dim Sb As New StringBuilder()

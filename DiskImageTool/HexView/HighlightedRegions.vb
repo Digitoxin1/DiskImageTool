@@ -1,52 +1,54 @@
-﻿Public Class HighlightedRegions
+﻿Imports DiskImageTool.DiskImage
+
+Public Class HighlightedRegions
     Inherits List(Of HexViewHighlightRegion)
 
-    Public Sub AddBootSectorOffset(Offset As DiskImage.BootSector.BootSectorOffsets, ForeColor As Color)
-        Dim Name As String = [Enum].GetName(GetType(DiskImage.BootSector.BootSectorOffsets), Offset)
-        Dim Size As DiskImage.BootSector.BootSectorSizes
+    Public Sub AddBootSectorOffset(Offset As BootSector.BootSectorOffsets, ForeColor As Color)
+        Dim Name As String = [Enum].GetName(GetType(BootSector.BootSectorOffsets), Offset)
+        Dim Size As BootSector.BootSectorSizes
 
         If Not [Enum].TryParse(Name, Size) Then
             Size = 0
         End If
 
-        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BootSectorDescription(Offset)))
+        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, Offset.GetDescription()))
     End Sub
 
-    Public Sub AddBootSectorOffset(Description As String, Offset As DiskImage.BootSector.BootSectorOffsets, Size As DiskImage.BootSector.BootSectorSizes, ForeColor As Color)
+    Public Sub AddBootSectorOffset(Description As String, Offset As BootSector.BootSectorOffsets, Size As BootSector.BootSectorSizes, ForeColor As Color)
         Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, Description))
     End Sub
 
     Public Sub AddBPBoffset(Offset As DiskImage.BiosParameterBlock.BPBOoffsets, ForeColor As Color)
-        Dim Name As String = [Enum].GetName(GetType(DiskImage.BiosParameterBlock.BPBOoffsets), Offset)
-        Dim Size As DiskImage.BiosParameterBlock.BPBSizes
+        Dim Name As String = [Enum].GetName(GetType(BiosParameterBlock.BPBOoffsets), Offset)
+        Dim Size As BiosParameterBlock.BPBSizes
 
         If Not [Enum].TryParse(Name, Size) Then
             Size = 0
         End If
 
-        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BPBDescription(Offset)))
+        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, Offset.GetDescription()))
     End Sub
 
-    Public Sub AddDirectoryEntryLFNOffset(Start As Long, Offset As DiskImage.DirectoryEntry.LFNOffsets, ForeColor As Color)
-        Dim Name As String = [Enum].GetName(GetType(DiskImage.DirectoryEntry.LFNOffsets), Offset)
-        Dim Size As DiskImage.DirectoryEntry.LFNSizes
+    Public Sub AddDirectoryEntryLFNOffset(Start As Long, Offset As DirectoryEntry.LFNOffsets, ForeColor As Color)
+        Dim Name As String = [Enum].GetName(GetType(DirectoryEntry.LFNOffsets), Offset)
+        Dim Size As DirectoryEntry.LFNSizes
 
         If Not [Enum].TryParse(Name, Size) Then
             Size = 0
         End If
 
-        Me.Add(New HexViewHighlightRegion(Start + Offset, Size, ForeColor, DiskImage.DirectorytEntryLFNDescription(Offset)))
+        Me.Add(New HexViewHighlightRegion(Start + Offset, Size, ForeColor, Offset.GetDescription()))
     End Sub
 
-    Public Sub AddDirectoryEntryOffset(Start As Long, Offset As DiskImage.DirectoryEntry.DirectoryEntryOffsets, ForeColor As Color)
-        Dim Name As String = [Enum].GetName(GetType(DiskImage.DirectoryEntry.DirectoryEntryOffsets), Offset)
-        Dim Size As DiskImage.DirectoryEntry.DirectoryEntrySizes
+    Public Sub AddDirectoryEntryOffset(Start As Long, Offset As DirectoryEntry.DirectoryEntryOffsets, ForeColor As Color)
+        Dim Name As String = [Enum].GetName(GetType(DirectoryEntry.DirectoryEntryOffsets), Offset)
+        Dim Size As DirectoryEntry.DirectoryEntrySizes
 
         If Not [Enum].TryParse(Name, Size) Then
             Size = 0
         End If
 
-        Me.Add(New HexViewHighlightRegion(Start + Offset, Size, ForeColor, DiskImage.DirectorytEntryDescription(Offset)))
+        Me.Add(New HexViewHighlightRegion(Start + Offset, Size, ForeColor, Offset.GetDescription()))
     End Sub
 
     Public Function AddItem(Start As Long, Size As Long, ForeColor As Color) As HexViewHighlightRegion

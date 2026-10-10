@@ -129,8 +129,8 @@ Namespace Flux
 
             Select Case SelectedDevice.Device
                 Case IDevice.FluxDevice.Greaseweazle
-                    Dim imageFormat = Greaseweazle.GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Value.Format)
-                    Return (imageFormat <> Greaseweazle.GreaseweazleImageFormat.None)
+                    Dim imageFormat = DiskParams.Value.Format.GetImageFormat()
+                    Return (imageFormat <> GreaseweazleImageFormat.None)
 
                 Case Else
                     Return True
@@ -203,8 +203,7 @@ Namespace Flux
                 End If
 
             ElseIf outputType = FluxFileTypeEnum.SectorImage Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
-                Format = GreaseweazleImageFormatString(ImageFormat)
+                Format = diskParams.Format.GetImageFormat().GetKey()
             End If
 
             Dim OutputFileWithOpts As String = outputFilePath
@@ -862,7 +861,7 @@ Namespace Flux
             Dim OutputType As FluxFileTypeEnum = ComboOutputType.SelectedValue
 
             If OutputType <> FluxFileTypeEnum.SectorImage Then
-                Dim Extension = FluxFileTypeExtension(OutputType)
+                Dim Extension = OutputType.GetExtension()
 
                 Dim items As New List(Of FileExtensionItem) From {
                     New FileExtensionItem(Extension, Nothing)
@@ -932,7 +931,7 @@ Namespace Flux
                 End If
 
                 OutputTypes.Add(New KeyValuePair(Of String, FluxFileTypeEnum)(
-                    FluxFileTypeDescription(OutputType), OutputType)
+                    OutputType.GetDescription(), OutputType)
                 )
             Next
 
@@ -962,7 +961,7 @@ Namespace Flux
 
             If HasSelectedOutputFile Then
                 Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
-                If Not FileTypeIsFlux(ImageInfo.FileType) Then
+                If Not ImageInfo.FileType.IsFlux() Then
                     ImageData = New ImageData(ImageInfo.FilePath)
                 End If
             End If
@@ -1300,7 +1299,7 @@ Namespace Flux
         Private Sub SetNewFileName()
             Dim FileExt = IO.Path.GetExtension(_DisplayInputFilePath).ToLower
 
-            If FileExt = ".raw" Then
+            If FileExt = FluxFileTypeEnum.RAW.GetExtension() Then
                 Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_DisplayInputFilePath).FullName)
                 TextBoxFileName.Text = ParentFolder
             Else
@@ -1329,7 +1328,7 @@ Namespace Flux
             Dim DisplayFileName = IO.Path.GetFileName(_DisplayInputFilePath)
             Dim FileExt = IO.Path.GetExtension(DisplayFileName).ToLower
 
-            If FileExt = ".raw" Then
+            If FileExt = FluxFileTypeEnum.RAW.GetExtension() Then
                 Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_DisplayInputFilePath).FullName)
                 DisplayFileName = IO.Path.Combine(ParentFolder, "*.raw")
             End If
@@ -1360,7 +1359,7 @@ Namespace Flux
 
             Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
 
-            If FileExt <> ".raw" Then
+            If FileExt <> FluxFileTypeEnum.RAW.GetExtension() Then
                 Return False
             End If
 
@@ -1842,7 +1841,7 @@ Namespace Flux
             Public Function SetPendingImage(FileSource As IDevice.FluxDevice, OutputType As FluxFileTypeEnum) As String
                 ClearPendingImage()
 
-                Dim FileExt = FluxFileTypeExtension(OutputType)
+                Dim FileExt = OutputType.GetExtension()
                 Dim FileName As String = Guid.NewGuid.ToString & FileExt
 
                 Dim FilePath = IO.Path.Combine(_TempPath, FileName)

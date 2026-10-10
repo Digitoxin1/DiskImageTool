@@ -48,7 +48,7 @@ Public Class ImageScanner
 
                         Dim Extension = FileInfo.Extension.ToLower()
 
-                        If AllFileExtensions.Contains(Extension) OrElse ArchiveFileExtensions.Contains(Extension) Then
+                        If FloppyImageFormats.AllFileExtensions.Contains(Extension) OrElse ArchiveFileExtensions.Contains(Extension) Then
                             ProcessFile(FileInfo.FullName, Extension, NewImage, NewFileName, ct)
                         End If
 
@@ -72,7 +72,9 @@ Public Class ImageScanner
     End Sub
 
     Private Function IsValidFileLength(Length As Long, Extension As String) As Boolean
-        Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension) And Not AdvancedSectorFileExtensions.Contains(Extension)
+        Dim CheckLength = Not FloppyImageFormats.BitstreamFileExtensions.Contains(Extension) AndAlso
+            Not FloppyImageFormats.AdvancedSectorFileExtensions.Contains(Extension)
+
         Return Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE)
     End Function
 
@@ -130,7 +132,7 @@ Public Class ImageScanner
             End If
 
             Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower()
-            If AllFileExtensions.Contains(EntryFileExt) Then
+            If FloppyImageFormats.AllFileExtensions.Contains(EntryFileExt) Then
                 Dim FilePath = Path.Combine(Filename, Entry.FullName)
 
                 If HasFilter AndAlso Entry.FullName <> InnerPath Then

@@ -75,7 +75,7 @@ Module Updater
         Dim FileName As String = ""
 
         Using Dialog As New SaveFileDialog With {
-                .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
+                .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ZipArchiveExt),
                 .FileName = Path.GetFileName(Response.URL),
                 .InitialDirectory = GetDownloadsFolder(),
                 .RestoreDirectory = True

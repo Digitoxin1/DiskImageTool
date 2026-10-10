@@ -389,7 +389,7 @@ Public Class SummaryPanel
                 ForeColor = Color.Blue
             End If
 
-            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
+            .AddItem(BootRecordGroup, BootSectorOffsets.OEMName.GetDescription(), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.BytesPerSector <> BPBBySize.BytesPerSector Then
                 ForeColor = Color.Blue
@@ -397,7 +397,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.BytesPerSector.GetDescription(), Disk.BootSector.BPB.BytesPerSector, ForeColor)
 
             If Not Disk.BootSector.BPB.HasValidSectorsPerCluster(True) Then
                 ForeColor = Color.Red
@@ -407,7 +407,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.SectorsPerCluster.GetDescription(), Disk.BootSector.BPB.SectorsPerCluster, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.ReservedSectorCount <> BPBBySize.ReservedSectorCount Then
                 ForeColor = Color.Blue
@@ -415,7 +415,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.ReservedSectorCount.GetDescription(), Disk.BootSector.BPB.ReservedSectorCount, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.NumberOfFATs <> BPBBySize.NumberOfFATs Then
                 ForeColor = Color.Blue
@@ -433,7 +433,7 @@ Public Class SummaryPanel
                 End If
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfFATs), Value, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.NumberOfFATs.GetDescription(), Value, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.RootEntryCount <> BPBBySize.RootEntryCount Then
                 ForeColor = Color.Blue
@@ -441,7 +441,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.RootEntryCount.GetDescription(), Disk.BootSector.BPB.RootEntryCount, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorCount <> BPBBySize.SectorCount Then
                 ForeColor = Color.Blue
@@ -449,7 +449,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.SectorCountSmall.GetDescription(), Disk.BootSector.BPB.SectorCount, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.MediaDescriptor <> BPBBySize.MediaDescriptor Then
                 ForeColor = Color.Blue
@@ -474,7 +474,7 @@ Public Class SummaryPanel
                 End If
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.MediaDescriptor.GetDescription(), Value, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerFAT <> BPBBySize.SectorsPerFAT Then
                 ForeColor = Color.Blue
@@ -482,7 +482,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.SectorsPerFAT.GetDescription(), Disk.BootSector.BPB.SectorsPerFAT, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerTrack <> BPBBySize.SectorsPerTrack Then
                 ForeColor = Color.Blue
@@ -490,7 +490,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.SectorsPerTrack.GetDescription(), Disk.BootSector.BPB.SectorsPerTrack, ForeColor)
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.NumberOfHeads <> BPBBySize.NumberOfHeads Then
                 ForeColor = Color.Blue
@@ -498,30 +498,30 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads, ForeColor)
+            .AddItem(BootRecordGroup, BPBOffsets.NumberOfHeads.GetDescription(), Disk.BootSector.BPB.NumberOfHeads, ForeColor)
 
             If Disk.BootSector.BPB.HiddenSectors > 0 Then
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.HiddenSectors), Disk.BootSector.BPB.HiddenSectors)
+                .AddItem(BootRecordGroup, BPBOffsets.HiddenSectors.GetDescription(), Disk.BootSector.BPB.HiddenSectors)
             End If
 
             Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
 
             If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
                 If Disk.BootSector.DriveNumber > 0 Then
-                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), Disk.BootSector.DriveNumber)
+                    .AddItem(BootRecordGroup, BootSectorOffsets.DriveNumber.GetDescription(), Disk.BootSector.DriveNumber)
                 End If
 
                 If Disk.BootSector.HasValidExtendedBootSignature Then
-                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-"))
+                    .AddItem(BootRecordGroup, BootSectorOffsets.VolumeSerialNumber.GetDescription(), Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-"))
                     If Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
-                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR))
-                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), Disk.BootSector.GetFileSystemTypeString)
+                        .AddItem(BootRecordGroup, BootSectorOffsets.VolumeLabel.GetDescription(), Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR))
+                        .AddItem(BootRecordGroup, BootSectorOffsets.FileSystemType.GetDescription(), Disk.BootSector.GetFileSystemTypeString)
                     End If
                 End If
             End If
 
             If Not Disk.BootSector.HasValidBootStrapSignature Then
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
+                .AddItem(BootRecordGroup, BootSectorOffsets.BootStrapSignature.GetDescription(), Disk.BootSector.BootStrapSignature.ToString("X4"))
             End If
 
             If App.Globals.AppSettings.Debug Then
@@ -530,7 +530,7 @@ Public Class SummaryPanel
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
+                .AddItem(BootRecordGroup, BootSectorOffsets.JmpBoot.GetDescription(), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
             End If
         End With
     End Sub
@@ -595,7 +595,9 @@ Public Class SummaryPanel
         With ListViewSummary
             DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.Label_Disk)
 
-            .AddItem(DiskGroup, My.Resources.Label_ImageType, GetImageTypeName(Disk.Image.ImageType))
+            Dim Info = FloppyImageFormats.GetInfo(Disk.Image.ImageType)
+
+            .AddItem(DiskGroup, My.Resources.Label_ImageType, Info.Name)
 
             If Disk.Image.ImageType = FloppyImageType.BasicSectorImage Then
                 If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then

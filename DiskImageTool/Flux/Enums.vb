@@ -1,4 +1,6 @@
-﻿Namespace Flux
+﻿Imports System.Runtime.CompilerServices
+
+Namespace Flux
     Module Enums
         Enum ActionTypeEnum
             Read
@@ -37,7 +39,29 @@
             Both
         End Enum
 
-        Public Function FluxFileTypeDescription(Value As FluxFileTypeEnum) As String
+        Public Function FluxFileTypeFromExtension(Extension As String) As FluxFileTypeEnum
+            Select Case Extension.ToLower()
+                Case ".hfe"
+                    Return FluxFileTypeEnum.HFE
+                Case ".mfm"
+                    Return FluxFileTypeEnum.MFM
+                Case ".86f"
+                    Return FluxFileTypeEnum.F86
+                Case ".tc"
+                    Return FluxFileTypeEnum.TC
+                Case ".scp"
+                    Return FluxFileTypeEnum.SCP
+                Case ".raw"
+                    Return FluxFileTypeEnum.RAW
+                Case ".a2r"
+                    Return FluxFileTypeEnum.A2R
+                Case Else
+                    Return FluxFileTypeEnum.SectorImage
+            End Select
+        End Function
+
+        <Extension()>
+        Public Function GetDescription(Value As FluxFileTypeEnum) As String
             Select Case Value
                 Case FluxFileTypeEnum.SectorImage
                     Return My.Resources.FloppyImageType_BasicSectorImage
@@ -60,7 +84,8 @@
             End Select
         End Function
 
-        Public Function FluxFileTypeExtension(Value As FluxFileTypeEnum) As String
+        <Extension()>
+        Public Function GetExtension(Value As FluxFileTypeEnum) As String
             Select Case Value
                 Case FluxFileTypeEnum.HFE
                     Return ".hfe"
@@ -81,28 +106,8 @@
             End Select
         End Function
 
-        Public Function FluxFileTypeFromExtension(Extension As String) As FluxFileTypeEnum
-            Select Case Extension.ToLower()
-                Case ".hfe"
-                    Return FluxFileTypeEnum.HFE
-                Case ".mfm"
-                    Return FluxFileTypeEnum.MFM
-                Case ".86f"
-                    Return FluxFileTypeEnum.F86
-                Case ".tc"
-                    Return FluxFileTypeEnum.TC
-                Case ".scp"
-                    Return FluxFileTypeEnum.SCP
-                Case ".raw"
-                    Return FluxFileTypeEnum.RAW
-                Case ".a2r"
-                    Return FluxFileTypeEnum.A2R
-                Case Else
-                    Return FluxFileTypeEnum.SectorImage
-            End Select
-        End Function
-
-        Public Function FileTypeIsFlux(Value As FluxFileTypeEnum) As Boolean
+        <Extension()>
+        Public Function IsFlux(Value As FluxFileTypeEnum) As Boolean
             Return Value = FluxFileTypeEnum.RAW OrElse Value = FluxFileTypeEnum.SCP OrElse Value = FluxFileTypeEnum.A2R
         End Function
     End Module

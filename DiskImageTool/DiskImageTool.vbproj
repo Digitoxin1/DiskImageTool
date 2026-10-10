@@ -245,6 +245,7 @@
     <Compile Include="ImageFormats\TD0\TD0SectorHeader.vb" />
     <Compile Include="ImageFormats\TD0\TD0Track.vb" />
     <Compile Include="ImageFormats\TD0\TD0TrackHeader.vb" />
+    <Compile Include="Lib\FileDialogFilterBuilder.vb" />
     <Compile Include="Lib\VistaFolderPicker.vb" />
     <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Modules\FileIO.vb" />
@@ -252,6 +253,7 @@
     <Compile Include="Modules\FloppyDB\FileNameData.vb" />
     <Compile Include="Modules\FloppyDB\FloppyData.vb" />
     <Compile Include="Modules\FloppyDB\TitleFindResult.vb" />
+    <Compile Include="Modules\FloppyImageFormats.vb" />
     <Compile Include="Modules\XMLDump.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>

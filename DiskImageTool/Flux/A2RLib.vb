@@ -5,7 +5,10 @@ Namespace Flux
         Public Function GetFluxSetInfoA2R(FilePath As String) As FluxSetInfo
             Dim Response As New FluxSetInfo(False, 0, 0, "")
 
-            If String.IsNullOrWhiteSpace(FilePath) OrElse Not File.Exists(FilePath) OrElse Not FilePath.EndsWith(".a2r", StringComparison.OrdinalIgnoreCase) Then
+            If String.IsNullOrWhiteSpace(FilePath) OrElse
+                Not File.Exists(FilePath) OrElse
+                Not FilePath.EndsWith(FluxFileTypeEnum.A2R.GetExtension(), StringComparison.OrdinalIgnoreCase) Then
+
                 Return Response
             End If
 

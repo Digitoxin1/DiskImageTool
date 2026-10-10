@@ -194,11 +194,11 @@ Module HexViews
             ForeColor = Color.Black
         End If
 
-        HighlightedRegions.AddBootSectorOffset(BootSectorDescription(BootSectorOffsets.JmpBoot), Disk.BootSector.GetJmpBootOffset, BootSectorSizes.JmpBoot, ForeColor)
+        HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.JmpBoot.GetDescription(), Disk.BootSector.GetJmpBootOffset, BootSectorSizes.JmpBoot, ForeColor)
         If Disk.IsValidImage Then
             If Disk.BootSector.CheckJumpInstruction(False) AndAlso Disk.BootSector.BPB.IsValid Then
                 If BootStrapStart < 3 Or BootStrapStart >= Disk.BootSector.GetOEMNameOffset + Disk.BootSector.GetOEMNameSize Then
-                    HighlightedRegions.AddBootSectorOffset(BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameOffset, Disk.BootSector.GetOEMNameSize, Color.Red)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.OEMName.GetDescription(), Disk.BootSector.GetOEMNameOffset, Disk.BootSector.GetOEMNameSize, Color.Red)
                 End If
                 If BootStrapStart < 3 Or BootStrapStart >= BPBOoffsets.HiddenSectors + BPBSizes.HiddenSectors Then
                     HighlightedRegions.AddBPBoffset(BPBOoffsets.BytesPerSector, Color.Blue)

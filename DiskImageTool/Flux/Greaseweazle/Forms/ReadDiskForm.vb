@@ -882,13 +882,13 @@ Namespace Flux.Greaseweazle
                 If SelectedOutputType2 <> ReadDiskOutputTypes.None AndAlso SelectedOutputType2 <> ReadDiskOutputTypes.RAW Then
                     Dim OutputType2 = If(NonStandard, ReadDiskOutputTypes.HFE, SelectedOutputType2)
 
-                    Response.FilePath2 = GenerateOutputFile(ReadDisktOutputTypeFileExt(OutputType2))
+                    Response.FilePath2 = GenerateOutputFile(OutputType2.GetExtension())
                 End If
 
             Else
                 Dim OutputType = If(NonStandard, ReadDiskOutputTypes.HFE, SelectedOutputType)
 
-                Response.FilePath = GenerateOutputFile(ReadDisktOutputTypeFileExt(OutputType))
+                Response.FilePath = GenerateOutputFile(OutputType.GetExtension())
             End If
 
             Return Response
@@ -930,7 +930,7 @@ Namespace Flux.Greaseweazle
 
             ElseIf IsBitstreamOutput Then
                 Dim items As New List(Of FileExtensionItem) From {
-                    New FileExtensionItem(ReadDisktOutputTypeFileExt(OutputType), Nothing)
+                    New FileExtensionItem(OutputType.GetExtension(), Nothing)
                 }
                 With Combo
                     .DataSource = Nothing
@@ -962,7 +962,7 @@ Namespace Flux.Greaseweazle
 
             For Each Location As ReadDiskImageLocations In [Enum].GetValues(GetType(ReadDiskImageLocations))
                 ComboList.Add(New KeyValuePair(Of String, ReadDiskImageLocations)(
-                    ReadDiskImageLocationDescription(Location), Location)
+                    Location.GetDescription(), Location)
                 )
             Next
 
@@ -1000,7 +1000,7 @@ Namespace Flux.Greaseweazle
 
 
                 DriveList.Add(New KeyValuePair(Of String, ReadDiskOutputTypes)(
-                    ReadDiskOutputTypeDescription(OutputType), OutputType)
+                    OutputType.GetDescription(), OutputType)
                 )
             Next
 

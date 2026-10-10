@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports DiskImageTool.DiskImage
+Imports DiskImageTool.Flux
 
 Public Class MainForm
     Private WithEvents FilePanelMain As FilePanel
@@ -1273,11 +1274,11 @@ Public Class MainForm
         Dim IsFluxIamge As Boolean = False
 
         If IO.File.Exists(FilePath) Then
-            If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
+            If IO.Path.GetExtension(FilePath).ToLower = FluxFileTypeEnum.SCP.GetExtension() Then
                 IsFluxIamge = True
-            ElseIf IO.Path.GetExtension(FilePath).ToLower = ".a2r" Then
+            ElseIf IO.Path.GetExtension(FilePath).ToLower = FluxFileTypeEnum.A2R.GetExtension() Then
                 IsFluxIamge = True
-            ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
+            ElseIf IO.Path.GetExtension(FilePath).ToLower = FluxFileTypeEnum.RAW.GetExtension() Then
                 Dim Response = Flux.GetFluxSetInfoRaw(FilePath)
                 If Response.Result Then
                     IsFluxIamge = True
@@ -2152,7 +2153,6 @@ Public Class MainForm
         _FileVersion = GetVersionString()
 
         PositionControls()
-        InitAllFileExtensions()
         PositionForm()
         InitOverlay()
 

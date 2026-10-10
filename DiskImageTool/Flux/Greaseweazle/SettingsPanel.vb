@@ -85,7 +85,7 @@ Namespace Flux.Greaseweazle
 
             For Each FloppyType As FloppyDriveType In [Enum].GetValues(GetType(FloppyDriveType))
                 DriveList.Add(New KeyValuePair(Of String, FloppyDriveType)(
-                    GreaseweazleFloppyTypeDescription(FloppyType), FloppyType)
+                    FloppyType.GetDescription(), FloppyType)
                 )
             Next
 

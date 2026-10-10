@@ -1,6 +1,10 @@
-﻿Namespace DiskImage
+﻿Imports System.Runtime.CompilerServices
+
+Namespace DiskImage
     Module EnumDescriptions
-        Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
+
+        <Extension()>
+        Public Function GetDescription(Offset As BootSector.BootSectorOffsets) As String
             Select Case Offset
                 Case BootSector.BootSectorOffsets.JmpBoot
                     Return My.Resources.BootSector_JmpBoot
@@ -25,7 +29,8 @@
             End Select
         End Function
 
-        Public Function BPBDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
+        <Extension()>
+        Public Function GetDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
             Select Case Offset
                 Case BiosParameterBlock.BPBOoffsets.BytesPerSector
                     Return My.Resources.Label_BytesPerSector
@@ -54,7 +59,8 @@
             End Select
         End Function
 
-        Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
+        <Extension()>
+        Public Function GetDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.DirectoryEntryOffsets.FileName
                     Return My.Resources.Label_Name
@@ -87,7 +93,8 @@
             End Select
         End Function
 
-        Public Function DirectorytEntryLFNDescription(Offset As DirectoryEntry.LFNOffsets) As String
+        <Extension()>
+        Public Function GetDescription(Offset As DirectoryEntry.LFNOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.LFNOffsets.Sequence
                     Return My.Resources.DirectoryEntryLFN_Sequence
@@ -107,31 +114,6 @@
                     Return String.Format(My.Resources.DirectoryEntryLFN_FilePart, "3")
                 Case Else
                     Return Offset.ToString
-            End Select
-        End Function
-
-        Public Function GetImageTypeName(ImageType As FloppyImageType) As String
-            Select Case ImageType
-                Case FloppyImageType.BasicSectorImage
-                    Return My.Resources.FloppyImageType_BasicSectorImage
-                Case FloppyImageType.HFEImage
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_HFE)
-                Case FloppyImageType.MFMImage
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_MFM)
-                Case FloppyImageType.PSIImage
-                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_PCE)
-                Case FloppyImageType.PRIImage
-                    Return String.Format(My.Resources.FloppyImageType_BitstreamImage, My.Resources.FloppyImageType_PCE)
-                Case FloppyImageType.TranscopyImage
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC)
-                Case FloppyImageType.D86FImage
-                    Return String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F)
-                Case FloppyImageType.IMDImage
-                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_IMD)
-                Case FloppyImageType.TD0Image
-                    Return String.Format(My.Resources.FloppyImageType_SectorImage, My.Resources.FloppyImageType_TD0)
-                Case Else
-                    Return My.Resources.Label_Unknown
             End Select
         End Function
     End Module

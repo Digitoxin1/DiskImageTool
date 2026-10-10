@@ -20,14 +20,14 @@ Namespace Flux.Greaseweazle
                                           outputType2 As ReadDiskOutputTypes,
                                           Optional physicalEvenFiles As Boolean = False) As ReadOptions
 
-            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
+            Dim ImageFormat = diskParams.Format.GetImageFormat()
             Dim Format As String = Nothing
             Dim Raw As Boolean = False
             Dim AdjustSpeed As Double? = Nothing
             Dim HardwareStep = doubleStep AndAlso Not physicalEvenFiles
 
             If Not physicalEvenFiles AndAlso (outputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None) Then
-                Format = GreaseweazleImageFormatString(ImageFormat)
+                Format = ImageFormat.GetKey()
             End If
 
             Dim FileNameWithOpts As String = filePath
@@ -102,8 +102,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Friend Shared Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
-            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(diskParams.Format)
-            Dim Format = GreaseweazleImageFormatString(ImageFormat)
+            Dim Format = diskParams.Format.GetImageFormat().GetKey()
 
             Dim TrackSet As New TrackSetSpec
 
@@ -244,7 +243,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Friend Shared Function FluxGetTrackFileName(Prefix As String, Track As Integer, Side As Integer) As String
-            Return Prefix & Track.ToString("00") & "." & Side.ToString() & ".raw"
+            Return Prefix & Track.ToString("00") & "." & Side.ToString() & FluxFileTypeEnum.RAW.GetExtension()
         End Function
 
         Friend Shared Function GetOutputFolderName(FolderName As String) As String

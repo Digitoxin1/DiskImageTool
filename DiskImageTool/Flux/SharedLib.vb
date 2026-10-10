@@ -15,24 +15,24 @@ Namespace Flux
 
             Dim Response = New FluxSetInfo(False, 0, 0, "")
 
-            If FileExt = ".raw" Then
+            If FileExt = FluxFileTypeEnum.RAW.GetExtension() Then
                 Response = GetFluxSetInfoRaw(FilePath, ReadHeaders)
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
                     Return Response
                 End If
-            ElseIf AllowSCP AndAlso FileExt = ".scp" Then
+            ElseIf AllowSCP AndAlso FileExt = FluxFileTypeEnum.SCP.GetExtension() Then
                 Response = GetFluxSetInfoSCP(FilePath)
                 If Not Response.Result Then
                     Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
-                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_SCP, ".scp"), MsgBoxStyle.Exclamation)
+                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_SCP, FluxFileTypeEnum.SCP.GetExtension()), MsgBoxStyle.Exclamation)
                     Return Response
                 End If
-            ElseIf AllowA2R AndAlso FileExt = ".a2r" Then
+            ElseIf AllowA2R AndAlso FileExt = FluxFileTypeEnum.A2R.GetExtension() Then
                 Response = GetFluxSetInfoA2R(FilePath)
                 If Not Response.Result Then
                     Dim ResourceString = If(Response.Unsupported, My.Resources.Dialog_UnsupportedImageFile, My.Resources.Dialog_InvalidImageFile)
-                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_A2R & " 3.x", ".a2r"), MsgBoxStyle.Exclamation)
+                    MsgBox(String.Format(ResourceString, My.Resources.FloppyImageType_A2R & " 3.x", FluxFileTypeEnum.A2R.GetExtension()), MsgBoxStyle.Exclamation)
                     Return Response
                 End If
             Else
@@ -231,7 +231,7 @@ Namespace Flux
                 Return Response
             End If
 
-            If Not FilePath.EndsWith(".raw", StringComparison.OrdinalIgnoreCase) Then
+            If Not FilePath.EndsWith(FluxFileTypeEnum.RAW.GetExtension(), StringComparison.OrdinalIgnoreCase) Then
                 Return Response
             End If
 
@@ -246,7 +246,7 @@ Namespace Flux
                 Return Response
             End If
 
-            Response.Prefix= PrefixMatch.Groups("diskId").Value
+            Response.Prefix = PrefixMatch.Groups("diskId").Value
             Dim rx As New Regex(REGEX_RAW_FILE, RegexOptions.IgnoreCase)
 
             For Each file In IO.Directory.EnumerateFiles(ParentDir, Response.Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
@@ -286,7 +286,7 @@ Namespace Flux
                 Return Response
             End If
 
-            If Not FilePath.EndsWith(".scp", StringComparison.OrdinalIgnoreCase) Then
+            If Not FilePath.EndsWith(FluxFileTypeEnum.SCP.GetExtension(), StringComparison.OrdinalIgnoreCase) Then
                 Return Response
             End If
 
@@ -379,7 +379,10 @@ Namespace Flux
             If IO.File.Exists(path) Then
                 ' Direct file: only .raw or .scp
                 Dim ext = IO.Path.GetExtension(path).ToLowerInvariant()
-                If ext = ".raw" OrElse (ext = ".scp" AndAlso allowSCP) OrElse (ext = ".a2r" AndAlso allowA2R) Then
+                If ext = FluxFileTypeEnum.RAW.GetExtension() OrElse
+                    (ext = FluxFileTypeEnum.SCP.GetExtension() AndAlso allowSCP) OrElse
+                    (ext = FluxFileTypeEnum.A2R.GetExtension() AndAlso allowA2R) Then
+
                     Return (True, path)
                 End If
 
@@ -394,38 +397,40 @@ Namespace Flux
         End Function
 
         Public Function OpenFluxImage(AllowSCP As Boolean, AllowA2R As Boolean) As String
+            Dim Builder As New FileDialogFilterBuilder()
+
+            Dim Extensions As New List(Of String) From {FluxFileTypeEnum.RAW.GetExtension()}
+
+            If AllowSCP Then
+                Extensions.Add(FluxFileTypeEnum.SCP.GetExtension())
+            End If
+
+            If AllowA2R Then
+                Extensions.Add(FluxFileTypeEnum.A2R.GetExtension())
+            End If
+
+            If Extensions.Count > 1 Then
+                Builder.Add(My.Resources.Label_FluxDumps, Extensions.ToArray())
+            End If
+
+            Builder.Add(My.Resources.FloppyImageType_RAW, FluxFileTypeEnum.RAW.GetExtension())
+
+            If AllowSCP Then
+                Builder.Add(My.Resources.FloppyImageType_SCP, FluxFileTypeEnum.SCP.GetExtension())
+            End If
+
+            If AllowA2R Then
+                Builder.Add(My.Resources.FloppyImageType_A2R & " 3.x", FluxFileTypeEnum.A2R.GetExtension())
+            End If
+
             Using dlg As New OpenFileDialog With {
-                .Title = My.Resources.Label_OpenFluxImage,
-                .FilterIndex = 1,
-                .CheckFileExists = True,
-                .AddExtension = True,
-                .Multiselect = False
-            }
-                If AllowSCP OrElse AllowA2R Then
-                    Dim ExtList As String = "*.raw"
-                    If AllowSCP Then
-                        ExtList &= ";*.scp"
-                    End If
-                    If AllowA2R Then
-                        ExtList &= ";*.a2r"
-                    End If
-
-                    Dim Filter As String = My.Resources.Label_FluxDumps & " (" & ExtList & ")|" & ExtList
-
-                    Filter &= "|" & My.Resources.FloppyImageType_RAW & " (*.raw)|*.raw"
-
-                    If AllowSCP Then
-                        Filter &= "|" & My.Resources.FloppyImageType_SCP & " (*.scp)|*.scp"
-                    End If
-
-                    If AllowA2R Then
-                        Filter &= "|" & My.Resources.FloppyImageType_A2R & " 3.x (*.a2r)|*.a2r"
-                    End If
-
-                    dlg.Filter = Filter
-                Else
-                    dlg.Filter = My.Resources.FloppyImageType_RAW & " (*.raw)|*.raw"
-                End If
+                    .Title = My.Resources.Label_OpenFluxImage,
+                    .Filter = Builder.ToString(),
+                    .FilterIndex = 1,
+                    .CheckFileExists = True,
+                    .AddExtension = True,
+                    .Multiselect = False
+                }
 
                 If dlg.ShowDialog(App.CurrentFormInstance) = DialogResult.OK Then
                     Return dlg.FileName
@@ -436,8 +441,6 @@ Namespace Flux
         End Function
 
         Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?)
-            Dim FileExtensions = BASIC_SECTOR_FILE_EXTENSIONS.Split(","c).ToList()
-
             Dim SelectedExtension As String = ""
 
             If SelectedFormat.HasValue Then
@@ -450,7 +453,7 @@ Namespace Flux
 
             Dim items As New List(Of FileExtensionItem)
 
-            For Each ext In FileExtensions
+            For Each ext In FloppyImageFormats.BasicSectorFileExtensionsFlux
                 items.Add(New FileExtensionItem(ext, FloppyDiskFormat.FloppyUnknown))
             Next
 
