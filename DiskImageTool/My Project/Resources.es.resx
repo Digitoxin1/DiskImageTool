@@ -2318,8 +2318,8 @@ Archivo de imagen: '{1}'
   <data name="SummaryPanel_OldestDate" xml:space="preserve">
     <value>Fecha más antigua</value>
   </data>
-  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>SO</value>
+  <data name="SummaryPanel_Platform" xml:space="preserve">
+    <value>Plataforma</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Editor</value>

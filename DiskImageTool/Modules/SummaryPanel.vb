@@ -291,8 +291,7 @@ Public Class SummaryPanel
         TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True, False))
         TitleRows.Add("Series", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Series, True, False))
         TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False, False))
-        TitleRows.Add("System", New SummaryRow(ListViewSummary.Font, My.Resources.Label_System, False, False))
-        TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False, False))
+        TitleRows.Add("Platform", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Platform, False, False))
         TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False, False))
         TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, True, False))
         TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True, False))
@@ -814,8 +813,7 @@ Public Class SummaryPanel
         Row("Publisher").Value = Result.GetPublisherList
         Row("Series").Value = Result.GetSeriesList
         Row("Year").Value = Result.GetYearList
-        Row("System").Value = TitleData.System
-        Row("OperatingSystem").Value = TitleData.OperatingSystem
+        Row("Platform").Value = TitleData.Platform
         Row("Region").Value = Result.GetRegionList
         Row("Language").Value = Result.GetLanguageList
         Row("Version").Value = Result.GetVersionDisplay

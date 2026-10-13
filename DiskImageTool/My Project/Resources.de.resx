@@ -2318,8 +2318,8 @@ Möchten Sie ihn überschreiben?</value>
   <data name="SummaryPanel_OldestDate" xml:space="preserve">
     <value>Ältestes Datum</value>
   </data>
-  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>BS</value>
+  <data name="SummaryPanel_Platform" xml:space="preserve">
+    <value>Plattform</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Herausgeber</value>

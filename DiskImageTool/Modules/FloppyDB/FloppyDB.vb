@@ -385,8 +385,8 @@ Namespace FloppyDB
                     NameFound = True
                 ElseIf Attribute.Name = "publisher" Then
                     PublisherFound = True
-                ElseIf Attribute.Name = "os" Then
                 ElseIf Attribute.Name = "mobyGamesId" Then
+                ElseIf Attribute.Name = "addon" Then
                 Else
                     Debug.Print("FloppyDB: Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
                 End If

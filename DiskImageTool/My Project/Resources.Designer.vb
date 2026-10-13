@@ -7791,11 +7791,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to OS.
+        '''  Looks up a localized string similar to Platform.
         '''</summary>
-        Friend ReadOnly Property SummaryPanel_OperatingSystem() As String
+        Friend ReadOnly Property SummaryPanel_Platform() As String
             Get
-                Return ResourceManager.GetString("SummaryPanel_OperatingSystem", resourceCulture)
+                Return ResourceManager.GetString("SummaryPanel_Platform", resourceCulture)
             End Get
         End Property
         

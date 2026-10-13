@@ -2641,8 +2641,8 @@ Do you wish to overwrite?</value>
   <data name="SummaryPanel_OldestDate" xml:space="preserve">
     <value>Oldest Date</value>
   </data>
-  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>OS</value>
+  <data name="SummaryPanel_Platform" xml:space="preserve">
+    <value>Platform</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Publisher</value>

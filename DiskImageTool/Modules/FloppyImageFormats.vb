@@ -8,11 +8,11 @@ Public NotInheritable Class FloppyImageFormats
             ".ima",
             Function() My.Resources.FloppyImageType_BasicSectorImage)},
         {FloppyImageType.IMGImage, New FloppyImageFormatInfo(
-            FloppyImageType.IMGImage,
+            FloppyImageType.BasicSectorImage,
             ".img",
             Function() My.Resources.FloppyImageType_BasicSectorImage)},
         {FloppyImageType.IMZImage, New FloppyImageFormatInfo(
-            FloppyImageType.IMZImage,
+            FloppyImageType.BasicSectorImage,
             ".imz",
             Function() My.Resources.FileType_IMZ)},
         {FloppyImageType.D86FImage, New FloppyImageFormatInfo(
@@ -20,11 +20,11 @@ Public NotInheritable Class FloppyImageFormats
             ".86f",
             Function() String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F))},
         {FloppyImageType.FLPImage, New FloppyImageFormatInfo(
-            FloppyImageType.FLPImage,
+            FloppyImageType.BasicSectorImage,
             ".flp",
             Function() My.Resources.FileType_VFD)},
         {FloppyImageType.DSKImage, New FloppyImageFormatInfo(
-            FloppyImageType.DSKImage,
+            FloppyImageType.BasicSectorImage,
             ".dsk",
             Function() My.Resources.FloppyImageType_BasicSectorImage)},
         {FloppyImageType.HFEImage, New FloppyImageFormatInfo(
@@ -56,7 +56,7 @@ Public NotInheritable Class FloppyImageFormats
             ".tc",
             Function() String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC))},
         {FloppyImageType.VFDImage, New FloppyImageFormatInfo(
-            FloppyImageType.VFDImage,
+            FloppyImageType.BasicSectorImage,
             ".vfd",
             Function() My.Resources.FileType_VFD)}
     }

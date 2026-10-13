@@ -2318,8 +2318,8 @@ Flux 映像集：“{0}”
   <data name="SummaryPanel_OldestDate" xml:space="preserve">
     <value>最早日期</value>
   </data>
-  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>操作系统</value>
+  <data name="SummaryPanel_Platform" xml:space="preserve">
+    <value>平台</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>发行商</value>

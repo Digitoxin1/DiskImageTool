@@ -2318,8 +2318,8 @@ Voulez-vous écraser ?</value>
   <data name="SummaryPanel_OldestDate" xml:space="preserve">
     <value>Date la plus ancienne</value>
   </data>
-  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>SE</value>
+  <data name="SummaryPanel_Platform" xml:space="preserve">
+    <value>Plateforme</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Éditeur</value>

@@ -3,6 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace FloppyDB
     Public Class FloppyData
+        Private ReadOnly _AddOn As Boolean?
         Private ReadOnly _Compilation As String
         Private ReadOnly _CopyProtection As String
         Private ReadOnly _Disk As String
@@ -15,14 +16,13 @@ Namespace FloppyDB
         Private ReadOnly _MediaString As String
         Private ReadOnly _MobyGamesId As String
         Private ReadOnly _Name As String
-        Private ReadOnly _OperatingSystem As String
+        Private ReadOnly _Platform As String
         Private ReadOnly _Owner As FloppyDB
         Private ReadOnly _Publisher As String
         Private ReadOnly _Region As String
         Private ReadOnly _Serial As String
         Private ReadOnly _Status As FloppyDBStatus?
         Private ReadOnly _Series As String
-        Private ReadOnly _System As String
         Private ReadOnly _TGOD As String
         Private ReadOnly _Variation As String
         Private ReadOnly _Version As String
@@ -35,8 +35,9 @@ Namespace FloppyDB
             {"ES", "Es"},
             {"IT", "It"}
         }
-        Private ReadOnly OSAbbrev As New Dictionary(Of String, String) From {
+        Private ReadOnly PlatformAbbrev As New Dictionary(Of String, String) From {
             {"Windows 3.1", "Win3.1"},
+            {"Windows 3.0", "Win3.0"},
             {"Windows 2.1", "Win2.1"},
             {"MS-DOS", ""},
             {"PC Booter", "Booter"}
@@ -46,6 +47,7 @@ Namespace FloppyDB
             _Owner = Owner
 
             If Inherited IsNot Nothing Then
+                _AddOn = Inherited._AddOn
                 _Compilation = Inherited._Compilation
                 _CopyProtection = Inherited._CopyProtection
                 _Disk = Inherited._Disk
@@ -58,13 +60,12 @@ Namespace FloppyDB
                 _MediaString = Inherited._MediaString
                 _MobyGamesId = Inherited._MobyGamesId
                 _Name = Inherited._Name
-                _OperatingSystem = Inherited._OperatingSystem
+                _Platform = Inherited._Platform
                 _Publisher = Inherited._Publisher
                 _Region = Inherited._Region
                 _Serial = Inherited._Serial
                 _Status = Inherited._Status
                 _Series = Inherited._Series
-                _System = Inherited._System
                 _TGOD = Inherited._TGOD
                 _Variation = Inherited._Variation
                 _Version = Inherited._Version
@@ -84,9 +85,8 @@ Namespace FloppyDB
                 If Node.HasAttribute("region") Then _Region = Node.GetAttribute("region")
                 If Node.HasAttribute("language") Then _Language = Node.GetAttribute("language")
                 If Node.HasAttribute("cp") Then _CopyProtection = Node.GetAttribute("cp")
-                If Node.HasAttribute("os") Then _OperatingSystem = Node.GetAttribute("os")
+                If Node.HasAttribute("platform") Then _Platform = Node.GetAttribute("platform")
                 If Node.HasAttribute("mobyGamesId") Then _MobyGamesId = Node.GetAttribute("mobyGamesId")
-                If Node.HasAttribute("system") Then _System = Node.GetAttribute("system")
                 If Node.HasAttribute("series") Then _Series = Node.GetAttribute("series")
                 If Node.HasAttribute("tgod") Then _TGOD = Node.GetAttribute("tgod")
 
@@ -98,6 +98,7 @@ Namespace FloppyDB
                 If Node.HasAttribute("status") Then _Status = GetFloppyDBStatus(Node.GetAttribute("status"))
                 If Node.HasAttribute("tdc") Then _IsTDC = (Node.GetAttribute("tdc") = "1")
                 If Node.HasAttribute("fixed") Then _Fixed = (Node.GetAttribute("fixed") = "1")
+                If Node.HasAttribute("addon") Then _AddOn = (Node.GetAttribute("addon") = "1")
 
                 If Node.Name = "media" Then
                     Dim mediaDiskCount As Integer = 0
@@ -111,6 +112,12 @@ Namespace FloppyDB
                 End If
             End If
         End Sub
+
+        Public ReadOnly Property AddOn As Boolean
+            Get
+                Return If(_AddOn, False)
+            End Get
+        End Property
 
         Public ReadOnly Property Compilation As String
             Get
@@ -191,9 +198,9 @@ Namespace FloppyDB
             End Get
         End Property
 
-        Public ReadOnly Property OperatingSystem As String
+        Public ReadOnly Property Platform As String
             Get
-                Return If(_OperatingSystem, "MS-DOS")
+                Return If(_Platform, "MS-DOS")
             End Get
         End Property
 
@@ -239,12 +246,6 @@ Namespace FloppyDB
             End Get
         End Property
 
-        Public ReadOnly Property System As String
-            Get
-                Return If(_System, "")
-            End Get
-        End Property
-
         Public ReadOnly Property TGOD As String
             Get
                 Return If(_TGOD, "")
@@ -278,21 +279,21 @@ Namespace FloppyDB
                 fileName &= " (" & SafeString(Me.Variation) & ")"
             End If
 
-            If Not String.IsNullOrEmpty(Me.System) Then
-                fileName &= " (" & SafeString(Me.System) & ")"
+            If Me.AddOn Then
+                fileName &= " (Add-on)"
             End If
 
-            Dim TitleOs = Me.OperatingSystem
+            Dim Platform = Me.Platform
 
-            If Not String.IsNullOrEmpty(TitleOs) Then
+            If Not String.IsNullOrEmpty(Platform) Then
                 Dim abbrev As String = Nothing
-                If OSAbbrev.TryGetValue(TitleOs, abbrev) Then
-                    TitleOs = abbrev
+                If PlatformAbbrev.TryGetValue(Platform, abbrev) Then
+                    Platform = abbrev
                 End If
             End If
 
-            If Not String.IsNullOrEmpty(TitleOs) Then
-                fileName &= " (" & SafeString(TitleOs) & ")"
+            If Not String.IsNullOrEmpty(Platform) Then
+                fileName &= " (" & SafeString(Platform) & ")"
             End If
 
             If Not String.IsNullOrEmpty(Me.Year) Then

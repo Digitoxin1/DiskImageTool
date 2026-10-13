@@ -591,11 +591,10 @@ Module XMLDump
             WriteElementStringIFNotEmpty(xw, "publisher", Title.Publisher)
             WriteElementStringIFNotEmpty(xw, "series", Title.Series)
             WriteElementStringIFNotEmpty(xw, "year", Title.Year)
-            WriteElementStringIFNotEmpty(xw, "os", Title.OperatingSystem)
+            WriteElementStringIFNotEmpty(xw, "os", Title.Platform)
             WriteElementStringIFNotEmpty(xw, "region", Title.Region)
             WriteElementStringIFNotEmpty(xw, "language", Title.Language)
             WriteElementStringIFNotEmpty(xw, "version", Title.Version)
-            WriteElementStringIFNotEmpty(xw, "system", Title.System)
             WriteElementStringIFNotEmpty(xw, "disk", Title.Disk)
             WriteElementStringIFNotEmpty(xw, "protection", Title.CopyProtection)
 
