@@ -125,6 +125,15 @@ Public NotInheritable Class FloppyImageFormats
         Return Nothing
     End Function
 
+    Private Shared Sub AddBasicSectorExtension(Extension As String)
+        If Not _ByExtension.ContainsKey(Extension) Then
+            _ByExtension.Add(Extension, New FloppyImageFormatInfo(
+                FloppyImageType.BasicSectorImage,
+                Extension,
+                Function() My.Resources.FloppyImageType_BasicSectorImage))
+        End If
+    End Sub
+
     Private Shared Sub InitExtensions()
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
@@ -132,6 +141,7 @@ Public NotInheritable Class FloppyImageFormats
             If FileExt <> "" Then
                 If Not BasicSectorFileExtensions.Contains(FileExt) Then
                     BasicSectorFileExtensions.Add(FileExt)
+                    AddBasicSectorExtension(FileExt)
                 End If
             End If
         Next

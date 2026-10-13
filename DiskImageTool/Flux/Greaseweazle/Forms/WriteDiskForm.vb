@@ -439,7 +439,13 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
-            Dim FileExt As String = If(_IsBitstreamImage, ".hfe", ".ima")
+            Dim FileExt As String
+
+            If _IsBitstreamImage Then
+                FileExt = FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.HFEImage).Extension
+            Else
+                FileExt = FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.BasicSectorImage).Extension
+            End If
 
             Dim TempPath = InitTempImagePath()
             Dim FileName = Guid.NewGuid.ToString & FileExt
@@ -498,7 +504,7 @@ Namespace Flux.Greaseweazle
 
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
 
-            If FileExt = ".ima" Then
+            If FileExt = FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.BasicSectorImage).Extension Then
                 Format = _DiskParams.Format.GetImageFormat().GetKey()
             End If
 

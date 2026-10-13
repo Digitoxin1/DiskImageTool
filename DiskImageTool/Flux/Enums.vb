@@ -2,6 +2,10 @@
 
 Namespace Flux
     Module Enums
+        Private Const SCP_EXTENSION As String = ".scp"
+        Private Const RAW_EXTENSION As String = ".raw"
+        Private Const A2R_EXTENSION As String = ".a2r"
+
         Enum ActionTypeEnum
             Read
             Write
@@ -41,19 +45,19 @@ Namespace Flux
 
         Public Function FluxFileTypeFromExtension(Extension As String) As FluxFileTypeEnum
             Select Case Extension.ToLower()
-                Case ".hfe"
+                Case FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.HFEImage).Extension
                     Return FluxFileTypeEnum.HFE
-                Case ".mfm"
+                Case FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.MFMImage).Extension
                     Return FluxFileTypeEnum.MFM
-                Case ".86f"
+                Case FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.D86FImage).Extension
                     Return FluxFileTypeEnum.F86
-                Case ".tc"
+                Case FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.TranscopyImage).Extension
                     Return FluxFileTypeEnum.TC
-                Case ".scp"
+                Case SCP_EXTENSION
                     Return FluxFileTypeEnum.SCP
-                Case ".raw"
+                Case RAW_EXTENSION
                     Return FluxFileTypeEnum.RAW
-                Case ".a2r"
+                Case A2R_EXTENSION
                     Return FluxFileTypeEnum.A2R
                 Case Else
                     Return FluxFileTypeEnum.SectorImage
@@ -88,21 +92,21 @@ Namespace Flux
         Public Function GetExtension(Value As FluxFileTypeEnum) As String
             Select Case Value
                 Case FluxFileTypeEnum.HFE
-                    Return ".hfe"
+                    Return FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.HFEImage).Extension
                 Case FluxFileTypeEnum.MFM
-                    Return ".mfm"
+                    Return FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.MFMImage).Extension
                 Case FluxFileTypeEnum.F86
-                    Return ".86f"
+                    Return FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.D86FImage).Extension
                 Case FluxFileTypeEnum.TC
-                    Return ".tc"
+                    Return FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.TranscopyImage).Extension
                 Case FluxFileTypeEnum.SCP
-                    Return ".scp"
+                    Return SCP_EXTENSION
                 Case FluxFileTypeEnum.RAW
-                    Return ".raw"
+                    Return RAW_EXTENSION
                 Case FluxFileTypeEnum.A2R
-                    Return ".a2r"
+                    Return A2R_EXTENSION
                 Case Else
-                    Return ".ima"
+                    Return FloppyImageFormats.GetInfo(DiskImage.FloppyImageType.BasicSectorImage).Extension
             End Select
         End Function
 
