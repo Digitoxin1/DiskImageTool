@@ -315,7 +315,7 @@ Module ImageIO
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FloppyImageType_BasicSectorImage, FloppyImageFormats.BasicSectorFileExtensions)
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_AdvancedSectorImage, FloppyImageFormats.AdvancedSectorFileExtensions)
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_BitstreamImage, FloppyImageFormats.BitstreamFileExtensions)
-        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_IMZ, FloppyImageFormats.GetInfo(FloppyImageType.IMZImage).Extension)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_IMZ, FloppyImageFormats.IMZ_EXTENSION)
         FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_VFD, FloppyImageFormats.VFDFileExtensions)
 
         Dim ImageTypes = {

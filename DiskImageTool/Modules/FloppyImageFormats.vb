@@ -2,31 +2,21 @@
 
 Public NotInheritable Class FloppyImageFormats
 
+    Public Const IMZ_EXTENSION As String = ".imz"
+    Private Const DSK_EXTENSION As String = ".dsk"
+    Private Const FLP_EXTENSION As String = ".flp"
+    Private Const IMG_EXTENSION As String = ".img"
+    Private Const VFD_EXTENSION As String = ".vfd"
+
     Private Shared ReadOnly _Formats As New Dictionary(Of FloppyImageType, FloppyImageFormatInfo) From {
         {FloppyImageType.BasicSectorImage, New FloppyImageFormatInfo(
             FloppyImageType.BasicSectorImage,
             ".ima",
             Function() My.Resources.FloppyImageType_BasicSectorImage)},
-        {FloppyImageType.IMGImage, New FloppyImageFormatInfo(
-            FloppyImageType.BasicSectorImage,
-            ".img",
-            Function() My.Resources.FloppyImageType_BasicSectorImage)},
-        {FloppyImageType.IMZImage, New FloppyImageFormatInfo(
-            FloppyImageType.BasicSectorImage,
-            ".imz",
-            Function() My.Resources.FileType_IMZ)},
         {FloppyImageType.D86FImage, New FloppyImageFormatInfo(
             FloppyImageType.D86FImage,
             ".86f",
             Function() String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_86F))},
-        {FloppyImageType.FLPImage, New FloppyImageFormatInfo(
-            FloppyImageType.BasicSectorImage,
-            ".flp",
-            Function() My.Resources.FileType_VFD)},
-        {FloppyImageType.DSKImage, New FloppyImageFormatInfo(
-            FloppyImageType.BasicSectorImage,
-            ".dsk",
-            Function() My.Resources.FloppyImageType_BasicSectorImage)},
         {FloppyImageType.HFEImage, New FloppyImageFormatInfo(
             FloppyImageType.HFEImage,
             ".hfe",
@@ -54,11 +44,7 @@ Public NotInheritable Class FloppyImageFormats
         {FloppyImageType.TranscopyImage, New FloppyImageFormatInfo(
             FloppyImageType.TranscopyImage,
             ".tc",
-            Function() String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC))},
-        {FloppyImageType.VFDImage, New FloppyImageFormatInfo(
-            FloppyImageType.BasicSectorImage,
-            ".vfd",
-            Function() My.Resources.FileType_VFD)}
+            Function() String.Format(My.Resources.FloppyImageType_Image, My.Resources.FloppyImageType_TC))}
     }
 
     Private Shared ReadOnly _ByExtension As Dictionary(Of String, FloppyImageFormatInfo) = _Formats.Values.ToDictionary(Function(f) f.Extension, Function(f) f, StringComparer.OrdinalIgnoreCase)
@@ -70,23 +56,23 @@ Public NotInheritable Class FloppyImageFormats
 
     Public Shared ReadOnly BasicSectorFileExtensions As New List(Of String) From {
         _Formats.Item(FloppyImageType.BasicSectorImage).Extension,
-        _Formats.Item(FloppyImageType.IMGImage).Extension,
-        _Formats.Item(FloppyImageType.IMZImage).Extension,
-        _Formats.Item(FloppyImageType.VFDImage).Extension,
-        _Formats.Item(FloppyImageType.FLPImage).Extension,
-        _Formats.Item(FloppyImageType.DSKImage).Extension}
+        IMG_EXTENSION,
+        IMZ_EXTENSION,
+        VFD_EXTENSION,
+        FLP_EXTENSION,
+        DSK_EXTENSION}
 
     Public Shared ReadOnly BasicSectorFileExtensionsFlux As New List(Of String) From {
         _Formats.Item(FloppyImageType.BasicSectorImage).Extension,
-        _Formats.Item(FloppyImageType.IMGImage).Extension,
-        _Formats.Item(FloppyImageType.VFDImage).Extension,
-        _Formats.Item(FloppyImageType.FLPImage).Extension,
-        _Formats.Item(FloppyImageType.DSKImage).Extension}
+        IMG_EXTENSION,
+        VFD_EXTENSION,
+        FLP_EXTENSION,
+        DSK_EXTENSION}
 
     Public Shared ReadOnly BasicSectorFileExtensionsSave As New List(Of String) From {
         _Formats.Item(FloppyImageType.BasicSectorImage).Extension,
-        _Formats.Item(FloppyImageType.IMGImage).Extension,
-        _Formats.Item(FloppyImageType.DSKImage).Extension}
+        IMG_EXTENSION,
+        DSK_EXTENSION}
 
     Public Shared ReadOnly BitstreamFileExtensions As New List(Of String) From {
         _Formats.Item(FloppyImageType.D86FImage).Extension,
@@ -96,8 +82,8 @@ Public NotInheritable Class FloppyImageFormats
         _Formats.Item(FloppyImageType.TranscopyImage).Extension}
 
     Public Shared ReadOnly VFDFileExtensions As New List(Of String) From {
-        _Formats.Item(FloppyImageType.VFDImage).Extension,
-        _Formats.Item(FloppyImageType.FLPImage).Extension}
+        VFD_EXTENSION,
+        FLP_EXTENSION}
 
     Public Shared ReadOnly AllFileExtensions As New List(Of String)
 
@@ -134,7 +120,29 @@ Public NotInheritable Class FloppyImageFormats
         End If
     End Sub
 
+    Private Shared Sub InitBasicSectorExtensions()
+        AddBasicSectorExtension(IMG_EXTENSION)
+        AddBasicSectorExtension(DSK_EXTENSION)
+
+        _ByExtension.Add(IMZ_EXTENSION, New FloppyImageFormatInfo(
+            FloppyImageType.BasicSectorImage,
+            IMZ_EXTENSION,
+            Function() My.Resources.FileType_IMZ))
+
+        _ByExtension.Add(FLP_EXTENSION, New FloppyImageFormatInfo(
+            FloppyImageType.BasicSectorImage,
+            FLP_EXTENSION,
+            Function() My.Resources.FileType_VFD))
+
+        _ByExtension.Add(VFD_EXTENSION, New FloppyImageFormatInfo(
+            FloppyImageType.BasicSectorImage,
+            VFD_EXTENSION,
+            Function() My.Resources.FileType_VFD))
+    End Sub
+
     Private Shared Sub InitExtensions()
+        InitBasicSectorExtensions()
+
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
             Dim FileExt = FloppyDiskFormatGetParams(Item).FileExtension

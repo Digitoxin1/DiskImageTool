@@ -11,11 +11,6 @@ Namespace DiskImage
         HFEImage
         IMDImage
         TD0Image
-        IMZImage
-        VFDImage
-        FLPImage
-        IMGImage
-        DSKImage
     End Enum
 
     Public Interface IFloppyImage
