@@ -36,6 +36,8 @@ Namespace FloppyDB
             {"IT", "It"}
         }
         Private ReadOnly PlatformAbbrev As New Dictionary(Of String, String) From {
+            {"Windows 95", "Win95"},
+            {"Windows NT", "WinNT"},
             {"Windows 3.1", "Win3.1"},
             {"Windows 3.0", "Win3.0"},
             {"Windows 2.1", "Win2.1"},
