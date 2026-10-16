@@ -322,6 +322,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\GreaseweazleFormatters.vb" />
+    <Compile Include="Flux\Greaseweazle\GreaseweazleReadLog.vb" />
     <Compile Include="Flux\Greaseweazle\GreaseweazleLib.vb" />
     <Compile Include="Flux\Greaseweazle\GreaseweazleRunner.vb" />
     <Compile Include="Flux\Forms\BaseFluxForm.Designer.vb">

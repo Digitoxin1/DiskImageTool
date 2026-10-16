@@ -80,6 +80,7 @@ Namespace Flux.Greaseweazle
         Private _OutputDiskParams As FloppyDiskParams?
         Private _OutputDriveOption As DriveOption
         Private _OutputLayout As FluxLayout
+        Private _ReadLog As GreaseweazleReadLog
         Private _SelectedDriveOption As DriveOption
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
@@ -368,9 +369,14 @@ Namespace Flux.Greaseweazle
 
             If Finished Then
                 If Completed Then
+                    _ReadLog?.CommitOpenTrack()
                     SetTitleBarText()
-                ElseIf Not _FileReprocessMode Then
-                    ClearOutputFile(True)
+                Else
+                    _ReadLog?.DiscardOpenTrack()
+
+                    If Not _FileReprocessMode Then
+                        ClearOutputFile(True)
+                    End If
                 End If
                 _FileReprocessMode = False
             End If
@@ -545,6 +551,7 @@ Namespace Flux.Greaseweazle
             _OutputDriveOption = Nothing
             _OutputLayout = New FluxLayout()
             _FileReprocessMode = False
+            _ReadLog = Nothing
         End Sub
 
         Private Sub ClearOutputType2()
@@ -562,6 +569,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean, RefreshState As Boolean)
             _FileReprocessMode = False
+            _ReadLog = Nothing
 
             ClearOutputFile(DeleteOutputFile)
             ClearLogAndStatus()
@@ -744,10 +752,41 @@ Namespace Flux.Greaseweazle
             End If
 
             UpdateVerifyLogPaths(destFolder)
+            WriteGreaseweazleReadLog(destFolder)
             _TempFilePath = FluxGetOutputFilePath()
 
             Return True
         End Function
+
+        Private Sub NoteReadPreamble(line As String)
+            Runner.EmitOutputLine(line)
+            _ReadLog?.AddPreambleLine(line)
+        End Sub
+
+        Private Sub NoteReadTrackLine(cyl As Integer, head As Integer, line As String)
+            Runner.EmitOutputLine(line)
+            _ReadLog?.AddTrackLine(cyl, head, line)
+        End Sub
+
+        Private Sub WriteGreaseweazleReadLog(destFolder As String)
+            If _ReadLog Is Nothing OrElse Not CheckSaveLog.Checked OrElse Not _ReadLog.HasContent Then
+                Return
+            End If
+
+            Dim LogName = Settings.LogFileName
+
+            If String.IsNullOrWhiteSpace(LogName) Then
+                Return
+            End If
+
+            Dim LogPath = IO.Path.Combine(destFolder, LogName)
+
+            Try
+                IO.File.WriteAllText(LogPath, _ReadLog.Render())
+            Catch ex As Exception
+                MsgBox(String.Format(My.Resources.Dialog_SaveFileError, LogPath), MsgBoxStyle.Exclamation)
+            End Try
+        End Sub
 
         Private Sub FinalizeImageOutput()
             Dim FilePath = GetImageFilePath()
@@ -874,10 +913,6 @@ Namespace Flux.Greaseweazle
                     MsgBox(My.Resources.Dialog_ParentFolderCreationError, MsgBoxStyle.Critical)
                     Response.FilePath = ""
                 End Try
-
-                If CheckSaveLog.Checked Then
-                    Response.LogFilePath = IO.Path.Combine(Pathname, Settings.LogFileName)
-                End If
 
                 If SelectedOutputType2 <> ReadDiskOutputTypes.None AndAlso SelectedOutputType2 <> ReadDiskOutputTypes.RAW Then
                     Dim OutputType2 = If(NonStandard, ReadDiskOutputTypes.HFE, SelectedOutputType2)
@@ -1084,7 +1119,11 @@ Namespace Flux.Greaseweazle
             Dim Layout = ReadDiskHelpers.DetectFluxLayout(_SelectedDriveOption.Type, DiskParams.Value.Format, _SelectedDriveOption.Tracks, 0)
             ApplyOutputSession(DiskParams, _SelectedDriveOption, Layout)
 
-            InitLogFilePath(If(Response.LogFilePath, ""))
+            If IsFluxOutput Then
+                _ReadLog = New GreaseweazleReadLog()
+            End If
+
+            InitLogFilePath("")
 
             StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, Layout.HardwareDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2, Layout.PhysicalEvenFiles)
         End Sub
@@ -1238,7 +1277,9 @@ Namespace Flux.Greaseweazle
 
             ClearOutputType2()
 
-            InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(TempFolder, Settings.LogFileName), ""))
+            _ReadLog = New GreaseweazleReadLog()
+
+            InitLogFilePath("")
 
             Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
         End Sub
@@ -1429,7 +1470,12 @@ Namespace Flux.Greaseweazle
                 AppendLog = True
             End If
 
-            InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
+            If _ReadLog IsNot Nothing Then
+                _ReadLog.BeginReread()
+                InitLogFilePath("")
+            Else
+                InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
+            End If
 
             StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
         End Sub
@@ -1706,7 +1752,7 @@ Namespace Flux.Greaseweazle
             ButtonRootBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
             'ButtonImageFolderBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
 
-            CheckSaveLog.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            CheckSaveLog.Enabled = IsFluxOutput
             CheckSaveLog.Visible = IsFluxOutput
         End Sub
 
@@ -2002,12 +2048,12 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
-            Runner.EmitOutputLine(FormatConvertHardSectorsAppliedLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatConvertHardSectorsAppliedLine(e))
         End Sub
 
         Private Sub ConvertCmd_Started(sender As Object, e As ConvertStartedEventArgs) Handles ConvertCmd.Started
             For Each Line In FormatConvertStartedLines(e)
-                Runner.EmitOutputLine(Line)
+                NoteReadPreamble(Line)
             Next
         End Sub
 
@@ -2016,17 +2062,19 @@ Namespace Flux.Greaseweazle
                 Runner.EmitOutputLine(Line)
             Next
 
+            _ReadLog?.MergeSummary(e.Grid)
+
             Runner.PostToUi(Sub() _Status.OnSummary(e.Grid))
         End Sub
 
         Private Sub ConvertCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ConvertCmd.TrackProcessed
-            Runner.EmitOutputLine(FormatConvertTrackProcessedLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatConvertTrackProcessedLine(e))
 
             Runner.PostToUi(Sub() _Status.OnConvertTrackProcessed(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ConvertCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ConvertCmd.UnexpectedSectorIgnored
-            Runner.EmitOutputLine(FormatConvertUnexpectedSectorLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatConvertUnexpectedSectorLine(e))
 
             Runner.PostToUi(Sub() _Status.OnConvertUnexpectedSector(e, _OutputLayout.DisplayDoubleStep))
         End Sub
@@ -2048,12 +2096,12 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ReadCmd_HardSectorsDetected(sender As Object, e As HardSectorsDetectedEventArgs) Handles ReadCmd.HardSectorsDetected
-            Runner.EmitOutputLine(FormatReadHardSectorsLine(e))
+            NoteReadPreamble(FormatReadHardSectorsLine(e))
         End Sub
 
         Private Sub ReadCmd_Started(sender As Object, e As ReadStartedEventArgs) Handles ReadCmd.Started
             For Each Line In FormatReadStartedLines(e)
-                Runner.EmitOutputLine(Line)
+                NoteReadPreamble(Line)
             Next
         End Sub
         Private Sub ReadCmd_SummaryReady(sender As Object, e As SectorSummaryReadyEventArgs) Handles ReadCmd.SummaryReady
@@ -2061,23 +2109,25 @@ Namespace Flux.Greaseweazle
                 Runner.EmitOutputLine(Line)
             Next
 
+            _ReadLog?.MergeSummary(e.Grid)
+
             Runner.PostToUi(Sub() _Status.OnSummary(e.Grid))
         End Sub
 
         Private Sub ReadCmd_TrackGaveUp(sender As Object, e As ReadTrackGaveUpEventArgs) Handles ReadCmd.TrackGaveUp
-            Runner.EmitOutputLine(FormatReadTrackGaveUpLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatReadTrackGaveUpLine(e))
 
             Runner.PostToUi(Sub() _Status.OnReadTrackGaveUp(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ReadCmd_TrackProcessed(sender As Object, e As TrackProcessedEventArgs) Handles ReadCmd.TrackProcessed
-            Runner.EmitOutputLine(FormatReadTrackProcessedLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatReadTrackProcessedLine(e))
 
             Runner.PostToUi(Sub() _Status.OnReadTrackProcessed(e, _OutputLayout.DisplayDoubleStep))
         End Sub
 
         Private Sub ReadCmd_UnexpectedSectorIgnored(sender As Object, e As UnexpectedSectorEventArgs) Handles ReadCmd.UnexpectedSectorIgnored
-            Runner.EmitOutputLine(FormatReadUnexpectedSectorLine(e))
+            NoteReadTrackLine(e.Track.Cyl, e.Track.Head, FormatReadUnexpectedSectorLine(e))
 
             Runner.PostToUi(Sub() _Status.OnReadUnexpectedSector(e, _OutputLayout.DisplayDoubleStep))
         End Sub
