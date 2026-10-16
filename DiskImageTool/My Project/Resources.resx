@@ -1793,6 +1793,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Refine</value>
   </data>
+  <data name="Label_RefineDisk" xml:space="preserve">
+    <value>Refine Disk</value>
+  </data>
   <data name="Label_Region" xml:space="preserve">
     <value>Region</value>
   </data>

@@ -401,6 +401,9 @@ sélectionnées dans la grille ci-dessous sont relues.</value>
     <value>Ouvrir un ensemble d’images flux (.raw) existant et charger
 son état actuel dans la grille des pistes.
 
+Vous pouvez aussi déposer un fichier .raw ou un dossier
+de fichiers .raw sur la grille des pistes.
+
 Le formulaire est ensuite placé en mode sélection de pistes
 afin que des pistes individuelles puissent être relues
 contre l’ensemble flux d’origine.</value>

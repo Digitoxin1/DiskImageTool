@@ -1535,6 +1535,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Affiner</value>
   </data>
+  <data name="Label_RefineDisk" xml:space="preserve">
+    <value>Affiner le disque</value>
+  </data>
   <data name="Label_Region" xml:space="preserve">
     <value>Région</value>
   </data>

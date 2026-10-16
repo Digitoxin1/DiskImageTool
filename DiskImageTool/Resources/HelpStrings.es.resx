@@ -399,6 +399,9 @@ a leer las pistas seleccionadas en la cuadrícula inferior.</value>
     <value>Abrir un conjunto de imágenes de flujo (.raw) existente y cargar
 su estado actual en la cuadrícula de pistas.
 
+También puede soltar un archivo .raw o una carpeta de ellos
+sobre la cuadrícula de pistas.
+
 A continuación, el formulario se coloca en modo de selección
 de pistas para que se puedan volver a leer pistas individuales
 contra el conjunto de flujo original.</value>

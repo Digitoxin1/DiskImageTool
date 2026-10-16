@@ -5148,6 +5148,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Refine Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_RefineDisk() As String
+            Get
+                Return ResourceManager.GetString("Label_RefineDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Region.
         '''</summary>
         Friend ReadOnly Property Label_Region() As String

@@ -1278,14 +1278,11 @@ Public Class MainForm
                 IsFluxIamge = True
             ElseIf IO.Path.GetExtension(FilePath).ToLower = FluxFileTypeEnum.A2R.GetExtension() Then
                 IsFluxIamge = True
-            ElseIf IO.Path.GetExtension(FilePath).ToLower = FluxFileTypeEnum.RAW.GetExtension() Then
-                Dim Response = Flux.GetFluxSetInfoRaw(FilePath)
-                If Response.Result Then
-                    IsFluxIamge = True
-                End If
             End If
-        ElseIf IO.Directory.Exists(FilePath) Then
-            Dim RawFile = Flux.Greaseweazle.GetFirstRawFile(FilePath)
+        End If
+
+        If Not IsFluxIamge Then
+            Dim RawFile = Flux.Greaseweazle.TryResolveRawFluxFile(FilePath)
             If Not String.IsNullOrEmpty(RawFile) Then
                 FilePath = RawFile
                 IsFluxIamge = True

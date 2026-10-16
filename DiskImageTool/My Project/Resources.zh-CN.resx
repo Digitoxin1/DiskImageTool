@@ -1535,6 +1535,9 @@ Flux 映像集：“{0}”
   <data name="Label_Refine" xml:space="preserve">
     <value>精修</value>
   </data>
+  <data name="Label_RefineDisk" xml:space="preserve">
+    <value>精修磁盘</value>
+  </data>
   <data name="Label_Region" xml:space="preserve">
     <value>地区</value>
   </data>

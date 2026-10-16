@@ -1535,6 +1535,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Refine" xml:space="preserve">
     <value>Verfeinern</value>
   </data>
+  <data name="Label_RefineDisk" xml:space="preserve">
+    <value>Diskette verfeinern</value>
+  </data>
   <data name="Label_Region" xml:space="preserve">
     <value>Bereich</value>
   </data>

@@ -398,6 +398,9 @@ unteren Raster ausgewählten Spuren erneut gelesen.</value>
     <value>Ein vorhandenes Flux-Image-Set (.raw) öffnen und seinen
 aktuellen Zustand in das Spuren-Raster laden.
 
+Eine .raw-Datei oder ein Ordner mit .raw-Dateien kann
+auch auf das Spuren-Raster gezogen werden.
+
 Das Formular wird anschließend in den Spurenauswahl-Modus
 versetzt, sodass einzelne Spuren erneut gegen das ursprüngliche
 Flux-Set gelesen werden können.</value>

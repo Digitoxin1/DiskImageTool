@@ -693,6 +693,9 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Open an existing flux image set (.raw) and load its
         '''current state into the track grid.
         '''
+        '''You can also drop a .raw file or a folder of them onto
+        '''the track grid.
+        '''
         '''The form is then placed in select-tracks mode so
         '''individual tracks can be re-read against the original
         '''flux set..

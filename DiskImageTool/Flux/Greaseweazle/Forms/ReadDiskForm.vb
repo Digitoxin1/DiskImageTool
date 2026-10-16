@@ -81,6 +81,7 @@ Namespace Flux.Greaseweazle
         Private _OutputDriveOption As DriveOption
         Private _OutputLayout As FluxLayout
         Private _ReadLog As GreaseweazleReadLog
+        Private _RefineMode As Boolean = False
         Private _SelectedDriveOption As DriveOption
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
@@ -146,6 +147,8 @@ Namespace Flux.Greaseweazle
 
             ButtonToggleSequence.Enabled = False
             ButtonToggleSequence2.Enabled = False
+
+            EnableRawDrop()
 
             _Initialized = True
         End Sub
@@ -317,6 +320,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+            DisableRawDrop()
+
             ConvertCmd = Nothing
             ReadCmd = Nothing
 
@@ -377,6 +382,8 @@ Namespace Flux.Greaseweazle
                     If Not _FileReprocessMode Then
                         ClearOutputFile(True)
                     End If
+
+                    SetTitleBarText()
                 End If
                 _FileReprocessMode = False
             End If
@@ -552,6 +559,7 @@ Namespace Flux.Greaseweazle
             _OutputLayout = New FluxLayout()
             _FileReprocessMode = False
             _ReadLog = Nothing
+            _RefineMode = False
         End Sub
 
         Private Sub ClearOutputType2()
@@ -1187,9 +1195,7 @@ Namespace Flux.Greaseweazle
             Return DetectImageFormat(Response.FileName, True)
         End Function
 
-        Private Sub RefineFromRaw()
-            Dim SourceFile = OpenFluxImage(False, False)
-
+        Private Sub RefineFromRaw(SourceFile As String)
             If String.IsNullOrEmpty(SourceFile) Then
                 Exit Sub
             End If
@@ -1280,6 +1286,9 @@ Namespace Flux.Greaseweazle
             _ReadLog = New GreaseweazleReadLog()
 
             InitLogFilePath("")
+
+            _RefineMode = True
+            SetTitleBarText()
 
             Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
         End Sub
@@ -1596,7 +1605,7 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.RootFolder = Path
         End Sub
         Private Sub SetTitleBarText()
-            Dim Text = My.Resources.Label_ReadDisk
+            Dim Text = If(_RefineMode, My.Resources.Label_RefineDisk, My.Resources.Label_ReadDisk)
 
             If Not HasOutputFile Then
                 Me.Text = Text
@@ -1763,6 +1772,43 @@ Namespace Flux.Greaseweazle
             ButtonToggleSequence2.Enabled = Enabled
         End Sub
 
+        Private Function CanAcceptRawDrop() As Boolean
+            Return IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
+        End Function
+
+        Private Sub DisableRawDrop()
+            If TableSide0 Is Nothing OrElse TableSide1 Is Nothing Then
+                Return
+            End If
+
+            RemoveHandler TableSide0.DragEnter, AddressOf TrackGrid_DragEnter
+            RemoveHandler TableSide1.DragEnter, AddressOf TrackGrid_DragEnter
+            RemoveHandler TableSide0.DragDrop, AddressOf TrackGrid_DragDrop
+            RemoveHandler TableSide1.DragDrop, AddressOf TrackGrid_DragDrop
+        End Sub
+
+        Private Sub EnableRawDrop()
+            TableSide0.AllowDrop = True
+            TableSide1.AllowDrop = True
+            AddHandler TableSide0.DragEnter, AddressOf TrackGrid_DragEnter
+            AddHandler TableSide1.DragEnter, AddressOf TrackGrid_DragEnter
+            AddHandler TableSide0.DragDrop, AddressOf TrackGrid_DragDrop
+            AddHandler TableSide1.DragDrop, AddressOf TrackGrid_DragDrop
+        End Sub
+
+        Private Function ResolveDroppedRawFile(e As DragEventArgs) As String
+            If e.Data Is Nothing OrElse Not e.Data.GetDataPresent(DataFormats.FileDrop) Then
+                Return ""
+            End If
+
+            Dim Paths = TryCast(e.Data.GetData(DataFormats.FileDrop), String())
+            If Paths Is Nothing OrElse Paths.Length = 0 Then
+                Return ""
+            End If
+
+            Return TryResolveRawFluxFile(Paths(0))
+        End Function
+
 #Region "Events"
         Private Sub ButtonConvert_Click(sender As Object, e As EventArgs) Handles ButtonConvert.Click
             If Not CheckFileNameEntered(CheckImageFile:=False) Then
@@ -1896,7 +1942,40 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            RefineFromRaw()
+            Dim SourceFile = OpenFluxImage(False, False)
+
+            If String.IsNullOrEmpty(SourceFile) Then
+                Exit Sub
+            End If
+
+            RefineFromRaw(SourceFile)
+        End Sub
+
+        Private Sub TrackGrid_DragDrop(sender As Object, e As DragEventArgs)
+            If Not CanAcceptRawDrop() Then
+                Return
+            End If
+
+            Dim SourceFile = ResolveDroppedRawFile(e)
+            If String.IsNullOrEmpty(SourceFile) Then
+                Return
+            End If
+
+            If IsFluxOutput AndAlso Not CheckRootFolder() Then
+                Return
+            End If
+
+            RefineFromRaw(SourceFile)
+        End Sub
+
+        Private Sub TrackGrid_DragEnter(sender As Object, e As DragEventArgs)
+            If Not CanAcceptRawDrop() Then
+                e.Effect = DragDropEffects.None
+                Return
+            End If
+
+            Dim SourceFile = ResolveDroppedRawFile(e)
+            e.Effect = If(String.IsNullOrEmpty(SourceFile), DragDropEffects.None, DragDropEffects.Copy)
         End Sub
 
         Private Sub ButtonRootBrowse_Click(sender As Object, e As EventArgs) Handles ButtonRootBrowse.Click

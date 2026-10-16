@@ -1535,6 +1535,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Refine" xml:space="preserve">
     <value>Refinar</value>
   </data>
+  <data name="Label_RefineDisk" xml:space="preserve">
+    <value>Refinar el disco</value>
+  </data>
   <data name="Label_Region" xml:space="preserve">
     <value>Región</value>
   </data>

@@ -229,6 +229,24 @@ Namespace Flux.Greaseweazle
             Return (IO.File.Exists(FileName), FileName)
         End Function
 
+        Public Function TryResolveRawFluxFile(path As String) As String
+            If String.IsNullOrWhiteSpace(path) Then
+                Return ""
+            End If
+
+            If IO.File.Exists(path) Then
+                If IO.Path.GetExtension(path).Equals(FluxFileTypeEnum.RAW.GetExtension(), StringComparison.OrdinalIgnoreCase) Then
+                    If GetFluxSetInfoRaw(path).Result Then
+                        Return path
+                    End If
+                End If
+            ElseIf IO.Directory.Exists(path) Then
+                Return GetFirstRawFile(path)
+            End If
+
+            Return ""
+        End Function
+
         Public Function GetFirstRawFile(FilePath As String) As String
             Dim RawFileName As String = ""
 

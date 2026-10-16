@@ -185,10 +185,14 @@ Namespace Flux.Greaseweazle
             End If
 
             Try
-                ' Fast path: destination does not exist -> rename temp folder to destination
+                ' Fast path: destination does not exist and shares a volume -> rename temp folder
                 If Not IO.Directory.Exists(destFull) Then
-                    IO.Directory.Move(tempFull, destFull)
-                    Return True
+                    If SamePathRoot(tempFull, destFull) Then
+                        IO.Directory.Move(tempFull, destFull)
+                        Return True
+                    End If
+
+                    IO.Directory.CreateDirectory(destFull)
                 End If
 
                 ' If prefix was not provided, try to infer it from temp set
@@ -220,7 +224,7 @@ Namespace Flux.Greaseweazle
                         IO.File.Delete(dstFile)
                     End If
 
-                    IO.File.Move(srcFile, dstFile)
+                    MoveFileTo(srcFile, dstFile)
 
                     IO.File.SetCreationTime(dstFile, created)
                     IO.File.SetLastWriteTime(dstFile, modified)
@@ -236,6 +240,20 @@ Namespace Flux.Greaseweazle
                 Debug.WriteLine($"FinalizeFluxTempFolder failed: {ex.Message}")
                 Return False
             End Try
+        End Function
+
+        Private Shared Sub MoveFileTo(srcFile As String, dstFile As String)
+            If SamePathRoot(srcFile, dstFile) Then
+                IO.File.Move(srcFile, dstFile)
+                Return
+            End If
+
+            IO.File.Copy(srcFile, dstFile, True)
+            IO.File.Delete(srcFile)
+        End Sub
+
+        Private Shared Function SamePathRoot(pathA As String, pathB As String) As Boolean
+            Return String.Equals(IO.Path.GetPathRoot(pathA), IO.Path.GetPathRoot(pathB), StringComparison.OrdinalIgnoreCase)
         End Function
 
         Friend Shared Function FluxGetFirstTrackFileName(Prefix As String) As String

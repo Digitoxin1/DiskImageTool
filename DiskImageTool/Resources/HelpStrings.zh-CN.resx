@@ -354,6 +354,8 @@ Flux 映像集将原始磁通保存为可稍后重新转换的 .raw 集合。其
   <data name="Flux_Refine" xml:space="preserve">
     <value>打开现有 Flux 映像集 (.raw)，并将其当前状态加载到磁道表格中。
 
+也可以将 .raw 文件或包含 .raw 文件的文件夹拖放到磁道表格上。
+
 随后进入选择磁道模式，以便针对原始 Flux 集重新读取单个磁道。</value>
   </data>
   <data name="Flux_Remaster" xml:space="preserve">
