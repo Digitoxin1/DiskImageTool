@@ -291,6 +291,7 @@ Module HexViews
             End If
         End If
 
+        HexViewSectorData.ShowAbsoluteOffset = Not DirectoryEntry.IsDirectory
         HexViewSectorData.Description = Caption
 
         Return HexViewSectorData

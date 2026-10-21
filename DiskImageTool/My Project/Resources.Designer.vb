@@ -2907,6 +2907,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Absolute.
+        '''</summary>
+        Friend ReadOnly Property Label_Absolute() As String
+            Get
+                Return ResourceManager.GetString("Label_Absolute", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to About.
         '''</summary>
         Friend ReadOnly Property Label_About() As String

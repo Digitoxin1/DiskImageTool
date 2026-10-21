@@ -1051,6 +1051,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Aborted" xml:space="preserve">
     <value>Aborted</value>
   </data>
+  <data name="Label_Absolute" xml:space="preserve">
+    <value>Absolute</value>
+  </data>
   <data name="Label_About" xml:space="preserve">
     <value>About</value>
   </data>

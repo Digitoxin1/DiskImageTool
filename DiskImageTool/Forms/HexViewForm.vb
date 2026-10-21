@@ -5,6 +5,7 @@ Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.HexView
 
 Public Class HexViewForm
+    Private WithEvents CheckBoxAbsolute As CheckBox
     Private WithEvents CheckBoxSync As ToolStripCheckBox
     Private WithEvents ComboTrack As ComboTrack
     Private WithEvents NumericCluster As ToolStripNumericUpDown
@@ -38,7 +39,6 @@ Public Class HexViewForm
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
-        LocalizeForm()
 
         _HexViewSectorData = HexViewSectorData
         _BPB = _HexViewSectorData.Disk.BPB
@@ -99,6 +99,12 @@ Public Class HexViewForm
         If _SyncBlocks Then
             InitializeSyncCheckBox()
         End If
+
+        If _HexViewSectorData.ShowAbsoluteOffset Then
+            InitializeAbsoluteCheckBox()
+        End If
+
+        LocalizeForm()
     End Sub
 
     Private Sub LocalizeForm()
@@ -118,6 +124,9 @@ Public Class HexViewForm
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
         LblGroups.Text = My.Resources.Label_Display
+        If CheckBoxAbsolute IsNot Nothing Then
+            CheckBoxAbsolute.Text = My.Resources.Label_Absolute
+        End If
         ToolStripBtnCommit.Text = My.Resources.Label_Commit
         ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
@@ -181,7 +190,7 @@ Public Class HexViewForm
         Dim Sector As UInteger
 
         For Index = 0 To Length - 1
-            Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            Sector = _BPB.OffsetToSector(GetSectorBlockOffset() + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
                 SectorReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
                 LastSector = Sector
@@ -206,7 +215,7 @@ Public Class HexViewForm
         Dim Sector As UInteger
 
         For Index = 0 To Length - 1
-            Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            Sector = _BPB.OffsetToSector(GetSectorBlockOffset() + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
                 SectorReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
                 LastSector = Sector
@@ -472,6 +481,16 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Function GetSectorBlockOffset() As UInteger
+        Dim Offset As UInteger = 0
+
+        If _BPB IsNot Nothing AndAlso _CurrentHexViewData IsNot Nothing Then
+            Offset = _BPB.SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
+        End If
+
+        Return Offset
+    End Function
+
     Private Sub DisplayBlock(SelectedIndex As Integer)
         If SelectedIndex = _CurrentIndex Then
             Exit Sub
@@ -491,7 +510,7 @@ Public Class HexViewForm
 
             If _CurrentHexViewData.SectorBlock.Size > 0 Then
                 .ByteProvider = _CurrentHexViewData.ByteProvider
-                .LineInfoOffset = _BPB.SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
+                ApplyLineInfoOffset()
 
                 HighlightedRegions.Sort()
 
@@ -529,7 +548,7 @@ Public Class HexViewForm
                     End If
 
                     If Size > 0 Then
-                        Dim Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Start)
+                        Dim Sector = _BPB.OffsetToSector(GetSectorBlockOffset() + Start)
                         If _HexViewSectorData.Disk.Image.IsProtectedSector(Sector) Then
                             HighlightForeColor = Color.Gray
                             HighlightBackColor = Color.White
@@ -647,6 +666,42 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub ApplyLineInfoOffset()
+        If _CurrentHexViewData Is Nothing Then
+            Exit Sub
+        End If
+
+        If CheckBoxAbsolute IsNot Nothing AndAlso CheckBoxAbsolute.Checked Then
+            HexBox1.LineInfoOffset = _CurrentHexViewData.SectorBlock.Offset
+        Else
+            HexBox1.LineInfoOffset = GetSectorBlockOffset()
+        End If
+    End Sub
+
+    Private Sub InitializeAbsoluteCheckBox()
+        CheckBoxAbsolute = New CheckBox With {
+            .AutoSize = True,
+            .Checked = False,
+            .Margin = New Padding(0, 0, 0, 0)
+        }
+
+        Dim host As New ToolStripControlHost(CheckBoxAbsolute) With {
+            .Margin = New Padding(12, 2, 0, 0)
+        }
+
+        Dim divider As New ToolStripStatusLabel With {
+            .AutoSize = False,
+            .BorderSides = ToolStripStatusLabelBorderSides.Right,
+            .Size = New Size(4, 19),
+            .Text = ""
+        }
+
+        StatusStrip1.Items.Insert(0, host)
+        StatusStrip1.Items.Insert(1, divider)
+
+        StatusStrip1.TabStop = True
+    End Sub
+
     Private Sub InitializeClusterNavigator()
         NumericCluster = New ToolStripNumericUpDown() With {
             .Alignment = ToolStripItemAlignment.Right,
@@ -724,7 +779,7 @@ Public Class HexViewForm
         Dim Sector = _BPB.ClusterToSector(Cluster)
 
         If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
-            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - GetSectorBlockOffset()
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -736,7 +791,7 @@ Public Class HexViewForm
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
 
         If Sector >= SectorStart And Sector <= SectorEnd Then
-            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - GetSectorBlockOffset()
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -755,7 +810,7 @@ Public Class HexViewForm
         Dim Sector = _BPB.TrackToSector(Track, Side)
 
         If Track >= TrackStart And Track <= TrackEnd Then
-            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - GetSectorBlockOffset()
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -950,13 +1005,14 @@ Public Class HexViewForm
             _DataGridInspector.SetDataRow(DataRowEnum.Area, Nothing, True, True)
             _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True, FileCaption)
         Else
+            Dim DiskOffsetStart As UInteger = GetSectorBlockOffset() + SelectionStart
             Dim OffsetStart As UInteger = HexBox1.LineInfoOffset + SelectionStart
             Dim OffsetEnd As Integer = HexBox1.LineInfoOffset + SelectionEnd
             Dim AreaName As String = ""
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-            Dim Sector = _BPB.OffsetToSector(OffsetStart)
+            Dim Sector = _BPB.OffsetToSector(DiskOffsetStart)
 
             HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
 
@@ -1178,7 +1234,7 @@ Public Class HexViewForm
             Exit Sub
         End If
 
-        Dim Offset = HexBox1.LineInfoOffset + HexBox1.StartByte
+        Dim Offset = GetSectorBlockOffset() + HexBox1.StartByte
         Dim Sector = _BPB.OffsetToSector(Offset)
 
         _IgnoreEvent = True
@@ -1280,7 +1336,7 @@ Public Class HexViewForm
 
         Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
         If Not OutOfRange Then
-            Dim Offset = _BPB.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(_CurrentSector) - GetSectorBlockOffset()
             Dim Length = _BPB.BytesPerSector
 
             If Offset + Length > HexBox1.ByteProvider.Length Then
@@ -1297,7 +1353,7 @@ Public Class HexViewForm
             Dim Track = _BPB.SectorToTrack(_CurrentSector)
             Dim Side = _BPB.SectorToSide(_CurrentSector)
             Dim Sector = _BPB.TrackToSector(Track, Side)
-            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - GetSectorBlockOffset()
             Dim Length = _BPB.BytesPerSector * _BPB.SectorsPerTrack
 
             If Offset + Length > HexBox1.ByteProvider.Length Then
@@ -1515,16 +1571,32 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub CheckBoxAbsolute_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxAbsolute.CheckedChanged
+        If _CurrentHexViewData Is Nothing Then
+            Exit Sub
+        End If
+
+        ApplyLineInfoOffset()
+        RefreshSelection(True)
+    End Sub
+
     Private Sub HexBox1_FormatSectorLabel(sender As Object, e As HexBox.FormatSectorLabelEventArgs) Handles HexBox1.FormatSectorLabel
+        Dim Sector As UInteger
+        If _BPB.BytesPerSector > 0 Then
+            Dim ByteIndex = e.Offset - HexBox1.LineInfoOffset
+            Sector = _BPB.OffsetToSector(GetSectorBlockOffset() + ByteIndex)
+        Else
+            Sector = CUInt(e.Sector)
+        End If
+
         If _BPB.IsValid Then
-            Dim Sector = CUInt(e.Sector)
             Dim Track = _BPB.SectorToTrack(Sector)
             Dim Side = _BPB.SectorToSide(Sector)
             Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
 
             e.Text = Track & "." & Side & "-" & SectorId
         Else
-            e.Text = e.Sector.ToString()
+            e.Text = Sector.ToString()
         End If
     End Sub
 

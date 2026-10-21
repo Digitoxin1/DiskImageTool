@@ -29,6 +29,7 @@ Public Class HexViewSectorData
     End Sub
 
     Public Property Description As String
+    Public Property ShowAbsoluteOffset As Boolean
     Public ReadOnly Property Disk As Disk
     Public ReadOnly Property HighlightedRegionList As List(Of HighlightedRegions)
     Public ReadOnly Property SectorData As SectorData

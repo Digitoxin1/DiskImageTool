@@ -135,7 +135,7 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         ToolStripStatusGap.Name = "ToolStripStatusGap"
-        ToolStripStatusGap.Size = New System.Drawing.Size(455, 19)
+        ToolStripStatusGap.Size = New System.Drawing.Size(424, 19)
         ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusLabel1
