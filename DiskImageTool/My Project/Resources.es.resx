@@ -809,6 +809,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Aborted" xml:space="preserve">
     <value>Abortado</value>
   </data>
+  <data name="Label_Absolute" xml:space="preserve">
+    <value>Absoluto</value>
+  </data>
   <data name="Label_About" xml:space="preserve">
     <value>Acerca de</value>
   </data>

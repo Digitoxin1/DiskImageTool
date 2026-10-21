@@ -809,6 +809,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Aborted" xml:space="preserve">
     <value>Annulé</value>
   </data>
+  <data name="Label_Absolute" xml:space="preserve">
+    <value>Absolu</value>
+  </data>
   <data name="Label_About" xml:space="preserve">
     <value>À propos</value>
   </data>

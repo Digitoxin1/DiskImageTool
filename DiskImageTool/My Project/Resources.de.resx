@@ -809,6 +809,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Aborted" xml:space="preserve">
     <value>Abgebrochen</value>
   </data>
+  <data name="Label_Absolute" xml:space="preserve">
+    <value>Absolut</value>
+  </data>
   <data name="Label_About" xml:space="preserve">
     <value>Info</value>
   </data>

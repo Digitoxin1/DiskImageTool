@@ -20,6 +20,7 @@ Public Class HexViewForm
     Private ReadOnly _RedoChanges As Stack(Of List(Of HexChange))
     Private ReadOnly _SectorNavigator As Boolean
     Private ReadOnly _SyncBlocks As Boolean
+    Private Shared _AbsoluteOffset As Boolean
     Private _CachedSelectedLength As Long = -1
     Private _CurrentHexViewData As HexViewData
     Private _CurrentIndex As Integer = -1
@@ -681,7 +682,7 @@ Public Class HexViewForm
     Private Sub InitializeAbsoluteCheckBox()
         CheckBoxAbsolute = New CheckBox With {
             .AutoSize = True,
-            .Checked = False,
+            .Checked = _AbsoluteOffset,
             .Margin = New Padding(0, 0, 0, 0)
         }
 
@@ -1572,6 +1573,8 @@ Public Class HexViewForm
     End Sub
 
     Private Sub CheckBoxAbsolute_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxAbsolute.CheckedChanged
+        _AbsoluteOffset = CheckBoxAbsolute.Checked
+
         If _CurrentHexViewData Is Nothing Then
             Exit Sub
         End If

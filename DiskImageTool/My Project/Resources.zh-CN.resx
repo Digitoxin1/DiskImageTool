@@ -809,6 +809,9 @@ Flux 映像集：“{0}”
   <data name="Label_Aborted" xml:space="preserve">
     <value>已中止</value>
   </data>
+  <data name="Label_Absolute" xml:space="preserve">
+    <value>绝对</value>
+  </data>
   <data name="Label_About" xml:space="preserve">
     <value>关于</value>
   </data>
