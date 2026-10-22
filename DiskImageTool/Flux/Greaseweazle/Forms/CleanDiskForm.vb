@@ -80,7 +80,14 @@ Namespace Flux.Greaseweazle
                 .Drive = Drive
             }
 
+            DisableProcessButton()
+
             Runner.RunAsync(Sub(Token) CleanCmd.Run(Opts, Token))
+        End Sub
+
+        Private Sub DisableProcessButton()
+            ButtonProcess.Enabled = False
+            StartDebounceTimer()
         End Sub
 
         Private Sub InitializeControls()
@@ -237,6 +244,10 @@ Namespace Flux.Greaseweazle
 
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
             If CancelIfRunning() Then
                 Exit Sub
             End If

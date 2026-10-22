@@ -6,6 +6,7 @@ Namespace Flux
     Public MustInherit Class BaseFluxForm
         Protected WithEvents Process As ConsoleProcessRunner
         Protected WithEvents Runner As GreaseweazleRunner
+        Private WithEvents DebounceTimer As New Timer
         Private WithEvents TS As ITrackStatus = Nothing
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
@@ -16,6 +17,7 @@ Namespace Flux
         Private _LogFileName As String = ""
         Private _LogFilePath As String = ""
         Private _LogStripPath As Boolean = False
+        Private _DebounceEnabled As Boolean = False
         Private _Sides As Byte
         Private _StatusData As TrackStatusData? = Nothing
         Private _Tracks As UShort
@@ -32,6 +34,7 @@ Namespace Flux
             _LogFileName = LogFileName
             StatusDevice.Visible = False
 
+            DebounceTimer.Interval = 2
             Runner = New GreaseweazleRunner()
 
             If UseProcess Then
@@ -75,6 +78,12 @@ Namespace Flux
         Protected ReadOnly Property IsIdle As Boolean
             Get
                 Return Not IsRunning
+            End Get
+        End Property
+
+        Protected ReadOnly Property CheckDebounce As Boolean
+            Get
+                Return _DebounceEnabled
             End Get
         End Property
 
@@ -441,6 +450,17 @@ Namespace Flux
             TextBoxConsole.Text = State.Log
         End Sub
 
+        Protected Sub StartDebounceTimer()
+            _DebounceEnabled = True
+            DebounceTimer.Stop()
+            DebounceTimer.Start()
+        End Sub
+
+        Protected Sub StopDebounceTimer()
+            _DebounceEnabled = False
+            DebounceTimer.Stop()
+        End Sub
+
         Protected Function TryMakeDriveSpec(Id As String, ByRef Drive As DriveSpec) As Boolean
             Try
                 Drive = MakeDriveSpec(Id)
@@ -653,6 +673,10 @@ Namespace Flux
             End If
 
             RaiseEvent SelectionChanged(Me, Track, 1, Selected)
+        End Sub
+
+        Private Sub DebounceTimer_Tick(sender As Object, e As EventArgs) Handles DebounceTimer.Tick
+            StopDebounceTimer()
         End Sub
 #End Region
         Public Structure FluxFormState

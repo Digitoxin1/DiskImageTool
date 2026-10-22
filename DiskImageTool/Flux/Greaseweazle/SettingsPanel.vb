@@ -208,13 +208,15 @@ Namespace Flux.Greaseweazle
         End Sub
 #Region "Events"
         Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
-            Me.Cursor = Cursors.WaitCursor
+            Dim Content As String = ""
 
-            Application.DoEvents()
+            Cursor.Current = Cursors.WaitCursor
 
-            Dim Content = GetInfo()
-
-            Me.Cursor = Cursors.Default
+            Try
+                Content = GetInfo()
+            Finally
+                Cursor.Current = Cursors.Default
+            End Try
 
             TextBoxInfo.Text = Content
         End Sub

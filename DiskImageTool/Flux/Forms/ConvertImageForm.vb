@@ -262,6 +262,11 @@ Namespace Flux
             TrackStatus.Clear()
         End Sub
 
+        Private Sub DisableProcessButton()
+            ButtonProcess.Enabled = False
+            StartDebounceTimer()
+        End Sub
+
         Private Sub DiscardLoadedImage()
             _OutputImages.ClearImages()
             ClearLoadedImage()
@@ -1023,6 +1028,8 @@ Namespace Flux
                 _OutputImages.PendingImage.SetSuffix(Response.Suffix)
             End If
 
+            DisableProcessButton()
+
             Process.StartAsync(_SelectedDevice.Settings.AppPath, Response.Arguments)
         End Sub
 
@@ -1349,6 +1356,8 @@ Namespace Flux
             StatusDevice.Text = _SelectedDevice.Name
             StatusDevice.Visible = True
 
+            DisableProcessButton()
+
             Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
         End Sub
 
@@ -1429,6 +1438,10 @@ Namespace Flux
         End Sub
 
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
             If CancelIfRunning() Then
                 Exit Sub
             End If

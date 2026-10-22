@@ -26,10 +26,10 @@ Namespace Flux.Greaseweazle
         Public Const MIN_REVS As Byte = 1
 
         Public Sub BandwidthDisplay(ParentForm As Form)
-            ParentForm.Cursor = Cursors.WaitCursor
-            Application.DoEvents()
-
             Dim Content As String = ""
+
+            Cursor.Current = Cursors.WaitCursor
+
             Try
                 Dim LocalEngine As New GreaseweazleEngine()
                 Dim Result = LocalEngine.Bandwidth.Run(New BandwidthOptions With {
@@ -40,7 +40,7 @@ Namespace Flux.Greaseweazle
             Catch ex As Exception
                 Content = String.Format(My.Resources.Dialog_CommandFailed, ex.Message)
             Finally
-                ParentForm.Cursor = Cursors.Default
+                Cursor.Current = Cursors.Default
             End Try
 
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, True, "GreaseweazleBandwidth.txt")
@@ -294,12 +294,15 @@ Namespace Flux.Greaseweazle
         End Function
 
         Public Sub InfoDisplay(ParentForm As Form)
-            ParentForm.Cursor = Cursors.WaitCursor
-            Application.DoEvents()
+            Dim Content As String = ""
 
-            Dim Content = GetInfo()
+            Cursor.Current = Cursors.WaitCursor
 
-            ParentForm.Cursor = Cursors.Default
+            Try
+                Content = GetInfo()
+            Finally
+                Cursor.Current = Cursors.Default
+            End Try
 
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, True, "GreaseweazleInfo.txt")
         End Sub

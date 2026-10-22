@@ -83,6 +83,7 @@ Namespace Flux.Greaseweazle
         Private _ReadLog As GreaseweazleReadLog
         Private _RefineMode As Boolean = False
         Private _SelectedDriveOption As DriveOption
+        Private _SkipProcessButtons As Boolean = False
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
 
@@ -702,7 +703,9 @@ Namespace Flux.Greaseweazle
                 Return True
             End If
 
+            _SkipProcessButtons = True
             DoFormatDetection()
+            _SkipProcessButtons = False
 
             Dim DiskParams = SelectedDiskParams
             If Not DiskParams.HasValue Then
@@ -1080,7 +1083,10 @@ Namespace Flux.Greaseweazle
                 ImagePreview.Display(ImageData, Caption)
 
             Else
+                RefreshProcessButtonState(True)
+
                 If Not EnsureFormatDetected() Then
+                    RefreshProcessButtonState()
                     Exit Sub
                 End If
 
@@ -1090,6 +1096,8 @@ Namespace Flux.Greaseweazle
                 End If
 
                 Dim Response = ReadFirstTrack(_SelectedDriveOption.Id, True, DiskParams.Value)
+
+                RefreshProcessButtonState()
 
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
@@ -1101,21 +1109,21 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub ProcessImage()
+        Private Function ProcessImage() As Boolean
             Dim DiskParams = SelectedDiskParams
 
             If Not DiskParams.HasValue Then
-                Exit Sub
+                Return False
             End If
 
             If Not HasOptionId Then
-                Exit Sub
+                Return False
             End If
 
             Dim Response = GetOutputFilePaths()
 
             If Response.FilePath = "" Then
-                Exit Sub
+                Return False
             End If
 
             TrackStatus = _Status
@@ -1133,8 +1141,8 @@ Namespace Flux.Greaseweazle
 
             InitLogFilePath("")
 
-            StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, Layout.HardwareDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2, Layout.PhysicalEvenFiles)
-        End Sub
+            Return StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, Layout.HardwareDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2, Layout.PhysicalEvenFiles)
+        End Function
 
         Private Sub ProcessImport(OutputFile As String, NewFileName As String)
             If Not String.IsNullOrEmpty(OutputFile) Then
@@ -1329,18 +1337,17 @@ Namespace Flux.Greaseweazle
 
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
 
-            ButtonDetect.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
-
             ButtonCancel.Text = If(IsRunning OrElse HasOutputFile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
-
-            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
 
             ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
 
             GridSelectEnabled(CanRefine)
             GridHideSelection(Not IsIdle)
 
-            RefreshProcessButtonState()
+            If Not _SkipProcessButtons Then
+                RefreshProcessButtonState()
+            End If
+
             RefreshImportButtonState()
             ToggleRootFolderControls()
             ToggleImageLocationVisible()
@@ -1408,16 +1415,23 @@ Namespace Flux.Greaseweazle
             App.UserState.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
 
-        Private Sub RefreshProcessButtonState()
+        Private Sub RefreshProcessButtonState(Optional Busy As Boolean = False)
+            Dim DiskParams = SelectedDiskParams
+            Dim DriveSelected As Boolean = HasOptionId
+            Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
+
+            ButtonDetect.Enabled = Not Busy AndAlso (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
+            ButtonPreview.Enabled = Not Busy AndAlso IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
+
             If IsRunning Then
                 ButtonRead.Text = My.Resources.Label_Abort
-                ButtonRead.Enabled = True
+                ButtonRead.Enabled = Not Busy
             Else
                 Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
 
                 ButtonRead.Text = My.Resources.Label_Read
                 Dim PhysicalEvenBlocked = HasOutputFile AndAlso _OutputLayout.PhysicalEvenFiles AndAlso Not CheckCompatibility()
-                ButtonRead.Enabled = HasOptionId AndAlso Not PhysicalEvenBlocked AndAlso (Not HasOutputFile OrElse TracksSelected)
+                ButtonRead.Enabled = Not Busy AndAlso DriveSelected AndAlso Not PhysicalEvenBlocked AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
@@ -1451,15 +1465,15 @@ Namespace Flux.Greaseweazle
             _LabelImageFormat.ForeColor = If(CheckCompatibility(), SystemColors.ControlText, Color.Red)
         End Sub
 
-        Private Sub ReprocessImage()
+        Private Function ReprocessImage() As Boolean
             Dim DiskParams = SelectedDiskParams
 
             If Not DiskParams.HasValue Then
-                Exit Sub
+                Return False
             End If
 
             If Not HasOptionId Then
-                Exit Sub
+                Return False
             End If
 
             TrackStatus = _Status
@@ -1486,8 +1500,8 @@ Namespace Flux.Greaseweazle
                 InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
             End If
 
-            StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
-        End Sub
+            Return StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
+        End Function
 
         Private Sub ResetOutputTypes(Optional OutputType As ReadDiskOutputTypes? = Nothing)
             If Not OutputType.HasValue Then
@@ -1638,7 +1652,7 @@ Namespace Flux.Greaseweazle
             Me.Text = Text & " - " & DisplayFileName
         End Sub
 
-        Private Sub StartReadRun(filePath As String,
+        Private Function StartReadRun(filePath As String,
                                  opt As DriveOption,
                                  diskParams As FloppyDiskParams,
                                  outputType As ReadDiskOutputTypes,
@@ -1647,7 +1661,7 @@ Namespace Flux.Greaseweazle
                                  heads As TrackHeads?,
                                  filePath2 As String,
                                  outputType2 As ReadDiskOutputTypes,
-                                 Optional physicalEvenFiles As Boolean = False)
+                                 Optional physicalEvenFiles As Boolean = False) As Boolean
 
             _Status.PhysicalEvenReadMode = physicalEvenFiles
 
@@ -1669,11 +1683,13 @@ Namespace Flux.Greaseweazle
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
-                Return
+                Return False
             End Try
 
             Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
-        End Sub
+
+            Return True
+        End Function
 
         Private Sub SyncOutputLayout()
             Dim DiskParams = SelectedDiskParams
@@ -1819,11 +1835,21 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonDetect_Click(sender As Object, e As EventArgs) Handles ButtonDetect.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
+            RefreshProcessButtonState(True)
+            _SkipProcessButtons = True
             DoFormatDetection()
+            _SkipProcessButtons = False
+            RefreshProcessButtonState()
 
             If Not SelectedDiskParams.HasValue Then
                 MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
             End If
+
+            StartDebounceTimer()
         End Sub
 
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
@@ -1910,10 +1936,20 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
             PreviewImage()
+
+            StartDebounceTimer()
         End Sub
 
         Private Sub ButtonRead_Click(sender As Object, e As EventArgs) Handles ButtonRead.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
             If CancelIfRunning() Then
                 Exit Sub
             End If
@@ -1927,14 +1963,25 @@ Namespace Flux.Greaseweazle
                     Exit Sub
                 End If
 
-                ReprocessImage()
+                RefreshProcessButtonState(True)
+
+                If Not ReprocessImage() Then
+                    RefreshProcessButtonState()
+                End If
             Else
+                RefreshProcessButtonState(True)
+
                 If Not EnsureFormatDetected() Then
+                    RefreshProcessButtonState()
                     Exit Sub
                 End If
 
-                ProcessImage()
+                If Not ProcessImage() Then
+                    RefreshProcessButtonState()
+                End If
             End If
+
+            StartDebounceTimer()
         End Sub
 
         Private Sub ButtonRefine_Click(sender As Object, e As EventArgs) Handles ButtonRefine.Click
