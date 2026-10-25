@@ -48,11 +48,11 @@ Namespace Flux
 
             If UseGrid Then
                 TS0 = New FloppyTrackGrid(TOTAL_TRACKS, 0) With {
-                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
-            }
+                    .Anchor = AnchorStyles.Top Or AnchorStyles.Right
+                }
                 TS1 = New FloppyTrackGrid(TOTAL_TRACKS, 1) With {
                     .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
-                    .Margin = New Padding(32, 3, 3, 3)
+                    .Margin = New Padding(32, 3, 3, 0)
                 }
             End If
         End Sub

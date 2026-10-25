@@ -53,7 +53,7 @@
             Me.PanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelBottom.Controls.Add(Me.PanelBottomInner)
             Me.PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-            Me.PanelBottom.Location = New System.Drawing.Point(0, 424)
+            Me.PanelBottom.Location = New System.Drawing.Point(0, 418)
             Me.PanelBottom.Name = "PanelBottom"
             Me.PanelBottom.Size = New System.Drawing.Size(767, 43)
             Me.PanelBottom.TabIndex = 1
@@ -171,8 +171,8 @@
             Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelMain.Location = New System.Drawing.Point(0, 0)
             Me.PanelMain.Name = "PanelMain"
-            Me.PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
-            Me.PanelMain.Size = New System.Drawing.Size(767, 424)
+            Me.PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 0)
+            Me.PanelMain.Size = New System.Drawing.Size(767, 418)
             Me.PanelMain.TabIndex = 0
             '
             'PanelInner
@@ -183,7 +183,7 @@
             Me.PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelInner.Location = New System.Drawing.Point(18, 18)
             Me.PanelInner.Name = "PanelInner"
-            Me.PanelInner.Size = New System.Drawing.Size(731, 234)
+            Me.PanelInner.Size = New System.Drawing.Size(731, 240)
             Me.PanelInner.TabIndex = 0
             '
             'TableLayoutPanelMain
@@ -209,7 +209,7 @@
             Me.PanelConsoleHeader.Controls.Add(Me.CheckSaveLog)
             Me.PanelConsoleHeader.Controls.Add(Me.LabelConsoleOutput)
             Me.PanelConsoleHeader.Dock = System.Windows.Forms.DockStyle.Bottom
-            Me.PanelConsoleHeader.Location = New System.Drawing.Point(18, 252)
+            Me.PanelConsoleHeader.Location = New System.Drawing.Point(18, 258)
             Me.PanelConsoleHeader.Name = "PanelConsoleHeader"
             Me.PanelConsoleHeader.Padding = New System.Windows.Forms.Padding(0, 0, 0, 3)
             Me.PanelConsoleHeader.Size = New System.Drawing.Size(731, 18)
@@ -243,12 +243,12 @@
             Me.TextBoxConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
             Me.TextBoxConsole.Dock = System.Windows.Forms.DockStyle.Bottom
             Me.TextBoxConsole.Font = New System.Drawing.Font("Consolas", 9.0!)
-            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 270)
+            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 276)
             Me.TextBoxConsole.Multiline = True
             Me.TextBoxConsole.Name = "TextBoxConsole"
             Me.TextBoxConsole.ReadOnly = True
             Me.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-            Me.TextBoxConsole.Size = New System.Drawing.Size(731, 120)
+            Me.TextBoxConsole.Size = New System.Drawing.Size(731, 114)
             Me.TextBoxConsole.TabIndex = 2
             '
             'PanelCommandLine
@@ -278,7 +278,7 @@
             'StatusStripBottom
             '
             Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.ToolStripProgress, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
-            Me.StatusStripBottom.Location = New System.Drawing.Point(0, 467)
+            Me.StatusStripBottom.Location = New System.Drawing.Point(0, 461)
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.Size = New System.Drawing.Size(767, 24)
             Me.StatusStripBottom.SizingGrip = False
@@ -347,7 +347,7 @@
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
             Me.AutoSize = True
             Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.ClientSize = New System.Drawing.Size(767, 491)
+            Me.ClientSize = New System.Drawing.Size(767, 485)
             Me.Controls.Add(Me.PanelMain)
             Me.Controls.Add(Me.PanelBottom)
             Me.Controls.Add(Me.StatusStripBottom)
