@@ -26,6 +26,8 @@
             Me.CheckSaveLog = New System.Windows.Forms.CheckBox()
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
+            Me.PanelCommandLine = New System.Windows.Forms.Panel()
+            Me.TextCommandLine = New DiskImageTool.PlaceholderTextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
             Me.StatusDevice = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
@@ -41,6 +43,7 @@
             Me.PanelMain.SuspendLayout()
             Me.PanelInner.SuspendLayout()
             Me.PanelConsoleHeader.SuspendLayout()
+            Me.PanelCommandLine.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
             Me.SuspendLayout()
             '
@@ -164,6 +167,7 @@
             Me.PanelMain.Controls.Add(Me.PanelInner)
             Me.PanelMain.Controls.Add(Me.PanelConsoleHeader)
             Me.PanelMain.Controls.Add(Me.TextBoxConsole)
+            Me.PanelMain.Controls.Add(Me.PanelCommandLine)
             Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelMain.Location = New System.Drawing.Point(0, 0)
             Me.PanelMain.Name = "PanelMain"
@@ -179,7 +183,7 @@
             Me.PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelInner.Location = New System.Drawing.Point(18, 18)
             Me.PanelInner.Name = "PanelInner"
-            Me.PanelInner.Size = New System.Drawing.Size(731, 262)
+            Me.PanelInner.Size = New System.Drawing.Size(731, 234)
             Me.PanelInner.TabIndex = 0
             '
             'TableLayoutPanelMain
@@ -205,7 +209,7 @@
             Me.PanelConsoleHeader.Controls.Add(Me.CheckSaveLog)
             Me.PanelConsoleHeader.Controls.Add(Me.LabelConsoleOutput)
             Me.PanelConsoleHeader.Dock = System.Windows.Forms.DockStyle.Bottom
-            Me.PanelConsoleHeader.Location = New System.Drawing.Point(18, 280)
+            Me.PanelConsoleHeader.Location = New System.Drawing.Point(18, 252)
             Me.PanelConsoleHeader.Name = "PanelConsoleHeader"
             Me.PanelConsoleHeader.Padding = New System.Windows.Forms.Padding(0, 0, 0, 3)
             Me.PanelConsoleHeader.Size = New System.Drawing.Size(731, 18)
@@ -239,13 +243,37 @@
             Me.TextBoxConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
             Me.TextBoxConsole.Dock = System.Windows.Forms.DockStyle.Bottom
             Me.TextBoxConsole.Font = New System.Drawing.Font("Consolas", 9.0!)
-            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 298)
+            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 270)
             Me.TextBoxConsole.Multiline = True
             Me.TextBoxConsole.Name = "TextBoxConsole"
             Me.TextBoxConsole.ReadOnly = True
             Me.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
             Me.TextBoxConsole.Size = New System.Drawing.Size(731, 120)
             Me.TextBoxConsole.TabIndex = 2
+            '
+            'PanelCommandLine
+            '
+            Me.PanelCommandLine.AutoSize = True
+            Me.PanelCommandLine.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelCommandLine.Controls.Add(Me.TextCommandLine)
+            Me.PanelCommandLine.Dock = System.Windows.Forms.DockStyle.Bottom
+            Me.PanelCommandLine.Location = New System.Drawing.Point(18, 390)
+            Me.PanelCommandLine.Name = "PanelCommandLine"
+            Me.PanelCommandLine.Padding = New System.Windows.Forms.Padding(0, 6, 15, 0)
+            Me.PanelCommandLine.Size = New System.Drawing.Size(731, 28)
+            Me.PanelCommandLine.TabIndex = 3
+            '
+            'TextCommandLine
+            '
+            Me.TextCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+            Me.TextCommandLine.Dock = System.Windows.Forms.DockStyle.Top
+            Me.TextCommandLine.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+            Me.TextCommandLine.Location = New System.Drawing.Point(0, 6)
+            Me.TextCommandLine.Name = "TextCommandLine"
+            Me.TextCommandLine.PlaceholderText = ""
+            Me.TextCommandLine.ReadOnly = True
+            Me.TextCommandLine.Size = New System.Drawing.Size(716, 22)
+            Me.TextCommandLine.TabIndex = 0
             '
             'StatusStripBottom
             '
@@ -344,6 +372,8 @@
             Me.PanelInner.PerformLayout()
             Me.PanelConsoleHeader.ResumeLayout(False)
             Me.PanelConsoleHeader.PerformLayout()
+            Me.PanelCommandLine.ResumeLayout(False)
+            Me.PanelCommandLine.PerformLayout()
             Me.StatusStripBottom.ResumeLayout(False)
             Me.StatusStripBottom.PerformLayout()
             Me.ResumeLayout(False)
@@ -373,5 +403,7 @@
         Friend WithEvents PanelConsoleHeader As Panel
         Friend WithEvents LabelConsoleOutput As Label
         Friend WithEvents CheckSaveLog As CheckBox
+        Friend WithEvents PanelCommandLine As Panel
+        Friend WithEvents TextCommandLine As PlaceholderTextBox
     End Class
 End Namespace

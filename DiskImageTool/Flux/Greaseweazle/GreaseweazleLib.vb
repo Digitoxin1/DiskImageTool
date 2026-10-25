@@ -190,6 +190,75 @@ Namespace Flux.Greaseweazle
             Return sb.ToString
         End Function
 
+        Public Function CommandLineFromReadOptions(opts As ReadOptions) As String
+            Dim sb As New StringBuilder()
+
+            sb.Append("read")
+
+            If Not String.IsNullOrEmpty(opts.Device) Then
+                sb.Append(" --device ")
+                sb.Append(opts.Device)
+            End If
+
+            If opts.Drive IsNot Nothing Then
+                sb.Append(" --drive ")
+                sb.Append(GetIdFromDriveSpec(opts.Drive))
+            End If
+
+            If opts.Raw Then
+                sb.Append(" --raw")
+            End If
+
+            If Not String.IsNullOrEmpty(opts.Format) Then
+                sb.Append(" --format ")
+                sb.Append(opts.Format)
+            End If
+
+            If opts.TrackSet IsNot Nothing Then
+                Dim Tracks = opts.TrackSet.ToString()
+                If Tracks.Length > 0 Then
+                    sb.Append(" --tracks ")
+                    sb.Append(Tracks)
+                End If
+            End If
+
+            sb.Append(" --revs ")
+            sb.Append(opts.Revs.ToString(Globalization.CultureInfo.InvariantCulture))
+
+            If opts.AdjustSpeed.HasValue Then
+                sb.Append(" --adjust-speed ")
+                sb.Append(opts.AdjustSpeed.Value.ToString(Globalization.CultureInfo.InvariantCulture))
+            End If
+
+            sb.Append(" --retries ")
+            sb.Append(opts.Retries.ToString(Globalization.CultureInfo.InvariantCulture))
+
+            If opts.SeekRetries <> 0 Then
+                sb.Append(" --seek-retries ")
+                sb.Append(opts.SeekRetries.ToString(Globalization.CultureInfo.InvariantCulture))
+            End If
+
+            AppendCommandArg(sb, opts.FileName)
+
+            Return sb.ToString()
+        End Function
+
+        Private Sub AppendCommandArg(sb As StringBuilder, value As String)
+            If String.IsNullOrEmpty(value) Then
+                Return
+            End If
+
+            sb.Append(" "c)
+
+            If value.IndexOf(" "c) >= 0 OrElse value.IndexOf(""""c) >= 0 Then
+                sb.Append(""""c)
+                sb.Append(value.Replace("""", """"""))
+                sb.Append(""""c)
+            Else
+                sb.Append(value)
+            End If
+        End Sub
+
         Public Function ConvertFirstTrack(FilePath As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 

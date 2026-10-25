@@ -28,7 +28,9 @@ Namespace Flux.Greaseweazle
         Private WithEvents ComboImageLocation As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents ComboOutputType2 As ComboBox
+        Private WithEvents NumericRetries As NumericUpDown
         Private WithEvents NumericRevs As NumericUpDown
+        Private WithEvents NumericSeekRetries As NumericUpDown
         Private WithEvents TextBoxFileName As TextBox
         Private WithEvents TextBoxFolderName As TextBox
         Private WithEvents TextBoxImageFolder As TextBox
@@ -48,12 +50,11 @@ Namespace Flux.Greaseweazle
         Private _LabelRevs As Label
         Private _LabelRootFolder As Label
         Private _LabelSeekRetries As Label
-        Private _NumericRetries As NumericUpDown
-        Private _NumericSeekRetries As NumericUpDown
 #End Region
         Private WithEvents ConvertCmd As ConvertCommand
         Private WithEvents ReadCmd As ReadCommand
         Private Const DEFAULT_RAW_FILE_NAME As String = "track"
+        Private Const PLACEHOLDER_FILE_NAME As String = "<filename>"
         Private Shared _CachedFileNameTemplate As String = ""
         Private Shared _CachedFolderNameTemplate As String = ""
         Private Shared _CachedPrefixNameTemplate As String = DEFAULT_RAW_FILE_NAME
@@ -141,8 +142,8 @@ Namespace Flux.Greaseweazle
 
             RefreshRevs()
 
-            _NumericRetries.Value = DEFAULT_RETRIES
-            _NumericSeekRetries.Value = DEFAULT_SEEK_RETRIES
+            NumericRetries.Value = DEFAULT_RETRIES
+            NumericSeekRetries.Value = DEFAULT_SEEK_RETRIES
 
             CheckSaveLog.Checked = SelectedDeviceState.SaveLog
 
@@ -151,7 +152,9 @@ Namespace Flux.Greaseweazle
 
             EnableRawDrop()
 
+            PanelCommandLine.Visible = True
             _Initialized = True
+            UpdateCommandLine()
         End Sub
 
         Public ReadOnly Property NewFileName As String
@@ -849,6 +852,10 @@ Namespace Flux.Greaseweazle
                 Return ""
             End If
 
+            Return BuildImageFilePath()
+        End Function
+
+        Private Function BuildImageFilePath() As String
             If Not SelectedImageLocation.HasValue Then
                 Return ""
             End If
@@ -900,6 +907,83 @@ Namespace Flux.Greaseweazle
             NewFileName &= Extension
 
             Return NewFileName
+        End Function
+
+        Private Function GetCommandLineFileName() As String
+            If IsFluxOutput Then
+                Return FluxGetOutputFilePath()
+            End If
+
+            Dim Extension As String = ""
+
+            If ComboExtensions.SelectedIndex > -1 Then
+                Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+                Extension = Item.Extension
+            ElseIf SelectedOutputType <> ReadDiskOutputTypes.None Then
+                Extension = SelectedOutputType.GetExtension()
+            End If
+
+            Dim Name As String = FileNameInput
+
+            If String.IsNullOrEmpty(Name) Then
+                Name = PLACEHOLDER_FILE_NAME
+            ElseIf ContainsPlaceholder(Name) Then
+                Name = StripAngleBrackets(Name)
+            End If
+
+            Return Name & Extension
+        End Function
+
+        Private Sub UpdateCommandLine()
+            TextCommandLine.Text = BuildCommandLineText()
+        End Sub
+
+        Private Function BuildCommandLineText() As String
+            If Not HasOptionId Then
+                Return ""
+            End If
+
+            Dim DiskParams = SelectedDiskParams
+            If Not DiskParams.HasValue Then
+                Return ""
+            End If
+
+            Dim DoubleStep As Boolean
+            Dim PhysicalEven As Boolean
+            Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
+            Dim Heads As TrackHeads? = Nothing
+
+            If HasOutputFile Then
+                DoubleStep = _OutputLayout.HardwareDoubleStep
+                PhysicalEven = _OutputLayout.PhysicalEvenFiles
+                If HasSelectedTracks Then
+                    TrackRanges = GetSelectedTrackRanges(_OutputLayout.DisplayDoubleStep)
+                    Heads = GetSelectedTrackHeads()
+                End If
+            Else
+                Dim Layout = ReadDiskHelpers.DetectFluxLayout(_SelectedDriveOption.Type, DiskParams.Value.Format, _SelectedDriveOption.Tracks, 0)
+                DoubleStep = Layout.HardwareDoubleStep
+                PhysicalEven = Layout.PhysicalEvenFiles
+            End If
+
+            Try
+                Dim Opts = ReadDiskHelpers.BuildReadOptions(GetCommandLineFileName(),
+                                                            _SelectedDriveOption,
+                                                            DiskParams.Value,
+                                                            SelectedOutputType,
+                                                            DoubleStep,
+                                                            TrackRanges,
+                                                            Heads,
+                                                            CInt(NumericRetries.Value),
+                                                            CInt(NumericSeekRetries.Value),
+                                                            CInt(NumericRevs.Value),
+                                                            Nothing,
+                                                            ReadDiskOutputTypes.None,
+                                                            PhysicalEven)
+                Return CommandLineFromReadOptions(Opts)
+            Catch
+                Return ""
+            End Try
         End Function
 
         Private Function GetOutputFilePaths() As (FilePath As String, FilePath2 As String, LogFilePath As String, IsFlux As Boolean)
@@ -1320,8 +1404,8 @@ Namespace Flux.Greaseweazle
             ComboExtensions2.Enabled = ComboExtensions2.Items.Count > 1
 
             NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
-            _NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
-            _NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
+            NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
+            NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
 
             RefreshSaveLogButtonState()
             ButtonReset.Enabled = IsIdle
@@ -1351,6 +1435,10 @@ Namespace Flux.Greaseweazle
             RefreshImportButtonState()
             ToggleRootFolderControls()
             ToggleImageLocationVisible()
+
+            If _Initialized Then
+                UpdateCommandLine()
+            End If
         End Sub
 
         Private Sub RefreshImportButtonItems(IsFluxOutput As Boolean)
@@ -1608,6 +1696,10 @@ Namespace Flux.Greaseweazle
 
             ImageFolderInput = Path
             SelectedDeviceState.ImageFolder = Path
+
+            If _Initialized Then
+                UpdateCommandLine()
+            End If
         End Sub
 
         Private Sub SetRootFolder(Path As String)
@@ -1617,6 +1709,10 @@ Namespace Flux.Greaseweazle
 
             RootFolderInput = Path
             SelectedDeviceState.RootFolder = Path
+
+            If _Initialized Then
+                UpdateCommandLine()
+            End If
         End Sub
         Private Sub SetTitleBarText()
             Dim Text = If(_RefineMode, My.Resources.Label_RefineDisk, My.Resources.Label_ReadDisk)
@@ -1674,8 +1770,8 @@ Namespace Flux.Greaseweazle
                                         doubleStep,
                                         trackRanges,
                                         heads,
-                                        CInt(_NumericRetries.Value),
-                                        CInt(_NumericSeekRetries.Value),
+                                        CInt(NumericRetries.Value),
+                                        CInt(NumericSeekRetries.Value),
                                         CInt(NumericRevs.Value),
                                         filePath2,
                                         outputType2,
@@ -2063,6 +2159,8 @@ Namespace Flux.Greaseweazle
             If sender Is ComboExtensions Then
                 RefreshTitleBarText()
             End If
+
+            UpdateCommandLine()
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDrives.SelectedIndexChanged
@@ -2138,6 +2236,7 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.ImageLocation = SelectedImageLocation
 
             ToggleImageLocationControls()
+            UpdateCommandLine()
         End Sub
 
         Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
@@ -2155,6 +2254,7 @@ Namespace Flux.Greaseweazle
             RefreshImportButtonItems(IsFluxOutput)
 
             SelectedDeviceState.OutputType = SelectedOutputType
+            UpdateCommandLine()
         End Sub
 
         Private Sub ComboOutputType2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType2.SelectedIndexChanged
@@ -2171,6 +2271,7 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.OutputType2 = SelectedOutputType2
 
             ToggleImageLocationVisible()
+            UpdateCommandLine()
         End Sub
 
         Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
@@ -2219,6 +2320,16 @@ Namespace Flux.Greaseweazle
             Else
                 _CachedRevs = NumericRevs.Value
             End If
+
+            UpdateCommandLine()
+        End Sub
+
+        Private Sub NumericRetries_ValueChanged(sender As Object, e As EventArgs) Handles NumericRetries.ValueChanged, NumericSeekRetries.ValueChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            UpdateCommandLine()
         End Sub
 
         Private Sub ReadCmd_HardSectorsDetected(sender As Object, e As HardSectorsDetectedEventArgs) Handles ReadCmd.HardSectorsDetected
@@ -2301,6 +2412,10 @@ Namespace Flux.Greaseweazle
 
             UpdateSequenceButtonState()
             FileNameChangePostProcess()
+
+            If _Initialized Then
+                UpdateCommandLine()
+            End If
         End Sub
 
         Private Sub TextBoxFileName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFileName.Validating, TextBoxPrefixName.Validating

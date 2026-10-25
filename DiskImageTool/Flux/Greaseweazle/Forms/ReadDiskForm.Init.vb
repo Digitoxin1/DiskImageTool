@@ -184,7 +184,7 @@
                 .AutoSize = True
             }
 
-            _NumericRetries = New NumericUpDown With {
+            NumericRetries = New NumericUpDown With {
                 .Minimum = MIN_RETRIES,
                 .Maximum = MAX_RETRIES,
                 .Width = 45,
@@ -197,7 +197,7 @@
                 .AutoSize = True
             }
 
-            _NumericSeekRetries = New NumericUpDown With {
+            NumericSeekRetries = New NumericUpDown With {
                 .Minimum = MIN_RETRIES,
                 .Maximum = MAX_RETRIES,
                 .Width = 45,
@@ -213,10 +213,10 @@
                 .Controls.Add(NumericRevs, 5, Row)
 
                 .Controls.AddWithSpan(_LabelRetries, 6, Row, 2)
-                .Controls.Add(_NumericRetries, 8, Row)
+                .Controls.Add(NumericRetries, 8, Row)
 
                 .Controls.Add(_LabelSeekRetries, 9, Row)
-                .Controls.Add(_NumericSeekRetries, 10, Row)
+                .Controls.Add(NumericSeekRetries, 10, Row)
             End With
         End Sub
 
@@ -440,8 +440,8 @@
         End Sub
 
         Private Sub InitializeHelp()
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Retries, _LabelRetries, _NumericRetries)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SeekRetries, _LabelSeekRetries, _NumericSeekRetries)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Retries, _LabelRetries, NumericRetries)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SeekRetries, _LabelSeekRetries, NumericSeekRetries)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _LabelRevs, NumericRevs)
             SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Detect, ButtonDetect)

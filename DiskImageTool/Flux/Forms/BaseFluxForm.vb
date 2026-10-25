@@ -37,6 +37,9 @@ Namespace Flux
             DebounceTimer.Interval = 2
             Runner = New GreaseweazleRunner()
 
+            PanelCommandLine.Padding = New Padding(0, 6, SystemInformation.VerticalScrollBarWidth, 0)
+            PanelCommandLine.Visible = False
+
             If UseProcess Then
                 Process = New ConsoleProcessRunner With {
                     .EventContext = Threading.SynchronizationContext.Current
