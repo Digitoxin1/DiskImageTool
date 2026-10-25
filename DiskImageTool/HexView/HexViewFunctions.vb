@@ -78,5 +78,40 @@ Namespace HexView
             Next
             Clipboard.SetText(SB.ToString)
         End Sub
+
+        Public Sub ExportSelection(HexBox As HexBox)
+            If Not HexBox.CanCopy() Then
+                Return
+            End If
+
+            Dim Length As Integer = CInt(HexBox.SelectionLength)
+            Dim Buffer = New Byte(Length - 1) {}
+            For Counter = 0 To Length - 1
+                Buffer(Counter) = HexBox.ByteProvider.ReadByte(HexBox.SelectionStart + Counter)
+            Next
+
+            Using Dialog As New SaveFileDialog With {
+                    .FileName = "selection.bin",
+                    .Filter = My.Resources.FileType_All & " (*.*)|*.*",
+                    .InitialDirectory = App.UserState.LastExportFilePath,
+                    .OverwritePrompt = True,
+                    .RestoreDirectory = True
+                }
+
+                If Dialog.ShowDialog(HexBox.FindForm()) <> DialogResult.OK Then
+                    Return
+                End If
+
+                App.UserState.LastExportFilePath = IO.Path.GetDirectoryName(Dialog.FileName)
+
+                Try
+                    IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+                Catch ex As Exception
+                    DebugException(ex)
+                    Dim Msg = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(Dialog.FileName))
+                    MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)
+                End Try
+            End Using
+        End Sub
     End Module
 End Namespace

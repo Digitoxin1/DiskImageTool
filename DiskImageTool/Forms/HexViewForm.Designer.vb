@@ -58,6 +58,7 @@ Partial Class HexViewForm
         Me.BtnCopyHex = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyHexFormatted = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnPaste = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnExport = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFind = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFindNext = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
@@ -304,9 +305,9 @@ Partial Class HexViewForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, Me.BtnFill, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, Me.BtnExport, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, Me.BtnFill, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 336)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 358)
         '
         'BtnUndo
         '
@@ -357,6 +358,13 @@ Partial Class HexViewForm
         Me.BtnPaste.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
         Me.BtnPaste.Size = New System.Drawing.Size(265, 22)
         Me.BtnPaste.Text = "{&Paste Over}"
+        '
+        'BtnExport
+        '
+        Me.BtnExport.Image = Global.DiskImageTool.My.Resources.Resources.Export
+        Me.BtnExport.Name = "BtnExport"
+        Me.BtnExport.Size = New System.Drawing.Size(265, 22)
+        Me.BtnExport.Text = "{&Export}"
         '
         'BtnFind
         '
@@ -622,6 +630,7 @@ Partial Class HexViewForm
     Friend WithEvents BtnDelete As ToolStripMenuItem
     Friend WithEvents BtnFillF6 As ToolStripMenuItem
     Friend WithEvents BtnPaste As ToolStripMenuItem
+    Friend WithEvents BtnExport As ToolStripMenuItem
     Friend WithEvents BtnSelectSector As ToolStripMenuItem
     Friend WithEvents ToolStripBtnUndo As ToolStripButton
     Friend WithEvents ToolStripBtnCopyText As ToolStripButton

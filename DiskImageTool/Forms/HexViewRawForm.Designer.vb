@@ -64,6 +64,7 @@ Partial Class HexViewRawForm
         Me.BtnCopyHexFormatted = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyEncoded = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnPaste = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnExport = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFind = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFindNext = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
@@ -395,9 +396,9 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertBytes, Me.BtnDeleteBytes, Me.ToolStripSeparator11, Me.BtnRemoveSplice, Me.BtnRotateTrack, Me.ToolStripSeparator10, Me.BtnNormalizeTrackSize})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, Me.BtnPaste, Me.BtnExport, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFill4E, Me.BtnFill, Me.ToolStripSeparatorFill, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset, Me.ToolStripSeparatorGapBytes, Me.BtnInsertBytes, Me.BtnDeleteBytes, Me.ToolStripSeparator11, Me.BtnRemoveSplice, Me.BtnRotateTrack, Me.ToolStripSeparator10, Me.BtnNormalizeTrackSize})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 486)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(266, 508)
         '
         'BtnCopyHex
         '
@@ -437,6 +438,13 @@ Partial Class HexViewRawForm
         Me.BtnPaste.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
         Me.BtnPaste.Size = New System.Drawing.Size(265, 22)
         Me.BtnPaste.Text = "{&Paste Over}"
+        '
+        'BtnExport
+        '
+        Me.BtnExport.Image = Global.DiskImageTool.My.Resources.Resources.Export
+        Me.BtnExport.Name = "BtnExport"
+        Me.BtnExport.Size = New System.Drawing.Size(265, 22)
+        Me.BtnExport.Text = "{&Export}"
         '
         'BtnFind
         '
@@ -893,6 +901,7 @@ Partial Class HexViewRawForm
     Friend WithEvents CheckBoxAllTracks As CheckBox
     Friend WithEvents ToolStripBtnPaste As ToolStripButton
     Friend WithEvents BtnPaste As ToolStripMenuItem
+    Friend WithEvents BtnExport As ToolStripMenuItem
     Friend WithEvents BtnDelete As ToolStripMenuItem
     Friend WithEvents BtnFill4E As ToolStripMenuItem
     Friend WithEvents BtnFill As ToolStripMenuItem

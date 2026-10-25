@@ -99,6 +99,7 @@ Partial Public Class HexViewRawForm
         BtnFindNext.Text = My.Resources.Label_FindNext
         BtnInsertBytes.Text = My.Resources.Menu_InsertBytes
         BtnNormalizeTrackSize.Text = My.Resources.Menu_NormalizeTrackSize
+        BtnExport.Text = My.Resources.Menu_Export
         BtnPaste.Text = My.Resources.Menu_PasteOver
         BtnRemoveSplice.Text = My.Resources.Menu_RemoveSplice
         BtnRotateTrack.Text = My.Resources.Menu_RotateTrack
@@ -1078,6 +1079,8 @@ Partial Public Class HexViewRawForm
 
         BtnCopyEncoded.Enabled = HexBox1.CanCopy
 
+        BtnExport.Enabled = HexBox1.CanCopy
+
         Dim FillEnabled = CanFillSelection()
         BtnDelete.Enabled = FillEnabled
         ToolStripBtnDelete.Enabled = FillEnabled
@@ -1373,6 +1376,10 @@ Partial Public Class HexViewRawForm
 
     Private Sub BtnCopyValue_Click(sender As Object, e As EventArgs) Handles BtnCopyValue.Click
         _DataGridInspector.CopyValueToClipboard()
+    End Sub
+
+    Private Sub BtnExport_Click(sender As Object, e As EventArgs) Handles BtnExport.Click
+        ExportSelection(HexBox1)
     End Sub
 
     Private Sub BtnFind_Click(sender As Object, e As EventArgs) Handles BtnFind.Click, ToolStripBtnFind.Click

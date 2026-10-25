@@ -2039,6 +2039,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>Datei&amp;eigenschaften bearbeiten</value>
   </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>&amp;Exportieren</value>
+  </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>Datei &amp;exportieren</value>
   </data>

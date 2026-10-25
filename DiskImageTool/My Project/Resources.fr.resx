@@ -2039,6 +2039,9 @@ Voulez-vous écraser ?</value>
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>Modifier les &amp;propriétés du fichier</value>
   </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>&amp;Exporter</value>
+  </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>&amp;Exporter le fichier</value>
   </data>

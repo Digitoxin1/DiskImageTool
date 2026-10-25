@@ -118,6 +118,7 @@ Public Class HexViewForm
         BtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FindNext
+        BtnExport.Text = My.Resources.Menu_Export
         BtnPaste.Text = My.Resources.Menu_PasteOver
         BtnRedo.Text = My.Resources.Menu_Redo
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
@@ -1167,6 +1168,8 @@ Public Class HexViewForm
         BtnCopyHexFormatted.Enabled = HexBox1.CanCopy
         ToolStripBtnCopyHexFormatted.Enabled = BtnCopyHexFormatted.Enabled
 
+        BtnExport.Enabled = HexBox1.CanCopy
+
         BtnDelete.Enabled = HexBox1.SelectionLength > 0
         ToolStripBtnDelete.Enabled = BtnDelete.Enabled
 
@@ -1424,6 +1427,10 @@ Public Class HexViewForm
 
     Private Sub BtnFindNext_Click(sender As Object, e As EventArgs) Handles BtnFindNext.Click, ToolStripBtnFindNext.Click
         Search(True)
+    End Sub
+
+    Private Sub BtnExport_Click(sender As Object, e As EventArgs) Handles BtnExport.Click
+        ExportSelection(HexBox1)
     End Sub
 
     Private Sub BtnPaste_Click(sender As Object, e As EventArgs) Handles BtnPaste.Click, ToolStripBtnPaste.Click

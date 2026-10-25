@@ -6732,6 +6732,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &amp;Export.
+        '''</summary>
+        Friend ReadOnly Property Menu_Export() As String
+            Get
+                Return ResourceManager.GetString("Menu_Export", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Export File.
         '''</summary>
         Friend ReadOnly Property Menu_ExportFile() As String

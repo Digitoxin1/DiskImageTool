@@ -2039,6 +2039,9 @@ Flux 映像集：“{0}”
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>编辑文件属性(&amp;P)</value>
   </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>导出(&amp;E)</value>
+  </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>导出文件(&amp;E)</value>
   </data>

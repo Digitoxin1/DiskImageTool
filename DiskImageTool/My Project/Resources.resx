@@ -2317,6 +2317,9 @@ Do you wish to overwrite?</value>
     <value>English</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>&amp;Export</value>
+  </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>&amp;Export File</value>
   </data>

@@ -2039,6 +2039,9 @@ Archivo de imagen: '{1}'
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>Editar propiedades del &amp;archivo</value>
   </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>&amp;Exportar</value>
+  </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>&amp;Exportar Archivo</value>
   </data>
