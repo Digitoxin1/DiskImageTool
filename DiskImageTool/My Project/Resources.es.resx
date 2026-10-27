@@ -1283,14 +1283,8 @@ Archivo de imagen: '{1}'
   <data name="Label_ImageCountSingular" xml:space="preserve">
     <value>{0} Imagen</value>
   </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Carpeta de imagen</value>
-  </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>Formato de imagen</value>
-  </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Ubicación</value>
   </data>
   <data name="Label_ImagePreview" xml:space="preserve">
     <value>Vista previa de la imagen</value>
@@ -2432,11 +2426,11 @@ Archivo de imagen: '{1}'
   <data name="FloppyImageType_ImageProperties" xml:space="preserve">
     <value>Propiedades de la imagen {0}</value>
   </data>
-  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
-    <value>Propiedades de la imagen de flujo de bits {0}</value>
-  </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>Propiedades de la imagen de sectores {0}</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>Propiedades de la imagen de flujo de bits {0}</value>
   </data>
   <data name="Label_kbps" xml:space="preserve">
     <value>{0} kbps</value>
@@ -2497,5 +2491,17 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Dialog_CommandFailed" xml:space="preserve">
     <value>Error al ejecutar el comando: {0}</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Ubicación de la imagen secundaria</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Carpeta de la imagen secundaria</value>
+  </data>
+  <data name="Label_PrimaryOutput" xml:space="preserve">
+    <value>Salida principal</value>
+  </data>
+  <data name="Label_SecondaryOutput" xml:space="preserve">
+    <value>Salida secundaria</value>
   </data>
 </root>

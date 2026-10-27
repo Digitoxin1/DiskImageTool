@@ -21,13 +21,11 @@
             Me.ButtonSaveLog = New System.Windows.Forms.Button()
             Me.PanelMain = New System.Windows.Forms.Panel()
             Me.PanelInner = New System.Windows.Forms.Panel()
-            Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
             Me.PanelConsoleHeader = New System.Windows.Forms.Panel()
             Me.CheckSaveLog = New System.Windows.Forms.CheckBox()
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.PanelCommandLine = New System.Windows.Forms.Panel()
-            Me.TextCommandLine = New DiskImageTool.PlaceholderTextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
             Me.StatusDevice = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
@@ -36,12 +34,12 @@
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.TextCommandLine = New DiskImageTool.PlaceholderTextBox()
             Me.PanelBottom.SuspendLayout()
             Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
             Me.PanelButtonsLeft.SuspendLayout()
             Me.PanelMain.SuspendLayout()
-            Me.PanelInner.SuspendLayout()
             Me.PanelConsoleHeader.SuspendLayout()
             Me.PanelCommandLine.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
@@ -179,30 +177,11 @@
             '
             Me.PanelInner.AutoSize = True
             Me.PanelInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.PanelInner.Controls.Add(Me.TableLayoutPanelMain)
             Me.PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelInner.Location = New System.Drawing.Point(18, 18)
             Me.PanelInner.Name = "PanelInner"
             Me.PanelInner.Size = New System.Drawing.Size(731, 240)
             Me.PanelInner.TabIndex = 0
-            '
-            'TableLayoutPanelMain
-            '
-            Me.TableLayoutPanelMain.Anchor = System.Windows.Forms.AnchorStyles.Top
-            Me.TableLayoutPanelMain.AutoSize = True
-            Me.TableLayoutPanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.TableLayoutPanelMain.ColumnCount = 1
-            Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-            Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-            Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-            Me.TableLayoutPanelMain.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
-            Me.TableLayoutPanelMain.Location = New System.Drawing.Point(355, 0)
-            Me.TableLayoutPanelMain.Margin = New System.Windows.Forms.Padding(0)
-            Me.TableLayoutPanelMain.Name = "TableLayoutPanelMain"
-            Me.TableLayoutPanelMain.RowCount = 1
-            Me.TableLayoutPanelMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-            Me.TableLayoutPanelMain.Size = New System.Drawing.Size(20, 20)
-            Me.TableLayoutPanelMain.TabIndex = 0
             '
             'PanelConsoleHeader
             '
@@ -262,18 +241,6 @@
             Me.PanelCommandLine.Padding = New System.Windows.Forms.Padding(0, 6, 15, 0)
             Me.PanelCommandLine.Size = New System.Drawing.Size(731, 28)
             Me.PanelCommandLine.TabIndex = 3
-            '
-            'TextCommandLine
-            '
-            Me.TextCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-            Me.TextCommandLine.Dock = System.Windows.Forms.DockStyle.Top
-            Me.TextCommandLine.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-            Me.TextCommandLine.Location = New System.Drawing.Point(0, 6)
-            Me.TextCommandLine.Name = "TextCommandLine"
-            Me.TextCommandLine.PlaceholderText = ""
-            Me.TextCommandLine.ReadOnly = True
-            Me.TextCommandLine.Size = New System.Drawing.Size(716, 22)
-            Me.TextCommandLine.TabIndex = 0
             '
             'StatusStripBottom
             '
@@ -341,6 +308,18 @@
             Me.StatusUnexpected.Size = New System.Drawing.Size(118, 19)
             Me.StatusUnexpected.Text = "{Unexpected Sectors}"
             '
+            'TextCommandLine
+            '
+            Me.TextCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+            Me.TextCommandLine.Dock = System.Windows.Forms.DockStyle.Top
+            Me.TextCommandLine.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+            Me.TextCommandLine.Location = New System.Drawing.Point(0, 6)
+            Me.TextCommandLine.Name = "TextCommandLine"
+            Me.TextCommandLine.PlaceholderText = ""
+            Me.TextCommandLine.ReadOnly = True
+            Me.TextCommandLine.Size = New System.Drawing.Size(716, 22)
+            Me.TextCommandLine.TabIndex = 0
+            '
             'BaseFluxForm
             '
             Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -368,8 +347,6 @@
             Me.PanelButtonsLeft.PerformLayout()
             Me.PanelMain.ResumeLayout(False)
             Me.PanelMain.PerformLayout()
-            Me.PanelInner.ResumeLayout(False)
-            Me.PanelInner.PerformLayout()
             Me.PanelConsoleHeader.ResumeLayout(False)
             Me.PanelConsoleHeader.PerformLayout()
             Me.PanelCommandLine.ResumeLayout(False)
@@ -381,7 +358,6 @@
 
         End Sub
         Friend WithEvents StatusStripBottom As StatusStrip
-        Friend WithEvents TableLayoutPanelMain As TableLayoutPanel
         Friend WithEvents TextBoxConsole As TextBox
         Friend WithEvents ButtonOk As Button
         Friend WithEvents ButtonCancel As Button

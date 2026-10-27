@@ -20,6 +20,7 @@ Namespace Flux
         Private _DebounceEnabled As Boolean = False
         Private _Sides As Byte
         Private _StatusData As TrackStatusData? = Nothing
+        Private _TLP As TableLayoutPanel
         Private _Tracks As UShort
 
         Protected Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
@@ -112,6 +113,12 @@ Namespace Flux
             Set
                 _LogStripPath = Value
             End Set
+        End Property
+
+        Protected ReadOnly Property TableLayoutPanelMain As TableLayoutPanel
+            Get
+                Return _TLP
+            End Get
         End Property
 
         Protected ReadOnly Property TableSide0 As FloppyTrackGrid
@@ -225,7 +232,7 @@ Namespace Flux
         End Sub
 
         Protected Sub FillAutoSizeStyles()
-            With TableLayoutPanelMain
+            With _TLP
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
                 End While
@@ -299,11 +306,11 @@ Namespace Flux
                 .Margin = New Padding(3, 9, 3, 3)
             }
 
-            TableLayoutPanelMain.Controls.AddWithSpan(sep, 0, Row, TableLayoutPanelMain.ColumnCount)
+            _TLP.Controls.AddWithSpan(sep, 0, Row, _TLP.ColumnCount)
         End Sub
 
         Protected Sub GridAddSpacerRow(Row As Integer)
-            TableLayoutPanelMain.RowStyles.Insert(Row, New RowStyle(SizeType.Absolute, 6))
+            _TLP.RowStyles.Insert(Row, New RowStyle(SizeType.Absolute, 6))
         End Sub
 
         Protected Sub GridHideSelection(Value As Boolean)
@@ -346,6 +353,18 @@ Namespace Flux
             If Not Append AndAlso Not String.IsNullOrEmpty(_LogFilePath) Then
                 DeleteFileIfExists(_LogFilePath)
             End If
+        End Sub
+
+        Protected Sub InitTLP()
+            _TLP = New TableLayoutPanel With {
+                .Anchor = AnchorStyles.Top,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .Margin = New Padding(0, 0, 0, 0),
+                .GrowStyle = TableLayoutPanelGrowStyle.FixedSize
+            }
+
+            PanelInner.Controls.Add(_TLP)
         End Sub
 
         Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
@@ -421,14 +440,14 @@ Namespace Flux
 
         Protected Sub SetRowVisible(row As Integer, visible As Boolean)
             If visible Then
-                TableLayoutPanelMain.RowStyles(row).SizeType = SizeType.AutoSize
+                _TLP.RowStyles(row).SizeType = SizeType.AutoSize
             Else
-                TableLayoutPanelMain.RowStyles(row).SizeType = SizeType.Absolute
-                TableLayoutPanelMain.RowStyles(row).Height = 0
+                _TLP.RowStyles(row).SizeType = SizeType.Absolute
+                _TLP.RowStyles(row).Height = 0
             End If
 
-            For Each c As Control In TableLayoutPanelMain.Controls
-                If TableLayoutPanelMain.GetRow(c) = row Then
+            For Each c As Control In _TLP.Controls
+                If _TLP.GetRow(c) = row Then
                     c.Visible = visible
                 End If
             Next

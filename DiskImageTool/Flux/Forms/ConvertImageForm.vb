@@ -453,6 +453,7 @@ Namespace Flux
 
         Private Sub InitializeControls()
             InitializeFooter()
+            InitTLP()
 
             With TableLayoutPanelMain
                 .SuspendLayout()

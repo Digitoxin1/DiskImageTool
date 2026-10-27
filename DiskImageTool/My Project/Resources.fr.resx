@@ -1283,14 +1283,8 @@ Voulez-vous écraser ?</value>
   <data name="Label_ImageCountSingular" xml:space="preserve">
     <value>{0} image</value>
   </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Dossier image</value>
-  </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>Format d’image</value>
-  </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Emplacement</value>
   </data>
   <data name="Label_ImagePreview" xml:space="preserve">
     <value>Aperçu de l’image</value>
@@ -2432,11 +2426,11 @@ Voulez-vous écraser ?</value>
   <data name="FloppyImageType_ImageProperties" xml:space="preserve">
     <value>Propriétés de l’image {0}</value>
   </data>
-  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
-    <value>Propriétés de l’image de flux binaire {0}</value>
-  </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>Propriétés de l’image de secteurs {0}</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>Propriétés de l’image de flux binaire {0}</value>
   </data>
   <data name="Label_kbps" xml:space="preserve">
     <value>{0} kbit/s</value>
@@ -2497,5 +2491,17 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Dialog_CommandFailed" xml:space="preserve">
     <value>Échec de la commande : {0}</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Emplacement de l’image secondaire</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Dossier de l’image secondaire</value>
+  </data>
+  <data name="Label_PrimaryOutput" xml:space="preserve">
+    <value>Sortie principale</value>
+  </data>
+  <data name="Label_SecondaryOutput" xml:space="preserve">
+    <value>Sortie secondaire</value>
   </data>
 </root>

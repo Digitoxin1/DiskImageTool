@@ -1542,13 +1542,13 @@ Do you wish to overwrite?</value>
     <value>{0} Image</value>
   </data>
   <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Image Folder</value>
+    <value>Secondary Image Folder</value>
   </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>Image Format</value>
   </data>
   <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Image Location</value>
+    <value>Secondary Image Location</value>
   </data>
   <data name="Label_ImagePreview" xml:space="preserve">
     <value>Image Preview</value>
@@ -2848,7 +2848,7 @@ Do you wish to overwrite?</value>
     <value>..\Resources\images\Exit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ImageProperties" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ImageProperties.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\images\ImageProperties.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FloppyImageType_Image" xml:space="preserve">
     <value>{0} Image</value>
@@ -2967,5 +2967,14 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Dialog_CommandFailed" xml:space="preserve">
     <value>Command Failed: {0}</value>
+  </data>
+  <data name="FolderOpened" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\images\FolderOpened.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Label_PrimaryOutput" xml:space="preserve">
+    <value>Primary Output</value>
+  </data>
+  <data name="Label_SecondaryOutput" xml:space="preserve">
+    <value>Secondary Output</value>
   </data>
 </root>

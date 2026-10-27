@@ -1,13 +1,12 @@
 ﻿Imports System.ComponentModel
 Imports System.Drawing.Text
-Imports System.Net.Http.Headers
 Imports System.Windows.Forms.VisualStyles
 
 Public Class FloppyTrackGrid
     Inherits Control
 
     Private Const CELL_HEIGHT As Integer = 21
-    Private Const CELL_WIDTH As Integer = 20
+    Private Const CELL_WIDTH As Integer = 21
     Private Const COLUMNS As Integer = 10
     Private Const FOOTER_MARGIN As Integer = 2
 

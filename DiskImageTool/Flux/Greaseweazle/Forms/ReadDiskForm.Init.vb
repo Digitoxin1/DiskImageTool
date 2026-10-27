@@ -1,232 +1,219 @@
 ﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private Sub InitializeControls()
-            Dim ColWidth As Integer = 0
+            Dim RowGrid As TableLayoutPanel
 
             InitializeFooter()
 
+            InitTLP()
+
             With TableLayoutPanelMain
                 .SuspendLayout()
-
                 .Left = 0
-                .RowCount = 10
-                .ColumnCount = 11
+                .RowCount = 2
+                .ColumnCount = 3
                 .Dock = DockStyle.Fill
 
                 FillAutoSizeStyles()
 
-                .ColumnStyles(0).SizeType = SizeType.Absolute
+                With .ColumnStyles(TableLayoutPanelMain.ColumnCount - 1)
+                    .SizeType = SizeType.Percent
+                    .Width = 100.0F
+                End With
 
-                Dim row As Integer = 0
+                _PanelDriveParams = New ReadDiskDriveParams
+                _PanelOutput = New ReadDiskOutput
+                _PanelDestination = New ReadDiskDestination With {
+                    .Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+                }
 
-                InitializeControlsRowDrive(row, ColWidth) : row += 1
-                InitializeControlsRowFormat(row, ColWidth) : row += 1
-                GridAddSpacerRow(row) : row += 1
-                InitializeControlsRowFileName(row, ColWidth) : row += 1
-                InitializeControlsRowPrefix(row, ColWidth) : row += 1
-                InitializeControlsRowRootFolder(row, ColWidth) : row += 1
-                InitializeControlsRowImageFolder(row, ColWidth) : row += 1
-                InitializeControlsRowFolderName(row, ColWidth) : row += 1
-                GridAddSeparatorrRow(row) : row += 1
-                InitializeControlsRowGrid(row) : row += 1
+                .Controls.Add(_PanelDriveParams, 0, 0)
+                .Controls.Add(_PanelOutput, 1, 0)
+                .Controls.Add(_PanelDestination, 2, 0)
 
-                .ColumnStyles(0).Width = ColWidth
+                RowGrid = InitializeControlsRowGrid(1)
 
                 .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
+            End With
+
+            InitializePanels()
+            InitializeEvents()
+
+            Dim Widths = RowGrid.GetColumnWidths()
+            Dim RequiredWidth As Integer = RowGrid.GetControlFromPosition(2, 0).GetPreferredSize(Size.Empty).Width
+
+            _MaxWidthAdjustment = Widths(2) - RequiredWidth
+        End Sub
+
+        Private Sub InitializePanels()
+            With _PanelDriveParams
+                .LabelDrive.Text = My.Resources.Label_Drive
+                .ButtonDetect.Text = My.Resources.Label_Detect
+                .LabelImageFormat.Text = My.Resources.Label_DiskFormat
+
+                .LabelRevs.Text = My.Resources.Label_Revs
+                .NumericRevs.Minimum = MIN_REVS
+                .NumericRevs.Maximum = MAX_REVS
+
+                .LabelRetries.Text = My.Resources.Label_Retries
+                .NumericRetries.Minimum = MIN_RETRIES
+                .NumericRetries.Maximum = MAX_RETRIES
+
+                .LabelSeekRetries.Text = My.Resources.Label_SeekRetries
+                .NumericSeekRetries.Minimum = MIN_RETRIES
+                .NumericSeekRetries.Maximum = MAX_RETRIES
+            End With
+
+            With _PanelOutput
+                .LabelOutputType.Text = My.Resources.Label_PrimaryOutput
+                .LabelOutputType2.Text = My.Resources.Label_SecondaryOutput
+                .LabelLocation.Text = My.Resources.Label_ImageLocation
+            End With
+
+            With _PanelDestination
+                _ToolTip.SetToolTip(.ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
+
+                .LabelRootFolder.Text = My.Resources.Label_RootFolder
+                .LabelFolderName.Text = My.Resources.Label_FolderName
+
+                .TextBoxRootFolder.MaxLength = 255
+                .TextBoxRootFolder.ReadOnly = True
+                .TextBoxRootFolder.BackColor = SystemColors.Window
+
+                .LabelPrefix.Text = My.Resources.Label_Prefix
+
+                .TextBoxPrefix.PlaceholderText = DEFAULT_RAW_FILE_NAME
+                .TextBoxPrefix.ShowCueWhenFocused = True
+                .TextBoxPrefix.MaxLength = 255
+
+                .LabelSecondaryImageFolder.Text = My.Resources.Label_ImageFolder
+
+                .TextBoxImageFolder.MaxLength = 255
+                .TextBoxImageFolder.ReadOnly = True
+                .TextBoxImageFolder.BackColor = SystemColors.Window
+
+                .LabelFileName.Text = My.Resources.Label_FileName
+                .TextBoxFileName.MaxLength = 255
+
+                .ToggleView(True)
             End With
         End Sub
 
-        Private Sub InitializeControlsRowDrive(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.Drive, Row)
+        Private Sub InitializeEvents()
+            With _PanelDriveParams
+                AddHandler .ComboDrives.SelectedIndexChanged, AddressOf ComboImageDrives_SelectedIndexChanged
+                AddHandler .ButtonDetect.Click, AddressOf ButtonDetect_Click
+                AddHandler .ComboImageFormat.SelectedIndexChanged, AddressOf ComboImageFormat_SelectedIndexChanged
+                AddHandler .NumericRevs.ValueChanged, AddressOf NumericRevs_ValueChanged
+                AddHandler .NumericRetries.ValueChanged, AddressOf NumericRetries_ValueChanged
+                AddHandler .NumericSeekRetries.ValueChanged, AddressOf NumericRetries_ValueChanged
+            End With
 
-            _LabelDrive = New Label With {
-                .Text = My.Resources.Label_Drive,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelDrive))
+            With _PanelOutput
+                AddHandler .ComboBoxPrimaryOutput.SelectedIndexChanged, AddressOf ComboOutputType_SelectedIndexChanged
+                AddHandler .ComboBoxPrimaryExtension.SelectedIndexChanged, AddressOf ComboExtensions_SelectedIndexChanged
+                AddHandler .ComboBoxSecondaryOutput.SelectedIndexChanged, AddressOf ComboOutputType2_SelectedIndexChanged
+                AddHandler .ComboBoxSecondaryExtension.SelectedIndexChanged, AddressOf ComboExtensions_SelectedIndexChanged
+                AddHandler .ComboBoxSecondaryLocation.SelectedIndexChanged, AddressOf ComboImageLocation_SelectedIndexChanged
+            End With
 
-            ComboDrives = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Width = 180
-            }
+            With _PanelDestination
+                AddHandler .ButtonToggleSequence.Click, AddressOf ButtonToggleSequence_Click
 
-            _LabelOutputType = New Label With {
-                .Text = My.Resources.Label_OutputType,
-                .Anchor = AnchorStyles.Left,
+                AddHandler .TextBoxRootFolder.Click, AddressOf TextBoxRootFolder_Click
+                AddHandler .ButtonBrowse.Click, AddressOf ButtonRootBrowse_Click
+
+                AddHandler .TextBoxFolderName.Enter, AddressOf TextBox_Enter
+                AddHandler .TextBoxFolderName.KeyUp, AddressOf TextBox_KeyUp
+                AddHandler .TextBoxFolderName.Leave, AddressOf TextBox_Leave
+                AddHandler .TextBoxFolderName.MouseUp, AddressOf TextBox_MouseUp
+                AddHandler .TextBoxFolderName.TextChanged, AddressOf TextBoxFileName_TextChanged
+                AddHandler .TextBoxFolderName.Validating, AddressOf TextBoxFolderName_Validating
+
+                AddHandler .TextBoxPrefix.Enter, AddressOf TextBox_Enter
+                AddHandler .TextBoxPrefix.KeyUp, AddressOf TextBox_KeyUp
+                AddHandler .TextBoxPrefix.Leave, AddressOf TextBox_Leave
+                AddHandler .TextBoxPrefix.MouseUp, AddressOf TextBox_MouseUp
+                AddHandler .TextBoxPrefix.TextChanged, AddressOf TextBoxFileName_TextChanged
+                AddHandler .TextBoxPrefix.Validating, AddressOf TextBoxFileName_Validating
+
+                AddHandler .TextBoxImageFolder.Click, AddressOf TextBoxImageFolder_Click
+                AddHandler .ButtonImageFolderBrowse.Click, AddressOf ButtonImageFolderBrowse_Click
+
+                AddHandler .TextBoxFileName.Enter, AddressOf TextBox_Enter
+                AddHandler .TextBoxFileName.KeyUp, AddressOf TextBox_KeyUp
+                AddHandler .TextBoxFileName.Leave, AddressOf TextBox_Leave
+                AddHandler .TextBoxFileName.MouseUp, AddressOf TextBox_MouseUp
+                AddHandler .TextBoxFileName.TextChanged, AddressOf TextBoxFileName_TextChanged
+                AddHandler .TextBoxFileName.Validating, AddressOf TextBoxFileName_Validating
+            End With
+        End Sub
+
+        Private Function InitializeControlsRowGrid(Row As Integer) As TableLayoutPanel
+            Dim RowContainer As New TableLayoutPanel With {
+                .Dock = DockStyle.Fill,
                 .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .ColumnCount = 4,
+                .RowCount = 1,
+                .GrowStyle = TableLayoutPanelGrowStyle.FixedSize,
+                .Margin = New Padding(0),
+                .Padding = New Padding(0)
             }
 
-            ComboOutputType = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
-            }
+            With RowContainer
+                .SuspendLayout()
+                .ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 40.0F))
+                .ColumnStyles.Add(New ColumnStyle(SizeType.AutoSize))
+                .ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 60.0F))
+                .RowStyles.Add(New RowStyle(SizeType.AutoSize))
+                .ResumeLayout(True)
+            End With
 
-            ComboExtensions = New ComboBox With {
-                .Anchor = AnchorStyles.Left,
-                .Width = 50,
-                .DropDownStyle = ComboBoxStyle.DropDownList
-            }
+            Dim ButtonContainer = InitializeButtons()
+            Dim TableContainer = InitializeTables()
+
+            With RowContainer
+                .Controls.Add(TableContainer, 1, 0)
+                .Controls.Add(ButtonContainer, 2, 0)
+            End With
 
             With TableLayoutPanelMain
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.AddWithSpan(ComboDrives, 1, Row, 2)
-
-                .Controls.Add(_LabelOutputType, 3, Row)
-                .Controls.AddWithSpan(ComboOutputType, 4, Row, 4)
-                .Controls.Add(ComboExtensions, 8, Row)
+                .Controls.AddWithSpan(RowContainer, 0, Row, 3)
             End With
-        End Sub
 
-        Private Sub InitializeControlsRowFileName(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.FileName, Row)
+            Return RowContainer
+        End Function
 
-            _LabelFileName = New Label With {
-                .Text = My.Resources.Label_FileName,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelFileName))
-
-            TextBoxFileName = New TextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255
-            }
-
-            ButtonToggleSequence = New Button With {
-                .Margin = New Padding(15, 0, 0, 0),
-                .Text = "< >",
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
-            _ToolTip.SetToolTip(ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelFileName, 0, Row)
-                .Controls.AddWithSpan(TextBoxFileName, 1, Row, 8)
-                .Controls.AddWithSpan(ButtonToggleSequence, 9, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowFolderName(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.FolderName, Row)
-
-            _LabelFolderName = New Label With {
-                .Text = My.Resources.Label_FolderName,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelFolderName))
-
-            TextBoxFolderName = New TextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255
-            }
-
-            ButtonToggleSequence2 = New Button With {
-                .Margin = New Padding(15, 0, 0, 0),
-                .Text = "< >",
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
-            _ToolTip.SetToolTip(ButtonToggleSequence2, My.Resources.Label_ToggleSequence & " (Alt+S)")
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelFolderName, 0, Row)
-                .Controls.AddWithSpan(TextBoxFolderName, 1, Row, 8)
-                .Controls.AddWithSpan(ButtonToggleSequence2, 9, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowFormat(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.Format, Row)
-
-            _LabelImageFormat = New Label With {
-                .Text = My.Resources.Label_Format,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelImageFormat))
-
-            ComboImageFormat = New ComboBox With {
-                .Anchor = AnchorStyles.Left,
-                .Width = 200
-            }
-
-            ButtonDetect = New Button With {
-                .Width = 75,
-                .Margin = New Padding(3, 3, 3, 3),
-                .Text = My.Resources.Label_Detect
-            }
-
-            _LabelRevs = New Label With {
-                .Text = My.Resources.Label_Revs,
-                .Anchor = AnchorStyles.Right,
+        Private Function InitializeTables() As FlowLayoutPanel
+            Dim TableContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.LeftToRight,
+                .Anchor = AnchorStyles.Top,
                 .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .WrapContents = False
             }
 
-            NumericRevs = New NumericUpDown With {
-                .Minimum = MIN_REVS,
-                .Maximum = MAX_REVS,
-                .Width = 50,
-                .Anchor = AnchorStyles.Left
-            }
+            TableContainer.Controls.Add(TableSide0)
+            TableContainer.Controls.Add(TableSide1)
 
-            _LabelRetries = New Label With {
-                .Text = My.Resources.Label_Retries,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
-            }
+            TableSide0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
+            TableSide0.Dock = DockStyle.None
+            TableSide0.Margin = New Padding(0, 0, 30, 0)
 
-            NumericRetries = New NumericUpDown With {
-                .Minimum = MIN_RETRIES,
-                .Maximum = MAX_RETRIES,
-                .Width = 45,
-                .Anchor = AnchorStyles.Left
-            }
+            TableSide1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
+            TableSide1.Dock = DockStyle.None
+            TableSide1.Margin = New Padding(30, 0, 0, 0)
 
-            _LabelSeekRetries = New Label With {
-                .Text = My.Resources.Label_SeekRetries,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
-            }
+            Return TableContainer
+        End Function
 
-            NumericSeekRetries = New NumericUpDown With {
-                .Minimum = MIN_RETRIES,
-                .Maximum = MAX_RETRIES,
-                .Width = 45,
-                .Anchor = AnchorStyles.Left
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelImageFormat, 0, Row)
-                .Controls.AddWithSpan(ComboImageFormat, 1, Row, 2)
-                .Controls.Add(ButtonDetect, 3, Row)
-
-                .Controls.Add(_LabelRevs, 4, Row)
-                .Controls.Add(NumericRevs, 5, Row)
-
-                .Controls.AddWithSpan(_LabelRetries, 6, Row, 2)
-                .Controls.Add(NumericRetries, 8, Row)
-
-                .Controls.Add(_LabelSeekRetries, 9, Row)
-                .Controls.Add(NumericSeekRetries, 10, Row)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowGrid(Row As Integer)
-            _GridIndex.Add(GridRows.Grid, Row)
-
+        Private Function InitializeButtons() As FlowLayoutPanel
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
-                .Margin = New Padding(12, 24, 3, 3)
+                .Margin = New Padding(24, 24, 24, 3),
+                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
 
             ButtonRefine = New Button With {
@@ -236,6 +223,7 @@
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+            ButtonContainer.Controls.Add(ButtonRefine)
 
             ButtonPreview = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -244,6 +232,7 @@
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+            ButtonContainer.Controls.Add(ButtonPreview)
 
             ButtonRead = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -252,6 +241,7 @@
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+            ButtonContainer.Controls.Add(ButtonRead)
 
             ButtonConvert = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -261,6 +251,7 @@
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Visible = False
             }
+            ButtonContainer.Controls.Add(ButtonConvert)
 
             ButtonDiscard = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -269,159 +260,13 @@
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
-
-            ButtonContainer.Controls.Add(ButtonRefine)
-            ButtonContainer.Controls.Add(ButtonPreview)
-            ButtonContainer.Controls.Add(ButtonRead)
-            ButtonContainer.Controls.Add(ButtonConvert)
             ButtonContainer.Controls.Add(ButtonDiscard)
 
-            With TableLayoutPanelMain
-                .Controls.AddWithSpan(TableSide0, 0, Row, 3)
-                .Controls.AddWithSpan(TableSide1, 3, Row, 6)
-                .Controls.AddWithSpan(ButtonContainer, 9, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowImageFolder(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.ImageFolder, Row)
-
-            _LabelImageFolder = New Label With {
-                .Text = My.Resources.Label_ImageFolder,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelImageFolder))
-
-            TextBoxImageFolder = New TextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255,
-                .[ReadOnly] = True,
-                .BackColor = SystemColors.Window
-            }
-
-            ButtonImageFolderBrowse = New Button With {
-                .Text = My.Resources.Label_Browse,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelImageFolder, 0, Row)
-                .Controls.AddWithSpan(TextBoxImageFolder, 1, Row, 6)
-                .Controls.AddWithSpan(ButtonImageFolderBrowse, 7, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowPrefix(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.Prefix, Row)
-
-            _LabelPrefixName = New Label With {
-                .Text = My.Resources.Label_Prefix,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False,
-                .Visible = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelPrefixName))
-
-            TextBoxPrefixName = New PlaceholderTextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255,
-                .Visible = False,
-                .PlaceholderText = DEFAULT_RAW_FILE_NAME,
-                .ShowCueWhenFocused = True
-            }
-
-            _LabelOutputType2 = New Label With {
-                .Text = My.Resources.Label_OutputType & " 2",
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            ComboOutputType2 = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
-            }
-
-            ComboExtensions2 = New ComboBox With {
-                .Anchor = AnchorStyles.Left,
-                .Width = 50,
-                .DropDownStyle = ComboBoxStyle.DropDownList
-            }
-
-            _LabelLocation = New Label With {
-                .Text = My.Resources.Label_ImageLocation,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            ComboImageLocation = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Margin = New Padding(0, 3, 0, 3)
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelPrefixName, 0, Row)
-                .Controls.Add(TextBoxPrefixName, 1, Row)
-                .Controls.Add(_LabelOutputType2, 2, Row)
-                .Controls.AddWithSpan(ComboOutputType2, 3, Row, 2)
-                .Controls.Add(ComboExtensions2, 5, Row)
-                .Controls.AddWithSpan(_LabelLocation, 6, Row, 3)
-                .Controls.AddWithSpan(ComboImageLocation, 9, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowRootFolder(Row As Integer, ByRef ColWidth As Integer)
-            _GridIndex.Add(GridRows.RootFolder, Row)
-
-            _LabelRootFolder = New Label With {
-                .Text = My.Resources.Label_RootFolder,
-                .Anchor = AnchorStyles.Right,
-                .TextAlign = ContentAlignment.MiddleRight,
-                .AutoSize = False
-            }
-            ColWidth = Math.Max(ColWidth, ReadDiskHelpers.SetControlWidth(_LabelRootFolder))
-
-            TextBoxRootFolder = New TextBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .MaxLength = 255,
-                .[ReadOnly] = True,
-                .BackColor = SystemColors.Window
-            }
-
-            ButtonRootBrowse = New Button With {
-                .Text = My.Resources.Label_Browse,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelRootFolder, 0, Row)
-                .Controls.AddWithSpan(TextBoxRootFolder, 1, Row, 6)
-                .Controls.AddWithSpan(ButtonRootBrowse, 7, Row, 2)
-            End With
-        End Sub
+            Return ButtonContainer
+        End Function
 
         Private Sub InitializeFooter()
-            ButtonVerify = New Button With {
-                .Margin = New Padding(6, 0, 18, 0),
-                .Text = My.Resources.Label_Verify,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .TabIndex = 0,
-                .Visible = False
-            }
-
-            ButtonImport = New SplitButton With {
-                .Margin = New Padding(6, 0, 6, 0),
-                .Text = My.Resources.Label_Import,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .TabIndex = 1
-            }
+            BumpTabIndexes(PanelButtonsRight, 3)
 
             ButtonImportAndClose = New SplitButton With {
                 .Margin = New Padding(6, 0, 6, 0),
@@ -430,26 +275,41 @@
                 .AutoSize = True,
                 .TabIndex = 2
             }
-
-            BumpTabIndexes(PanelButtonsRight, 3)
             PanelButtonsRight.Controls.Add(ButtonImportAndClose)
+
+            ButtonImport = New SplitButton With {
+                .Margin = New Padding(6, 0, 6, 0),
+                .Text = My.Resources.Label_Import,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 1
+            }
             PanelButtonsRight.Controls.Add(ButtonImport)
+
+            ButtonVerify = New Button With {
+                .Margin = New Padding(6, 0, 18, 0),
+                .Text = My.Resources.Label_Verify,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 0,
+                .Visible = False
+            }
             PanelButtonsRight.Controls.Add(ButtonVerify)
 
             ButtonOk.Visible = False
         End Sub
 
         Private Sub InitializeHelp()
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Retries, _LabelRetries, NumericRetries)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SeekRetries, _LabelSeekRetries, NumericSeekRetries)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _LabelRevs, NumericRevs)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Retries, _PanelDriveParams.LabelRetries, _PanelDriveParams.NumericRetries)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_SeekRetries, _PanelDriveParams.LabelSeekRetries, _PanelDriveParams.NumericSeekRetries)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _PanelDriveParams.LabelRevs, _PanelDriveParams.NumericRevs)
             SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
-            SetHelpString(My.Resources.HelpStrings.Flux_Detect, ButtonDetect)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboDrives)
-            SetHelpString(My.Resources.HelpStrings.Flux_Format, _LabelImageFormat, ComboImageFormat)
-            SetHelpString(My.Resources.HelpStrings.Flux_ImageType, _LabelOutputType, ComboOutputType)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_ReadFilename, _LabelFileName, TextBoxFileName)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt, ComboExtensions)
+            SetHelpString(My.Resources.HelpStrings.Flux_Detect, _PanelDriveParams.ButtonDetect)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _PanelDriveParams.LabelDrive, _PanelDriveParams.ComboDrives)
+            SetHelpString(My.Resources.HelpStrings.Flux_Format, _PanelDriveParams.LabelImageFormat, _PanelDriveParams.ComboImageFormat)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageType, _PanelOutput.LabelOutputType, _PanelOutput.ComboBoxPrimaryOutput)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_ReadFilename, _PanelDestination.LabelFileName, _PanelDestination.TextBoxFileName)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt, _PanelOutput.ComboBoxPrimaryExtension)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_SaveLog, CheckSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
             SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonRead)
@@ -457,17 +317,16 @@
             SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
             SetHelpString(My.Resources.HelpStrings.Flux_Verify, ButtonVerify)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _LabelRootFolder, TextBoxRootFolder)
-            SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, ButtonRootBrowse)
-            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolder, _LabelImageFolder, TextBoxImageFolder)
-            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolderBrowse, ButtonImageFolderBrowse)
-            SetHelpString(My.Resources.HelpStrings.Flux_FolderName, _LabelFolderName, TextBoxFolderName)
-            SetHelpString(My.Resources.HelpStrings.Flux_PrefixName, _LabelPrefixName, TextBoxPrefixName)
-            SetHelpString(My.Resources.HelpStrings.Flux_OutputType2, _LabelOutputType2, ComboOutputType2)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt2, ComboExtensions2)
-            SetHelpString(My.Resources.HelpStrings.Flux_ImageLocation, _LabelLocation, ComboImageLocation)
-            SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence)
-            SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, ButtonToggleSequence2)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, _PanelDestination.LabelRootFolder, _PanelDestination.TextBoxRootFolder)
+            SetHelpString(My.Resources.HelpStrings.Flux_RootBrowse, _PanelDestination.ButtonBrowse)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolder, _PanelDestination.LabelSecondaryImageFolder, _PanelDestination.TextBoxImageFolder)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageFolderBrowse, _PanelDestination.ButtonImageFolderBrowse)
+            SetHelpString(My.Resources.HelpStrings.Flux_FolderName, _PanelDestination.LabelFolderName, _PanelDestination.TextBoxFolderName)
+            SetHelpString(My.Resources.HelpStrings.Flux_PrefixName, _PanelDestination.LabelPrefix, _PanelDestination.TextBoxPrefix)
+            SetHelpString(My.Resources.HelpStrings.Flux_OutputType2, _PanelOutput.LabelOutputType2, _PanelOutput.ComboBoxSecondaryOutput)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_FileExt2, _PanelOutput.ComboBoxSecondaryExtension)
+            SetHelpString(My.Resources.HelpStrings.Flux_ImageLocation, _PanelOutput.LabelLocation, _PanelOutput.ComboBoxSecondaryLocation)
+            SetHelpString(My.Resources.HelpStrings.Flux_ToggleSequence, _PanelDestination.ButtonToggleSequence, _PanelDestination.ButtonToggleSequence)
 
             InitializeHelpImportButtons(False)
         End Sub

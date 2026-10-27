@@ -1283,14 +1283,8 @@ Flux 映像集：“{0}”
   <data name="Label_ImageCountSingular" xml:space="preserve">
     <value>{0} 个映像</value>
   </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>映像文件夹</value>
-  </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>映像格式</value>
-  </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>映像位置</value>
   </data>
   <data name="Label_ImagePreview" xml:space="preserve">
     <value>映像预览</value>
@@ -2432,11 +2426,11 @@ Flux 映像集：“{0}”
   <data name="FloppyImageType_ImageProperties" xml:space="preserve">
     <value>{0} 镜像属性</value>
   </data>
-  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
-    <value>{0} 位流镜像属性</value>
-  </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>{0} 扇区镜像属性</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>{0} 位流镜像属性</value>
   </data>
   <data name="Label_kbps" xml:space="preserve">
     <value>{0} kbps</value>
@@ -2497,5 +2491,17 @@ Flux 映像集：“{0}”
   </data>
   <data name="Dialog_CommandFailed" xml:space="preserve">
     <value>命令执行失败：{0}</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>辅助镜像位置</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>辅助镜像文件夹</value>
+  </data>
+  <data name="Label_PrimaryOutput" xml:space="preserve">
+    <value>主输出</value>
+  </data>
+  <data name="Label_SecondaryOutput" xml:space="preserve">
+    <value>辅助输出</value>
   </data>
 </root>

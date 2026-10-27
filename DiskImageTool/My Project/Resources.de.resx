@@ -1283,14 +1283,8 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ImageCountSingular" xml:space="preserve">
     <value>{0} Abbild</value>
   </data>
-  <data name="Label_ImageFolder" xml:space="preserve">
-    <value>Image-Ordner</value>
-  </data>
   <data name="Label_ImageFormat" xml:space="preserve">
     <value>Imageformat</value>
-  </data>
-  <data name="Label_ImageLocation" xml:space="preserve">
-    <value>Speicherort</value>
   </data>
   <data name="Label_ImagePreview" xml:space="preserve">
     <value>Image-Vorschau</value>
@@ -2432,11 +2426,11 @@ Möchten Sie ihn überschreiben?</value>
   <data name="FloppyImageType_ImageProperties" xml:space="preserve">
     <value>Eigenschaften des {0}-Images</value>
   </data>
-  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
-    <value>Eigenschaften des {0}-Bitstream-Images</value>
-  </data>
   <data name="FloppyImageType_SectorImageProperties" xml:space="preserve">
     <value>Eigenschaften des {0}-Sektor-Images</value>
+  </data>
+  <data name="FloppyImageType_BitstreamImageProperties" xml:space="preserve">
+    <value>Eigenschaften des {0}-Bitstream-Images</value>
   </data>
   <data name="Label_kbps" xml:space="preserve">
     <value>{0} kbit/s</value>
@@ -2497,5 +2491,17 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Dialog_CommandFailed" xml:space="preserve">
     <value>Befehl fehlgeschlagen: {0}</value>
+  </data>
+  <data name="Label_ImageLocation" xml:space="preserve">
+    <value>Speicherort des sekundären Images</value>
+  </data>
+  <data name="Label_ImageFolder" xml:space="preserve">
+    <value>Ordner des sekundären Images</value>
+  </data>
+  <data name="Label_PrimaryOutput" xml:space="preserve">
+    <value>Primäre Ausgabe</value>
+  </data>
+  <data name="Label_SecondaryOutput" xml:space="preserve">
+    <value>Sekundäre Ausgabe</value>
   </data>
 </root>

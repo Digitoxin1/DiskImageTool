@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.45.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.46.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -197,6 +197,24 @@
       <DependentUpon>GeneralSettingsPanel.vb</DependentUpon>
     </Compile>
     <Compile Include="Flux\GeneralSettingsPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskDestination.Designer.vb">
+      <DependentUpon>ReadDiskDestination.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskDestination.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskDriveParams.Designer.vb">
+      <DependentUpon>ReadDiskDriveParams.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskDriveParams.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskOutput.Designer.vb">
+      <DependentUpon>ReadDiskOutput.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Controls\ReadDiskOutput.vb">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.Init.vb">
@@ -732,6 +750,15 @@
     <EmbeddedResource Include="Flux\GeneralSettingsPanel.resx">
       <DependentUpon>GeneralSettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Greaseweazle\Controls\ReadDiskDestination.resx">
+      <DependentUpon>ReadDiskDestination.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Greaseweazle\Controls\ReadDiskDriveParams.resx">
+      <DependentUpon>ReadDiskDriveParams.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Greaseweazle\Controls\ReadDiskOutput.resx">
+      <DependentUpon>ReadDiskOutput.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.resx">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
@@ -891,6 +918,7 @@
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SaveAllForm.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
@@ -926,6 +954,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\images\ImageProperties.png" />
+    <None Include="Resources\images\FolderOpened.png" />
     <None Include="Resources\images\Fill4E.png" />
     <None Include="Resources\images\MobyGames.png" />
     <None Include="Resources\images\HelpTableOfContents.png" />

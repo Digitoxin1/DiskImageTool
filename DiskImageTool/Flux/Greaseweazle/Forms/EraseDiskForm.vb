@@ -119,6 +119,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub InitializeControls()
             InitializeFooter()
+            InitTLP()
 
             With TableLayoutPanelMain
                 .SuspendLayout()

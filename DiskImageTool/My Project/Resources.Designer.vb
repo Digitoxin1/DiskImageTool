@@ -2677,6 +2677,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property FolderOpened() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("FolderOpened", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Select a Greaseweazle executable.
         '''</summary>
         Friend ReadOnly Property Greaseweazle_SelectExecutable() As String
@@ -4374,7 +4384,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Image Folder.
+        '''  Looks up a localized string similar to Secondary Image Folder.
         '''</summary>
         Friend ReadOnly Property Label_ImageFolder() As String
             Get
@@ -4392,7 +4402,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Image Location.
+        '''  Looks up a localized string similar to Secondary Image Location.
         '''</summary>
         Friend ReadOnly Property Label_ImageLocation() As String
             Get
@@ -5094,6 +5104,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Primary Output.
+        '''</summary>
+        Friend ReadOnly Property Label_PrimaryOutput() As String
+            Get
+                Return ResourceManager.GetString("Label_PrimaryOutput", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Process.
         '''</summary>
         Friend ReadOnly Property Label_Process() As String
@@ -5387,6 +5406,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_SearchFor() As String
             Get
                 Return ResourceManager.GetString("Label_SearchFor", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Secondary Output.
+        '''</summary>
+        Friend ReadOnly Property Label_SecondaryOutput() As String
+            Get
+                Return ResourceManager.GetString("Label_SecondaryOutput", resourceCulture)
             End Get
         End Property
         
