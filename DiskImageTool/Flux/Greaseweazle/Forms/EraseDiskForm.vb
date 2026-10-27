@@ -134,11 +134,13 @@ Namespace Flux.Greaseweazle
                 .ColumnStyles(0).SizeType = SizeType.Percent
                 .ColumnStyles(0).Width = 100
 
+                Dim ButtonContainer = InitializeButtons()
+
                 Dim Row As Integer = 0
 
                 InitializeControlsRowDrive(Row) : Row += 1
                 GridAddSeparatorrRow(Row) : Row += 1
-                InitializeControlsRowGrid(Row) : Row += 1
+                InitGridRow(Row, .ColumnCount, ButtonContainer) : Row += 1
 
                 .ResumeLayout()
                 '.Left = (.Parent.ClientSize.Width - .Width) \ 2
@@ -198,11 +200,12 @@ Namespace Flux.Greaseweazle
             End With
         End Sub
 
-        Private Sub InitializeControlsRowGrid(Row As Integer)
+        Private Function InitializeButtons() As FlowLayoutPanel
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
-                .Margin = New Padding(12, 24, 3, 3)
+                .Margin = New Padding(20, 24, 3, 3),
+                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
 
             ButtonProcess = New Button With {
@@ -212,16 +215,10 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
-
             ButtonContainer.Controls.Add(ButtonProcess)
 
-            With TableLayoutPanelMain
-                .Controls.AddWithSpan(TableSide0, 0, Row, 2)
-                .Controls.AddWithSpan(TableSide1, 2, Row, 3)
-
-                .Controls.Add(ButtonContainer, 5, Row)
-            End With
-        End Sub
+            Return ButtonContainer
+        End Function
 
         Private Sub InitializeFooter()
             ButtonOk.Visible = False

@@ -1,11 +1,6 @@
 ﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
-        Private _DotPattern As Bitmap
-        Private _DotPatternColor As Color = Color.Empty
-
         Private Sub InitializeControls()
-            Dim RowGrid As FlowLayoutPanel
-
             InitializeFooter()
 
             InitTLP()
@@ -30,19 +25,19 @@
                     .Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
                 }
 
+                Dim ButtonContainer = InitializeButtons()
+
                 .Controls.Add(_PanelDriveParams, 0, 0)
                 .Controls.Add(_PanelOutput, 1, 0)
                 .Controls.Add(_PanelDestination, 2, 0)
 
-                RowGrid = InitializeControlsRowGrid(1)
+                InitGridRow(1, .ColumnCount, ButtonContainer)
 
                 .ResumeLayout()
             End With
 
             InitializePanels()
             InitializeEvents()
-
-            AddHandler TableLayoutPanelMain.CellPaint, AddressOf PaintGridBackground
         End Sub
 
         Private Sub InitializePanels()
@@ -148,71 +143,6 @@
                 AddHandler .TextBoxFileName.Validating, AddressOf TextBoxFileName_Validating
             End With
         End Sub
-
-        Private Function InitializeControlsRowGrid(Row As Integer) As FlowLayoutPanel
-            Dim TableContainer = InitializeTables()
-
-            With TableLayoutPanelMain
-                .Controls.AddWithSpan(TableContainer, 0, Row, 3)
-            End With
-
-            Return TableContainer
-        End Function
-
-        Private Sub PaintGridBackground(sender As Object, e As TableLayoutCellPaintEventArgs)
-            If e.Row <> 1 Then
-                Return
-            End If
-
-            Dim TLP = DirectCast(sender, TableLayoutPanel)
-
-            ' Create or update the pattern only when necessary
-            If _DotPattern Is Nothing OrElse _DotPatternColor <> TLP.ForeColor Then
-                If _DotPattern IsNot Nothing Then _DotPattern.Dispose()
-
-                _DotPattern = New Bitmap(14, 14)
-                _DotPatternColor = TLP.ForeColor
-
-                Dim DotColor = Color.FromArgb(18, TLP.ForeColor)
-
-                Using G As Graphics = Graphics.FromImage(_DotPattern)
-                    Using B As New SolidBrush(DotColor)
-                        G.FillRectangle(B, 8, 8, 2, 2)
-                    End Using
-                End Using
-            End If
-
-            ' Repeat the pattern across the entire cell
-            Using B As New TextureBrush(_DotPattern)
-                e.Graphics.FillRectangle(B, e.CellBounds)
-            End Using
-        End Sub
-
-        Private Function InitializeTables() As FlowLayoutPanel
-            Dim ButtonContainer = InitializeButtons()
-
-            Dim TableContainer As New FlowLayoutPanel With {
-                .FlowDirection = FlowDirection.LeftToRight,
-                .Anchor = AnchorStyles.Top,
-                .AutoSize = True,
-                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                .WrapContents = False
-            }
-
-            TableContainer.Controls.Add(TableSide0)
-            TableContainer.Controls.Add(TableSide1)
-            TableContainer.Controls.Add(ButtonContainer)
-
-            TableSide0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
-            TableSide0.Dock = DockStyle.None
-            TableSide0.Margin = New Padding(0, 0, 20, 0)
-
-            TableSide1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
-            TableSide1.Dock = DockStyle.None
-            TableSide1.Margin = New Padding(20, 0, 20, 0)
-
-            Return TableContainer
-        End Function
 
         Private Function InitializeButtons() As FlowLayoutPanel
             Dim ButtonContainer As New FlowLayoutPanel With {
@@ -344,13 +274,6 @@
             Else
                 SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
                 SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
-            End If
-        End Sub
-
-        Private Sub ReadDiskForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
-            If _DotPattern IsNot Nothing Then
-                _DotPattern.Dispose()
-                _DotPattern = Nothing
             End If
         End Sub
     End Class

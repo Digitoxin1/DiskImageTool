@@ -23,6 +23,9 @@ Namespace Flux
         Private _TLP As TableLayoutPanel
         Private _Tracks As UShort
 
+        Private _DotPattern As Bitmap
+        Private _DotPatternColor As Color = Color.Empty
+
         Protected Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Protected Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
 
@@ -346,6 +349,34 @@ Namespace Flux
             AppendLogLine("Command Failed: " & Msg)
         End Sub
 
+        Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel)
+            Dim TableContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.LeftToRight,
+                .Anchor = AnchorStyles.Top,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .WrapContents = False
+            }
+
+            TableContainer.Controls.Add(TS0)
+            TableContainer.Controls.Add(TS1)
+            TableContainer.Controls.Add(ButtonContainer)
+
+            TS0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
+            TS0.Dock = DockStyle.None
+            TS0.Margin = New Padding(0, 0, 20, 0)
+
+            TS1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
+            TS1.Dock = DockStyle.None
+            TS1.Margin = New Padding(20, 0, 20, 0)
+
+            With _TLP
+                .Controls.AddWithSpan(TableContainer, 0, Row, ColSpan)
+            End With
+
+            AddHandler _TLP.CellPaint, AddressOf PaintGridBackground
+        End Sub
+
         Protected Sub InitLogFilePath(FilePath As String, Optional Append As Boolean = False)
             _LogFilePath = FilePath
 
@@ -583,6 +614,35 @@ Namespace Flux
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
         End Sub
 
+        Private Sub PaintGridBackground(sender As Object, e As TableLayoutCellPaintEventArgs)
+            If e.Row <> 1 Then
+                Return
+            End If
+
+            Dim TLP = DirectCast(sender, TableLayoutPanel)
+
+            ' Create or update the pattern only when necessary
+            If _DotPattern Is Nothing OrElse _DotPatternColor <> TLP.ForeColor Then
+                If _DotPattern IsNot Nothing Then _DotPattern.Dispose()
+
+                _DotPattern = New Bitmap(14, 14)
+                _DotPatternColor = TLP.ForeColor
+
+                Dim DotColor = Color.FromArgb(18, TLP.ForeColor)
+
+                Using G As Graphics = Graphics.FromImage(_DotPattern)
+                    Using B As New SolidBrush(DotColor)
+                        G.FillRectangle(B, 8, 8, 2, 2)
+                    End Using
+                End Using
+            End If
+
+            ' Repeat the pattern across the entire cell
+            Using B As New TextureBrush(_DotPattern)
+                e.Graphics.FillRectangle(B, e.CellBounds)
+            End Using
+        End Sub
+
         Private Sub UpdateStatus(StatusData As TrackStatusData)
             _StatusData = StatusData
 
@@ -698,6 +758,13 @@ Namespace Flux
 
         Private Sub DebounceTimer_Tick(sender As Object, e As EventArgs) Handles DebounceTimer.Tick
             StopDebounceTimer()
+        End Sub
+
+        Private Sub BaseFluxForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
+            If _DotPattern IsNot Nothing Then
+                _DotPattern.Dispose()
+                _DotPattern = Nothing
+            End If
         End Sub
 #End Region
         Public Structure FluxFormState
