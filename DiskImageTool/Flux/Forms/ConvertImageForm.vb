@@ -460,13 +460,16 @@ Namespace Flux
 
                 .Left = 0
                 .RowCount = 5
-                .ColumnCount = 7
+                .ColumnCount = 8
                 .Dock = DockStyle.Fill
 
                 FillAutoSizeStyles()
 
                 .ColumnStyles(0).SizeType = SizeType.Percent
                 .ColumnStyles(0).Width = 100
+
+                .ColumnStyles(6).SizeType = SizeType.Absolute
+                .ColumnStyles(6).Width = 50
 
                 Dim Row As Integer = 0
 
@@ -516,12 +519,20 @@ Namespace Flux
                 .Visible = False
             }
 
+            CheckBoxDoublestep = New CheckBox With {
+                .Text = My.Resources.Label_DoubleStep,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 0, 3)
+            }
+
             With TableLayoutPanelMain
                 .Controls.Add(_LabelDevice, 0, Row)
                 .Controls.Add(ComboDevices, 1, Row)
                 .Controls.AddWithSpan(CheckBoxExtendedLogging, 2, Row, 2)
                 .Controls.Add(_CheckBoxRemaster, 2, Row)
                 .Controls.AddWithSpan(_CheckBox86FSurfaceData, 3, Row, 2)
+                .Controls.AddWithSpan(CheckBoxDoublestep, 5, Row, 2)
             End With
         End Sub
 
@@ -544,16 +555,17 @@ Namespace Flux
             }
 
             ButtonOpen = New Button With {
-                .Margin = New Padding(15, 3, 3, 3),
+                .Margin = New Padding(3, 1, 6, 0),
                 .Text = WithoutHotkey(My.Resources.Menu_Open),
                 .MinimumSize = New Size(75, 0),
-                .AutoSize = True
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
             With TableLayoutPanelMain
                 .Controls.Add(_LabelFileName, 0, Row)
-                .Controls.AddWithSpan(TextBoxFileName, 1, Row, 4)
-                .Controls.Add(ComboExtensions, 4, Row)
+                .Controls.AddWithSpan(TextBoxFileName, 1, Row, 5)
+                .Controls.Add(ComboExtensions, 5, Row)
                 .Controls.Add(ButtonOpen, 6, Row)
             End With
         End Sub
@@ -578,31 +590,35 @@ Namespace Flux
             }
 
             ComboOutputType = New ComboBox With {
-                    .Anchor = AnchorStyles.Left,
-                    .Width = 175
-                }
-
-            CheckBoxDoublestep = New CheckBox With {
-                .Text = My.Resources.Label_DoubleStep,
                 .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .Width = 175
             }
 
             With TableLayoutPanelMain
                 .Controls.Add(_LabelImageFormat, 0, Row)
                 .Controls.AddWithSpan(ComboImageFormat, 1, Row, 2)
                 .Controls.Add(_LabelOutputType, 3, Row)
-                .Controls.AddWithSpan(ComboOutputType, 4, Row, 2)
-                .Controls.Add(CheckBoxDoublestep, 6, Row)
+                .Controls.AddWithSpan(ComboOutputType, 4, Row, 3)
             End With
         End Sub
 
         Private Sub InitializeControlsRowGrid(Row As Integer)
+            Dim ButtonContainer = InitializeButtons()
+            Dim TableContainer = GetTableContainer()
+
+            With TableLayoutPanelMain
+                .Controls.AddWithSpan(TableContainer, 0, Row, 7)
+                .Controls.Add(ButtonContainer, 7, Row)
+            End With
+        End Sub
+
+        Private Function InitializeButtons() As FlowLayoutPanel
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
+                .WrapContents = False,
                 .AutoSize = True,
-                .Margin = New Padding(12, 24, 3, 3)
+                .Margin = New Padding(0, 24, 3, 3),
+                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
 
             ButtonPreview = New Button With {
@@ -612,6 +628,7 @@ Namespace Flux
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+            ButtonContainer.Controls.Add(ButtonPreview)
 
             ButtonProcess = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -620,6 +637,7 @@ Namespace Flux
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+            ButtonContainer.Controls.Add(ButtonProcess)
 
             ButtonDiscard = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -629,6 +647,7 @@ Namespace Flux
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Visible = Not _LaunchedFromDialog
             }
+            ButtonContainer.Controls.Add(ButtonDiscard)
 
             ButtonTrackLayout = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -638,6 +657,7 @@ Namespace Flux
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Visible = False
             }
+            ButtonContainer.Controls.Add(ButtonTrackLayout)
 
             ButtonModifications = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
@@ -647,19 +667,20 @@ Namespace Flux
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Visible = False
             }
-
-            ButtonContainer.Controls.Add(ButtonPreview)
-            ButtonContainer.Controls.Add(ButtonProcess)
-            ButtonContainer.Controls.Add(ButtonDiscard)
-            ButtonContainer.Controls.Add(ButtonTrackLayout)
             ButtonContainer.Controls.Add(ButtonModifications)
 
-            With TableLayoutPanelMain
-                .Controls.AddWithSpan(TableSide0, 0, Row, 3)
-                .Controls.AddWithSpan(TableSide1, 3, Row, 3)
-                .Controls.Add(ButtonContainer, 6, Row)
-            End With
-        End Sub
+            Dim MaxWidth As Integer = 0
+
+            For Each Btn As Button In ButtonContainer.Controls.OfType(Of Button)
+                MaxWidth = Math.Max(MaxWidth, Math.Max(Btn.MinimumSize.Width, Btn.GetPreferredSize(Size.Empty).Width))
+            Next
+
+            For Each Btn As Button In ButtonContainer.Controls.OfType(Of Button)
+                Btn.MinimumSize = New Size(MaxWidth, Btn.MinimumSize.Height)
+            Next
+
+            Return ButtonContainer
+        End Function
 
         Private Sub InitializeDevice(Repopulate As Boolean)
             If Repopulate Then

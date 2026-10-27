@@ -350,7 +350,7 @@ Namespace Flux
             AppendLogLine("Command Failed: " & Msg)
         End Sub
 
-        Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel, ShowDots As Boolean)
+        Protected Function GetTableContainer() As FlowLayoutPanel
             Dim TableContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.LeftToRight,
                 .Anchor = AnchorStyles.Top,
@@ -362,10 +362,6 @@ Namespace Flux
             TableContainer.Controls.Add(TS0)
             TableContainer.Controls.Add(TS1)
 
-            If ButtonContainer IsNot Nothing Then
-                TableContainer.Controls.Add(ButtonContainer)
-            End If
-
             TS0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TS0.Dock = DockStyle.None
             TS0.Margin = New Padding(0, 0, 20, 0)
@@ -373,6 +369,16 @@ Namespace Flux
             TS1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TS1.Dock = DockStyle.None
             TS1.Margin = New Padding(20, 0, 20, 0)
+
+            Return TableContainer
+        End Function
+
+        Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel, ShowDots As Boolean)
+            Dim TableContainer = GetTableContainer()
+
+            If ButtonContainer IsNot Nothing Then
+                TableContainer.Controls.Add(ButtonContainer)
+            End If
 
             With _TLP
                 .Controls.AddWithSpan(TableContainer, 0, Row, ColSpan)
