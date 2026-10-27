@@ -130,16 +130,12 @@ Namespace Flux.Greaseweazle
 
                 FillAutoSizeStyles()
 
-                '.ColumnStyles(0).SizeType = SizeType.Percent
-                '.ColumnStyles(0).Width = 100
-
                 Dim Row As Integer = 0
 
                 InitializeControlsRowDrive(Row) : Row += 1
                 InitGridRow(Row, .ColumnCount, Nothing, True) : Row += 1
 
                 .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 

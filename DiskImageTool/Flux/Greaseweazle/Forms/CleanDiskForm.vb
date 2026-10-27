@@ -10,7 +10,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonProcess As Button
         Private WithEvents ComboImageDrives As ComboBox
         Private _LabelCyls As Label
-        Private _LabelDrive As Label
         Private _LabelLinger As Label
         Private _LabelPasses As Label
         Private _NumericCyls As NumericUpDown
@@ -96,109 +95,114 @@ Namespace Flux.Greaseweazle
 
             With TableLayoutPanelMain
                 .SuspendLayout()
-                .RowCount = 2
-                .ColumnCount = 9
+                .RowCount = 1
+                .ColumnCount = 3
                 .Dock = DockStyle.Fill
+                .Padding = New Padding(0, 0, 0, 12)
 
                 FillAutoSizeStyles()
 
-                .ColumnStyles(2).SizeType = SizeType.Percent
-                .ColumnStyles(2).Width = 100
-
-                Dim Row As Integer = 0
-
-                InitializeControlsRowDrive(Row) : Row += 1
-                InitializeControlsRowButtons(Row) : Row += 1
+                InitializeControlsRowDrive(0)
 
                 .ResumeLayout()
             End With
         End Sub
 
-        Private Sub InitializeControlsRowButtons(Row As Integer)
-            Dim ButtonContainer As New FlowLayoutPanel With {
-                .FlowDirection = FlowDirection.RightToLeft,
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Right,
-                .Margin = New Padding(3, 3, 0, 3)
-            }
-
-            ButtonProcess = New Button With {
-                .Width = 75,
-                .Margin = New Padding(3, 3, 3, 3),
-                .Text = My.Resources.Label_Erase
-            }
-
-            ButtonContainer.Controls.Add(ButtonProcess)
-
-            TableLayoutPanelMain.Controls.AddWithSpan(ButtonContainer, 5, Row, 4)
-        End Sub
-
         Private Sub InitializeControlsRowDrive(Row As Integer)
-            _LabelDrive = New Label With {
+            Dim GroupBoxDrive As New GroupBox With {
                 .Text = My.Resources.Label_Drive,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .MinimumSize = New Size(0, 60)
             }
 
             ComboImageDrives = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Width = 180
+                .Width = 180,
+                .Location = New Point(9, 19)
+            }
+
+            GroupBoxDrive.Controls.Add(ComboImageDrives)
+
+            Dim GroupBoxOptions As New GroupBox With {
+                .Text = My.Resources.Label_Options,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .MinimumSize = New Size(0, 60)
+            }
+
+            Dim OptionsContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.LeftToRight,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .Location = New Point(9, 19),
+                .WrapContents = False
             }
 
             _LabelCyls = New Label With {
                 .Text = My.Resources.Label_Cylinders,
-                .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(6, 3, 3, 3)
+                .Anchor = AnchorStyles.Left,
+                .Margin = New Padding(0)
             }
+            OptionsContainer.Controls.Add(_LabelCyls)
 
             _NumericCyls = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = MIN_CYLS,
-                .Maximum = MAX_CYLS
+                .Maximum = MAX_CYLS,
+                .Margin = New Padding(6, 0, 0, 0)
             }
+            OptionsContainer.Controls.Add(_NumericCyls)
 
             _LabelPasses = New Label With {
                 .Text = My.Resources.Label_Passes,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(6, 3, 3, 3)
+                .Margin = New Padding(12, 0, 0, 0)
             }
+            OptionsContainer.Controls.Add(_LabelPasses)
 
             _NumericPasses = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = MIN_PASSES,
-                .Maximum = MAX_PASSES
+                .Maximum = MAX_PASSES,
+                .Margin = New Padding(6, 0, 0, 0)
             }
+            OptionsContainer.Controls.Add(_NumericPasses)
 
             _LabelLinger = New Label With {
                 .Text = My.Resources.Label_Linger,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(6, 3, 3, 3)
+                .Margin = New Padding(12, 0, 0, 0)
             }
+            OptionsContainer.Controls.Add(_LabelLinger)
 
             _NumericLinger = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 60,
                 .Minimum = MIN_LINGER,
-                .Maximum = MAX_LINGER
+                .Maximum = MAX_LINGER,
+                .Margin = New Padding(6, 0, 0, 0)
+            }
+            OptionsContainer.Controls.Add(_NumericLinger)
+
+            GroupBoxOptions.Controls.Add(OptionsContainer)
+
+            ButtonProcess = New Button With {
+                .Margin = New Padding(12, 0, 0, 0),
+                .Text = My.Resources.Label_Erase,
+                .Anchor = AnchorStyles.Right,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True
             }
 
             With TableLayoutPanelMain
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
-
-                .Controls.Add(_LabelCyls, 3, Row)
-                .Controls.Add(_NumericCyls, 4, Row)
-
-                .Controls.Add(_LabelPasses, 5, Row)
-                .Controls.Add(_NumericPasses, 6, Row)
-
-                .Controls.Add(_LabelLinger, 7, Row)
-                .Controls.Add(_NumericLinger, 8, Row)
+                .Controls.Add(GroupBoxDrive, 0, Row)
+                .Controls.Add(GroupBoxOptions, 1, Row)
+                .Controls.Add(ButtonProcess, 2, Row)
             End With
         End Sub
 
@@ -208,7 +212,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeHelp()
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, ComboImageDrives)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanCyls, _LabelCyls, _NumericCyls)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanPasses, _LabelPasses, _NumericPasses)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_CleanLinger, _LabelLinger, _NumericLinger)
