@@ -11,7 +11,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private _CheckBoxHFreq As CheckBox
-        Private _LabelDrive As Label
         Private _LabelRevs As Label
         Private _NumericRevs As NumericUpDown
 #End Region
@@ -125,22 +124,19 @@ Namespace Flux.Greaseweazle
                 .SuspendLayout()
 
                 .Left = 0
-                .RowCount = 3
-                .ColumnCount = 6
+                .RowCount = 2
+                .ColumnCount = 4
                 .Dock = DockStyle.Fill
 
                 FillAutoSizeStyles()
 
-                .ColumnStyles(0).SizeType = SizeType.Percent
-                .ColumnStyles(0).Width = 100
-
-                Dim ButtonContainer = InitializeButtons()
+                '.ColumnStyles(0).SizeType = SizeType.Percent
+                '.ColumnStyles(0).Width = 100
 
                 Dim Row As Integer = 0
 
                 InitializeControlsRowDrive(Row) : Row += 1
-                GridAddSeparatorrRow(Row) : Row += 1
-                InitGridRow(Row, .ColumnCount, ButtonContainer) : Row += 1
+                InitGridRow(Row, .ColumnCount, Nothing, True) : Row += 1
 
                 .ResumeLayout()
                 '.Left = (.Parent.ClientSize.Width - .Width) \ 2
@@ -148,84 +144,91 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControlsRowDrive(Row As Integer)
-            _LabelDrive = New Label With {
+            Dim GroupBoxDrive As New GroupBox With {
                 .Text = My.Resources.Label_Drive,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .MinimumSize = New Size(0, 60)
             }
 
             ComboImageDrives = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Width = 180
+                .Width = 180,
+                .Location = New Point(9, 19)
+            }
+
+            GroupBoxDrive.Controls.Add(ComboImageDrives)
+
+            Dim GroupBoxOptions As New GroupBox With {
+                .Text = My.Resources.Label_Options,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .MinimumSize = New Size(0, 60)
+            }
+
+            Dim OptionsContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.LeftToRight,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .Location = New Point(9, 19),
+                .WrapContents = False
             }
 
             _LabelRevs = New Label With {
                 .Text = My.Resources.Label_Revs,
-                .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(32, 3, 3, 3)
+                .Anchor = AnchorStyles.Left,
+                .Margin = New Padding(0)
             }
+            OptionsContainer.Controls.Add(_LabelRevs)
 
             _NumericRevs = New NumericUpDown With {
-                .Anchor = AnchorStyles.Left,
                 .Width = 45,
+                .Anchor = AnchorStyles.Left,
                 .Minimum = MIN_REVS,
-                .Maximum = MAX_REVS
+                .Maximum = MAX_REVS,
+                .Margin = New Padding(6, 0, 0, 0)
             }
+            OptionsContainer.Controls.Add(_NumericRevs)
+
+            _CheckBoxHFreq = New CheckBox With {
+                .Text = My.Resources.Label_Hfreq,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 0, 0, 0)
+            }
+            OptionsContainer.Controls.Add(_CheckBoxHFreq)
+
+            GroupBoxOptions.Controls.Add(OptionsContainer)
 
             CheckBoxSelect = New CheckBox With {
                 .Text = My.Resources.Label_SelectTracks,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            _CheckBoxHFreq = New CheckBox With {
-                .Text = My.Resources.Label_Hfreq,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
-
-                .Controls.Add(_LabelRevs, 2, Row)
-                .Controls.Add(_NumericRevs, 3, Row)
-
-                .Controls.Add(_CheckBoxHFreq, 4, Row)
-
-                .Controls.Add(CheckBoxSelect, 5, Row)
-            End With
-        End Sub
-
-        Private Function InitializeButtons() As FlowLayoutPanel
-            Dim ButtonContainer As New FlowLayoutPanel With {
-                .FlowDirection = FlowDirection.TopDown,
-                .AutoSize = True,
-                .Margin = New Padding(20, 24, 3, 3),
-                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
+                .Margin = New Padding(12, 0, 0, 0)
             }
 
             ButtonProcess = New Button With {
-                .Margin = New Padding(3, 0, 3, 3),
+                .Margin = New Padding(12, 0, 0, 0),
                 .Text = My.Resources.Label_Erase,
+                .Anchor = AnchorStyles.Right,
                 .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+                .AutoSize = True
             }
-            ButtonContainer.Controls.Add(ButtonProcess)
 
-            Return ButtonContainer
-        End Function
+            With TableLayoutPanelMain
+                .Controls.Add(GroupBoxDrive, 0, Row)
+                .Controls.Add(GroupBoxOptions, 1, Row)
+                .Controls.Add(CheckBoxSelect, 2, Row)
+                .Controls.Add(ButtonProcess, 3, Row)
+            End With
+        End Sub
 
         Private Sub InitializeFooter()
             ButtonOk.Visible = False
             ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
         End Sub
         Private Sub InitializeHelp()
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, _LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, ComboImageDrives)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Revs, _LabelRevs, _NumericRevs)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_Hfreq, _CheckBoxHFreq)
             SetHelpString(My.Resources.HelpStrings.Flux_SelectTracks, CheckBoxSelect)

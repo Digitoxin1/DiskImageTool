@@ -25,6 +25,7 @@ Namespace Flux
 
         Private _DotPattern As Bitmap
         Private _DotPatternColor As Color = Color.Empty
+        Private _DotRow As Integer = -1
 
         Protected Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Protected Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
@@ -349,7 +350,7 @@ Namespace Flux
             AppendLogLine("Command Failed: " & Msg)
         End Sub
 
-        Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel)
+        Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel, ShowDots As Boolean)
             Dim TableContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.LeftToRight,
                 .Anchor = AnchorStyles.Top,
@@ -360,7 +361,10 @@ Namespace Flux
 
             TableContainer.Controls.Add(TS0)
             TableContainer.Controls.Add(TS1)
-            TableContainer.Controls.Add(ButtonContainer)
+
+            If ButtonContainer IsNot Nothing Then
+                TableContainer.Controls.Add(ButtonContainer)
+            End If
 
             TS0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TS0.Dock = DockStyle.None
@@ -374,7 +378,10 @@ Namespace Flux
                 .Controls.AddWithSpan(TableContainer, 0, Row, ColSpan)
             End With
 
-            AddHandler _TLP.CellPaint, AddressOf PaintGridBackground
+            If ShowDots Then
+                _DotRow = Row
+                AddHandler _TLP.CellPaint, AddressOf PaintGridBackground
+            End If
         End Sub
 
         Protected Sub InitLogFilePath(FilePath As String, Optional Append As Boolean = False)
@@ -615,11 +622,26 @@ Namespace Flux
         End Sub
 
         Private Sub PaintGridBackground(sender As Object, e As TableLayoutCellPaintEventArgs)
-            If e.Row <> 1 Then
+            If e.Row <> _DotRow Then Return
+
+            Dim TLP = DirectCast(sender, TableLayoutPanel)
+
+            ' Get the FlowLayoutPanel in the grid row
+            Dim GridPanel = TryCast(TLP.GetControlFromPosition(0, _DotRow), FlowLayoutPanel)
+            If GridPanel Is Nothing Then
                 Return
             End If
 
-            Dim TLP = DirectCast(sender, TableLayoutPanel)
+            ' Use the cell's width but the FlowLayoutPanel's vertical bounds
+            Dim Bounds As New Rectangle(
+                e.CellBounds.Left,
+                GridPanel.Top,
+                e.CellBounds.Width,
+                GridPanel.Height
+            )
+
+            Bounds = Rectangle.Intersect(Bounds, e.CellBounds)
+            If Bounds.IsEmpty Then Return
 
             ' Create or update the pattern only when necessary
             If _DotPattern Is Nothing OrElse _DotPatternColor <> TLP.ForeColor Then
@@ -637,9 +659,10 @@ Namespace Flux
                 End Using
             End If
 
-            ' Repeat the pattern across the entire cell
+            ' Repeat the pattern within the FlowLayoutPanel's vertical bounds
             Using B As New TextureBrush(_DotPattern)
-                e.Graphics.FillRectangle(B, e.CellBounds)
+                B.TranslateTransform(Bounds.Left, Bounds.Top)
+                e.Graphics.FillRectangle(B, Bounds)
             End Using
         End Sub
 

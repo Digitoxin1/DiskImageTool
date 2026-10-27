@@ -39,6 +39,10 @@ Namespace Flux.Greaseweazle
         End Property
 
         Public Function CanKeepProcessing() As Boolean Implements ITrackStatus.CanKeepProcessing
+            Return HasRemainingTracks() AndAlso _CurrentStatusInfo.Failed
+        End Function
+
+        Friend Function HasRemainingTracks() As Boolean
             If _CurrentStatusInfo Is Nothing Then
                 Return False
             End If
@@ -47,15 +51,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
-            If Not _CurrentStatusInfo.Failed Then
-                Return False
-            End If
-
-            If Not (_CurrentStatusInfo.Track < _Range.TrackEnd OrElse _CurrentStatusInfo.Side < _Range.HeadEnd) Then
-                Return False
-            End If
-
-            Return True
+            Return _CurrentStatusInfo.Track < _Range.TrackEnd OrElse _CurrentStatusInfo.Side < _Range.HeadEnd
         End Function
 
         Public Sub Clear() Implements ITrackStatus.Clear

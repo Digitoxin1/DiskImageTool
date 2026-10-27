@@ -99,17 +99,20 @@ Namespace Flux.Greaseweazle
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     TrackStatus.UpdateTrackStatusAborted()
 
-                Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
-                    TrackStatus.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed, ConsoleProcessRunner.ProcessStateEnum.Error
+                    Dim DoKeepProcessing As Boolean = CheckKeepProcessing(state)
 
                     If DoKeepProcessing Then
+                        TrackStatus.UpdateTrackStatusComplete(_DoubleStep, True)
                         KeepProcessing()
                         Exit Sub
                     End If
 
-                Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    TrackStatus.UpdateTrackStatusError()
+                    If state = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+                        TrackStatus.UpdateTrackStatusComplete(_DoubleStep, False)
+                    Else
+                        TrackStatus.UpdateTrackStatusError()
+                    End If
             End Select
 
             If state <> ConsoleProcessRunner.ProcessStateEnum.Running Then
@@ -137,14 +140,18 @@ Namespace Flux.Greaseweazle
             Return FloppyType = Opt.Type
         End Function
 
-        Private Function CheckKeepProcessing() As Boolean
-            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (ContinueAllowed() AndAlso _CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
+        Private Function CheckKeepProcessing(state As ConsoleProcessRunner.ProcessStateEnum) As Boolean
+            Dim WantsContinue As Boolean = _ContinueAfterWrite OrElse (ContinueAllowed() AndAlso _CheckBoxContinue.Checked)
 
-            If KeepProcessing Then
-                KeepProcessing = TrackStatus.CanKeepProcessing
+            If Not WantsContinue Then
+                Return False
             End If
 
-            Return KeepProcessing
+            If state = ConsoleProcessRunner.ProcessStateEnum.Completed AndAlso _ContinueAfterWrite Then
+                Return _Status.HasRemainingTracks()
+            End If
+
+            Return TrackStatus.CanKeepProcessing()
         End Function
 
         Private Function ConfirmIncompatibleImage() As Boolean

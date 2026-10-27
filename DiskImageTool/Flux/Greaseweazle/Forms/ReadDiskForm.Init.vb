@@ -31,7 +31,7 @@
                 .Controls.Add(_PanelOutput, 1, 0)
                 .Controls.Add(_PanelDestination, 2, 0)
 
-                InitGridRow(1, .ColumnCount, ButtonContainer)
+                InitGridRow(1, .ColumnCount, ButtonContainer, True)
 
                 .ResumeLayout()
             End With
