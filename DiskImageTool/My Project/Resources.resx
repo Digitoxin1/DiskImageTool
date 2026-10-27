@@ -2977,4 +2977,16 @@ Do you wish to overwrite?</value>
   <data name="Label_SecondaryOutput" xml:space="preserve">
     <value>Secondary Output</value>
   </data>
+  <data name="Label_Destination" xml:space="preserve">
+    <value>Destination</value>
+  </data>
+  <data name="Label_Output" xml:space="preserve">
+    <value>Output</value>
+  </data>
+  <data name="Label_DriveReadParams" xml:space="preserve">
+    <value>Drive &amp;&amp; Read Parameters</value>
+  </data>
+  <data name="Label_DriveAndImage" xml:space="preserve">
+    <value>Drive &amp;&amp; Image</value>
+  </data>
 </root>

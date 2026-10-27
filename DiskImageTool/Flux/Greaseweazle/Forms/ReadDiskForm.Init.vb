@@ -42,6 +42,7 @@
 
         Private Sub InitializePanels()
             With _PanelDriveParams
+                .GroupBoxParams.Text = My.Resources.Label_DriveReadParams
                 .LabelDrive.Text = My.Resources.Label_Drive
                 .ButtonDetect.Text = My.Resources.Label_Detect
                 .LabelImageFormat.Text = My.Resources.Label_DiskFormat
@@ -60,12 +61,14 @@
             End With
 
             With _PanelOutput
+                .GroupBoxOutput.Text = My.Resources.Label_Output
                 .LabelOutputType.Text = My.Resources.Label_PrimaryOutput
                 .LabelOutputType2.Text = My.Resources.Label_SecondaryOutput
                 .LabelLocation.Text = My.Resources.Label_ImageLocation
             End With
 
             With _PanelDestination
+                .GroupBoxDestination.Text = My.Resources.Label_Destination
                 _ToolTip.SetToolTip(.ButtonToggleSequence, My.Resources.Label_ToggleSequence & " (Alt+S)")
 
                 .LabelRootFolder.Text = My.Resources.Label_RootFolder

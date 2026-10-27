@@ -2504,4 +2504,16 @@ Archivo de imagen: '{1}'
   <data name="Label_SecondaryOutput" xml:space="preserve">
     <value>Salida secundaria</value>
   </data>
+  <data name="Label_Output" xml:space="preserve">
+    <value>Salida</value>
+  </data>
+  <data name="Label_DriveAndImage" xml:space="preserve">
+    <value>Unidad &amp;&amp; Imagen</value>
+  </data>
+  <data name="Label_DriveReadParams" xml:space="preserve">
+    <value>Unidad &amp;&amp; Parámetros de lectura</value>
+  </data>
+  <data name="Label_Destination" xml:space="preserve">
+    <value>Destino</value>
+  </data>
 </root>

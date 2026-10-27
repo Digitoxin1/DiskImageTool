@@ -185,114 +185,227 @@ Namespace Flux.Greaseweazle
                 .SuspendLayout()
 
                 .Left = 0
-                .RowCount = 5
-                .ColumnCount = 8
+                .RowCount = 2
+                .ColumnCount = 4
                 .Dock = DockStyle.Fill
 
                 FillAutoSizeStyles()
 
-                .ColumnStyles(0).SizeType = SizeType.Percent
-                .ColumnStyles(0).Width = 100
-
                 Dim Row As Integer = 0
 
-                InitializeControlsRowDrive(Row) : Row += 1
-                InitializeControlsRowFormat(Row) : Row += 1
-                InitializeControlsRowSelect(Row) : Row += 1
-                GridAddSeparatorrRow(Row) : Row += 1
-                InitializeControlsRowGrid(Row) : Row += 1
+                InitializeControlsRowDrive(Row)
+                InitializeControlsRowOptions(Row)
+                InitializeControlsRowWrite(Row) : Row += 1
+                InitGridRow(Row, .ColumnCount, Nothing, True) : Row += 1
 
                 .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 
         Private Sub InitializeControlsRowDrive(Row As Integer)
+            Dim GroupBoxDrive As New GroupBox With {
+                .Font = New Font(Me.Font, FontStyle.Bold),
+                .Text = My.Resources.Label_DriveAndImage,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .MinimumSize = New Size(0, 100)
+            }
+
+            Dim OptionsContainer As New TableLayoutPanel With {
+                .Font = Me.Font,
+                .ColumnCount = 2,
+                .RowCount = 3,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .Location = New Point(9, 19),
+                .Margin = New Padding(0),
+                .Padding = New Padding(0, 0, 9, 0),
+                .GrowStyle = TableLayoutPanelGrowStyle.FixedSize
+            }
+
+            With OptionsContainer
+                For i As Integer = 0 To .ColumnCount - 1
+                    .ColumnStyles.Add(New ColumnStyle(SizeType.AutoSize))
+                Next
+
+                For i As Integer = 0 To .RowCount - 1
+                    .RowStyles.Add(New RowStyle(SizeType.AutoSize))
+                Next
+            End With
+
+
             _LabelDrive = New Label With {
                 .Text = My.Resources.Label_Drive,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left,
+                .Margin = New Padding(0, 0, 3, 6)
             }
 
             ComboImageDrives = New ComboBox With {
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Width = 180
+                .Anchor = AnchorStyles.Left,
+                .Width = 180,
+                .Margin = New Padding(0, 0, 0, 6)
             }
 
-            _LabelRetries = New Label With {
-                .Text = My.Resources.Label_Retries,
+            _LabelImageFormatCaption = New Label With {
+                .Text = My.Resources.Label_Format,
                 .Anchor = AnchorStyles.Left,
-                .AutoSize = True
+                .AutoSize = True,
+                .Margin = New Padding(0, 0, 3, 6)
             }
 
-            _NumericRetries = New NumericUpDown With {
+            _LabelImageFormat = New Label With {
                 .Anchor = AnchorStyles.Left,
-                .Width = 45,
-                .Minimum = MIN_RETRIES,
-                .Maximum = MAX_RETRIES
+                .AutoSize = True,
+                .UseMnemonic = False,
+                .Margin = New Padding(0, 0, 0, 6)
             }
+
+            _LabelWarning = New Label With {
+                .Text = My.Resources.Message_ImageFormatWarning,
+                .ForeColor = Color.Red,
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Right,
+                .Visible = False,
+                .Margin = New Padding(0)
+            }
+
+            With OptionsContainer
+                .Controls.Add(_LabelDrive, 0, 0)
+                .Controls.Add(ComboImageDrives, 1, 0)
+
+                .Controls.Add(_LabelImageFormatCaption, 0, 1)
+                .Controls.Add(_LabelImageFormat, 1, 1)
+
+                .Controls.AddWithSpan(_LabelWarning, 0, 2, 2)
+            End With
+
+            GroupBoxDrive.Controls.Add(OptionsContainer)
+
+            With TableLayoutPanelMain
+                .Controls.Add(GroupBoxDrive, 0, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowOptions(Row As Integer)
+            Dim GroupBoxOptions As New GroupBox With {
+                .Font = New Font(Me.Font, FontStyle.Bold),
+               .Text = My.Resources.Label_Options,
+               .AutoSize = True,
+               .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+               .MinimumSize = New Size(0, 100)
+           }
+
+            Dim OptionsContainer As New TableLayoutPanel With {
+               .Font = Me.Font,
+               .ColumnCount = 3,
+               .RowCount = 2,
+               .AutoSize = True,
+               .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+               .Location = New Point(9, 19),
+               .Margin = New Padding(0),
+               .Padding = New Padding(0, 0, 9, 0),
+               .GrowStyle = TableLayoutPanelGrowStyle.FixedSize
+           }
+
+            With OptionsContainer
+                For i As Integer = 0 To .ColumnCount - 1
+                    .ColumnStyles.Add(New ColumnStyle(SizeType.AutoSize))
+                Next
+
+                For i As Integer = 0 To .RowCount - 1
+                    .RowStyles.Add(New RowStyle(SizeType.AutoSize))
+                Next
+            End With
 
             _CheckBoxPreErase = New CheckBox With {
                 .Text = My.Resources.Label_PreErase,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
+                .Margin = New Padding(0, 0, 3, 6)
             }
 
             _CheckBoxEraseEmpty = New CheckBox With {
                 .Text = My.Resources.Label_EraseEmpty,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
-            }
-
-            With TableLayoutPanelMain
-                .Controls.Add(_LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
-
-                .Controls.Add(_CheckBoxPreErase, 4, Row)
-
-                .Controls.Add(_CheckBoxEraseEmpty, 5, Row)
-
-                .Controls.Add(_LabelRetries, 6, Row)
-                .Controls.Add(_NumericRetries, 7, Row)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowFormat(Row As Integer)
-            _LabelImageFormatCaption = New Label With {
-                .Text = My.Resources.Label_Format,
-                .Anchor = AnchorStyles.Right,
-                .AutoSize = True
-            }
-
-            _LabelImageFormat = New Label With {
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .UseMnemonic = False
+                .Margin = New Padding(0, 0, 0, 6)
             }
 
             CheckboxNoVerify = New CheckBox With {
                 .Text = My.Resources.Label_NoVerify,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
+                .Margin = New Padding(0, 0, 3, 0)
+            }
+
+            _LabelRetries = New Label With {
+                .Text = My.Resources.Label_Retries,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(0, 0, 3, 0)
+            }
+
+            _NumericRetries = New NumericUpDown With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 45,
+                .Minimum = MIN_RETRIES,
+                .Maximum = MAX_RETRIES,
+                .Margin = New Padding(0)
+            }
+
+            With OptionsContainer
+                .Controls.Add(_CheckBoxPreErase, 0, 0)
+                .Controls.AddWithSpan(_CheckBoxEraseEmpty, 1, 0, 2)
+
+                .Controls.Add(CheckboxNoVerify, 0, 1)
+                .Controls.Add(_LabelRetries, 1, 1)
+                .Controls.Add(_NumericRetries, 2, 1)
+            End With
+
+            GroupBoxOptions.Controls.Add(OptionsContainer)
+
+            With TableLayoutPanelMain
+                .Controls.Add(GroupBoxOptions, 1, Row)
+            End With
+        End Sub
+
+        Private Sub InitializeControlsRowWrite(Row As Integer)
+            Dim OptionsContainer As New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.TopDown,
+                .AutoSize = True,
+                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                .WrapContents = False,
+                .Padding = New Padding(9, 19, 0, 0)
             }
 
             _CheckBoxContinue = New CheckBox With {
                 .Text = My.Resources.Label_ContinueAfterFailure,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
+                .Margin = New Padding(0, 0, 0, 6)
+            }
+            OptionsContainer.Controls.Add(_CheckBoxContinue)
+
+            CheckBoxSelect = New CheckBox With {
+                .Text = My.Resources.Label_SelectTracks,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(0)
+            }
+            OptionsContainer.Controls.Add(CheckBoxSelect)
+
+            ButtonProcess = New Button With {
+                .Margin = New Padding(12, 0, 0, 0),
+                .Text = My.Resources.Label_Write,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Right
             }
 
             With TableLayoutPanelMain
-                .Controls.Add(_LabelImageFormatCaption, 0, Row)
-                .Controls.Add(_LabelImageFormat, 1, Row)
-
-                .Controls.Add(CheckboxNoVerify, 4, Row)
-
-                .Controls.Add(_CheckBoxContinue, 5, Row)
+                .Controls.Add(OptionsContainer, 2, Row)
+                .Controls.Add(ButtonProcess, 3, Row)
             End With
         End Sub
 
@@ -317,30 +430,6 @@ Namespace Flux.Greaseweazle
                 .Controls.AddWithSpan(TableSide0, 0, Row, 2)
                 .Controls.AddWithSpan(TableSide1, 2, Row, 4)
                 .Controls.AddWithSpan(ButtonContainer, 6, Row, 2)
-            End With
-        End Sub
-
-        Private Sub InitializeControlsRowSelect(Row As Integer)
-            _LabelWarning = New Label With {
-                .Text = My.Resources.Message_ImageFormatWarning,
-                .ForeColor = Color.Red,
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Right,
-                .Visible = False
-            }
-
-            CheckBoxSelect = New CheckBox With {
-                .Text = My.Resources.Label_SelectTracks,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(3, 3, 3, 3)
-            }
-
-            With TableLayoutPanelMain
-                ' .RowStyles(Row).SizeType = SizeType.Absolute
-                ' .RowStyles(Row).Height = 20
-                .Controls.AddWithSpan(_LabelWarning, 0, Row, 2)
-                .Controls.AddWithSpan(CheckBoxSelect, 4, Row, 2)
             End With
         End Sub
 

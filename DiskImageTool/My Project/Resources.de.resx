@@ -2504,4 +2504,16 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_SecondaryOutput" xml:space="preserve">
     <value>Sekundäre Ausgabe</value>
   </data>
+  <data name="Label_Output" xml:space="preserve">
+    <value>Ausgabe</value>
+  </data>
+  <data name="Label_DriveAndImage" xml:space="preserve">
+    <value>Laufwerk &amp;&amp; Image</value>
+  </data>
+  <data name="Label_DriveReadParams" xml:space="preserve">
+    <value>Laufwerk &amp;&amp; Leseparameter</value>
+  </data>
+  <data name="Label_Destination" xml:space="preserve">
+    <value>Ziel</value>
+  </data>
 </root>

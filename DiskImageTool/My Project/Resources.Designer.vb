@@ -3583,6 +3583,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Destination.
+        '''</summary>
+        Friend ReadOnly Property Label_Destination() As String
+            Get
+                Return ResourceManager.GetString("Label_Destination", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Details.
         '''</summary>
         Friend ReadOnly Property Label_Details() As String
@@ -3718,6 +3727,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Drive &amp;&amp; Image.
+        '''</summary>
+        Friend ReadOnly Property Label_DriveAndImage() As String
+            Get
+                Return ResourceManager.GetString("Label_DriveAndImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Drive Interface.
         '''</summary>
         Friend ReadOnly Property Label_DriveInterface() As String
@@ -3732,6 +3750,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_DriveNumber() As String
             Get
                 Return ResourceManager.GetString("Label_DriveNumber", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Drive &amp;&amp; Read Parameters.
+        '''</summary>
+        Friend ReadOnly Property Label_DriveReadParams() As String
+            Get
+                Return ResourceManager.GetString("Label_DriveReadParams", resourceCulture)
             End Get
         End Property
         
@@ -5010,6 +5037,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Other() As String
             Get
                 Return ResourceManager.GetString("Label_Other", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Output.
+        '''</summary>
+        Friend ReadOnly Property Label_Output() As String
+            Get
+                Return ResourceManager.GetString("Label_Output", resourceCulture)
             End Get
         End Property
         

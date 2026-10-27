@@ -2504,4 +2504,16 @@ Voulez-vous écraser ?</value>
   <data name="Label_SecondaryOutput" xml:space="preserve">
     <value>Sortie secondaire</value>
   </data>
+  <data name="Label_Output" xml:space="preserve">
+    <value>Sortie</value>
+  </data>
+  <data name="Label_DriveAndImage" xml:space="preserve">
+    <value>Lecteur &amp;&amp; Image</value>
+  </data>
+  <data name="Label_DriveReadParams" xml:space="preserve">
+    <value>Lecteur &amp;&amp; Paramètres de lecture</value>
+  </data>
+  <data name="Label_Destination" xml:space="preserve">
+    <value>Destination</value>
+  </data>
 </root>

@@ -2504,4 +2504,16 @@ Flux 映像集：“{0}”
   <data name="Label_SecondaryOutput" xml:space="preserve">
     <value>辅助输出</value>
   </data>
+  <data name="Label_Output" xml:space="preserve">
+    <value>输出</value>
+  </data>
+  <data name="Label_DriveAndImage" xml:space="preserve">
+    <value>驱动器 &amp;&amp; 镜像</value>
+  </data>
+  <data name="Label_DriveReadParams" xml:space="preserve">
+    <value>驱动器 &amp;&amp; 读取参数</value>
+  </data>
+  <data name="Label_Destination" xml:space="preserve">
+    <value>目标位置</value>
+  </data>
 </root>
