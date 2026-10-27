@@ -27,6 +27,7 @@
             Me.TextBoxPanel = New System.Windows.Forms.Panel()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.PanelCommandLine = New System.Windows.Forms.Panel()
+            Me.TextCommandLine = New DiskImageTool.PlaceholderTextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
             Me.StatusDevice = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
@@ -35,7 +36,6 @@
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
-            Me.TextCommandLine = New DiskImageTool.PlaceholderTextBox()
             Me.PanelBottom.SuspendLayout()
             Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
@@ -254,6 +254,18 @@
             Me.PanelCommandLine.Size = New System.Drawing.Size(731, 28)
             Me.PanelCommandLine.TabIndex = 3
             '
+            'TextCommandLine
+            '
+            Me.TextCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+            Me.TextCommandLine.Dock = System.Windows.Forms.DockStyle.Top
+            Me.TextCommandLine.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+            Me.TextCommandLine.Location = New System.Drawing.Point(0, 6)
+            Me.TextCommandLine.Name = "TextCommandLine"
+            Me.TextCommandLine.PlaceholderText = ""
+            Me.TextCommandLine.ReadOnly = True
+            Me.TextCommandLine.Size = New System.Drawing.Size(731, 22)
+            Me.TextCommandLine.TabIndex = 0
+            '
             'StatusStripBottom
             '
             Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.ToolStripProgress, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
@@ -320,18 +332,6 @@
             Me.StatusUnexpected.Size = New System.Drawing.Size(118, 19)
             Me.StatusUnexpected.Text = "{Unexpected Sectors}"
             '
-            'TextCommandLine
-            '
-            Me.TextCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-            Me.TextCommandLine.Dock = System.Windows.Forms.DockStyle.Top
-            Me.TextCommandLine.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-            Me.TextCommandLine.Location = New System.Drawing.Point(0, 6)
-            Me.TextCommandLine.Name = "TextCommandLine"
-            Me.TextCommandLine.PlaceholderText = ""
-            Me.TextCommandLine.ReadOnly = True
-            Me.TextCommandLine.Size = New System.Drawing.Size(731, 22)
-            Me.TextCommandLine.TabIndex = 0
-            '
             'BaseFluxForm
             '
             Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -347,6 +347,7 @@
             Me.MinimizeBox = False
             Me.MinimumSize = New System.Drawing.Size(700, 39)
             Me.Name = "BaseFluxForm"
+            Me.ShowIcon = False
             Me.ShowInTaskbar = False
             Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
             Me.PanelBottom.ResumeLayout(False)
