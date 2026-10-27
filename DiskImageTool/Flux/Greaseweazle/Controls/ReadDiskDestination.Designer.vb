@@ -31,13 +31,13 @@ Partial Class ReadDiskDestination
         Me.LabelFolderName = New System.Windows.Forms.Label()
         Me.TextBoxFolderName = New System.Windows.Forms.TextBox()
         Me.LabelPrefix = New System.Windows.Forms.Label()
-        Me.TextBoxPrefix = New DiskImageTool.PlaceholderTextBox()
         Me.ButtonBrowse = New System.Windows.Forms.Button()
         Me.LabelSecondaryImageFolder = New System.Windows.Forms.Label()
         Me.TextBoxImageFolder = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanelDestinationImage = New System.Windows.Forms.TableLayoutPanel()
         Me.LabelFileName = New System.Windows.Forms.Label()
         Me.TextBoxFileName = New System.Windows.Forms.TextBox()
+        Me.TextBoxPrefix = New DiskImageTool.PlaceholderTextBox()
         Me.GroupBoxDestination.SuspendLayout()
         Me.TableLayoutPanelDestinationFlux.SuspendLayout()
         Me.TableLayoutPanelDestinationImage.SuspendLayout()
@@ -116,14 +116,14 @@ Partial Class ReadDiskDestination
         '
         'LabelRootFolder
         '
-        Me.LabelRootFolder.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.LabelRootFolder.AutoSize = True
         Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.LabelRootFolder, 2)
+        Me.LabelRootFolder.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabelRootFolder.Location = New System.Drawing.Point(3, 0)
         Me.LabelRootFolder.Name = "LabelRootFolder"
-        Me.LabelRootFolder.Size = New System.Drawing.Size(62, 13)
+        Me.LabelRootFolder.Size = New System.Drawing.Size(368, 13)
         Me.LabelRootFolder.TabIndex = 2
         Me.LabelRootFolder.Text = "Root Folder"
+        Me.LabelRootFolder.UseMnemonic = False
         '
         'TextBoxRootFolder
         '
@@ -138,13 +138,14 @@ Partial Class ReadDiskDestination
         '
         'LabelFolderName
         '
-        Me.LabelFolderName.AutoSize = True
-        Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.LabelFolderName, 2)
+        Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.LabelFolderName, 3)
+        Me.LabelFolderName.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabelFolderName.Location = New System.Drawing.Point(3, 42)
         Me.LabelFolderName.Name = "LabelFolderName"
-        Me.LabelFolderName.Size = New System.Drawing.Size(67, 13)
+        Me.LabelFolderName.Size = New System.Drawing.Size(402, 13)
         Me.LabelFolderName.TabIndex = 5
         Me.LabelFolderName.Text = "Folder Name"
+        Me.LabelFolderName.UseMnemonic = False
         '
         'TextBoxFolderName
         '
@@ -157,21 +158,14 @@ Partial Class ReadDiskDestination
         '
         'LabelPrefix
         '
-        Me.LabelPrefix.AutoSize = True
+        Me.LabelPrefix.AutoEllipsis = True
+        Me.LabelPrefix.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabelPrefix.Location = New System.Drawing.Point(3, 81)
         Me.LabelPrefix.Name = "LabelPrefix"
-        Me.LabelPrefix.Size = New System.Drawing.Size(33, 13)
+        Me.LabelPrefix.Size = New System.Drawing.Size(94, 13)
         Me.LabelPrefix.TabIndex = 7
         Me.LabelPrefix.Text = "Prefix"
-        '
-        'TextBoxPrefix
-        '
-        Me.TextBoxPrefix.Location = New System.Drawing.Point(3, 98)
-        Me.TextBoxPrefix.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
-        Me.TextBoxPrefix.Name = "TextBoxPrefix"
-        Me.TextBoxPrefix.PlaceholderText = ""
-        Me.TextBoxPrefix.Size = New System.Drawing.Size(94, 20)
-        Me.TextBoxPrefix.TabIndex = 9
+        Me.LabelPrefix.UseMnemonic = False
         '
         'ButtonBrowse
         '
@@ -185,12 +179,15 @@ Partial Class ReadDiskDestination
         '
         'LabelSecondaryImageFolder
         '
-        Me.LabelSecondaryImageFolder.AutoSize = True
+        Me.LabelSecondaryImageFolder.AutoEllipsis = True
+        Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.LabelSecondaryImageFolder, 2)
+        Me.LabelSecondaryImageFolder.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabelSecondaryImageFolder.Location = New System.Drawing.Point(103, 81)
         Me.LabelSecondaryImageFolder.Name = "LabelSecondaryImageFolder"
-        Me.LabelSecondaryImageFolder.Size = New System.Drawing.Size(122, 13)
+        Me.LabelSecondaryImageFolder.Size = New System.Drawing.Size(302, 13)
         Me.LabelSecondaryImageFolder.TabIndex = 8
         Me.LabelSecondaryImageFolder.Text = "Secondary Image Folder"
+        Me.LabelSecondaryImageFolder.UseMnemonic = False
         '
         'TextBoxImageFolder
         '
@@ -243,6 +240,15 @@ Partial Class ReadDiskDestination
         Me.TextBoxFileName.Name = "TextBoxFileName"
         Me.TextBoxFileName.Size = New System.Drawing.Size(402, 20)
         Me.TextBoxFileName.TabIndex = 6
+        '
+        'TextBoxPrefix
+        '
+        Me.TextBoxPrefix.Location = New System.Drawing.Point(3, 98)
+        Me.TextBoxPrefix.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
+        Me.TextBoxPrefix.Name = "TextBoxPrefix"
+        Me.TextBoxPrefix.PlaceholderText = ""
+        Me.TextBoxPrefix.Size = New System.Drawing.Size(94, 20)
+        Me.TextBoxPrefix.TabIndex = 9
         '
         'ReadDiskDestination
         '

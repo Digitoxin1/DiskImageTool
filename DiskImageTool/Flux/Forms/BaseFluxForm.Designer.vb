@@ -24,6 +24,7 @@
             Me.PanelConsoleHeader = New System.Windows.Forms.Panel()
             Me.CheckSaveLog = New System.Windows.Forms.CheckBox()
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
+            Me.TextBoxPanel = New System.Windows.Forms.Panel()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.PanelCommandLine = New System.Windows.Forms.Panel()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
@@ -41,6 +42,7 @@
             Me.PanelButtonsLeft.SuspendLayout()
             Me.PanelMain.SuspendLayout()
             Me.PanelConsoleHeader.SuspendLayout()
+            Me.TextBoxPanel.SuspendLayout()
             Me.PanelCommandLine.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
             Me.SuspendLayout()
@@ -127,8 +129,8 @@
             Me.PanelButtonsLeft.Location = New System.Drawing.Point(0, 0)
             Me.PanelButtonsLeft.Margin = New System.Windows.Forms.Padding(0)
             Me.PanelButtonsLeft.Name = "PanelButtonsLeft"
-            Me.PanelButtonsLeft.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
-            Me.PanelButtonsLeft.Size = New System.Drawing.Size(186, 43)
+            Me.PanelButtonsLeft.Padding = New System.Windows.Forms.Padding(12, 10, 6, 10)
+            Me.PanelButtonsLeft.Size = New System.Drawing.Size(192, 43)
             Me.PanelButtonsLeft.TabIndex = 0
             Me.PanelButtonsLeft.WrapContents = False
             '
@@ -136,7 +138,7 @@
             '
             Me.ButtonReset.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonReset.AutoSize = True
-            Me.ButtonReset.Location = New System.Drawing.Point(12, 10)
+            Me.ButtonReset.Location = New System.Drawing.Point(18, 10)
             Me.ButtonReset.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.ButtonReset.MinimumSize = New System.Drawing.Size(75, 0)
             Me.ButtonReset.Name = "ButtonReset"
@@ -149,7 +151,7 @@
             '
             Me.ButtonSaveLog.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonSaveLog.AutoSize = True
-            Me.ButtonSaveLog.Location = New System.Drawing.Point(99, 10)
+            Me.ButtonSaveLog.Location = New System.Drawing.Point(105, 10)
             Me.ButtonSaveLog.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.ButtonSaveLog.MinimumSize = New System.Drawing.Size(75, 0)
             Me.ButtonSaveLog.Name = "ButtonSaveLog"
@@ -164,7 +166,7 @@
             Me.PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelMain.Controls.Add(Me.PanelInner)
             Me.PanelMain.Controls.Add(Me.PanelConsoleHeader)
-            Me.PanelMain.Controls.Add(Me.TextBoxConsole)
+            Me.PanelMain.Controls.Add(Me.TextBoxPanel)
             Me.PanelMain.Controls.Add(Me.PanelCommandLine)
             Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelMain.Location = New System.Drawing.Point(0, 0)
@@ -198,7 +200,7 @@
             '
             Me.CheckSaveLog.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
             Me.CheckSaveLog.AutoSize = True
-            Me.CheckSaveLog.Location = New System.Drawing.Point(607, 0)
+            Me.CheckSaveLog.Location = New System.Drawing.Point(625, 0)
             Me.CheckSaveLog.Name = "CheckSaveLog"
             Me.CheckSaveLog.Size = New System.Drawing.Size(105, 17)
             Me.CheckSaveLog.TabIndex = 1
@@ -216,18 +218,28 @@
             Me.LabelConsoleOutput.TabIndex = 0
             Me.LabelConsoleOutput.Text = "{Console Output}"
             '
+            'TextBoxPanel
+            '
+            Me.TextBoxPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+            Me.TextBoxPanel.Controls.Add(Me.TextBoxConsole)
+            Me.TextBoxPanel.Dock = System.Windows.Forms.DockStyle.Bottom
+            Me.TextBoxPanel.Location = New System.Drawing.Point(18, 276)
+            Me.TextBoxPanel.Name = "TextBoxPanel"
+            Me.TextBoxPanel.Size = New System.Drawing.Size(731, 114)
+            Me.TextBoxPanel.TabIndex = 2
+            '
             'TextBoxConsole
             '
             Me.TextBoxConsole.BackColor = System.Drawing.SystemColors.Control
-            Me.TextBoxConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-            Me.TextBoxConsole.Dock = System.Windows.Forms.DockStyle.Bottom
+            Me.TextBoxConsole.BorderStyle = System.Windows.Forms.BorderStyle.None
+            Me.TextBoxConsole.Dock = System.Windows.Forms.DockStyle.Fill
             Me.TextBoxConsole.Font = New System.Drawing.Font("Consolas", 9.0!)
-            Me.TextBoxConsole.Location = New System.Drawing.Point(18, 276)
+            Me.TextBoxConsole.Location = New System.Drawing.Point(0, 0)
             Me.TextBoxConsole.Multiline = True
             Me.TextBoxConsole.Name = "TextBoxConsole"
             Me.TextBoxConsole.ReadOnly = True
             Me.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-            Me.TextBoxConsole.Size = New System.Drawing.Size(731, 114)
+            Me.TextBoxConsole.Size = New System.Drawing.Size(729, 112)
             Me.TextBoxConsole.TabIndex = 2
             '
             'PanelCommandLine
@@ -238,7 +250,7 @@
             Me.PanelCommandLine.Dock = System.Windows.Forms.DockStyle.Bottom
             Me.PanelCommandLine.Location = New System.Drawing.Point(18, 390)
             Me.PanelCommandLine.Name = "PanelCommandLine"
-            Me.PanelCommandLine.Padding = New System.Windows.Forms.Padding(0, 6, 15, 0)
+            Me.PanelCommandLine.Padding = New System.Windows.Forms.Padding(0, 6, 0, 0)
             Me.PanelCommandLine.Size = New System.Drawing.Size(731, 28)
             Me.PanelCommandLine.TabIndex = 3
             '
@@ -317,7 +329,7 @@
             Me.TextCommandLine.Name = "TextCommandLine"
             Me.TextCommandLine.PlaceholderText = ""
             Me.TextCommandLine.ReadOnly = True
-            Me.TextCommandLine.Size = New System.Drawing.Size(716, 22)
+            Me.TextCommandLine.Size = New System.Drawing.Size(731, 22)
             Me.TextCommandLine.TabIndex = 0
             '
             'BaseFluxForm
@@ -349,6 +361,8 @@
             Me.PanelMain.PerformLayout()
             Me.PanelConsoleHeader.ResumeLayout(False)
             Me.PanelConsoleHeader.PerformLayout()
+            Me.TextBoxPanel.ResumeLayout(False)
+            Me.TextBoxPanel.PerformLayout()
             Me.PanelCommandLine.ResumeLayout(False)
             Me.PanelCommandLine.PerformLayout()
             Me.StatusStripBottom.ResumeLayout(False)
@@ -359,6 +373,7 @@
         End Sub
         Friend WithEvents StatusStripBottom As StatusStrip
         Friend WithEvents TextBoxConsole As TextBox
+        Friend WithEvents TextBoxPanel As Panel
         Friend WithEvents ButtonOk As Button
         Friend WithEvents ButtonCancel As Button
         Friend WithEvents StatusType As ToolStripStatusLabel

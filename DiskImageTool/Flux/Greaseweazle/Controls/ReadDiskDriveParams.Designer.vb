@@ -99,6 +99,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelDrive.Size = New System.Drawing.Size(32, 13)
         Me.LabelDrive.TabIndex = 0
         Me.LabelDrive.Text = "Drive"
+        Me.LabelDrive.UseMnemonic = False
         '
         'ComboDrives
         '
@@ -121,6 +122,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelImageFormat.Size = New System.Drawing.Size(63, 13)
         Me.LabelImageFormat.TabIndex = 3
         Me.LabelImageFormat.Text = "Disk Format"
+        Me.LabelImageFormat.UseMnemonic = False
         '
         'ComboImageFormat
         '
@@ -141,6 +143,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelRevs.Size = New System.Drawing.Size(32, 13)
         Me.LabelRevs.TabIndex = 5
         Me.LabelRevs.Text = "Revs"
+        Me.LabelRevs.UseMnemonic = False
         '
         'LabelRetries
         '
@@ -150,6 +153,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelRetries.Size = New System.Drawing.Size(40, 13)
         Me.LabelRetries.TabIndex = 6
         Me.LabelRetries.Text = "Retries"
+        Me.LabelRetries.UseMnemonic = False
         '
         'LabelSeekRetries
         '
@@ -159,6 +163,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelSeekRetries.Size = New System.Drawing.Size(68, 13)
         Me.LabelSeekRetries.TabIndex = 7
         Me.LabelSeekRetries.Text = "Seek Retries"
+        Me.LabelSeekRetries.UseMnemonic = False
         '
         'NumericRevs
         '

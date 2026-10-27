@@ -34,7 +34,6 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _Status As TrackStatus
         Private ReadOnly _ToolTip As New ToolTip()
         Private ReadOnly _UserState As Settings.UserStateFlux
-        Private _MaxWidthAdjustment As Integer
         Private _CachedRevs As Byte = 0
         Private _CachedRevsFlux As Byte = 0
         Private _ComboExtensionsNoEvent As Boolean = False
@@ -2444,7 +2443,7 @@ Namespace Flux.Greaseweazle
             Me.AutoSize = False
             Me.AutoSizeMode = AutoSizeMode.GrowOnly
             Me.Size = InitialSize
-            Me.MinimumSize = New Size(InitialSize.Width - _MaxWidthAdjustment, InitialSize.Height)
+            Me.MinimumSize = New Size(780, InitialSize.Height)
             Me.MaximumSize = New Size(1280, InitialSize.Height)
         End Sub
 #End Region

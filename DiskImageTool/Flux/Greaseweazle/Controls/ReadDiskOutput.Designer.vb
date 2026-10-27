@@ -89,6 +89,7 @@ Partial Class ReadDiskOutput
         Me.LabelOutputType.Size = New System.Drawing.Size(76, 13)
         Me.LabelOutputType.TabIndex = 0
         Me.LabelOutputType.Text = "Primary Output"
+        Me.LabelOutputType.UseMnemonic = False
         '
         'LabelOutputType2
         '
@@ -99,6 +100,7 @@ Partial Class ReadDiskOutput
         Me.LabelOutputType2.Size = New System.Drawing.Size(93, 13)
         Me.LabelOutputType2.TabIndex = 3
         Me.LabelOutputType2.Text = "Secondary Output"
+        Me.LabelOutputType2.UseMnemonic = False
         '
         'LabelLocation
         '
@@ -109,6 +111,7 @@ Partial Class ReadDiskOutput
         Me.LabelLocation.Size = New System.Drawing.Size(134, 13)
         Me.LabelLocation.TabIndex = 6
         Me.LabelLocation.Text = "Secondary Image Location"
+        Me.LabelLocation.UseMnemonic = False
         '
         'ComboBoxPrimaryOutput
         '

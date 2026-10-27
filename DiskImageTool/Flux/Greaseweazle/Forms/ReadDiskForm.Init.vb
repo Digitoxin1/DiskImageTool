@@ -1,7 +1,10 @@
 ﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
+        Private _DotPattern As Bitmap
+        Private _DotPatternColor As Color = Color.Empty
+
         Private Sub InitializeControls()
-            Dim RowGrid As TableLayoutPanel
+            Dim RowGrid As FlowLayoutPanel
 
             InitializeFooter()
 
@@ -39,10 +42,7 @@
             InitializePanels()
             InitializeEvents()
 
-            Dim Widths = RowGrid.GetColumnWidths()
-            Dim RequiredWidth As Integer = RowGrid.GetControlFromPosition(2, 0).GetPreferredSize(Size.Empty).Width
-
-            _MaxWidthAdjustment = Widths(2) - RequiredWidth
+            AddHandler TableLayoutPanelMain.CellPaint, AddressOf PaintGridBackground
         End Sub
 
         Private Sub InitializePanels()
@@ -149,43 +149,48 @@
             End With
         End Sub
 
-        Private Function InitializeControlsRowGrid(Row As Integer) As TableLayoutPanel
-            Dim RowContainer As New TableLayoutPanel With {
-                .Dock = DockStyle.Fill,
-                .AutoSize = True,
-                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                .ColumnCount = 4,
-                .RowCount = 1,
-                .GrowStyle = TableLayoutPanelGrowStyle.FixedSize,
-                .Margin = New Padding(0),
-                .Padding = New Padding(0)
-            }
-
-            With RowContainer
-                .SuspendLayout()
-                .ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 40.0F))
-                .ColumnStyles.Add(New ColumnStyle(SizeType.AutoSize))
-                .ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 60.0F))
-                .RowStyles.Add(New RowStyle(SizeType.AutoSize))
-                .ResumeLayout(True)
-            End With
-
-            Dim ButtonContainer = InitializeButtons()
+        Private Function InitializeControlsRowGrid(Row As Integer) As FlowLayoutPanel
             Dim TableContainer = InitializeTables()
 
-            With RowContainer
-                .Controls.Add(TableContainer, 1, 0)
-                .Controls.Add(ButtonContainer, 2, 0)
-            End With
-
             With TableLayoutPanelMain
-                .Controls.AddWithSpan(RowContainer, 0, Row, 3)
+                .Controls.AddWithSpan(TableContainer, 0, Row, 3)
             End With
 
-            Return RowContainer
+            Return TableContainer
         End Function
 
+        Private Sub PaintGridBackground(sender As Object, e As TableLayoutCellPaintEventArgs)
+            If e.Row <> 1 Then
+                Return
+            End If
+
+            Dim TLP = DirectCast(sender, TableLayoutPanel)
+
+            ' Create or update the pattern only when necessary
+            If _DotPattern Is Nothing OrElse _DotPatternColor <> TLP.ForeColor Then
+                If _DotPattern IsNot Nothing Then _DotPattern.Dispose()
+
+                _DotPattern = New Bitmap(14, 14)
+                _DotPatternColor = TLP.ForeColor
+
+                Dim DotColor = Color.FromArgb(18, TLP.ForeColor)
+
+                Using G As Graphics = Graphics.FromImage(_DotPattern)
+                    Using B As New SolidBrush(DotColor)
+                        G.FillRectangle(B, 8, 8, 2, 2)
+                    End Using
+                End Using
+            End If
+
+            ' Repeat the pattern across the entire cell
+            Using B As New TextureBrush(_DotPattern)
+                e.Graphics.FillRectangle(B, e.CellBounds)
+            End Using
+        End Sub
+
         Private Function InitializeTables() As FlowLayoutPanel
+            Dim ButtonContainer = InitializeButtons()
+
             Dim TableContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.LeftToRight,
                 .Anchor = AnchorStyles.Top,
@@ -196,14 +201,15 @@
 
             TableContainer.Controls.Add(TableSide0)
             TableContainer.Controls.Add(TableSide1)
+            TableContainer.Controls.Add(ButtonContainer)
 
             TableSide0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TableSide0.Dock = DockStyle.None
-            TableSide0.Margin = New Padding(0, 0, 30, 0)
+            TableSide0.Margin = New Padding(0, 0, 20, 0)
 
             TableSide1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TableSide1.Dock = DockStyle.None
-            TableSide1.Margin = New Padding(30, 0, 0, 0)
+            TableSide1.Margin = New Padding(20, 0, 20, 0)
 
             Return TableContainer
         End Function
@@ -212,7 +218,7 @@
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
-                .Margin = New Padding(24, 24, 24, 3),
+                .Margin = New Padding(20, 24, 3, 3),
                 .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
 
@@ -338,6 +344,13 @@
             Else
                 SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
                 SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
+            End If
+        End Sub
+
+        Private Sub ReadDiskForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
+            If _DotPattern IsNot Nothing Then
+                _DotPattern.Dispose()
+                _DotPattern = Nothing
             End If
         End Sub
     End Class
