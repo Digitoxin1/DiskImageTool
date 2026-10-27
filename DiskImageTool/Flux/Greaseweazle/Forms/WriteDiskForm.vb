@@ -208,7 +208,8 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_DriveAndImage,
                 .AutoSize = True,
                 .AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                .MinimumSize = New Size(0, 100)
+                .MinimumSize = New Size(0, 90),
+                .MaximumSize = New Size(400, 90)
             }
 
             Dim OptionsContainer As New TableLayoutPanel With {
@@ -293,7 +294,8 @@ Namespace Flux.Greaseweazle
                .Text = My.Resources.Label_Options,
                .AutoSize = True,
                .AutoSizeMode = AutoSizeMode.GrowAndShrink,
-               .MinimumSize = New Size(0, 100)
+               .MinimumSize = New Size(0, 90),
+               .MaximumSize = New Size(400, 90)
            }
 
             Dim OptionsContainer As New TableLayoutPanel With {
