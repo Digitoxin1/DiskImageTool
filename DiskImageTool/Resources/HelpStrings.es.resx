@@ -448,7 +448,10 @@ durante la conversión.</value>
 usando Kryoflux sin volver a leer la unidad.
 
 Los resultados de la verificación de cada pista se
-muestran en la cuadrícula superior.</value>
+muestran en la cuadrícula superior.
+
+Cuando hay pistas seleccionadas, solo se verifican
+esas pistas.</value>
   </data>
   <data name="Flux_Write" xml:space="preserve">
     <value>Escribir la imagen cargada en el disquete en la

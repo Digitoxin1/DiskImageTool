@@ -449,7 +449,10 @@ PCImgCnv pendant la conversion.</value>
 de Kryoflux sans relire le lecteur.
 
 Les résultats de vérification de chaque piste sont
-affichés dans la grille ci-dessus.</value>
+affichés dans la grille ci-dessus.
+
+Lorsque des pistes sont sélectionnées, seules ces
+pistes sont vérifiées.</value>
   </data>
   <data name="Flux_Write" xml:space="preserve">
     <value>Écrire l’image chargée sur la disquette dans le lecteur

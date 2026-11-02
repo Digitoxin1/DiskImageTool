@@ -446,7 +446,9 @@ der Konvertierung erzeugt hat.</value>
 ohne das Laufwerk erneut zu lesen.
 
 Die Überprüfungsergebnisse jeder Spur werden im
-oberen Raster angezeigt.</value>
+oberen Raster angezeigt.
+
+Wenn Spuren ausgewählt sind, werden nur diese Spuren überprüft.</value>
   </data>
   <data name="Flux_Write" xml:space="preserve">
     <value>Schreibt das geladene Image auf die Diskette im
