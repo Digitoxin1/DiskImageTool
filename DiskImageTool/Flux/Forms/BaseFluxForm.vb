@@ -4,6 +4,8 @@ Imports Greaseweazle.Tools
 
 Namespace Flux
     Public MustInherit Class BaseFluxForm
+        Private Const TABLE_MARGIN As Integer = 20
+
         Protected WithEvents Process As ConsoleProcessRunner
         Protected WithEvents Runner As GreaseweazleRunner
         Private WithEvents DebounceTimer As New Timer
@@ -359,18 +361,58 @@ Namespace Flux
                 .WrapContents = False
             }
 
+            Dim margin = GetTableMargin()
+
             TableContainer.Controls.Add(TS0)
             TableContainer.Controls.Add(TS1)
 
             TS0.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TS0.Dock = DockStyle.None
-            TS0.Margin = New Padding(0, 0, 20, 0)
+            TS0.Margin = New Padding(0, 0, TABLE_MARGIN, 0)
 
             TS1.Anchor = AnchorStyles.Left Or AnchorStyles.Top
             TS1.Dock = DockStyle.None
-            TS1.Margin = New Padding(20, 0, 20, 0)
+            TS1.Margin = New Padding(TABLE_MARGIN, 0, TABLE_MARGIN, 0)
 
             Return TableContainer
+        End Function
+
+        Protected Sub ResizeTableContainer()
+            If TS0 Is Nothing OrElse TS1 Is Nothing OrElse TS0.Parent Is Nothing Then
+                Return
+            End If
+
+            If MinimumSize.Width = 0 Then
+                Return
+            End If
+
+            Dim margin As Integer = GetTableMargin()
+
+            Dim margin0 As New Padding(0, 0, margin, 0)
+            Dim margin1 As New Padding(margin, 0, margin, 0)
+
+            If TableSide0.Margin = margin0 AndAlso TableSide1.Margin = margin1 Then
+                Return
+            End If
+
+            Dim container = TS0.Parent
+
+            container.SuspendLayout()
+
+            TS0.Margin = margin0
+            TS1.Margin = margin1
+
+            container.ResumeLayout(True)
+        End Sub
+
+        Private Function GetTableMargin() As Integer
+            Dim growthFactor As Double = 0.075
+
+            If MinimumSize.Width = 0 Then
+                Return TABLE_MARGIN
+            End If
+
+            Return TABLE_MARGIN + CInt((Width - MinimumSize.Width) * growthFactor)
         End Function
 
         Protected Sub InitGridRow(Row As Integer, ColSpan As Integer, ButtonContainer As FlowLayoutPanel, ShowDots As Boolean)

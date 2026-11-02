@@ -2446,6 +2446,10 @@ Namespace Flux.Greaseweazle
             Me.MinimumSize = New Size(780, InitialSize.Height)
             Me.MaximumSize = New Size(1280, InitialSize.Height)
         End Sub
+
+        Private Sub ReadDiskForm_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+            ResizeTableContainer()
+        End Sub
 #End Region
     End Class
 End Namespace
