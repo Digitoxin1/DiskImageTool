@@ -8,6 +8,8 @@
         Private _TotalUnexpectedSectors As UInteger = 0
         Private _TrackFound As Boolean = False
 
+        Friend Property ReportLogicalTracks As Boolean
+
         Private Enum TrackStatusEnum
             Reading
             Erasing
@@ -43,6 +45,11 @@
             _TotalUnexpectedSectors = 0
             _TrackFound = False
         End Sub
+
+        Friend Sub ResetTrackFound()
+            _TrackFound = False
+        End Sub
+
         Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
             UpdateTrackStatusType(TrackStatusEnum.Aborted)
         End Sub
@@ -202,10 +209,15 @@
                 End If
             End If
 
+            Dim Track = _CurrentTrack.Track
+            If ReportLogicalTracks Then
+                Track \= 2
+            End If
+
             Dim StatusData As BaseFluxForm.TrackStatusData
             With StatusData
                 .CellText = CellText
-                .Track = _CurrentTrack.Track
+                .Track = Track
                 .Side = _CurrentTrack.Side
                 .SideVisible = True
                 .TotalBadSectors = _TotalBadSectors

@@ -430,7 +430,9 @@ A bracketed number is auto-incremented after each read.</value>
 Kryoflux without re-reading the drive.
 
 Verification results for each track are displayed
-in the grid above.</value>
+in the grid above.
+
+When tracks are selected, only those tracks are verified.</value>
   </data>
   <data name="Flux_Write" xml:space="preserve">
     <value>Write the loaded image to the floppy disk in the

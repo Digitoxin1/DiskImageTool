@@ -52,12 +52,20 @@ Namespace Flux.Kryoflux
             Return (IO.File.Exists(FileName), FileName)
         End Function
 
-        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, TrackCount As Integer, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, SingleSide As Boolean)
+        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, TrackCount As Integer, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask, Optional TrackStart As Integer = -1, Optional TrackEnd As Integer = -1, Optional Heads As TrackHeads = TrackHeads.Both) As (Arguments As String, SingleSide As Boolean)
             Dim SingleSidedMode As SingleSidedModeEnum = SingleSidedModeEnum.off
             Dim SingleSide As Boolean = False
 
             If DiskParams.Format = FloppyDiskFormat.Floppy160 Or DiskParams.Format = FloppyDiskFormat.Floppy180 Then
                 SingleSidedMode = SingleSidedModeEnum.side0
+                SingleSide = True
+            End If
+
+            If Heads = TrackHeads.Head0 Then
+                SingleSidedMode = SingleSidedModeEnum.side0
+                SingleSide = True
+            ElseIf Heads = TrackHeads.Head1 Then
+                SingleSidedMode = SingleSidedModeEnum.side1
                 SingleSide = True
             End If
 
@@ -68,6 +76,12 @@ Namespace Flux.Kryoflux
                 TrackDistance = TrackDistanceEnum.Tracks40
             End If
 
+            Dim HasExplicitSpan = TrackStart >= 0 OrElse TrackEnd >= 0
+            Dim ResolvedStart = If(TrackStart >= 0, TrackStart, 0)
+            Dim ResolvedEnd = If(TrackEnd >= 0, TrackEnd, TrackCount - 1)
+            Dim ResolvedOutputStart = If(HasExplicitSpan, ResolvedStart, 0)
+            Dim ResolvedOutputEnd = If(HasExplicitSpan, ResolvedEnd, OutputTrackCount - 1)
+
             Dim Builder As New CommandLineBuilder() With {
                 .InFile = InputFilePath,
                 .OutFile = OutputFilePath,
@@ -75,10 +89,10 @@ Namespace Flux.Kryoflux
                 .InImageType = ImageTypeEnum.KryoFlux_Stream,
                 .OutImageType = ImageTypeEnum.MFM_SectorImage,
                 .LogLevel = LogMask.Format Or LogLevel,
-                .TrackStart = 0,
-                .TrackEnd = TrackCount - 1,
-                .OutputTrackStart = 0,
-                .OutputTrackEnd = OutputTrackCount - 1,
+                .TrackStart = ResolvedStart,
+                .TrackEnd = ResolvedEnd,
+                .OutputTrackStart = ResolvedOutputStart,
+                .OutputTrackEnd = ResolvedOutputEnd,
                 .SingleSidedMode = SingleSidedMode,
                 .RPM = DiskParams.RPM,
                 .TrackDistance = TrackDistance,

@@ -6,6 +6,7 @@ Public Class ConsoleProcessRunner
     Implements IDisposable
 
     Private ReadOnly _logLock As New Object()
+    Private ReadOnly _procLock As New Object()
     Private _ctr As CancellationTokenRegistration
 
     Private _disposed As Boolean
@@ -165,98 +166,107 @@ Public Class ConsoleProcessRunner
                               Optional useRawCapture As Boolean = False,
                               Optional useAsyncReadLine As Boolean = False,
                               Optional logFile As String = Nothing) As Task(Of Integer)
-        If _proc IsNot Nothing Then
-            Throw New InvalidOperationException("Process is already started on this instance.")
-        End If
-
-        _logFilePath = logFile
-
-        If _logWriter IsNot Nothing Then
-            _logWriter.Dispose()
-            _logWriter = Nothing
-        End If
-
-        If Not String.IsNullOrWhiteSpace(_logFilePath) Then
-            Try
-                _logWriter = New StreamWriter(_logFilePath, append:=True, encoding:=Encoding.UTF8)
-            Catch
-                _logWriter = Nothing
-            End Try
-        End If
-
-        _useRawCapture = useRawCapture
-        _useAsyncReadLine = useAsyncReadLine
-
-        If _useRawCapture AndAlso _useAsyncReadLine Then
-            Throw New ArgumentException("useRawCapture and useAsyncReadLine cannot both be True.")
-        End If
-
-        _tcs = New TaskCompletionSource(Of Integer)(TaskCreationOptions.RunContinuationsAsynchronously)
-        _exitCode = Nothing
-
-        Dim psi As New ProcessStartInfo(exePath, arguments) With {
-            .UseShellExecute = False,
-            .CreateNoWindow = True,
-            .RedirectStandardOutput = True,
-            .RedirectStandardError = True
-        }
-
-        If Not String.IsNullOrWhiteSpace(WorkingDirectory) Then
-            psi.WorkingDirectory = WorkingDirectory
-        End If
-
-        psi.StandardOutputEncoding = StandardOutputEncoding
-        psi.StandardErrorEncoding = StandardErrorEncoding
-
-        _proc = New Process() With {
-            .StartInfo = psi,
-            .EnableRaisingEvents = True
-        }
-
-        ' Wire cancellation: kill process & children if requested
-        If ct.CanBeCanceled Then
-            _ctr = ct.Register(AddressOf CancelProcessCallback)
-        End If
-
-        ' Subscribe to events BEFORE Start()
-        AddHandler _proc.Exited, AddressOf OnExited
-
-        If Not _useRawCapture AndAlso Not _useAsyncReadLine Then
-            AddHandler _proc.OutputDataReceived, AddressOf OnOutputData
-            AddHandler _proc.ErrorDataReceived, AddressOf OnErrorData
-        End If
-
-        Try
-            If Not _proc.Start() Then
-                Throw New InvalidOperationException("Failed to start process.")
+        SyncLock _procLock
+            If _proc IsNot Nothing Then
+                Throw New InvalidOperationException("Process is already started on this instance.")
             End If
-        Catch ex As Exception
-            SetProcessStateFailed("Failed to start process.", ex)
-            Cleanup()
-            Throw
-        End Try
 
-        SetProcessState(ProcessStateEnum.Running)
-        RaiseOnContext(Sub() RaiseEvent ProcessStarted(exePath, arguments))
+            _logFilePath = logFile
 
-        ' Begin async reads, depending on mode
-        If _useRawCapture Then
-            _rawOutTask = Task.Run(AddressOf ReadRawOutput)
-            _rawErrTask = Task.Run(AddressOf ReadRawError)
+            If _logWriter IsNot Nothing Then
+                _logWriter.Dispose()
+                _logWriter = Nothing
+            End If
 
-        ElseIf _useAsyncReadLine Then
-            ' Our manual ReadLineAsync loops
-            _rawOutTask = ReadLineOutputLoopAsync()
-            _rawErrTask = ReadLineErrorLoopAsync()
+            If Not String.IsNullOrWhiteSpace(_logFilePath) Then
+                Try
+                    _logWriter = New StreamWriter(_logFilePath, append:=True, encoding:=Encoding.UTF8)
+                Catch
+                    _logWriter = Nothing
+                End Try
+            End If
 
-        Else
-            ' line-buffered behavior
-            _proc.BeginOutputReadLine()
-            _proc.BeginErrorReadLine()
-        End If
+            _useRawCapture = useRawCapture
+            _useAsyncReadLine = useAsyncReadLine
 
+            If _useRawCapture AndAlso _useAsyncReadLine Then
+                Throw New ArgumentException("useRawCapture and useAsyncReadLine cannot both be True.")
+            End If
 
-        Return _tcs.Task
+            _tcs = New TaskCompletionSource(Of Integer)(TaskCreationOptions.RunContinuationsAsynchronously)
+            _exitCode = Nothing
+
+            Dim psi As New ProcessStartInfo(exePath, arguments) With {
+                .UseShellExecute = False,
+                .CreateNoWindow = True,
+                .RedirectStandardOutput = True,
+                .RedirectStandardError = True
+            }
+
+            If Not String.IsNullOrWhiteSpace(WorkingDirectory) Then
+                psi.WorkingDirectory = WorkingDirectory
+            End If
+
+            psi.StandardOutputEncoding = StandardOutputEncoding
+            psi.StandardErrorEncoding = StandardErrorEncoding
+
+            _proc = New Process() With {
+                .StartInfo = psi,
+                .EnableRaisingEvents = True
+            }
+
+            ' Wire cancellation: kill process & children if requested
+            If ct.CanBeCanceled Then
+                _ctr = ct.Register(AddressOf CancelProcessCallback)
+            End If
+
+            ' Subscribe to events BEFORE Start()
+            AddHandler _proc.Exited, AddressOf OnExited
+
+            If Not _useRawCapture AndAlso Not _useAsyncReadLine Then
+                AddHandler _proc.OutputDataReceived, AddressOf OnOutputData
+                AddHandler _proc.ErrorDataReceived, AddressOf OnErrorData
+            End If
+
+            Dim proc = _proc
+
+            Try
+                If Not proc.Start() Then
+                    Throw New InvalidOperationException("Failed to start process.")
+                End If
+
+                ' A same-thread exit can re-enter this lock and clear _proc during Start.
+                If Not Object.ReferenceEquals(_proc, proc) Then
+                    Return _tcs.Task
+                End If
+
+                ' Attach readers before Running. That notification refreshes the form.
+                If _useRawCapture Then
+                    _rawOutTask = Task.Run(AddressOf ReadRawOutput)
+                    _rawErrTask = Task.Run(AddressOf ReadRawError)
+
+                ElseIf _useAsyncReadLine Then
+                    _rawOutTask = ReadLineOutputLoopAsync()
+                    _rawErrTask = ReadLineErrorLoopAsync()
+
+                Else
+                    AttachLineReaders(proc)
+                End If
+
+                If Not Object.ReferenceEquals(_proc, proc) Then
+                    Return _tcs.Task
+                End If
+
+                SetProcessState(ProcessStateEnum.Running)
+                RaiseOnContext(Sub() RaiseEvent ProcessStarted(exePath, arguments))
+            Catch ex As Exception
+                SetProcessStateFailed("Failed to start process.", ex)
+                Cleanup()
+                Throw
+            End Try
+
+            Return _tcs.Task
+        End SyncLock
     End Function
 
     Public Function StartAsyncRaw(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing) As Task(Of Integer)
@@ -384,6 +394,68 @@ Public Class ConsoleProcessRunner
         End Try
     End Sub
 
+    Private Sub AttachLineReaders(proc As Process)
+        Try
+            proc.BeginOutputReadLine()
+            proc.BeginErrorReadLine()
+        Catch ex As NullReferenceException When ProcessHasExited(proc)
+            DrainProcessOutput(proc)
+        Catch ex As ObjectDisposedException When ProcessHasExited(proc)
+            DrainProcessOutput(proc)
+        End Try
+    End Sub
+
+    Private Sub DrainProcessOutput(proc As Process)
+        EmitProcessLines(TryReadToEnd(Function() proc.StandardOutput.ReadToEnd()), False)
+        EmitProcessLines(TryReadToEnd(Function() proc.StandardError.ReadToEnd()), True)
+    End Sub
+
+    Private Sub EmitProcessLines(text As String, isError As Boolean)
+        If String.IsNullOrEmpty(text) Then
+            Return
+        End If
+
+        Dim lines = text.Split({vbCrLf, vbCr, vbLf}, StringSplitOptions.None)
+        For i = 0 To lines.Length - 1
+            If i = lines.Length - 1 AndAlso lines(i).Length = 0 Then
+                Continue For
+            End If
+
+            Dim captured = lines(i)
+            If isError Then
+                LogLine(captured)
+                If UseContextForDataEvents Then
+                    RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(captured))
+                Else
+                    RaiseEvent ErrorDataReceived(captured)
+                End If
+            Else
+                LogLine(captured)
+                If UseContextForDataEvents Then
+                    RaiseOnContext(Sub() RaiseEvent OutputDataReceived(captured))
+                Else
+                    RaiseEvent OutputDataReceived(captured)
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Function ProcessHasExited(proc As Process) As Boolean
+        Try
+            Return proc.HasExited
+        Catch ex As InvalidOperationException
+            Return True
+        End Try
+    End Function
+
+    Private Function TryReadToEnd(read As Func(Of String)) As String
+        Try
+            Return read()
+        Catch ex As Exception
+            Return Nothing
+        End Try
+    End Function
+
     Private Sub OnErrorData(sender As Object, e As DataReceivedEventArgs)
         If e.Data Is Nothing Then
             Return
@@ -399,24 +471,43 @@ Public Class ConsoleProcessRunner
     End Sub
 
     Private Sub OnExited(sender As Object, e As EventArgs)
+        Dim Exiting = TryCast(sender, Process)
+        If Exiting Is Nothing Then
+            Return
+        End If
+
         Dim code As Integer = 0
 
         Try
-            _proc.WaitForExit() ' This flushes any pending OutputDataReceived/ErrorDataReceived events
+            Exiting.WaitForExit() ' This flushes any pending OutputDataReceived/ErrorDataReceived events
         Catch
             ' ignore
         End Try
 
         Try
-            code = _proc.ExitCode
+            code = Exiting.ExitCode
         Catch
         End Try
-        _exitCode = code
 
-        If _logWriter IsNot Nothing Then
-            _logWriter.Flush()
-            _logWriter.Dispose()
-            _logWriter = Nothing
+        Dim Owned As Boolean
+        SyncLock _procLock
+            Owned = (_proc Is Exiting)
+            If Owned Then
+                _exitCode = code
+
+                If _logWriter IsNot Nothing Then
+                    _logWriter.Flush()
+                    _logWriter.Dispose()
+                    _logWriter = Nothing
+                End If
+
+                Cleanup()
+                _tcs?.TrySetResult(code)
+            End If
+        End SyncLock
+
+        If Not Owned Then
+            Return
         End If
 
         RaiseOnContext(Sub() RaiseEvent ProcessExited(code))
@@ -425,9 +516,6 @@ Public Class ConsoleProcessRunner
         Else
             SetProcessState(ProcessStateEnum.Completed)
         End If
-        _tcs.TrySetResult(code)
-
-        Cleanup()
     End Sub
 
     Private Sub OnOutputData(sender As Object, e As DataReceivedEventArgs)
@@ -568,7 +656,8 @@ Public Class ConsoleProcessRunner
     Private Sub SetProcessState(newState As ProcessStateEnum)
         If _state <> newState Then
             _state = newState
-            RaiseOnContext(Sub() RaiseEvent ProcessStateChanged(_state))
+            Dim Raised = newState
+            RaiseOnContext(Sub() RaiseEvent ProcessStateChanged(Raised))
         End If
     End Sub
 

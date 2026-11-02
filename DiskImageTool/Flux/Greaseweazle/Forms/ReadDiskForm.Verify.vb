@@ -1,6 +1,7 @@
 ﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private ReadOnly _KryofluxStatus As Kryoflux.TrackStatus
+        Private ReadOnly _VerifyQueue As New Queue(Of String)
 
         Private Shared Function GetVerifyLogFileName() As String
             Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
@@ -76,24 +77,56 @@
                 TrackCount *= 2
             End If
 
-            Dim Args As (Arguments As String, SingleSide As Boolean)
+            Dim Commands As New List(Of String)
+            Dim PartialVerify = HasSelectedTracks
+
             Try
-                Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+                If PartialVerify Then
+                    Dim Ranges = GetSelectedTrackRanges(DtcDoubleStep)
+                    Dim Heads = GetSelectedTrackHeads()
+
+                    For Each Range In Ranges
+                        Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format, Range.StartTrack, Range.EndTrack, Heads)
+                        Commands.Add(Args.Arguments)
+                    Next
+                Else
+                    Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+                    Commands.Add(Args.Arguments)
+                End If
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 Exit Sub
             End Try
 
+            If Commands.Count = 0 Then
+                Exit Sub
+            End If
+
+            _VerifyQueue.Clear()
+            For i = 1 To Commands.Count - 1
+                _VerifyQueue.Enqueue(Commands(i))
+            Next
+
             ClearLogAndStatus()
             TrackStatus = _KryofluxStatus
             TrackStatus.Clear()
-            ResetTrackGrid(ResetSelected:=False)
+            _KryofluxStatus.ReportLogicalTracks = DtcDoubleStep
+
+            If PartialVerify Then
+                GridResetSelectedCells()
+            Else
+                ResetTrackGrid(ResetSelected:=False)
+            End If
 
             InitLogFilePath(GetVerifyLogPath())
+            StartVerifyCommand(Commands(0))
+        End Sub
 
+        Private Sub StartVerifyCommand(Arguments As String)
             Try
-                Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Args.Arguments)
+                Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Arguments)
             Catch ex As Exception
+                _VerifyQueue.Clear()
                 HandleRunFailure(ex.Message)
             End Try
         End Sub
@@ -107,16 +140,24 @@
         Private Sub Process_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    _VerifyQueue.Clear()
                     _KryofluxStatus.UpdateTrackStatusAborted()
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    If _KryofluxStatus.TrackFound Then
+                    If _VerifyQueue.Count > 0 AndAlso _KryofluxStatus.TrackFound Then
+                        _KryofluxStatus.ResetTrackFound()
+                        Dim NextArguments = _VerifyQueue.Dequeue()
+                        StartVerifyCommand(NextArguments)
+                    ElseIf _KryofluxStatus.TrackFound Then
+                        _VerifyQueue.Clear()
                         _KryofluxStatus.UpdateTrackStatusComplete(_OutputLayout.DisplayDoubleStep)
                     Else
+                        _VerifyQueue.Clear()
                         _KryofluxStatus.UpdateTrackStatusError()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    _VerifyQueue.Clear()
                     _KryofluxStatus.UpdateTrackStatusError()
             End Select
 

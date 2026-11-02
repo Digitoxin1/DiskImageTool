@@ -791,7 +791,9 @@ Namespace My.Resources
         '''Kryoflux without re-reading the drive.
         '''
         '''Verification results for each track are displayed
-        '''in the grid above..
+        '''in the grid above.
+        '''
+        '''When tracks are selected, only those tracks are verified..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Verify() As String
             Get
