@@ -1811,12 +1811,14 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ToggleImageLocationVisible()
-            Dim Visible = DisplayImageLocation
+            Dim ShowSecondary = IsFluxOutput
+            Dim ShowLocation = DisplayImageLocation
 
-            _PanelOutput.LabelLocation.Visible = Visible
-            _PanelOutput.ComboBoxSecondaryLocation.Visible = Visible
-            _PanelOutput.ComboBoxSecondaryExtension.Visible = Visible
-
+            _PanelOutput.LabelOutputType2.Visible = ShowSecondary
+            _PanelOutput.ComboBoxSecondaryOutput.Visible = ShowSecondary
+            _PanelOutput.ComboBoxSecondaryExtension.Visible = ShowLocation
+            _PanelOutput.LabelLocation.Visible = ShowLocation
+            _PanelOutput.ComboBoxSecondaryLocation.Visible = ShowLocation
 
             ToggleImageLocationControls()
         End Sub
