@@ -1,7 +1,13 @@
-﻿Namespace Flux.Greaseweazle
+﻿Imports System.Text.RegularExpressions
+
+Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private ReadOnly _KryofluxStatus As Kryoflux.TrackStatus
         Private ReadOnly _VerifyQueue As New Queue(Of String)
+        Private ReadOnly _VerifyTrackLine As New Regex("^\d+\.\d+\s+:", RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private _VerifyRunCount As Integer
+        Private _VerifyRunIndex As Integer
+        Private _VerifySeenTrack As Boolean
 
         Private Shared Function GetVerifyLogFileName() As String
             Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
@@ -107,6 +113,10 @@
                 _VerifyQueue.Enqueue(Commands(i))
             Next
 
+            _VerifyRunCount = Commands.Count
+            _VerifyRunIndex = 0
+            _VerifySeenTrack = False
+
             ClearLogAndStatus()
             TrackStatus = _KryofluxStatus
             TrackStatus.Clear()
@@ -123,6 +133,8 @@
         End Sub
 
         Private Sub StartVerifyCommand(Arguments As String)
+            _VerifySeenTrack = False
+
             Try
                 Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Arguments)
             Catch ex As Exception
@@ -131,9 +143,47 @@
             End Try
         End Sub
 
+        Private Function ShouldLogVerifyLine(Data As String) As Boolean
+            If _VerifyRunCount <= 1 Then
+                Return True
+            End If
+
+            Dim Line = If(Data, "").Trim()
+            If _VerifyTrackLine.IsMatch(Line) Then
+                _VerifySeenTrack = True
+                Return True
+            End If
+
+            If IsVerifyHeaderLine(Line) OrElse (Line.Length = 0 AndAlso Not _VerifySeenTrack) Then
+                Return _VerifyRunIndex = 0
+            End If
+
+            If IsVerifyFooterLine(Line) OrElse (Line.Length = 0 AndAlso _VerifySeenTrack) Then
+                Return _VerifyRunIndex = _VerifyRunCount - 1
+            End If
+
+            Return True
+        End Function
+
+        Private Shared Function IsVerifyHeaderLine(Line As String) As Boolean
+            Return Line.StartsWith("KryoFlux DiskTool Console", StringComparison.OrdinalIgnoreCase) OrElse
+                Line.StartsWith("(c) ", StringComparison.Ordinal) OrElse
+                Line.StartsWith("Developed by ", StringComparison.Ordinal) OrElse
+                Line.StartsWith("Licensed for ", StringComparison.Ordinal) OrElse
+                Line.StartsWith("Stream file:", StringComparison.OrdinalIgnoreCase)
+        End Function
+
+        Private Shared Function IsVerifyFooterLine(Line As String) As Boolean
+            Return Line.StartsWith("Enjoy your shiny new disk image!", StringComparison.Ordinal) OrElse
+                Line.StartsWith("Please consider helping us", StringComparison.Ordinal) OrElse
+                Line.StartsWith("www.softpres.org/donate", StringComparison.OrdinalIgnoreCase)
+        End Function
+
 #Region "Events"
         Private Sub Process_DataReceived(Data As String) Handles Process.OutputDataReceived, Process.ErrorDataReceived
-            AppendLogLine(Data)
+            If ShouldLogVerifyLine(Data) Then
+                AppendLogLine(Data)
+            End If
             _KryofluxStatus.ProcessOutputLineRead(Data, _OutputLayout.DisplayDoubleStep)
         End Sub
 
@@ -147,6 +197,7 @@
                     If _VerifyQueue.Count > 0 AndAlso _KryofluxStatus.TrackFound Then
                         _KryofluxStatus.ResetTrackFound()
                         Dim NextArguments = _VerifyQueue.Dequeue()
+                        _VerifyRunIndex += 1
                         StartVerifyCommand(NextArguments)
                     ElseIf _KryofluxStatus.TrackFound Then
                         _VerifyQueue.Clear()
