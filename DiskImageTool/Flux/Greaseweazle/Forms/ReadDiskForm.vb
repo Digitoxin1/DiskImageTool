@@ -57,6 +57,7 @@ Namespace Flux.Greaseweazle
         Private _SkipProcessButtons As Boolean = False
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
+        Private _ImportButtonsState As (Boolean, ConversionMode)? = Nothing
 
         Private Enum GridRows
             Drive
@@ -1677,32 +1678,53 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshImportButtonItems(IsFluxOutput As Boolean)
-            _ImportButtonNoEvent = True
+            Dim SingleStateMode As Boolean = IsFluxOutput AndAlso Not SecondaryOutputSelected()
+            Dim Mode = App.UserState.Flux.Convert.ConversionMode
 
-            PanelButtonsRight.SuspendLayout()
+            Dim NewState As (Boolean, ConversionMode) = (SingleStateMode, Mode)
 
-            ButtonImport.ClearItems()
-            ButtonImportAndClose.ClearItems()
+            Dim SingleStateModeChanged As Boolean = True
+            Dim ModeChanged As Boolean = True
 
-            If IsFluxOutput AndAlso Not SecondaryOutputSelected() Then
-                ButtonImport.AddItem(WithoutHotkey(My.Resources.Menu_Save), ConversionMode.Save)
-                ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
-                ButtonImport.SelectedValue = ConversionMode.Save
-                ButtonImportAndClose.SelectedValue = ConversionMode.Save
-            Else
-                ButtonImport.AddItem(WithoutHotkey(My.Resources.Label_Import), ConversionMode.Import)
-                ButtonImport.AddItem(My.Resources.Label_Save, ConversionMode.Save)
-                ButtonImportAndClose.AddItem(My.Resources.Label_ImportClose, ConversionMode.Import)
-                ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
-
-                Dim Mode = App.UserState.Flux.Convert.ConversionMode
-                ButtonImport.SelectedValue = Mode
-                ButtonImportAndClose.SelectedValue = Mode
+            If _ImportButtonsState.HasValue Then
+                SingleStateModeChanged = _ImportButtonsState.Value.Item1 <> NewState.Item1
+                ModeChanged = _ImportButtonsState.Value.Item2 <> NewState.Item2
             End If
 
-            PanelButtonsRight.ResumeLayout(True)
+            If SingleStateModeChanged OrElse ModeChanged Then
+                _ImportButtonsState = NewState
 
-            _ImportButtonNoEvent = False
+                _ImportButtonNoEvent = True
+
+                PanelButtonsRight.SuspendLayout()
+
+                If SingleStateModeChanged Then
+                    ButtonImport.ClearItems()
+                    ButtonImportAndClose.ClearItems()
+
+                    If SingleStateMode Then
+                        ButtonImport.AddItem(WithoutHotkey(My.Resources.Menu_Save), ConversionMode.Save)
+                        ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
+
+                        ButtonImport.SelectedValue = ConversionMode.Save
+                        ButtonImportAndClose.SelectedValue = ConversionMode.Save
+                    Else
+                        ButtonImport.AddItem(WithoutHotkey(My.Resources.Label_Import), ConversionMode.Import)
+                        ButtonImport.AddItem(My.Resources.Label_Save, ConversionMode.Save)
+                        ButtonImportAndClose.AddItem(My.Resources.Label_ImportClose, ConversionMode.Import)
+                        ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
+                    End If
+                End If
+
+                If Not SingleStateMode AndAlso (SingleStateModeChanged OrElse ModeChanged) Then
+                    ButtonImport.SelectedValue = Mode
+                    ButtonImportAndClose.SelectedValue = Mode
+                End If
+
+                PanelButtonsRight.ResumeLayout(True)
+
+                _ImportButtonNoEvent = False
+            End If
 
             InitializeHelpImportButtons(IsFluxOutput)
         End Sub

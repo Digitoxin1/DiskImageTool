@@ -16,9 +16,6 @@
             Me.PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
-            Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
-            Me.ButtonReset = New System.Windows.Forms.Button()
-            Me.ButtonSaveLog = New System.Windows.Forms.Button()
             Me.PanelMain = New System.Windows.Forms.Panel()
             Me.PanelInner = New System.Windows.Forms.Panel()
             Me.PanelConsoleHeader = New System.Windows.Forms.Panel()
@@ -36,15 +33,18 @@
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.ButtonSaveLog = New System.Windows.Forms.Button()
+            Me.ButtonReset = New System.Windows.Forms.Button()
+            Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             Me.PanelBottom.SuspendLayout()
             Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
-            Me.PanelButtonsLeft.SuspendLayout()
             Me.PanelMain.SuspendLayout()
             Me.PanelConsoleHeader.SuspendLayout()
             Me.TextBoxPanel.SuspendLayout()
             Me.PanelCommandLine.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
+            Me.PanelButtonsLeft.SuspendLayout()
             Me.SuspendLayout()
             '
             'PanelBottom
@@ -62,12 +62,11 @@
             '
             Me.PanelBottomInner.AutoSize = True
             Me.PanelBottomInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.PanelBottomInner.ColumnCount = 3
+            Me.PanelBottomInner.ColumnCount = 2
             Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
             Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-            Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsRight, 2, 0)
-            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 1, 0)
+            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsRight, 1, 0)
+            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 0, 0)
             Me.PanelBottomInner.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelBottomInner.Location = New System.Drawing.Point(0, 0)
             Me.PanelBottomInner.Name = "PanelBottomInner"
@@ -78,16 +77,15 @@
             '
             'PanelButtonsRight
             '
-            Me.PanelButtonsRight.AutoSize = True
-            Me.PanelButtonsRight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelButtonsRight.Controls.Add(Me.ButtonCancel)
             Me.PanelButtonsRight.Controls.Add(Me.ButtonOk)
+            Me.PanelButtonsRight.Dock = System.Windows.Forms.DockStyle.Fill
             Me.PanelButtonsRight.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-            Me.PanelButtonsRight.Location = New System.Drawing.Point(581, 0)
+            Me.PanelButtonsRight.Location = New System.Drawing.Point(192, 0)
             Me.PanelButtonsRight.Margin = New System.Windows.Forms.Padding(0)
             Me.PanelButtonsRight.Name = "PanelButtonsRight"
             Me.PanelButtonsRight.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
-            Me.PanelButtonsRight.Size = New System.Drawing.Size(186, 43)
+            Me.PanelButtonsRight.Size = New System.Drawing.Size(575, 43)
             Me.PanelButtonsRight.TabIndex = 1
             Me.PanelButtonsRight.WrapContents = False
             '
@@ -98,7 +96,7 @@
             Me.ButtonCancel.CausesValidation = False
             Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
             Me.ButtonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl
-            Me.ButtonCancel.Location = New System.Drawing.Point(93, 10)
+            Me.ButtonCancel.Location = New System.Drawing.Point(482, 10)
             Me.ButtonCancel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.ButtonCancel.Name = "ButtonCancel"
             Me.ButtonCancel.Size = New System.Drawing.Size(75, 23)
@@ -112,53 +110,13 @@
             Me.ButtonOk.AutoSize = True
             Me.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK
             Me.ButtonOk.ImeMode = System.Windows.Forms.ImeMode.NoControl
-            Me.ButtonOk.Location = New System.Drawing.Point(6, 10)
+            Me.ButtonOk.Location = New System.Drawing.Point(395, 10)
             Me.ButtonOk.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.ButtonOk.Name = "ButtonOk"
             Me.ButtonOk.Size = New System.Drawing.Size(75, 23)
             Me.ButtonOk.TabIndex = 0
             Me.ButtonOk.Text = "{Ok}"
             Me.ButtonOk.UseVisualStyleBackColor = True
-            '
-            'PanelButtonsLeft
-            '
-            Me.PanelButtonsLeft.AutoSize = True
-            Me.PanelButtonsLeft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            Me.PanelButtonsLeft.Controls.Add(Me.ButtonReset)
-            Me.PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
-            Me.PanelButtonsLeft.Location = New System.Drawing.Point(0, 0)
-            Me.PanelButtonsLeft.Margin = New System.Windows.Forms.Padding(0)
-            Me.PanelButtonsLeft.Name = "PanelButtonsLeft"
-            Me.PanelButtonsLeft.Padding = New System.Windows.Forms.Padding(12, 10, 6, 10)
-            Me.PanelButtonsLeft.Size = New System.Drawing.Size(192, 43)
-            Me.PanelButtonsLeft.TabIndex = 0
-            Me.PanelButtonsLeft.WrapContents = False
-            '
-            'ButtonReset
-            '
-            Me.ButtonReset.Anchor = System.Windows.Forms.AnchorStyles.Left
-            Me.ButtonReset.AutoSize = True
-            Me.ButtonReset.Location = New System.Drawing.Point(18, 10)
-            Me.ButtonReset.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
-            Me.ButtonReset.MinimumSize = New System.Drawing.Size(75, 0)
-            Me.ButtonReset.Name = "ButtonReset"
-            Me.ButtonReset.Size = New System.Drawing.Size(75, 23)
-            Me.ButtonReset.TabIndex = 0
-            Me.ButtonReset.Text = "{Reset}"
-            Me.ButtonReset.UseVisualStyleBackColor = True
-            '
-            'ButtonSaveLog
-            '
-            Me.ButtonSaveLog.Anchor = System.Windows.Forms.AnchorStyles.Left
-            Me.ButtonSaveLog.AutoSize = True
-            Me.ButtonSaveLog.Location = New System.Drawing.Point(105, 10)
-            Me.ButtonSaveLog.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
-            Me.ButtonSaveLog.MinimumSize = New System.Drawing.Size(75, 0)
-            Me.ButtonSaveLog.Name = "ButtonSaveLog"
-            Me.ButtonSaveLog.Size = New System.Drawing.Size(75, 23)
-            Me.ButtonSaveLog.TabIndex = 0
-            Me.ButtonSaveLog.Text = "{Save Log}"
-            Me.ButtonSaveLog.UseVisualStyleBackColor = True
             '
             'PanelMain
             '
@@ -332,6 +290,46 @@
             Me.StatusUnexpected.Size = New System.Drawing.Size(118, 19)
             Me.StatusUnexpected.Text = "{Unexpected Sectors}"
             '
+            'ButtonSaveLog
+            '
+            Me.ButtonSaveLog.Anchor = System.Windows.Forms.AnchorStyles.Left
+            Me.ButtonSaveLog.AutoSize = True
+            Me.ButtonSaveLog.Location = New System.Drawing.Point(105, 10)
+            Me.ButtonSaveLog.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+            Me.ButtonSaveLog.MinimumSize = New System.Drawing.Size(75, 0)
+            Me.ButtonSaveLog.Name = "ButtonSaveLog"
+            Me.ButtonSaveLog.Size = New System.Drawing.Size(75, 23)
+            Me.ButtonSaveLog.TabIndex = 0
+            Me.ButtonSaveLog.Text = "{Save Log}"
+            Me.ButtonSaveLog.UseVisualStyleBackColor = True
+            '
+            'ButtonReset
+            '
+            Me.ButtonReset.Anchor = System.Windows.Forms.AnchorStyles.Left
+            Me.ButtonReset.AutoSize = True
+            Me.ButtonReset.Location = New System.Drawing.Point(18, 10)
+            Me.ButtonReset.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+            Me.ButtonReset.MinimumSize = New System.Drawing.Size(75, 0)
+            Me.ButtonReset.Name = "ButtonReset"
+            Me.ButtonReset.Size = New System.Drawing.Size(75, 23)
+            Me.ButtonReset.TabIndex = 0
+            Me.ButtonReset.Text = "{Reset}"
+            Me.ButtonReset.UseVisualStyleBackColor = True
+            '
+            'PanelButtonsLeft
+            '
+            Me.PanelButtonsLeft.AutoSize = True
+            Me.PanelButtonsLeft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelButtonsLeft.Controls.Add(Me.ButtonReset)
+            Me.PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
+            Me.PanelButtonsLeft.Location = New System.Drawing.Point(0, 0)
+            Me.PanelButtonsLeft.Margin = New System.Windows.Forms.Padding(0)
+            Me.PanelButtonsLeft.Name = "PanelButtonsLeft"
+            Me.PanelButtonsLeft.Padding = New System.Windows.Forms.Padding(12, 10, 6, 10)
+            Me.PanelButtonsLeft.Size = New System.Drawing.Size(192, 43)
+            Me.PanelButtonsLeft.TabIndex = 0
+            Me.PanelButtonsLeft.WrapContents = False
+            '
             'BaseFluxForm
             '
             Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -356,8 +354,6 @@
             Me.PanelBottomInner.PerformLayout()
             Me.PanelButtonsRight.ResumeLayout(False)
             Me.PanelButtonsRight.PerformLayout()
-            Me.PanelButtonsLeft.ResumeLayout(False)
-            Me.PanelButtonsLeft.PerformLayout()
             Me.PanelMain.ResumeLayout(False)
             Me.PanelMain.PerformLayout()
             Me.PanelConsoleHeader.ResumeLayout(False)
@@ -368,6 +364,8 @@
             Me.PanelCommandLine.PerformLayout()
             Me.StatusStripBottom.ResumeLayout(False)
             Me.StatusStripBottom.PerformLayout()
+            Me.PanelButtonsLeft.ResumeLayout(False)
+            Me.PanelButtonsLeft.PerformLayout()
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
@@ -382,9 +380,6 @@
         Friend WithEvents StatusSide As ToolStripStatusLabel
         Friend WithEvents StatusBadSectors As ToolStripStatusLabel
         Friend WithEvents StatusUnexpected As ToolStripStatusLabel
-        Friend WithEvents ButtonReset As Button
-        Friend WithEvents ButtonSaveLog As Button
-        Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
         Friend WithEvents PanelButtonsRight As FlowLayoutPanel
         Friend WithEvents PanelBottom As Panel
         Friend WithEvents PanelBottomInner As TableLayoutPanel
@@ -397,5 +392,8 @@
         Friend WithEvents CheckSaveLog As CheckBox
         Friend WithEvents PanelCommandLine As Panel
         Friend WithEvents TextCommandLine As PlaceholderTextBox
+        Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
+        Friend WithEvents ButtonReset As Button
+        Friend WithEvents ButtonSaveLog As Button
     End Class
 End Namespace
