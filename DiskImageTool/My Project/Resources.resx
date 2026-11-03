@@ -477,12 +477,8 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Error: Unable to detect image format.</value>
   </data>
-  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
-    <value>Redumping selected tracks will discard the secondary image file.
-
-You can regenerate it from the flux set using Convert after the redump completes.
-
-Do you wish to continue?</value>
+  <data name="Dialog_GeneratingSecondaryImage" xml:space="preserve">
+    <value>Generating Secondary Image</value>
   </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?</value>
@@ -564,6 +560,7 @@ Do you wish to overwrite?</value>
     <value>The following already exist:
 
 Flux image set: '{0}'
+
 Image file: '{1}'
 
 Do you wish to overwrite?</value>

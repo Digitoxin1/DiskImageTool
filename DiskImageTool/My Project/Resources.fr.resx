@@ -357,12 +357,8 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Erreur : Impossible de détecter le format de l’image.</value>
   </data>
-  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
-    <value>Redumper les pistes sélectionnées supprimera le fichier image secondaire.
-
-Vous pourrez le régénérer à partir de l’ensemble flux à l’aide de Convertir une fois le redump terminé.
-
-Souhaitez-vous continuer ?</value>
+  <data name="Dialog_GeneratingSecondaryImage" xml:space="preserve">
+    <value>Génération de l’image secondaire</value>
   </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Avertissement: le disque dans le lecteur {0} n’est pas vide.{1}{1}Si vous continuez, le disque sera écrasé.{1}{1}Souhaitez-vous continuer ?</value>
@@ -444,6 +440,7 @@ Souhaitez-vous le remplacer ?</value>
     <value>Les éléments suivants existent déjà :
 
 Ensemble d’images flux : '{0}'
+
 Fichier image : '{1}'
 
 Souhaitez-vous les remplacer ?</value>

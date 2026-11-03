@@ -357,12 +357,8 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Fehler: Bildformat konnte nicht erkannt werden.</value>
   </data>
-  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
-    <value>Beim erneuten Dumpen der ausgewählten Spuren wird die sekundäre Image-Datei verworfen.
-
-Sie können sie nach Abschluss des erneuten Dumps mit „Konvertieren“ aus dem Flux-Satz neu erzeugen.
-
-Möchten Sie fortfahren?</value>
+  <data name="Dialog_GeneratingSecondaryImage" xml:space="preserve">
+    <value>Sekundäres Image wird erzeugt</value>
   </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Warnung: Die Diskette in Laufwerk {0} ist nicht leer.{1}{1}Wenn Sie fortfahren, wird sie überschrieben.{1}{1}Möchten Sie fortfahren?</value>
@@ -444,6 +440,7 @@ Möchten Sie sie überschreiben?</value>
     <value>Die folgenden Elemente existieren bereits:
 
 Flux-Image-Satz: '{0}'
+
 Image-Datei: '{1}'
 
 Möchten Sie sie überschreiben?</value>

@@ -357,12 +357,8 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>错误：无法检测映像格式。</value>
   </data>
-  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
-    <value>重新转储所选磁道将丢弃第二映像文件。
-
-重新转储完成后，可使用“转换”从 Flux 集重新生成。
-
-要继续吗？</value>
+  <data name="Dialog_GeneratingSecondaryImage" xml:space="preserve">
+    <value>正在生成第二映像</value>
   </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>警告：驱动器 {0} 中的磁盘非空。{1}{1}如果继续，磁盘将被覆盖。{1}{1}要继续吗？</value>
@@ -444,6 +440,7 @@
     <value>以下内容已存在：
 
 Flux 映像集：“{0}”
+
 映像文件：“{1}”
 
 要覆盖吗？</value>

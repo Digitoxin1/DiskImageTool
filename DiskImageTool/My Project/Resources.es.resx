@@ -357,12 +357,8 @@
   <data name="Dialog_DetectFormatError" xml:space="preserve">
     <value>Error: No se pudo detectar el formato de la imagen.</value>
   </data>
-  <data name="Dialog_DiscardSecondaryImageOnReprocess" xml:space="preserve">
-    <value>Volver a volcar las pistas seleccionadas descartará el archivo de imagen secundario.
-
-Puede regenerarlo desde el conjunto de flujo usando Convertir después de que finalice el nuevo volcado.
-
-¿Desea continuar?</value>
+  <data name="Dialog_GeneratingSecondaryImage" xml:space="preserve">
+    <value>Generando imagen secundaria</value>
   </data>
   <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
     <value>Advertencia: el disco en la unidad {0} no está vacío.{1}{1}Si continúa, el disco será sobrescrito.{1}{1}¿Desea continuar?</value>
@@ -444,6 +440,7 @@ Puede regenerarlo desde el conjunto de flujo usando Convertir después de que fi
     <value>Los siguientes elementos ya existen:
 
 Conjunto de imágenes de flujo: '{0}'
+
 Archivo de imagen: '{1}'
 
 ¿Desea sobrescribirlos?</value>
