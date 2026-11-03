@@ -1,13 +1,6 @@
-﻿Imports System.Text.RegularExpressions
-
-Namespace Flux.Greaseweazle
+﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private ReadOnly _KryofluxStatus As Kryoflux.TrackStatus
-        Private ReadOnly _VerifyQueue As New Queue(Of String)
-        Private ReadOnly _VerifyTrackLine As New Regex("^\d+\.\d+\s+:", RegexOptions.CultureInvariant Or RegexOptions.Compiled)
-        Private _VerifyRunCount As Integer
-        Private _VerifyRunIndex As Integer
-        Private _VerifySeenTrack As Boolean
 
         Private Shared Function GetVerifyLogFileName() As String
             Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
@@ -83,39 +76,33 @@ Namespace Flux.Greaseweazle
                 TrackCount *= 2
             End If
 
-            Dim Commands As New List(Of String)
+            Dim Arguments As String
             Dim PartialVerify = HasSelectedTracks
 
             Try
                 If PartialVerify Then
                     Dim Ranges = GetSelectedTrackRanges(DtcDoubleStep)
-                    Dim Heads = GetSelectedTrackHeads()
+                    If Ranges.Count = 0 Then
+                        Exit Sub
+                    End If
 
-                    For Each Range In Ranges
-                        Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format, Range.StartTrack, Range.EndTrack, Heads)
-                        Commands.Add(Args.Arguments)
-                    Next
+                    Dim StartTrack = Ranges.Min(Function(Range) CInt(Range.StartTrack))
+                    Dim EndTrack = Ranges.Max(Function(Range) CInt(Range.EndTrack))
+                    Dim Heads = GetSelectedTrackHeads()
+                    Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format, StartTrack, EndTrack, Heads)
+                    Arguments = Args.Arguments
                 Else
                     Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
-                    Commands.Add(Args.Arguments)
+                    Arguments = Args.Arguments
                 End If
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 Exit Sub
             End Try
 
-            If Commands.Count = 0 Then
+            If String.IsNullOrEmpty(Arguments) Then
                 Exit Sub
             End If
-
-            _VerifyQueue.Clear()
-            For i = 1 To Commands.Count - 1
-                _VerifyQueue.Enqueue(Commands(i))
-            Next
-
-            _VerifyRunCount = Commands.Count
-            _VerifyRunIndex = 0
-            _VerifySeenTrack = False
 
             ClearLogAndStatus()
             TrackStatus = _KryofluxStatus
@@ -129,86 +116,36 @@ Namespace Flux.Greaseweazle
                 ResetTrackGrid(ResetSelected:=False)
                 InitLogFilePath(GetVerifyLogPath())
             End If
-            StartVerifyCommand(Commands(0))
+            StartVerifyCommand(Arguments)
         End Sub
 
         Private Sub StartVerifyCommand(Arguments As String)
-            _VerifySeenTrack = False
-
             Try
                 Process.StartAsync(Flux.Kryoflux.Settings().AppPath, Arguments)
             Catch ex As Exception
-                _VerifyQueue.Clear()
                 HandleRunFailure(ex.Message)
             End Try
         End Sub
 
-        Private Function ShouldLogVerifyLine(Data As String) As Boolean
-            If _VerifyRunCount <= 1 Then
-                Return True
-            End If
-
-            Dim Line = If(Data, "").Trim()
-            If _VerifyTrackLine.IsMatch(Line) Then
-                _VerifySeenTrack = True
-                Return True
-            End If
-
-            If IsVerifyHeaderLine(Line) OrElse (Line.Length = 0 AndAlso Not _VerifySeenTrack) Then
-                Return _VerifyRunIndex = 0
-            End If
-
-            If IsVerifyFooterLine(Line) OrElse (Line.Length = 0 AndAlso _VerifySeenTrack) Then
-                Return _VerifyRunIndex = _VerifyRunCount - 1
-            End If
-
-            Return True
-        End Function
-
-        Private Shared Function IsVerifyHeaderLine(Line As String) As Boolean
-            Return Line.StartsWith("KryoFlux DiskTool Console", StringComparison.OrdinalIgnoreCase) OrElse
-                Line.StartsWith("(c) ", StringComparison.Ordinal) OrElse
-                Line.StartsWith("Developed by ", StringComparison.Ordinal) OrElse
-                Line.StartsWith("Licensed for ", StringComparison.Ordinal) OrElse
-                Line.StartsWith("Stream file:", StringComparison.OrdinalIgnoreCase)
-        End Function
-
-        Private Shared Function IsVerifyFooterLine(Line As String) As Boolean
-            Return Line.StartsWith("Enjoy your shiny new disk image!", StringComparison.Ordinal) OrElse
-                Line.StartsWith("Please consider helping us", StringComparison.Ordinal) OrElse
-                Line.StartsWith("www.softpres.org/donate", StringComparison.OrdinalIgnoreCase)
-        End Function
-
 #Region "Events"
         Private Sub Process_DataReceived(Data As String) Handles Process.OutputDataReceived, Process.ErrorDataReceived
-            If ShouldLogVerifyLine(Data) Then
-                AppendLogLine(Data)
-            End If
+            AppendLogLine(Data)
             _KryofluxStatus.ProcessOutputLineRead(Data, _OutputLayout.DisplayDoubleStep)
         End Sub
 
         Private Sub Process_ProcessStateChanged(state As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    _VerifyQueue.Clear()
                     _KryofluxStatus.UpdateTrackStatusAborted()
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    If _VerifyQueue.Count > 0 AndAlso _KryofluxStatus.TrackFound Then
-                        _KryofluxStatus.ResetTrackFound()
-                        Dim NextArguments = _VerifyQueue.Dequeue()
-                        _VerifyRunIndex += 1
-                        StartVerifyCommand(NextArguments)
-                    ElseIf _KryofluxStatus.TrackFound Then
-                        _VerifyQueue.Clear()
+                    If _KryofluxStatus.TrackFound Then
                         _KryofluxStatus.UpdateTrackStatusComplete(_OutputLayout.DisplayDoubleStep)
                     Else
-                        _VerifyQueue.Clear()
                         _KryofluxStatus.UpdateTrackStatusError()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    _VerifyQueue.Clear()
                     _KryofluxStatus.UpdateTrackStatusError()
             End Select
 
