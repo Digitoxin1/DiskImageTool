@@ -124,11 +124,11 @@ Namespace Flux.Greaseweazle
 
             If PartialVerify Then
                 GridResetSelectedCells()
+                InitLogFilePath("")
             Else
                 ResetTrackGrid(ResetSelected:=False)
+                InitLogFilePath(GetVerifyLogPath())
             End If
-
-            InitLogFilePath(GetVerifyLogPath())
             StartVerifyCommand(Commands(0))
         End Sub
 
