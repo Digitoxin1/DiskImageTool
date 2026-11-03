@@ -558,7 +558,7 @@ Namespace Flux.Greaseweazle
             Return (IO.File.Exists(FileName), FileName, Sb.ToString())
         End Function
 
-        Public Function ReadFluxImage(importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
+        Public Function ReadFluxImage(importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String, NewImage As Boolean)
             Using dlg As New ReadDiskForm(Flux.Kryoflux.Settings().IsPathValid())
 
                 If importHandler IsNot Nothing Then
@@ -576,11 +576,11 @@ Namespace Flux.Greaseweazle
 
                 If result = DialogResult.OK Then
                     If Not String.IsNullOrEmpty(dlg.NewFilePath) Then
-                        Return (True, dlg.NewFilePath, dlg.NewFileName)
+                        Return (True, dlg.NewFilePath, dlg.NewFileName, dlg.ImportAsNew)
                     End If
                 End If
 
-                Return (False, "", "")
+                Return (False, "", "", True)
             End Using
         End Function
 

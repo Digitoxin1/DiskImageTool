@@ -259,13 +259,23 @@
             InitializeHelpImportButtons(False)
         End Sub
 
+        Private Function SelectedImportMode() As ConversionMode
+            If ButtonImport.SelectedValue Is Nothing Then
+                Return ConversionMode.Save
+            End If
+
+            Return CType(ButtonImport.SelectedValue, ConversionMode)
+        End Function
+
         Private Sub InitializeHelpImportButtons(IsFluxOutput As Boolean)
-            If IsFluxOutput Then
-                SetHelpString(My.Resources.HelpStrings.Flux_Save, ButtonImport)
-                SetHelpString(My.Resources.HelpStrings.Flux_SaveClose, ButtonImportAndClose)
-            Else
+            Dim ImportHelp = Not IsFluxOutput OrElse (SecondaryOutputSelected() AndAlso SelectedImportMode() = ConversionMode.Import)
+
+            If ImportHelp Then
                 SetHelpString(My.Resources.HelpStrings.Flux_Import, ButtonImport)
                 SetHelpString(My.Resources.HelpStrings.Flux_ImportClose, ButtonImportAndClose)
+            Else
+                SetHelpString(My.Resources.HelpStrings.Flux_Save, ButtonImport)
+                SetHelpString(My.Resources.HelpStrings.Flux_SaveClose, ButtonImportAndClose)
             End If
         End Sub
     End Class

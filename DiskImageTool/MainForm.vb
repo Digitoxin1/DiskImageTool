@@ -694,7 +694,7 @@ Public Class MainForm
     Private Sub GreaseweazleReadImage()
         Dim Response = Flux.Greaseweazle.ReadFluxImage(AddressOf ProcessImportedImage)
         If Response.Result Then
-            ProcessImportedImage(Response.OutputFile, Response.NewFileName)
+            ProcessImportedImage(Response.OutputFile, Response.NewFileName, Response.NewImage)
         End If
     End Sub
 
@@ -1305,7 +1305,15 @@ Public Class MainForm
     End Function
 
     Private Function ProcessImportedImage(File As String, NewFileName As String) As ImageData
-        Return ProcessFileDropNew(File, NewFileName)
+        Return ProcessImportedImage(File, NewFileName, True)
+    End Function
+
+    Private Function ProcessImportedImage(File As String, NewFileName As String, NewImage As Boolean) As ImageData
+        If NewImage Then
+            Return ProcessFileDropNew(File, NewFileName)
+        End If
+
+        Return ProcessFileDrop(File)
     End Function
 
     Private Sub RecordRecentFiles(Paths() As String)

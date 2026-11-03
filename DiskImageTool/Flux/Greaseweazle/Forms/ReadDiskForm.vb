@@ -44,6 +44,7 @@ Namespace Flux.Greaseweazle
         Private _FileReprocessMode As Boolean = False
         Private _LastFluxOutput As Boolean? = Nothing
         Private _LastSequenceTextBox As TextBoxBase
+        Private _ImportAsNew As Boolean = True
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
         Private _NumericRevsNoEvent As Boolean = False
@@ -68,7 +69,7 @@ Namespace Flux.Greaseweazle
             Grid
         End Enum
 
-        Public Event ImportProcess(File As String, NewFilename As String)
+        Public Event ImportProcess(File As String, NewFilename As String, NewImage As Boolean)
 
         Public Sub New(KryofluxAvailable As Boolean)
             MyBase.New(Settings.LogFileName, UseProcess:=KryofluxAvailable)
@@ -128,6 +129,12 @@ Namespace Flux.Greaseweazle
             _Initialized = True
             UpdateCommandLine()
         End Sub
+
+        Public ReadOnly Property ImportAsNew As Boolean
+            Get
+                Return _ImportAsNew
+            End Get
+        End Property
 
         Public ReadOnly Property NewFileName As String
             Get
@@ -574,11 +581,12 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub CloseForm(NewFilePath As String, NewFileName As String)
+        Private Sub CloseForm(NewFilePath As String, NewFileName As String, Optional NewImage As Boolean = True)
             CacheFilenameTemplate()
 
             _NewFilePath = NewFilePath
             _NewFileName = NewFileName
+            _ImportAsNew = NewImage
             Me.DialogResult = DialogResult.OK
             Me.Close()
         End Sub
@@ -734,22 +742,43 @@ Namespace Flux.Greaseweazle
             End Try
         End Sub
 
-        Private Sub FinalizeImageOutput()
+        Private Function FinalizeImageOutput() As Boolean
             Dim FilePath = GetImageFilePath()
 
             If String.IsNullOrEmpty(FilePath) Then
-                Return
+                Return False
             End If
             Try
                 IO.File.Copy(_TempFilePath2, FilePath, True)
                 DeleteFileIfExists(_TempFilePath2)
+                _TempFilePath2 = ""
             Catch
                 MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
-                Return
+                Return False
             End Try
 
-            Return
-        End Sub
+            Return True
+        End Function
+
+        Private Function SaveFluxOutputs(ByRef SavedImagePath As String) As Boolean
+            SavedImagePath = ""
+
+            If Not EnsureSecondaryImage() Then
+                Return False
+            End If
+
+            If Not FinalizeFluxOutput() Then
+                Return False
+            End If
+
+            If HasOutputFile2 Then
+                If FinalizeImageOutput() Then
+                    SavedImagePath = GetImageFilePath()
+                End If
+            End If
+
+            Return True
+        End Function
 
         Private Function EnsureSecondaryImage() As Boolean
             If HasOutputFile2 OrElse Not SecondaryOutputSelected() Then
@@ -1436,9 +1465,9 @@ Namespace Flux.Greaseweazle
             Return StartReadRun(Response.FilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, Layout.HardwareDoubleStep, Nothing, Nothing, Response.FilePath2, SelectedOutputType2, Layout.PhysicalEvenFiles)
         End Function
 
-        Private Sub ProcessImport(OutputFile As String, NewFileName As String)
+        Private Sub ProcessImport(OutputFile As String, NewFileName As String, Optional NewImage As Boolean = True)
             If Not String.IsNullOrEmpty(OutputFile) Then
-                RaiseEvent ImportProcess(OutputFile, NewFileName)
+                RaiseEvent ImportProcess(OutputFile, NewFileName, NewImage)
             End If
 
             ClearProcessedImage(False, True)
@@ -1655,7 +1684,7 @@ Namespace Flux.Greaseweazle
             ButtonImport.ClearItems()
             ButtonImportAndClose.ClearItems()
 
-            If IsFluxOutput Then
+            If IsFluxOutput AndAlso Not SecondaryOutputSelected() Then
                 ButtonImport.AddItem(WithoutHotkey(My.Resources.Menu_Save), ConversionMode.Save)
                 ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
                 ButtonImport.SelectedValue = ConversionMode.Save
@@ -1674,6 +1703,8 @@ Namespace Flux.Greaseweazle
             PanelButtonsRight.ResumeLayout(True)
 
             _ImportButtonNoEvent = False
+
+            InitializeHelpImportButtons(IsFluxOutput)
         End Sub
         Private Sub RefreshImportButtonState()
 
@@ -1810,6 +1841,7 @@ Namespace Flux.Greaseweazle
         Private Sub ResetOutputTypes2()
             PopulateOutputTypes(_PanelOutput.ComboBoxSecondaryOutput, SelectedDeviceState.OutputType2, NoFlux:=True)
             PopulateFileExtensions(_PanelOutput.ComboBoxSecondaryExtension, SelectedOutputType2)
+            RefreshImportButtonItems(IsFluxOutput)
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
@@ -2155,20 +2187,16 @@ Namespace Flux.Greaseweazle
             End If
 
             If IsFluxOutput Then
-                If Not EnsureSecondaryImage() Then
+                Dim SavedImagePath As String = ""
+                If Not SaveFluxOutputs(SavedImagePath) Then
                     Exit Sub
                 End If
 
-                If Not FinalizeFluxOutput() Then
-                    Exit Sub
+                If SecondaryOutputSelected() AndAlso SelectedImportMode() = ConversionMode.Import AndAlso Not String.IsNullOrEmpty(SavedImagePath) Then
+                    ProcessImport(SavedImagePath, IO.Path.GetFileName(SavedImagePath), NewImage:=False)
+                Else
+                    ClearProcessedImage(False, True)
                 End If
-
-                If HasOutputFile2 Then
-                    FinalizeImageOutput()
-                    _TempFilePath2 = ""
-                End If
-
-                ClearProcessedImage(False, True)
                 Exit Sub
             End If
 
@@ -2207,20 +2235,16 @@ Namespace Flux.Greaseweazle
             End If
 
             If IsFluxOutput Then
-                If Not EnsureSecondaryImage() Then
+                Dim SavedImagePath As String = ""
+                If Not SaveFluxOutputs(SavedImagePath) Then
                     Exit Sub
                 End If
 
-                If Not FinalizeFluxOutput() Then
-                    Exit Sub
+                If SecondaryOutputSelected() AndAlso SelectedImportMode() = ConversionMode.Import AndAlso Not String.IsNullOrEmpty(SavedImagePath) Then
+                    CloseForm(SavedImagePath, IO.Path.GetFileName(SavedImagePath), NewImage:=False)
+                Else
+                    CloseForm("", "")
                 End If
-
-                If HasOutputFile2 Then
-                    FinalizeImageOutput()
-                    _TempFilePath2 = ""
-                End If
-
-                CloseForm("", "")
                 Exit Sub
             End If
 
@@ -2472,6 +2496,7 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.OutputType2 = SelectedOutputType2
 
             RefreshFormState()
+            RefreshImportButtonItems(IsFluxOutput)
         End Sub
 
         Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
