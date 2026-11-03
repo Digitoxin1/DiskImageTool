@@ -9,7 +9,6 @@ Namespace Flux.Greaseweazle
         Inherits BaseFluxForm
 
 #Region "Form Controls"
-        Private WithEvents ButtonConvert As Button
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As SplitButton
         Private WithEvents ButtonImportAndClose As SplitButton
@@ -616,24 +615,6 @@ Namespace Flux.Greaseweazle
 
             Return MsgBox(msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or vbDefaultButton2) = MsgBoxResult.Ok
         End Function
-        Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(_TempFilePath, Nothing, True, FluxGetOutputFilePath())
-
-            If Response.Result = DialogResult.OK Then
-                If Not FinalizeFluxOutput() Then
-                    Exit Sub
-                End If
-
-                CloseForm(Response.OutputFile, Response.NewFileName)
-
-            ElseIf Response.Result = DialogResult.Retry Then
-                If Not FinalizeFluxOutput() Then
-                    Exit Sub
-                End If
-
-                ProcessImport(Response.OutputFile, Response.NewFileName)
-            End If
-        End Sub
 
         Private Sub DoFormatDetection()
             Dim ImageFormat As FloppyDiskFormat?
@@ -1616,7 +1597,6 @@ Namespace Flux.Greaseweazle
             Dim HasOutputFile As Boolean = Me.HasOutputFile
 
             Dim CanChangeSettings = Me.CanChangeSettings
-            Dim CanConvert As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not HasOutputFile2
             Dim DriveSelected As Boolean = HasOptionId
             Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
 
@@ -1638,9 +1618,6 @@ Namespace Flux.Greaseweazle
 
             RefreshSaveLogButtonState()
             ButtonReset.Enabled = IsIdle
-
-            ButtonConvert.Enabled = CanConvert
-            ButtonConvert.Visible = IsFluxOutput
 
             Dim NonImageFormat As Boolean = Not _OutputDiskParams.HasValue OrElse _OutputDiskParams.Value.IsNonImage
             Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso _KryofluxAvailable
@@ -2146,14 +2123,6 @@ Namespace Flux.Greaseweazle
         End Function
 
 #Region "Events"
-        Private Sub ButtonConvert_Click(sender As Object, e As EventArgs) Handles ButtonConvert.Click
-            If Not CheckFileNameEntered(CheckImageFile:=False) Then
-                Exit Sub
-            End If
-
-            ConvertImage()
-        End Sub
-
         Private Sub ButtonDetect_Click(sender As Object, e As EventArgs)
             If CheckDebounce Then
                 Exit Sub

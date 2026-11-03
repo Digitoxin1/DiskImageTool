@@ -661,7 +661,7 @@ Public Class MainForm
 
     Private Sub FluxConvertImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.ConvertFluxImage(FileName, AddressOf ProcessImportedImage, False)
+            Dim Response = Flux.ConvertFluxImage(FileName, AddressOf ProcessImportedImage)
             If Response.Result = DialogResult.OK Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If

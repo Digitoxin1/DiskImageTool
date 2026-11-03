@@ -248,10 +248,6 @@ de unidad seleccionada usando un disco de limpieza.</value>
 pista falla la verificación, en lugar de abortar
 la ejecución.</value>
   </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir el conjunto de imágenes de flujo cargado al
-tipo de imagen seleccionado sin volver a leer la unidad.</value>
-  </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>Intentar detectar el formato del disco en la unidad seleccionada analizando el sector de arranque.</value>
   </data>

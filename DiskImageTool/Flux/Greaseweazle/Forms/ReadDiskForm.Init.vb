@@ -182,16 +182,6 @@
             }
             ButtonContainer.Controls.Add(ButtonRead)
 
-            ButtonConvert = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.Label_Convert,
-                .MinimumSize = New Size(75, 0),
-                .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Visible = False
-            }
-            ButtonContainer.Controls.Add(ButtonConvert)
-
             ButtonDiscard = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_Discard,
@@ -252,7 +242,6 @@
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_SaveLog, CheckSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Discard, ButtonDiscard)
             SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonRead)
-            SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
             SetHelpString(My.Resources.HelpStrings.Flux_Preview, ButtonPreview)
             SetHelpString(My.Resources.HelpStrings.Flux_Refine, ButtonRefine)
             SetHelpString(My.Resources.HelpStrings.Flux_Verify, ButtonVerify)

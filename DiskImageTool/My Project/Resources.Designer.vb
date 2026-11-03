@@ -3391,15 +3391,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Convert.
-        '''</summary>
-        Friend ReadOnly Property Label_Convert() As String
-            Get
-                Return ResourceManager.GetString("Label_Convert", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Copy Across Index.
         '''</summary>
         Friend ReadOnly Property Label_CopyAcrossIndex() As String

@@ -39,7 +39,6 @@ Namespace Flux
         Private WithEvents ConvertCmd As ConvertCommand
         Private ReadOnly _ConsoleQueue As New ConcurrentQueue(Of String)
         Private ReadOnly _Initialized As Boolean = False
-        Private ReadOnly _LaunchedFromDialog As Boolean = False
         Private ReadOnly _OutputImages As OutputImages
         Private ReadOnly _UserState As Settings.UserStateFlux
         Private _ComboDevicesNoEvent As Boolean = False
@@ -60,7 +59,7 @@ Namespace Flux
         Private _TrackLayoutExists As Boolean = False
 
         Public Event ImportProcess(File As String, NewFilename As String)
-        Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "")
+        Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo)
             MyBase.New("", UseProcess:=True)
 
             Me.AllowDrop = True
@@ -75,9 +74,8 @@ Namespace Flux
             ConvertCmd = Engine.Convert
 
             _UserState = App.UserState.Flux
-            _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
-            _DisplayInputFilePath = If(String.IsNullOrWhiteSpace(DisplayFilePath), FilePath, DisplayFilePath)
+            _DisplayInputFilePath = FilePath
             _OutputImages = New OutputImages(TempPath)
             _TrackCount = FluxSetinfo.TrackCount
             _SideCount = FluxSetinfo.SideCount
@@ -444,8 +442,8 @@ Namespace Flux
             RefreshButtonState()
         End Sub
 
-        Private Sub ImportAndClose(DialogResult As DialogResult)
-            Me.DialogResult = DialogResult
+        Private Sub ImportAndClose()
+            Me.DialogResult = DialogResult.OK
             MoveLogs()
             SetOutputFilePath()
             Me.Close()
@@ -644,8 +642,7 @@ Namespace Flux
                 .Text = My.Resources.Label_Discard,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
-                .Visible = Not _LaunchedFromDialog
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
             ButtonContainer.Controls.Add(ButtonDiscard)
 
@@ -1302,9 +1299,9 @@ Namespace Flux
             _CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
 
-        Private Sub SaveAndClose(DialogResult As DialogResult)
+        Private Sub SaveAndClose()
             If ProcessSave() Then
-                Me.DialogResult = DialogResult
+                Me.DialogResult = DialogResult.OK
                 Me.Close()
             End If
         End Sub
@@ -1405,15 +1402,6 @@ Namespace Flux
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
-            If _LaunchedFromDialog Then
-                If ButtonImport.SelectedValue = ConversionMode.Import Then
-                    ImportAndClose(DialogResult.Retry)
-                Else
-                    SaveAndClose(DialogResult.Retry)
-                End If
-                Exit Sub
-            End If
-
             If _OutputImages.HasImage Then
                 If ButtonImport.SelectedValue = ConversionMode.Import Then
                     ProcessImport()
@@ -1443,9 +1431,9 @@ Namespace Flux
 
         Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonImportAndClose.Click
             If ButtonImportAndClose.SelectedValue = ConversionMode.Import Then
-                ImportAndClose(DialogResult.OK)
+                ImportAndClose()
             Else
-                SaveAndClose(DialogResult.OK)
+                SaveAndClose()
             End If
         End Sub
 

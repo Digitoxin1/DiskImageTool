@@ -962,9 +962,6 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Nach Fehler fortsetzen</value>
   </data>
-  <data name="Label_Convert" xml:space="preserve">
-    <value>Konvertieren</value>
-  </data>
   <data name="Label_CopyAcrossIndex" xml:space="preserve">
     <value>Über Index kopieren</value>
   </data>

@@ -248,10 +248,6 @@ sélectionnée à l’aide d’un disque de nettoyage.</value>
 échoue à la vérification, au lieu d’abandonner
 l’exécution.</value>
   </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir l’ensemble d’images flux chargé vers le type
-d’image sélectionné sans relire le lecteur.</value>
-  </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>Tenter de détecter le format du disque dans le lecteur sélectionné en analysant le secteur de démarrage.</value>
   </data>

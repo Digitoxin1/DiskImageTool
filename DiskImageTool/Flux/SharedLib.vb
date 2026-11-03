@@ -76,7 +76,7 @@ Namespace Flux
             Return CanToggleSequenceAtSelection(tb) OrElse CanToggleSequenceAtCaretAfterToken(tb) OrElse CanToggleSequenceAtCaretAfterNumber(tb)
         End Function
 
-        Public Function ConvertFluxImage(FilePath As String, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean, Optional DisplayFilePath As String = "") As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(FilePath As String, importHandler As ConvertImageForm.ImportProcessEventHandler) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -90,7 +90,7 @@ Namespace Flux
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Using dlg As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog, DisplayFilePath)
+            Using dlg As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse)
 
                 If importHandler IsNot Nothing Then
                     AddHandler dlg.ImportProcess, importHandler
@@ -105,7 +105,7 @@ Namespace Flux
                     End If
                 End Try
 
-                If result = DialogResult.OK Or result = DialogResult.Retry Then
+                If result = DialogResult.OK Then
                     If Not String.IsNullOrEmpty(dlg.OutputFilePath) Then
                         Return (result, dlg.OutputFilePath, dlg.GetNewFileName)
                     End If

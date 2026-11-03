@@ -962,9 +962,6 @@ Voulez-vous écraser ?</value>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Continuer après une erreur</value>
   </data>
-  <data name="Label_Convert" xml:space="preserve">
-    <value>Convertir</value>
-  </data>
   <data name="Label_CopyAcrossIndex" xml:space="preserve">
     <value>Copier à travers l’index</value>
   </data>

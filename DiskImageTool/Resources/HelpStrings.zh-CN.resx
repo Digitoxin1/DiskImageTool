@@ -241,9 +241,6 @@
   <data name="Flux_ContinueAfterFailure" xml:space="preserve">
     <value>若某磁道校验失败，继续写入其余磁道，而不是中止本次操作。</value>
   </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>将当前加载的 Flux 映像集转换为所选映像类型，无需重新读取驱动器。</value>
-  </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>通过分析引导扇区，尝试检测所选驱动器中磁盘的格式。</value>
   </data>

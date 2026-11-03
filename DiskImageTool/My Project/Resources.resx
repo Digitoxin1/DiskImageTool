@@ -1208,9 +1208,6 @@ Do you wish to overwrite?</value>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Continue after Failure</value>
   </data>
-  <data name="Label_Convert" xml:space="preserve">
-    <value>Convert</value>
-  </data>
   <data name="Label_CRC32" xml:space="preserve">
     <value>CRC32</value>
     <comment>@Invariant</comment>

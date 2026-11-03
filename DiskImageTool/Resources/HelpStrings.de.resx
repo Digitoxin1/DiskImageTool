@@ -248,10 +248,6 @@ ausgewählten Laufwerksschacht mit einer Reinigungsdiskette.</value>
 wenn eine Spur die Überprüfung nicht besteht, anstatt
 den Vorgang abzubrechen.</value>
   </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>Das geladene Flux-Image-Set in den ausgewählten
-Image-Typ konvertieren, ohne das Laufwerk erneut zu lesen.</value>
-  </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>Versuchen, das Format der Diskette im ausgewählten Laufwerk durch Analyse des Bootsektors zu erkennen.</value>
   </data>

@@ -962,9 +962,6 @@ Archivo de imagen: '{1}'
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Continuar después de un fallo</value>
   </data>
-  <data name="Label_Convert" xml:space="preserve">
-    <value>Convertir</value>
-  </data>
   <data name="Label_CopyAcrossIndex" xml:space="preserve">
     <value>Copiar a través del índice</value>
   </data>

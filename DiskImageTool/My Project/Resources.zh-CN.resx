@@ -962,9 +962,6 @@ Flux 映像集：“{0}”
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>失败后继续</value>
   </data>
-  <data name="Label_Convert" xml:space="preserve">
-    <value>转换</value>
-  </data>
   <data name="Label_CopyAcrossIndex" xml:space="preserve">
     <value>跨索引复制</value>
   </data>

@@ -390,16 +390,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Convert the currently loaded flux image set into the
-        '''selected image type without re-reading the drive..
-        '''</summary>
-        Friend Shared ReadOnly Property Flux_Convert() As String
-            Get
-                Return ResourceManager.GetString("Flux_Convert", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Attempt to detect the format of the disk in the selected drive by analyzing the boot sector..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Detect() As String
