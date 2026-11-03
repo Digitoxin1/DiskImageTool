@@ -128,6 +128,17 @@ Namespace Flux.Greaseweazle
             RefreshButtonState()
         End Sub
 
+        Protected Overrides ReadOnly Property SelectedCleanDriveId As String
+            Get
+                Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
+                If Opt Is Nothing Then
+                    Return ""
+                End If
+
+                Return Opt.Id
+            End Get
+        End Property
+
         Private Function CheckCompatibility() As Boolean
             Dim Opt As DriveOption = TryCast(ComboImageDrives.SelectedItem, DriveOption)
 
@@ -438,6 +449,7 @@ Namespace Flux.Greaseweazle
         Private Sub InitializeFooter()
             ButtonOk.Visible = False
             ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
+            ButtonClean.Visible = True
         End Sub
 
         Private Sub InitializeHelp()
@@ -483,6 +495,7 @@ Namespace Flux.Greaseweazle
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Write)
 
             ButtonReset.Enabled = IsIdle
+            ButtonClean.Enabled = IsIdle
 
             RefreshSaveLogButtonState()
 

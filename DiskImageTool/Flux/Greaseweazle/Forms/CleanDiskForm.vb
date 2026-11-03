@@ -19,7 +19,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents CleanCmd As CleanCommand
         Private ReadOnly _Initialized As Boolean = False
 
-        Public Sub New()
+        Public Sub New(Optional DriveId As String = "")
             MyBase.New(Settings.LogFileName, False)
             InitializeControls()
             InitializeHelp()
@@ -27,13 +27,13 @@ Namespace Flux.Greaseweazle
             CleanCmd = Engine.Clean
 
             Me.HelpButton = True
-            Me.Text = My.Resources.Label_CleanDisk
+            Me.Text = WithoutHotkey(My.Resources.MainMenu_Greaseweazle_Clean)
 
             _NumericCyls.Value = DEFAULT_CYLS
             _NumericLinger.Value = DEFAULT_LINGER
             _NumericPasses.Value = DEFAULT_PASSES
 
-            PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown)
+            PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown, DriveId)
             ClearLogAndStatus()
             RefreshButtonState()
             RefreshCylinderCount()
@@ -41,8 +41,8 @@ Namespace Flux.Greaseweazle
             _Initialized = True
         End Sub
 
-        Public Shared Sub Display()
-            Using dlg As New CleanDiskForm()
+        Public Shared Sub Display(Optional DriveId As String = "")
+            Using dlg As New CleanDiskForm(DriveId)
                 dlg.ShowDialog(App.CurrentFormInstance)
             End Using
         End Sub

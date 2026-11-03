@@ -196,6 +196,7 @@
 
         Private Sub InitializeFooter()
             BumpTabIndexes(PanelButtonsRight, 3)
+            ButtonClean.Visible = True
 
             ButtonImportAndClose = New SplitButton With {
                 .Margin = New Padding(6, 0, 6, 0),

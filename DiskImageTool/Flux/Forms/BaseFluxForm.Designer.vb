@@ -34,6 +34,7 @@
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
             Me.ButtonSaveLog = New System.Windows.Forms.Button()
+            Me.ButtonClean = New System.Windows.Forms.Button()
             Me.ButtonReset = New System.Windows.Forms.Button()
             Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             Me.PanelBottom.SuspendLayout()
@@ -316,11 +317,26 @@
             Me.ButtonReset.Text = "{Reset}"
             Me.ButtonReset.UseVisualStyleBackColor = True
             '
+            'ButtonClean
+            '
+            Me.ButtonClean.Anchor = System.Windows.Forms.AnchorStyles.Left
+            Me.ButtonClean.AutoSize = True
+            Me.ButtonClean.Location = New System.Drawing.Point(105, 10)
+            Me.ButtonClean.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
+            Me.ButtonClean.MinimumSize = New System.Drawing.Size(75, 0)
+            Me.ButtonClean.Name = "ButtonClean"
+            Me.ButtonClean.Size = New System.Drawing.Size(75, 23)
+            Me.ButtonClean.TabIndex = 0
+            Me.ButtonClean.Text = "{Clean Drive}"
+            Me.ButtonClean.UseVisualStyleBackColor = True
+            Me.ButtonClean.Visible = False
+            '
             'PanelButtonsLeft
             '
             Me.PanelButtonsLeft.AutoSize = True
             Me.PanelButtonsLeft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.PanelButtonsLeft.Controls.Add(Me.ButtonReset)
+            Me.PanelButtonsLeft.Controls.Add(Me.ButtonClean)
             Me.PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
             Me.PanelButtonsLeft.Location = New System.Drawing.Point(0, 0)
             Me.PanelButtonsLeft.Margin = New System.Windows.Forms.Padding(0)
@@ -394,6 +410,7 @@
         Friend WithEvents TextCommandLine As PlaceholderTextBox
         Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
         Friend WithEvents ButtonReset As Button
+        Friend WithEvents ButtonClean As Button
         Friend WithEvents ButtonSaveLog As Button
     End Class
 End Namespace

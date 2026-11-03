@@ -149,6 +149,16 @@ Namespace Flux.Greaseweazle
             End Get
         End Property
 
+        Protected Overrides ReadOnly Property SelectedCleanDriveId As String
+            Get
+                If _SelectedDriveOption Is Nothing Then
+                    Return ""
+                End If
+
+                Return _SelectedDriveOption.Id
+            End Get
+        End Property
+
         Private ReadOnly Property CanChangeSettings As Boolean
             Get
                 Return IsIdle AndAlso Not HasOutputFile
@@ -1648,6 +1658,7 @@ Namespace Flux.Greaseweazle
 
             RefreshSaveLogButtonState()
             ButtonReset.Enabled = IsIdle
+            ButtonClean.Enabled = IsIdle
 
             Dim NonImageFormat As Boolean = Not _OutputDiskParams.HasValue OrElse _OutputDiskParams.Value.IsNonImage
             Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso _KryofluxAvailable

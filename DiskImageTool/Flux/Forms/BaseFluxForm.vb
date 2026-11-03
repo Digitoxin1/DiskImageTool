@@ -90,6 +90,12 @@ Namespace Flux
             End Get
         End Property
 
+        Protected Overridable ReadOnly Property SelectedCleanDriveId As String
+            Get
+                Return ""
+            End Get
+        End Property
+
         Protected ReadOnly Property CheckDebounce As Boolean
             Get
                 Return _DebounceEnabled
@@ -663,10 +669,12 @@ Namespace Flux
             ButtonCancel.Text = My.Resources.Menu_Cancel
             ButtonSaveLog.Text = My.Resources.Label_SaveLog
             ButtonReset.Text = My.Resources.Label_Reset
+            ButtonClean.Text = WithoutHotkey(My.Resources.MainMenu_Greaseweazle_Clean)
             LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
             CheckSaveLog.Text = My.Resources.Label_AutoSaveLog
 
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
+            SetHelpString(My.Resources.HelpStrings.Flux_Clean, ButtonClean)
         End Sub
 
         Private Sub PaintGridBackground(sender As Object, e As TableLayoutCellPaintEventArgs)
@@ -756,6 +764,10 @@ Namespace Flux
 #Region "Events"
         Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
             GreaseweazleReset()
+        End Sub
+
+        Private Sub ButtonClean_Click(sender As Object, e As EventArgs) Handles ButtonClean.Click
+            CleanDiskForm.Display(SelectedCleanDriveId)
         End Sub
 
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
