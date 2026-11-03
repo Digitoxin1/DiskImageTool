@@ -9,6 +9,7 @@ Namespace Flux.Greaseweazle
         Inherits BaseFluxForm
 
 #Region "Form Controls"
+        Private WithEvents ButtonAbort As Button
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As SplitButton
         Private WithEvents ButtonImportAndClose As SplitButton
@@ -1666,11 +1667,7 @@ Namespace Flux.Greaseweazle
             ButtonVerify.Enabled = CanVerify
             ButtonVerify.Visible = IsFluxOutput AndAlso _KryofluxAvailable
 
-            ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
-
             ButtonCancel.Text = If(IsRunning OrElse HasOutputFile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
-
-            ButtonRefine.Enabled = IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
 
             GridSelectEnabled(CanRefine)
             GridHideSelection(Not IsIdle)
@@ -1779,18 +1776,32 @@ Namespace Flux.Greaseweazle
             Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
 
             _PanelDriveParams.ButtonDetect.Enabled = Not Busy AndAlso (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
+
+            ButtonAbort.Parent.SuspendLayout()
+
+            ButtonAbort.Visible = IsRunning
+
             ButtonPreview.Enabled = Not Busy AndAlso IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
+            ButtonPreview.Visible = Not IsRunning
+
+            ButtonRead.Visible = Not IsRunning
+
+            ButtonRefine.Enabled = Not Busy AndAlso IsIdle AndAlso Not HasOutputFile AndAlso _DrivesAvailable
+            ButtonRefine.Visible = Not IsRunning
+
+            ButtonDiscard.Enabled = IsIdle AndAlso HasOutputFile
+            ButtonDiscard.Visible = Not IsRunning
 
             If IsRunning Then
-                ButtonRead.Text = My.Resources.Label_Abort
                 ButtonRead.Enabled = Not Busy
             Else
                 Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
 
-                ButtonRead.Text = My.Resources.Label_Read
                 Dim PhysicalEvenBlocked = HasOutputFile AndAlso _OutputLayout.PhysicalEvenFiles AndAlso Not CheckCompatibility()
                 ButtonRead.Enabled = Not Busy AndAlso DriveSelected AndAlso Not PhysicalEvenBlocked AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
+
+            ButtonAbort.Parent.ResumeLayout(True)
         End Sub
 
         Private Sub RefreshRevs()
@@ -2298,12 +2309,18 @@ Namespace Flux.Greaseweazle
             StartDebounceTimer()
         End Sub
 
-        Private Sub ButtonRead_Click(sender As Object, e As EventArgs) Handles ButtonRead.Click
+        Private Sub ButtonAbort_Click(sender As Object, e As EventArgs) Handles ButtonAbort.Click
             If CheckDebounce Then
                 Exit Sub
             End If
 
-            If CancelIfRunning() Then
+            CancelIfRunning()
+
+            StartDebounceTimer()
+        End Sub
+
+        Private Sub ButtonRead_Click(sender As Object, e As EventArgs) Handles ButtonRead.Click
+            If CheckDebounce Then
                 Exit Sub
             End If
 

@@ -152,20 +152,21 @@
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
                 .Margin = New Padding(20, 24, 3, 3),
-                .Anchor = AnchorStyles.Top Or AnchorStyles.Right
+                .Dock = DockStyle.Fill
             }
 
-            ButtonRefine = New Button With {
+            ButtonAbort = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
-                .Text = My.Resources.Label_Refine,
+                .Text = My.Resources.Label_Abort,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = False
             }
-            ButtonContainer.Controls.Add(ButtonRefine)
+            ButtonContainer.Controls.Add(ButtonAbort)
 
             ButtonPreview = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
+                .Margin = New Padding(3, 0, 3, 3),
                 .Text = My.Resources.Label_Preview,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
@@ -174,7 +175,7 @@
             ButtonContainer.Controls.Add(ButtonPreview)
 
             ButtonRead = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
+                .Margin = New Padding(3, 18, 3, 3),
                 .Text = My.Resources.Label_Read,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
@@ -182,8 +183,17 @@
             }
             ButtonContainer.Controls.Add(ButtonRead)
 
-            ButtonDiscard = New Button With {
+            ButtonRefine = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
+                .Text = My.Resources.Label_Refine,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+            ButtonContainer.Controls.Add(ButtonRefine)
+
+            ButtonDiscard = New Button With {
+                .Margin = New Padding(3, 18, 3, 3),
                 .Text = My.Resources.Label_Discard,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
