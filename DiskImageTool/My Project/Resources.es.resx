@@ -2510,4 +2510,7 @@ Archivo de imagen: '{1}'
   <data name="Label_Destination" xml:space="preserve">
     <value>Destino</value>
   </data>
+  <data name="Label_DTCVerify" xml:space="preserve">
+    <value>DTC Verificar</value>
+  </data>
 </root>

@@ -2510,4 +2510,7 @@ Flux 映像集：“{0}”
   <data name="Label_Destination" xml:space="preserve">
     <value>目标位置</value>
   </data>
+  <data name="Label_DTCVerify" xml:space="preserve">
+    <value>DTC 校验</value>
+  </data>
 </root>

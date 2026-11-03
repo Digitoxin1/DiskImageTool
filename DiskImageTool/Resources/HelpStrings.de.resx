@@ -438,7 +438,7 @@ Lesevorgang automatisch erhöht.</value>
 der Konvertierung erzeugt hat.</value>
   </data>
   <data name="Flux_Verify" xml:space="preserve">
-    <value>Das geladene Flux-Image-Set mit Kryoflux überprüfen,
+    <value>Das geladene Flux-Image-Set mit Kryoflux DTC überprüfen,
 ohne das Laufwerk erneut zu lesen.
 
 Die Überprüfungsergebnisse jeder Spur werden im

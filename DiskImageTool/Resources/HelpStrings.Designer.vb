@@ -778,7 +778,7 @@ Namespace My.Resources
         
         '''<summary>
         '''  Looks up a localized string similar to Verify the currently loaded flux image set using
-        '''Kryoflux without re-reading the drive.
+        '''Kryoflux DTC without re-reading the drive.
         '''
         '''Verification results for each track are displayed
         '''in the grid above.

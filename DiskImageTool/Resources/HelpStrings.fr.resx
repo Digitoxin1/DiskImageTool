@@ -442,7 +442,7 @@ PCImgCnv pendant la conversion.</value>
   </data>
   <data name="Flux_Verify" xml:space="preserve">
     <value>Vérifier l’ensemble d’images flux chargé à l’aide
-de Kryoflux sans relire le lecteur.
+de Kryoflux DTC sans relire le lecteur.
 
 Les résultats de vérification de chaque piste sont
 affichés dans la grille ci-dessus.

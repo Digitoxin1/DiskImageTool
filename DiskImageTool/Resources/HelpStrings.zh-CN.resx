@@ -386,7 +386,7 @@ Flux 映像集将原始磁通保存为可稍后重新转换的 .raw 集合。其
     <value>查看 PCImgCnv 在转换过程中生成的逐磁道布局。</value>
   </data>
   <data name="Flux_Verify" xml:space="preserve">
-    <value>使用 Kryoflux 校验当前加载的 Flux 映像集，无需重新读取驱动器。
+    <value>使用 Kryoflux DTC 校验当前加载的 Flux 映像集，无需重新读取驱动器。
 
 各磁道的校验结果显示在上方表格中。
 

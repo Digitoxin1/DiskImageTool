@@ -218,7 +218,7 @@
 
             ButtonVerify = New Button With {
                 .Margin = New Padding(6, 0, 18, 0),
-                .Text = My.Resources.Label_Verify,
+                .Text = My.Resources.Label_DTCVerify,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .TabIndex = 0,

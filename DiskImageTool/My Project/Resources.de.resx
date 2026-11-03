@@ -2510,4 +2510,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Destination" xml:space="preserve">
     <value>Ziel</value>
   </data>
+  <data name="Label_DTCVerify" xml:space="preserve">
+    <value>DTC Verifizieren</value>
+  </data>
 </root>

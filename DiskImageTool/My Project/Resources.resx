@@ -2983,4 +2983,7 @@ Do you wish to overwrite?</value>
   <data name="Label_DriveAndImage" xml:space="preserve">
     <value>Drive &amp;&amp; Image</value>
   </data>
+  <data name="Label_DTCVerify" xml:space="preserve">
+    <value>DTC Verify</value>
+  </data>
 </root>

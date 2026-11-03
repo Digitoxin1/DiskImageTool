@@ -441,7 +441,7 @@ durante la conversión.</value>
   </data>
   <data name="Flux_Verify" xml:space="preserve">
     <value>Verificar el conjunto de imágenes de flujo cargado
-usando Kryoflux sin volver a leer la unidad.
+usando Kryoflux DTC sin volver a leer la unidad.
 
 Los resultados de la verificación de cada pista se
 muestran en la cuadrícula superior.

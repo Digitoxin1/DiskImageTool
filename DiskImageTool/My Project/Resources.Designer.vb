@@ -3769,6 +3769,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to DTC Verify.
+        '''</summary>
+        Friend ReadOnly Property Label_DTCVerify() As String
+            Get
+                Return ResourceManager.GetString("Label_DTCVerify", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Encoding() As String
