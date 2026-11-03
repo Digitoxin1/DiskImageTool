@@ -151,7 +151,7 @@
             Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
-                .Margin = New Padding(20, 24, 3, 3),
+                .Margin = New Padding(20, 21, 3, 3),
                 .Dock = DockStyle.Fill
             }
 
