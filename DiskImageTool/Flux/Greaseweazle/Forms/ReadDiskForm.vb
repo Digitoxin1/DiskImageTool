@@ -58,6 +58,7 @@ Namespace Flux.Greaseweazle
         Private _SkipProcessButtons As Boolean = False
         Private _TempFilePath As String = ""
         Private _TempFilePath2 As String = ""
+        Private _SecondaryImageOutputType As ReadDiskOutputTypes = ReadDiskOutputTypes.None
         Private _ImportButtonsState As (Boolean, ConversionMode)? = Nothing
 
         Private Enum GridRows
@@ -549,6 +550,7 @@ Namespace Flux.Greaseweazle
 
             _TempFilePath = ""
             _TempFilePath2 = ""
+            _SecondaryImageOutputType = ReadDiskOutputTypes.None
             _OutputDiskParams = Nothing
             _OutputDriveOption = Nothing
             _OutputLayout = New FluxLayout()
@@ -558,12 +560,12 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub DeleteSecondaryImage()
-            If String.IsNullOrEmpty(_TempFilePath2) Then
-                Return
+            If Not String.IsNullOrEmpty(_TempFilePath2) Then
+                DeleteFileIfExists(_TempFilePath2)
+                _TempFilePath2 = ""
             End If
 
-            DeleteFileIfExists(_TempFilePath2)
-            _TempFilePath2 = ""
+            _SecondaryImageOutputType = ReadDiskOutputTypes.None
         End Sub
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean, RefreshState As Boolean)
@@ -764,6 +766,7 @@ Namespace Flux.Greaseweazle
                 IO.File.Copy(_TempFilePath2, FilePath, True)
                 DeleteFileIfExists(_TempFilePath2)
                 _TempFilePath2 = ""
+                _SecondaryImageOutputType = ReadDiskOutputTypes.None
             Catch
                 MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
                 Return False
@@ -793,7 +796,8 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function EnsureSecondaryImage() As Boolean
-            If HasOutputFile2 OrElse Not SecondaryOutputSelected() Then
+            If Not SecondaryOutputSelected() Then
+                DeleteSecondaryImage()
                 Return True
             End If
 
@@ -804,6 +808,12 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim OutputType2 = If(DiskParams.Value.IsStandard, SelectedOutputType2, ReadDiskOutputTypes.HFE)
+            If HasOutputFile2 AndAlso _SecondaryImageOutputType = OutputType2 Then
+                Return True
+            End If
+
+            DeleteSecondaryImage()
+
             Dim OutputPath = GenerateOutputFile(OutputType2.GetExtension())
             If String.IsNullOrEmpty(OutputPath) Then
                 Return False
@@ -825,6 +835,7 @@ Namespace Flux.Greaseweazle
             End If
 
             _TempFilePath2 = OutputPath
+            _SecondaryImageOutputType = OutputType2
             Return True
         End Function
 
@@ -1464,6 +1475,11 @@ Namespace Flux.Greaseweazle
 
             _TempFilePath = Response.FilePath
             _TempFilePath2 = Response.FilePath2
+            If String.IsNullOrEmpty(Response.FilePath2) Then
+                _SecondaryImageOutputType = ReadDiskOutputTypes.None
+            Else
+                _SecondaryImageOutputType = If(DiskParams.Value.IsStandard, SelectedOutputType2, ReadDiskOutputTypes.HFE)
+            End If
 
             Dim Layout = ReadDiskHelpers.DetectFluxLayout(_SelectedDriveOption.Type, DiskParams.Value.Format, _SelectedDriveOption.Tracks, 0)
             ApplyOutputSession(DiskParams, _SelectedDriveOption, Layout)
@@ -2538,8 +2554,6 @@ Namespace Flux.Greaseweazle
             If _ComboOutputTypeNoEvent Then
                 Exit Sub
             End If
-
-            DeleteSecondaryImage()
 
             PopulateFileExtensions(_PanelOutput.ComboBoxSecondaryExtension, SelectedOutputType2)
 
