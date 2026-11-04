@@ -1656,9 +1656,10 @@ Namespace Flux.Greaseweazle
             Dim CanChangeSettings = Me.CanChangeSettings
             Dim DriveSelected As Boolean = HasOptionId
             Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
+            Dim CanEditSource = CanChangeSettings OrElse (_RefineMode AndAlso IsIdle)
 
-            _PanelDriveParams.ComboImageFormat.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
-            _PanelDriveParams.ComboDrives.Enabled = CanChangeSettings OrElse SelectMode
+            _PanelDriveParams.ComboImageFormat.Enabled = CanEditSource AndAlso DriveSelected
+            _PanelDriveParams.ComboDrives.Enabled = CanEditSource
 
             Dim CanEditSecondary = CanChangeSettings OrElse SelectMode
 
@@ -1789,9 +1790,9 @@ Namespace Flux.Greaseweazle
         Private Sub RefreshProcessButtonState(Optional Busy As Boolean = False)
             Dim DiskParams = SelectedDiskParams
             Dim DriveSelected As Boolean = HasOptionId
-            Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
+            Dim CanEditSource = CanChangeSettings OrElse (_RefineMode AndAlso IsIdle)
 
-            _PanelDriveParams.ButtonDetect.Enabled = Not Busy AndAlso (CanChangeSettings OrElse SelectMode) AndAlso DriveSelected
+            _PanelDriveParams.ButtonDetect.Enabled = Not Busy AndAlso CanEditSource AndAlso DriveSelected
 
             ButtonAbort.Parent.SuspendLayout()
 
