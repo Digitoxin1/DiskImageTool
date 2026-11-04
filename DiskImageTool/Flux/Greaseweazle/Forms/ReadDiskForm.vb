@@ -1648,54 +1648,97 @@ Namespace Flux.Greaseweazle
             Runner.RunAsync(Sub(Token) ConvertCmd.Run(Opts, Token))
         End Sub
 
-        Private Sub RefreshFormState()
-            Dim DiskParams = SelectedDiskParams
-
-            Dim HasOutputFile As Boolean = Me.HasOutputFile
-
-            Dim CanChangeSettings = Me.CanChangeSettings
+        Private Sub RefreshDriveParams()
             Dim DriveSelected As Boolean = HasOptionId
             Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
             Dim CanEditSource = CanChangeSettings OrElse (_RefineMode AndAlso IsIdle)
 
-            _PanelDriveParams.ComboImageFormat.Enabled = CanEditSource AndAlso DriveSelected
-            _PanelDriveParams.ComboDrives.Enabled = CanEditSource
+            With _PanelDriveParams
+                .ComboImageFormat.Enabled = CanEditSource AndAlso DriveSelected
+                .ComboDrives.Enabled = CanEditSource
 
+                .NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
+                .NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
+                .NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
+            End With
+        End Sub
+
+        Private Sub RefreshOutputParams()
+            Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
+            Dim CanChangeSettings = Me.CanChangeSettings
             Dim CanEditSecondary = CanChangeSettings OrElse SelectMode
+            Dim ShowSecondary = IsFluxOutput
+            Dim ShowLocation = DisplayImageLocation
 
-            _PanelOutput.ComboBoxPrimaryOutput.Enabled = CanChangeSettings AndAlso _PanelOutput.ComboBoxPrimaryOutput.Items.Count > 1
-            _PanelOutput.ComboBoxSecondaryOutput.Enabled = CanEditSecondary AndAlso _PanelOutput.ComboBoxSecondaryOutput.Items.Count > 1
-            _PanelOutput.ComboBoxSecondaryExtension.Enabled = CanEditSecondary AndAlso _PanelOutput.ComboBoxSecondaryExtension.Items.Count > 1
-            _PanelOutput.ComboBoxSecondaryLocation.Enabled = CanEditSecondary
-            _PanelDestination.TextBoxImageFolder.Enabled = CanEditSecondary
-            _PanelDestination.ButtonImageFolderBrowse.Enabled = CanEditSecondary
+            With _PanelOutput
+                .ComboBoxPrimaryOutput.Enabled = CanChangeSettings AndAlso .ComboBoxPrimaryOutput.Items.Count > 1
 
-            _PanelDriveParams.NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
-            _PanelDriveParams.NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
-            _PanelDriveParams.NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
+                .LabelOutputType2.Visible = ShowSecondary
 
-            RefreshSaveLogButtonState()
+                .ComboBoxSecondaryOutput.Enabled = CanEditSecondary AndAlso .ComboBoxSecondaryOutput.Items.Count > 1
+                .ComboBoxSecondaryOutput.Visible = ShowSecondary
+
+                .ComboBoxSecondaryExtension.Enabled = CanEditSecondary AndAlso .ComboBoxSecondaryExtension.Items.Count > 1
+                .ComboBoxSecondaryExtension.Visible = ShowLocation
+
+                .LabelLocation.Visible = ShowLocation
+
+                .ComboBoxSecondaryLocation.Enabled = CanEditSecondary
+                .ComboBoxSecondaryLocation.Visible = ShowLocation
+            End With
+        End Sub
+
+        Private Sub RefreshDestinationParams()
+            Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
+            Dim CanEditSecondary = Me.CanChangeSettings OrElse SelectMode
+
+            With _PanelDestination
+                .TextBoxImageFolder.Enabled = CanEditSecondary
+                .ButtonImageFolderBrowse.Enabled = CanEditSecondary
+            End With
+
+            ToggleSecondaryImageFolder()
+        End Sub
+
+        Private Sub RefreshUtilityButtons()
             ButtonReset.Enabled = IsIdle
             ButtonClean.Enabled = IsIdle
+        End Sub
 
+        Private Sub RefreshGridSelection()
+            GridSelectEnabled(CanRefine)
+            GridHideSelection(Not IsIdle)
+        End Sub
+
+        Private Sub RefreshVerifyButton()
             Dim NonImageFormat As Boolean = Not _OutputDiskParams.HasValue OrElse _OutputDiskParams.Value.IsNonImage
             Dim CanVerify As Boolean = IsIdle AndAlso HasOutputFile AndAlso IsFluxOutput AndAlso Not NonImageFormat AndAlso _KryofluxAvailable
 
             ButtonVerify.Enabled = CanVerify
             ButtonVerify.Visible = IsFluxOutput AndAlso _KryofluxAvailable
+        End Sub
+
+
+        Private Sub RefreshFormState()
+            RefreshDriveParams()
+            RefreshOutputParams()
+            RefreshDestinationParams()
+
+            RefreshSaveLogButtonState()
+            RefreshUtilityButtons()
+            RefreshVerifyButton()
 
             ButtonCancel.Text = If(IsRunning OrElse HasOutputFile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
-            GridSelectEnabled(CanRefine)
-            GridHideSelection(Not IsIdle)
+            RefreshGridSelection()
 
             If Not _SkipProcessButtons Then
                 RefreshProcessButtonState()
             End If
 
             RefreshImportButtonState()
+
             ToggleRootFolderControls()
-            ToggleImageLocationVisible()
 
             If _Initialized Then
                 UpdateCommandLine()
@@ -2131,28 +2174,15 @@ Namespace Flux.Greaseweazle
             }
         End Sub
 
-        Private Sub ToggleImageLocationControls()
-            _PanelDestination.LabelSecondaryImageFolder.Visible = DisplayImageFolder
-            _PanelDestination.TextBoxImageFolder.Visible = DisplayImageFolder
-            _PanelDestination.ButtonImageFolderBrowse.Visible = DisplayImageFolder
-        End Sub
-
-        Private Sub ToggleImageLocationVisible()
-            Dim ShowSecondary = IsFluxOutput
-            Dim ShowLocation = DisplayImageLocation
-
-            _PanelOutput.LabelOutputType2.Visible = ShowSecondary
-            _PanelOutput.ComboBoxSecondaryOutput.Visible = ShowSecondary
-            _PanelOutput.ComboBoxSecondaryExtension.Visible = ShowLocation
-            _PanelOutput.LabelLocation.Visible = ShowLocation
-            _PanelOutput.ComboBoxSecondaryLocation.Visible = ShowLocation
-
-            ToggleImageLocationControls()
+        Private Sub ToggleSecondaryImageFolder()
+            With _PanelDestination
+                .LabelSecondaryImageFolder.Visible = DisplayImageFolder
+                .TextBoxImageFolder.Visible = DisplayImageFolder
+                .ButtonImageFolderBrowse.Visible = DisplayImageFolder
+            End With
         End Sub
 
         Private Sub ToggleRootFolderControls()
-            Dim HasOutputFile As Boolean = Me.HasOutputFile
-
             If Not _LastFluxOutput.HasValue OrElse _LastFluxOutput.Value <> IsFluxOutput Then
                 _LastFluxOutput = IsFluxOutput
                 _PanelDestination.ToggleView(IsFluxOutput)
@@ -2161,12 +2191,11 @@ Namespace Flux.Greaseweazle
 
             Dim CanChangeSettings = Me.CanChangeSettings
 
-            _PanelDestination.TextBoxRootFolder.Enabled = CanChangeSettings
-            _PanelDestination.TextBoxPrefix.Enabled = CanChangeSettings
-            'TextBoxImageFolder.Enabled = CanChangeSettings
-
-            _PanelDestination.ButtonBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
-            'ButtonImageFolderBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            With _PanelDestination
+                .TextBoxRootFolder.Enabled = CanChangeSettings
+                .TextBoxPrefix.Enabled = CanChangeSettings
+                .ButtonBrowse.Enabled = IsIdle AndAlso IsFluxOutput AndAlso Not HasOutputFile
+            End With
 
             CheckSaveLog.Enabled = IsFluxOutput
             CheckSaveLog.Visible = IsFluxOutput
@@ -2525,7 +2554,7 @@ Namespace Flux.Greaseweazle
 
             SelectedDeviceState.ImageLocation = SelectedImageLocation
 
-            ToggleImageLocationControls()
+            ToggleSecondaryImageFolder()
             UpdateCommandLine()
         End Sub
 
