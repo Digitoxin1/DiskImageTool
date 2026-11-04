@@ -165,6 +165,16 @@
             }
             ButtonContainer.Controls.Add(ButtonAbort)
 
+            ButtonPause = New Button With {
+                .Margin = New Padding(3, 18, 3, 3),
+                .Text = My.Resources.Label_Pause,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = False
+            }
+            ButtonContainer.Controls.Add(ButtonPause)
+
             ButtonPreview = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
                 .Text = My.Resources.Label_Preview,

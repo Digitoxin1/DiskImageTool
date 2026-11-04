@@ -12,7 +12,7 @@ Namespace Flux.Greaseweazle
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
 
-        Private Enum TrackStatusEnum
+        Friend Enum TrackStatusEnum
             Reading
             Erasing
             Writing
@@ -37,6 +37,54 @@ Namespace Flux.Greaseweazle
                 Return True
             End Get
         End Property
+
+        Friend ReadOnly Property TotalBadSectors As UInteger
+            Get
+                Return _TotalBadSectors
+            End Get
+        End Property
+
+        Friend ReadOnly Property TotalUnexpectedSectors As UInteger
+            Get
+                Return _TotalUnexpectedSectors
+            End Get
+        End Property
+
+        Friend Function CurrentTrackIdentity() As (HasCurrent As Boolean, Track As Integer, Side As Integer)
+            If _CurrentStatusInfo Is Nothing Then
+                Return (False, 0, 0)
+            End If
+
+            Return (True, _CurrentStatusInfo.Track, _CurrentStatusInfo.Side)
+        End Function
+
+        Friend Function AbandonCurrentTrack(doubleStep As Boolean) As (HasCurrent As Boolean, DisplayTrack As Integer, Side As Integer)
+            If _CurrentStatusInfo Is Nothing Then
+                Return (False, 0, 0)
+            End If
+
+            Dim DisplayTrack = DisplayTrackIndex(_CurrentStatusInfo.Track, doubleStep)
+            Dim Side = _CurrentStatusInfo.Side
+
+            Dim Bad = CUInt(_CurrentStatusInfo.BadSectors)
+            If _TotalBadSectors >= Bad Then
+                _TotalBadSectors -= Bad
+            Else
+                _TotalBadSectors = 0
+            End If
+
+            Dim Unexpected = CUInt(_CurrentStatusInfo.UnexpectedSectors.Count)
+            If _TotalUnexpectedSectors >= Unexpected Then
+                _TotalUnexpectedSectors -= Unexpected
+            Else
+                _TotalUnexpectedSectors = 0
+            End If
+
+            _StatusCollection.Remove(_CurrentStatusInfo.Track & "." & _CurrentStatusInfo.Side)
+            _CurrentStatusInfo = Nothing
+
+            Return (True, DisplayTrack, Side)
+        End Function
 
         Public Function CanKeepProcessing() As Boolean Implements ITrackStatus.CanKeepProcessing
             Return HasRemainingTracks() AndAlso _CurrentStatusInfo.Failed
@@ -427,13 +475,19 @@ Namespace Flux.Greaseweazle
                 .Tooltip = BuildTooltip(_CurrentStatusInfo)
             End With
 
-            If PhysicalEvenReadMode Then
-                StatusData.Track \= 2
-            ElseIf DoubleStep AndAlso Not DestinationTrackMode Then
-                StatusData.Track *= 2
-            End If
+            StatusData.Track = DisplayTrackIndex(StatusData.Track, DoubleStep)
 
             Return StatusData
+        End Function
+
+        Private Function DisplayTrackIndex(track As Integer, doubleStep As Boolean) As Integer
+            If PhysicalEvenReadMode Then
+                Return track \ 2
+            ElseIf doubleStep AndAlso Not DestinationTrackMode Then
+                Return track * 2
+            End If
+
+            Return track
         End Function
 
         Private Function GetStatusInfo(Track As TrackInfo) As TrackStatusInfo
@@ -452,7 +506,7 @@ Namespace Flux.Greaseweazle
             Return StatusInfo
         End Function
 
-        Private Sub SetCurrentTrackStatusComplete(DoubleStep As Boolean)
+        Friend Sub SetCurrentTrackStatusComplete(DoubleStep As Boolean)
             If _CurrentStatusInfo IsNot Nothing Then
                 Dim StatusData = GetCurrentTrackStatusData(ActionTypeEnum.Complete, DoubleStep)
 
@@ -485,7 +539,7 @@ Namespace Flux.Greaseweazle
             RaiseEvent UpdateStatus(StatusData)
         End Sub
 
-        Private Sub UpdateTrackStatusType(Status As TrackStatusEnum)
+        Friend Sub UpdateTrackStatusType(Status As TrackStatusEnum)
             RaiseEvent UpdateStatusType(GetTrackStatusText(Status))
         End Sub
 

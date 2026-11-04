@@ -303,6 +303,12 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>Möchten Sie den Vorgang wirklich abbrechen?</value>
   </data>
+  <data name="Dialog_AbortRead" xml:space="preserve">
+    <value>Möchten Sie den Fortschritt behalten oder verwerfen?</value>
+  </data>
+  <data name="Dialog_AbortReadTitle" xml:space="preserve">
+    <value>Lesevorgang abbrechen</value>
+  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>Dies ist ein verifiziertes Abbild. Möchten Sie wirklich die Abbildgröße anpassen?</value>
   </data>
@@ -959,6 +965,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Konsolenausgabe</value>
   </data>
+  <data name="Label_Continue" xml:space="preserve">
+    <value>&amp;Fortsetzen</value>
+  </data>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Nach Fehler fortsetzen</value>
   </data>
@@ -1325,6 +1334,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Sprungbefehl</value>
   </data>
+  <data name="Label_Keep" xml:space="preserve">
+    <value>&amp;Behalten</value>
+  </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Daten behalten</value>
   </data>
@@ -1489,6 +1501,9 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_Passes" xml:space="preserve">
     <value>Durchläufe</value>
+  </data>
+  <data name="Label_Pause" xml:space="preserve">
+    <value>Anhalten</value>
   </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Bitte auswählen</value>

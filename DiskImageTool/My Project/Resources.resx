@@ -423,6 +423,12 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>Are you sure you wish to abort?</value>
   </data>
+  <data name="Dialog_AbortRead" xml:space="preserve">
+    <value>Would you like to keep or discard your progress?</value>
+  </data>
+  <data name="Dialog_AbortReadTitle" xml:space="preserve">
+    <value>Abort Read Operation</value>
+  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>This is a verified image.  Are you sure you wish to adjust the image size for this image?</value>
   </data>
@@ -1205,6 +1211,9 @@ Do you wish to overwrite?</value>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Console Output</value>
   </data>
+  <data name="Label_Continue" xml:space="preserve">
+    <value>&amp;Continue</value>
+  </data>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Continue after Failure</value>
   </data>
@@ -1589,6 +1598,9 @@ Do you wish to overwrite?</value>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Jump Instruction</value>
   </data>
+  <data name="Label_Keep" xml:space="preserve">
+    <value>&amp;Keep</value>
+  </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Keep Data</value>
   </data>
@@ -1753,6 +1765,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Passes" xml:space="preserve">
     <value>Passes</value>
+  </data>
+  <data name="Label_Pause" xml:space="preserve">
+    <value>Pause</value>
   </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Please Select</value>

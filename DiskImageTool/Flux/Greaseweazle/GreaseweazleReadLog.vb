@@ -65,6 +65,14 @@ Namespace Flux.Greaseweazle
             _Reread = True
         End Sub
 
+        Public Function OpenTrack() As (HasOpen As Boolean, Cyl As Integer, Head As Integer)
+            If Not _HasOpen Then
+                Return (False, 0, 0)
+            End If
+
+            Return (True, _OpenCyl, _OpenHead)
+        End Function
+
         Public Sub CommitOpenTrack()
             If Not _HasOpen Then
                 Return
@@ -139,6 +147,10 @@ Namespace Flux.Greaseweazle
                 Next
             Next
         End Sub
+
+        Public Function SummaryLines() As IEnumerable(Of String)
+            Return FormatSectorSummaryLines(BuildGrid())
+        End Function
 
         Public Function Render() As String
             Dim sb As New StringBuilder()

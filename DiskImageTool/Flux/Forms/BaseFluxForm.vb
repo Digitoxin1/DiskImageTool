@@ -731,21 +731,32 @@ Namespace Flux
             StatusSide.Text = My.Resources.Label_Side & " " & StatusData.Side
             StatusSide.Visible = StatusData.SideVisible
 
-            If StatusData.TotalBadSectors = 1 Then
-                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSector
+            ApplySectorCounts(StatusData.TotalBadSectors, StatusData.TotalUnexpectedSectors)
+        End Sub
+
+        Protected Sub ApplySectorCounts(totalBad As UInteger, totalUnexpected As UInteger)
+            If _StatusData.HasValue Then
+                Dim StatusData = _StatusData.Value
+                StatusData.TotalBadSectors = totalBad
+                StatusData.TotalUnexpectedSectors = totalUnexpected
+                _StatusData = StatusData
+            End If
+
+            If totalBad = 1 Then
+                StatusBadSectors.Text = totalBad & " " & My.Resources.Label_BadSector
                 StatusBadSectors.Visible = True
-            ElseIf StatusData.TotalBadSectors > 1 Then
-                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSectors
+            ElseIf totalBad > 1 Then
+                StatusBadSectors.Text = totalBad & " " & My.Resources.Label_BadSectors
                 StatusBadSectors.Visible = True
             Else
                 StatusBadSectors.Visible = False
             End If
 
-            If StatusData.TotalUnexpectedSectors = 1 Then
-                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
+            If totalUnexpected = 1 Then
+                StatusUnexpected.Text = totalUnexpected & " " & My.Resources.Label_UnexpectedSector
                 StatusUnexpected.Visible = True
-            ElseIf StatusData.TotalUnexpectedSectors > 1 Then
-                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
+            ElseIf totalUnexpected > 1 Then
+                StatusUnexpected.Text = totalUnexpected & " " & My.Resources.Label_UnexpectedSectors
                 StatusUnexpected.Visible = True
             Else
                 StatusUnexpected.Visible = False

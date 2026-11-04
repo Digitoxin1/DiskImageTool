@@ -303,6 +303,12 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>¿Está seguro de que desea abortar?</value>
   </data>
+  <data name="Dialog_AbortRead" xml:space="preserve">
+    <value>¿Desea conservar o descartar el progreso?</value>
+  </data>
+  <data name="Dialog_AbortReadTitle" xml:space="preserve">
+    <value>Abortar la operación de lectura</value>
+  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>Esta es una imagen verificada. ¿Desea ajustar el tamaño de la imagen para esta imagen?</value>
   </data>
@@ -959,6 +965,9 @@ Archivo de imagen: '{1}'
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Salida de consola</value>
   </data>
+  <data name="Label_Continue" xml:space="preserve">
+    <value>Contin&amp;uar</value>
+  </data>
   <data name="Label_ContinueAfterFailure" xml:space="preserve">
     <value>Continuar después de un fallo</value>
   </data>
@@ -1325,6 +1334,9 @@ Archivo de imagen: '{1}'
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Instrucción de salto</value>
   </data>
+  <data name="Label_Keep" xml:space="preserve">
+    <value>&amp;Conservar</value>
+  </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Conservar datos</value>
   </data>
@@ -1489,6 +1501,9 @@ Archivo de imagen: '{1}'
   </data>
   <data name="Label_Passes" xml:space="preserve">
     <value>Pasadas</value>
+  </data>
+  <data name="Label_Pause" xml:space="preserve">
+    <value>Pausa</value>
   </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Seleccione, por favor</value>

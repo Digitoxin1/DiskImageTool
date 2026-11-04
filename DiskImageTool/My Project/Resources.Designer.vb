@@ -935,6 +935,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Would you like to keep or discard your progress?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_AbortRead() As String
+            Get
+                Return ResourceManager.GetString("Dialog_AbortRead", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Abort Read Operation.
+        '''</summary>
+        Friend ReadOnly Property Dialog_AbortReadTitle() As String
+            Get
+                Return ResourceManager.GetString("Dialog_AbortReadTitle", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to adjust the image size for this image?.
         '''</summary>
         Friend ReadOnly Property Dialog_AdjustImageSize() As String
@@ -3382,6 +3400,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &amp;Continue.
+        '''</summary>
+        Friend ReadOnly Property Label_Continue() As String
+            Get
+                Return ResourceManager.GetString("Label_Continue", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Continue after Failure.
         '''</summary>
         Friend ReadOnly Property Label_ContinueAfterFailure() As String
@@ -4579,6 +4606,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &amp;Keep.
+        '''</summary>
+        Friend ReadOnly Property Label_Keep() As String
+            Get
+                Return ResourceManager.GetString("Label_Keep", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Keep Data.
         '''</summary>
         Friend ReadOnly Property Label_KeepData() As String
@@ -5079,6 +5115,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Passes() As String
             Get
                 Return ResourceManager.GetString("Label_Passes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Pause.
+        '''</summary>
+        Friend ReadOnly Property Label_Pause() As String
+            Get
+                Return ResourceManager.GetString("Label_Pause", resourceCulture)
             End Get
         End Property
         

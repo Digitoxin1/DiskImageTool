@@ -10,6 +10,7 @@ Namespace Flux.Greaseweazle
 
 #Region "Form Controls"
         Private WithEvents ButtonAbort As Button
+        Private WithEvents ButtonPause As Button
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As SplitButton
         Private WithEvents ButtonImportAndClose As SplitButton
@@ -42,7 +43,16 @@ Namespace Flux.Greaseweazle
         Private _ComboImageLocationNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _TextChangeNoEvent As Boolean = False
+        Private Enum FluxReadStop
+            None
+            Keep
+            KeepAndSelect
+            Discard
+        End Enum
+
         Private _FileReprocessMode As Boolean = False
+        Private _FluxReadActive As Boolean = False
+        Private _FluxReadStop As FluxReadStop = FluxReadStop.None
         Private _LastFluxOutput As Boolean? = Nothing
         Private _LastSequenceTextBox As TextBoxBase
         Private _ImportAsNew As Boolean = True
@@ -348,11 +358,23 @@ Namespace Flux.Greaseweazle
         Private Sub ApplyProcessState(state As ConsoleProcessRunner.ProcessStateEnum)
             Dim Finished As Boolean = False
             Dim Completed As Boolean = False
+            Dim KeptPartial As Boolean = False
+            Dim StopAction = _FluxReadStop
 
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     Finished = True
-                    TrackStatus.UpdateTrackStatusAborted()
+                    KeptPartial = StopAction = FluxReadStop.Keep OrElse StopAction = FluxReadStop.KeepAndSelect
+
+                    If _FluxReadActive Then
+                        FinalizeAbortedFluxTrack()
+                    End If
+
+                    If KeptPartial Then
+                        _Status.UpdateTrackStatusType(DiskImageTool.Flux.Greaseweazle.TrackStatus.TrackStatusEnum.Success)
+                    Else
+                        TrackStatus.UpdateTrackStatusAborted()
+                    End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     Finished = True
@@ -369,22 +391,161 @@ Namespace Flux.Greaseweazle
             End Select
 
             If Finished Then
-                If Completed Then
-                    _ReadLog?.CommitOpenTrack()
+                If Completed OrElse KeptPartial Then
+                    If KeptPartial Then
+                        KeepPartialReadLog()
+                        DeleteSecondaryImage()
+                    Else
+                        _ReadLog?.CommitOpenTrack()
+                    End If
+
                     SetTitleBarText()
                 Else
                     _ReadLog?.DiscardOpenTrack()
 
-                    If Not _FileReprocessMode Then
+                    If Not _FileReprocessMode OrElse (StopAction = FluxReadStop.Discard AndAlso Not _RefineMode) Then
                         ClearOutputFile(True)
                     End If
 
                     SetTitleBarText()
                 End If
                 _FileReprocessMode = False
+                _FluxReadActive = False
+                _FluxReadStop = FluxReadStop.None
             End If
 
             RefreshFormState()
+
+            If Finished AndAlso StopAction = FluxReadStop.KeepAndSelect Then
+                SelectUndumpedTracks()
+            End If
+        End Sub
+
+        Private Sub FinalizeAbortedFluxTrack()
+            Dim Current = _Status.CurrentTrackIdentity()
+            If Not Current.HasCurrent Then
+                Return
+            End If
+
+            If FluxTrackWritten(Current.Track, Current.Side) Then
+                _Status.SetCurrentTrackStatusComplete(_OutputLayout.DisplayDoubleStep)
+                Return
+            End If
+
+            Dim Abandoned = _Status.AbandonCurrentTrack(_OutputLayout.DisplayDoubleStep)
+            If Not Abandoned.HasCurrent Then
+                Return
+            End If
+
+            Dim Grid As FloppyTrackGrid = Nothing
+            If Abandoned.Side = 0 Then
+                Grid = TableSide0
+            ElseIf Abandoned.Side = 1 Then
+                Grid = TableSide1
+            End If
+
+            If Grid IsNot Nothing AndAlso Abandoned.DisplayTrack >= 0 AndAlso Abandoned.DisplayTrack < Grid.TrackCount Then
+                Grid.ResetCell(Abandoned.DisplayTrack)
+            End If
+
+            ApplySectorCounts(_Status.TotalBadSectors, _Status.TotalUnexpectedSectors)
+        End Sub
+
+        Private Function FluxTrackWritten(cyl As Integer, head As Integer) As Boolean
+            If String.IsNullOrEmpty(_TempFilePath) Then
+                Return False
+            End If
+
+            Dim Folder = IO.Path.GetDirectoryName(_TempFilePath)
+            If String.IsNullOrEmpty(Folder) Then
+                Return False
+            End If
+
+            Dim Name = ReadDiskHelpers.FluxGetTrackFileName(FluxGetPrefix(), cyl, head)
+            Return IO.File.Exists(IO.Path.Combine(Folder, Name))
+        End Function
+
+        Private Function DisplayTrackCylinder(DisplayTrack As Integer) As Integer
+            If _OutputLayout.PhysicalEvenFiles Then
+                Return DisplayTrack * 2
+            End If
+
+            Return DisplayTrack
+        End Function
+
+        Private Function AllFluxTracksWritten() As Boolean
+            If Not SideTracksWritten(TableSide0, 0) Then
+                Return False
+            End If
+
+            Return TableSide1 Is Nothing OrElse TableSide1.Disabled OrElse SideTracksWritten(TableSide1, 1)
+        End Function
+
+        Private Function SideTracksWritten(Grid As FloppyTrackGrid, Head As Integer) As Boolean
+            If Grid Is Nothing Then
+                Return False
+            End If
+
+            For Track = 0 To Grid.ActiveTrackCount - 1
+                If Not FluxTrackWritten(DisplayTrackCylinder(Track), Head) Then
+                    Return False
+                End If
+            Next
+
+            Return True
+        End Function
+
+        Private Sub SelectUndumpedTracks()
+            Dim SelectSide0 = TableSide0 IsNot Nothing AndAlso Not TableSide0.Disabled
+            Dim SelectSide1 = TableSide1 IsNot Nothing AndAlso Not TableSide1.Disabled
+
+            ' Keep the footer boxes from copying the other side's selection while cells are chosen.
+            If SelectSide0 Then
+                TableSide0.SetCheckStateSilent(True)
+            End If
+            If SelectSide1 Then
+                TableSide1.SetCheckStateSilent(True)
+            End If
+
+            If SelectSide0 Then
+                Dim ResumePending = SelectSide1
+                For Track = 0 To TableSide0.ActiveTrackCount - 1
+                    Dim Cyl = DisplayTrackCylinder(Track)
+                    Dim SelectCell = Not FluxTrackWritten(Cyl, 0)
+                    If ResumePending AndAlso Not SelectCell AndAlso Track < TableSide1.ActiveTrackCount AndAlso Not FluxTrackWritten(Cyl, 1) Then
+                        SelectCell = True
+                        ResumePending = False
+                    End If
+                    TableSide0.SetCellSelected(Track, SelectCell, True)
+                Next
+                If TableSide0.SelectedTracks.Count = 0 Then
+                    TableSide0.SetCheckStateSilent(False)
+                End If
+            End If
+
+            If SelectSide1 Then
+                For Track = 0 To TableSide1.ActiveTrackCount - 1
+                    TableSide1.SetCellSelected(Track, Not FluxTrackWritten(DisplayTrackCylinder(Track), 1), True)
+                Next
+                If TableSide1.SelectedTracks.Count = 0 Then
+                    TableSide1.SetCheckStateSilent(False)
+                End If
+            End If
+
+            RefreshProcessButtonState()
+        End Sub
+
+        Private Sub KeepPartialReadLog()
+            If _ReadLog Is Nothing Then
+                Return
+            End If
+
+            Dim OpenTrack = _ReadLog.OpenTrack()
+            If OpenTrack.HasOpen AndAlso FluxTrackWritten(OpenTrack.Cyl, OpenTrack.Head) Then
+                _ReadLog.CommitOpenTrack()
+            Else
+                _ReadLog.DiscardOpenTrack()
+            End If
         End Sub
 
         Private Sub CacheFilenameTemplate()
@@ -795,8 +956,27 @@ Namespace Flux.Greaseweazle
             Return True
         End Function
 
+        Private Function TrySaveFluxImage(ByRef ImagePath As String) As Boolean
+            ImagePath = ""
+
+            If Not SaveFluxOutputs(ImagePath) Then
+                Return False
+            End If
+
+            If Not SecondaryOutputSelected() OrElse SelectedImportMode() <> ConversionMode.Import OrElse String.IsNullOrEmpty(ImagePath) Then
+                ImagePath = ""
+            End If
+
+            Return True
+        End Function
+
         Private Function EnsureSecondaryImage() As Boolean
             If Not SecondaryOutputSelected() Then
+                DeleteSecondaryImage()
+                Return True
+            End If
+
+            If Not AllFluxTracksWritten() Then
                 DeleteSecondaryImage()
                 Return True
             End If
@@ -1759,6 +1939,7 @@ Namespace Flux.Greaseweazle
             End If
 
             RefreshImportButtonState()
+            RefreshImportButtonItems(IsFluxOutput)
 
             ToggleRootFolderControls()
 
@@ -1768,7 +1949,8 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshImportButtonItems(IsFluxOutput As Boolean)
-            Dim SingleStateMode As Boolean = IsFluxOutput AndAlso Not SecondaryOutputSelected()
+            Dim IncompleteDump = IsIdle AndAlso HasOutputFile AndAlso Not AllFluxTracksWritten()
+            Dim SingleStateMode As Boolean = IsFluxOutput AndAlso (Not SecondaryOutputSelected() OrElse IncompleteDump)
             Dim Mode = App.UserState.Flux.Convert.ConversionMode
 
             Dim NewState As (Boolean, ConversionMode) = (SingleStateMode, Mode)
@@ -1862,6 +2044,7 @@ Namespace Flux.Greaseweazle
             ButtonAbort.Parent.SuspendLayout()
 
             ButtonAbort.Visible = IsRunning
+            ButtonPause.Visible = ButtonAbort.Visible AndAlso _FluxReadActive AndAlso Not _RefineMode
 
             ButtonPreview.Enabled = Not Busy AndAlso IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
             ButtonPreview.Visible = Not IsRunning
@@ -2146,6 +2329,7 @@ Namespace Flux.Greaseweazle
                 Return False
             End Try
 
+            _FluxReadActive = IsFluxOutput
             Runner.RunAsync(Sub(Token) ReadCmd.Run(Opts, Token))
 
             Return True
@@ -2299,13 +2483,13 @@ Namespace Flux.Greaseweazle
             End If
 
             If IsFluxOutput Then
-                Dim SavedImagePath As String = ""
-                If Not SaveFluxOutputs(SavedImagePath) Then
+                Dim ImagePath As String = ""
+                If Not TrySaveFluxImage(ImagePath) Then
                     Exit Sub
                 End If
 
-                If SecondaryOutputSelected() AndAlso SelectedImportMode() = ConversionMode.Import AndAlso Not String.IsNullOrEmpty(SavedImagePath) Then
-                    ProcessImport(SavedImagePath, IO.Path.GetFileName(SavedImagePath), NewImage:=False)
+                If ImagePath <> "" Then
+                    ProcessImport(ImagePath, IO.Path.GetFileName(ImagePath), NewImage:=False)
                 Else
                     ClearProcessedImage(False, True)
                 End If
@@ -2347,13 +2531,13 @@ Namespace Flux.Greaseweazle
             End If
 
             If IsFluxOutput Then
-                Dim SavedImagePath As String = ""
-                If Not SaveFluxOutputs(SavedImagePath) Then
+                Dim ImagePath As String = ""
+                If Not TrySaveFluxImage(ImagePath) Then
                     Exit Sub
                 End If
 
-                If SecondaryOutputSelected() AndAlso SelectedImportMode() = ConversionMode.Import AndAlso Not String.IsNullOrEmpty(SavedImagePath) Then
-                    CloseForm(SavedImagePath, IO.Path.GetFileName(SavedImagePath), NewImage:=False)
+                If ImagePath <> "" Then
+                    CloseForm(ImagePath, IO.Path.GetFileName(ImagePath), NewImage:=False)
                 Else
                     CloseForm("", "")
                 End If
@@ -2377,12 +2561,43 @@ Namespace Flux.Greaseweazle
             StartDebounceTimer()
         End Sub
 
+        Private Function CanStopFluxRead() As Boolean
+            Return _FluxReadActive AndAlso Not _RefineMode AndAlso Runner IsNot Nothing AndAlso Runner.IsRunning
+        End Function
+
+        Private Sub StopFluxRead(Action As FluxReadStop)
+            _FluxReadStop = Action
+            Runner.Cancel()
+        End Sub
+
         Private Sub ButtonAbort_Click(sender As Object, e As EventArgs) Handles ButtonAbort.Click
             If CheckDebounce Then
                 Exit Sub
             End If
 
-            CancelIfRunning()
+            If CanStopFluxRead() Then
+                Dim Choice = AbortReadForm.Display(Me, My.Resources.Dialog_AbortRead)
+
+                If Choice = AbortReadResult.Discard Then
+                    StopFluxRead(FluxReadStop.Discard)
+                ElseIf Choice = AbortReadResult.Keep Then
+                    StopFluxRead(FluxReadStop.Keep)
+                End If
+            Else
+                CancelIfRunning()
+            End If
+
+            StartDebounceTimer()
+        End Sub
+
+        Private Sub ButtonPause_Click(sender As Object, e As EventArgs) Handles ButtonPause.Click
+            If CheckDebounce Then
+                Exit Sub
+            End If
+
+            If CanStopFluxRead() Then
+                StopFluxRead(FluxReadStop.KeepAndSelect)
+            End If
 
             StartDebounceTimer()
         End Sub
@@ -2683,11 +2898,14 @@ Namespace Flux.Greaseweazle
             Next
         End Sub
         Private Sub ReadCmd_SummaryReady(sender As Object, e As SectorSummaryReadyEventArgs) Handles ReadCmd.SummaryReady
-            For Each Line In FormatSectorSummaryLines(e.Grid)
-                Runner.EmitOutputLine(Line)
-            Next
-
             _ReadLog?.MergeSummary(e.Grid)
+
+            If Not e.IsPartial Then
+                Dim Lines = If(_ReadLog Is Nothing, FormatSectorSummaryLines(e.Grid), _ReadLog.SummaryLines())
+                For Each Line In Lines
+                    Runner.EmitOutputLine(Line)
+                Next
+            End If
 
             Runner.PostToUi(Sub() _Status.OnSummary(e.Grid))
         End Sub
