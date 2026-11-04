@@ -1617,16 +1617,7 @@ Namespace Flux.Greaseweazle
                 End If
 
                 Dim Response = ConvertFirstTrack(_TempFilePath, True, DiskParams.Value)
-
-                RefreshProcessButtonState()
-
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                Else
-                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption)
-                End If
-
-                DeleteTempFileIfExists(Response.FileName)
+                ShowFirstTrackPreview(Response.Result, Response.FileName, DiskParams.Value, Caption)
 
             Else
                 RefreshProcessButtonState(True)
@@ -1642,17 +1633,20 @@ Namespace Flux.Greaseweazle
                 End If
 
                 Dim Response = ReadFirstTrack(_SelectedDriveOption.Id, True, DiskParams.Value)
-
-                RefreshProcessButtonState()
-
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                Else
-                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption)
-                End If
-
-                DeleteTempFileIfExists(Response.FileName)
+                ShowFirstTrackPreview(Response.Result, Response.FileName, DiskParams.Value, Caption)
             End If
+        End Sub
+
+        Private Sub ShowFirstTrackPreview(Result As Boolean, FileName As String, DiskParams As FloppyDiskParams, Caption As String)
+            RefreshProcessButtonState()
+
+            If Not Result Then
+                MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+            Else
+                ImagePreview.Display(FileName, DiskParams, Caption)
+            End If
+
+            DeleteTempFileIfExists(FileName)
         End Sub
 
         Private Function ProcessImage() As Boolean
@@ -2090,9 +2084,20 @@ Namespace Flux.Greaseweazle
         Private Sub RefreshTrackState(PrevDoubleStep As Boolean)
             If PrevDoubleStep <> _OutputLayout.DisplayDoubleStep Then
                 ResetTrackGrid(False)
-                'Dim State = GetState(PrevDoubleStep)
-                'SetState(State, Doublestep)
             End If
+        End Sub
+
+        Private Sub RefreshLayoutAfterChange()
+            If Not HasOutputFile Then
+                ResetTrackGrid()
+            Else
+                Dim PrevDoubleStep = _OutputLayout.DisplayDoubleStep
+                SyncOutputLayout()
+                RefreshTrackState(PrevDoubleStep)
+            End If
+
+            RefreshFormState()
+            RefreshWarningLabel()
         End Sub
 
         Private Sub RefreshWarningLabel()
@@ -2733,17 +2738,7 @@ Namespace Flux.Greaseweazle
             End If
 
             PopulateImageFormats()
-
-            If Not HasOutputFile Then
-                ResetTrackGrid()
-            Else
-                Dim PrevDoubleStep = _OutputLayout.DisplayDoubleStep
-                SyncOutputLayout()
-                RefreshTrackState(PrevDoubleStep)
-            End If
-
-            RefreshFormState()
-            RefreshWarningLabel()
+            RefreshLayoutAfterChange()
 
             SelectedDeviceState.DriveId = _SelectedDriveOption.Id
         End Sub
@@ -2757,8 +2752,6 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim PrevDoubleStep = _OutputLayout.DisplayDoubleStep
-
             If Not String.IsNullOrEmpty(_SelectedDriveOption?.Id) Then
                 _SelectedDriveOption.SelectedFormat = SelectedDiskFormat
             End If
@@ -2768,16 +2761,7 @@ Namespace Flux.Greaseweazle
             End If
 
             ResetOutputTypes2()
-
-            If Not HasOutputFile Then
-                ResetTrackGrid()
-            Else
-                SyncOutputLayout()
-                RefreshTrackState(PrevDoubleStep)
-            End If
-
-            RefreshFormState()
-            RefreshWarningLabel()
+            RefreshLayoutAfterChange()
         End Sub
 
         Private Sub ComboImageLocation_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -2807,7 +2791,6 @@ Namespace Flux.Greaseweazle
             PopulateFileExtensions(_PanelOutput.ComboBoxPrimaryExtension, SelectedOutputType)
             RefreshFormState()
             RefreshRevs()
-            RefreshImportButtonItems(IsFluxOutput)
 
             SelectedDeviceState.OutputType = SelectedOutputType
             UpdateCommandLine()
@@ -2827,7 +2810,6 @@ Namespace Flux.Greaseweazle
             SelectedDeviceState.OutputType2 = SelectedOutputType2
 
             RefreshFormState()
-            RefreshImportButtonItems(IsFluxOutput)
         End Sub
 
         Private Sub ConvertCmd_HardSectorsApplied(sender As Object, e As ConvertHardSectorsEventArgs) Handles ConvertCmd.HardSectorsApplied
