@@ -53,6 +53,7 @@ Namespace Flux.Greaseweazle
         Private _FileReprocessMode As Boolean = False
         Private _FluxReadActive As Boolean = False
         Private _FluxReadStop As FluxReadStop = FluxReadStop.None
+        Private _ClearSelectionOnComplete As Boolean = False
         Private _LastFluxOutput As Boolean? = Nothing
         Private _LastSequenceTextBox As TextBoxBase
         Private _ImportAsNew As Boolean = True
@@ -393,10 +394,15 @@ Namespace Flux.Greaseweazle
             If Finished Then
                 If Completed OrElse KeptPartial Then
                     If KeptPartial Then
+                        _ClearSelectionOnComplete = True
                         KeepPartialReadLog()
                         DeleteSecondaryImage()
                     Else
                         _ReadLog?.CommitOpenTrack()
+                        If _ClearSelectionOnComplete Then
+                            ClearTrackSelection()
+                            _ClearSelectionOnComplete = False
+                        End If
                     End If
 
                     SetTitleBarText()
@@ -533,6 +539,23 @@ Namespace Flux.Greaseweazle
             End If
 
             RefreshProcessButtonState()
+        End Sub
+
+        Private Sub ClearTrackSelection()
+            ClearSideSelection(TableSide0)
+            ClearSideSelection(TableSide1)
+        End Sub
+
+        Private Sub ClearSideSelection(Grid As FloppyTrackGrid)
+            If Grid Is Nothing Then
+                Return
+            End If
+
+            For Each Track In Grid.SelectedTracks.ToList()
+                Grid.SetCellSelected(Track, False, True)
+            Next
+
+            Grid.SetCheckStateSilent(False)
         End Sub
 
         Private Sub KeepPartialReadLog()
@@ -692,6 +715,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub ClearOutputFile(Delete As Boolean)
+            _ClearSelectionOnComplete = False
             If Not HasOutputFile Then
                 Exit Sub
             End If
