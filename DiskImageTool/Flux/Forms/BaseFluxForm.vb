@@ -367,8 +367,6 @@ Namespace Flux
                 .WrapContents = False
             }
 
-            Dim margin = GetTableMargin()
-
             TableContainer.Controls.Add(TS0)
             TableContainer.Controls.Add(TS1)
 
@@ -412,7 +410,7 @@ Namespace Flux
         End Sub
 
         Private Function GetTableMargin() As Integer
-            Dim growthFactor As Double = 0.075
+            Dim growthFactor As Single = 0.075
 
             If MinimumSize.Width = 0 Then
                 Return TABLE_MARGIN
