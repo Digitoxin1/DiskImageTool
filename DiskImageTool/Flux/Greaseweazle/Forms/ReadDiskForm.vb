@@ -1426,6 +1426,28 @@ Namespace Flux.Greaseweazle
 
                 ImagePreview.Display(ImageData, Caption)
 
+            ElseIf HasOutputFile AndAlso IsFluxOutput Then
+                RefreshProcessButtonState(True)
+
+                Dim DiskParams = SelectedDiskParams
+                If Not DiskParams.HasValue Then
+                    RefreshProcessButtonState()
+                    MsgBox(My.Resources.Dialog_DetectFormatError, MsgBoxStyle.Exclamation)
+                    Exit Sub
+                End If
+
+                Dim Response = ConvertFirstTrack(_TempFilePath, True, DiskParams.Value)
+
+                RefreshProcessButtonState()
+
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                Else
+                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption)
+                End If
+
+                DeleteTempFileIfExists(Response.FileName)
+
             Else
                 RefreshProcessButtonState(True)
 
