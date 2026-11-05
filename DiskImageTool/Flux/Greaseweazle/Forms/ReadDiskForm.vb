@@ -1818,7 +1818,7 @@ Namespace Flux.Greaseweazle
             ButtonAbort.Parent.SuspendLayout()
 
             ButtonAbort.Visible = IsRunning
-            ButtonPause.Visible = ButtonAbort.Visible AndAlso _FluxReadActive AndAlso Not _RefineMode
+            ButtonPause.Visible = CanStopFluxRead()
 
             ButtonPreview.Enabled = Not Busy AndAlso IsIdle AndAlso DriveSelected AndAlso (Not DiskParams.HasValue OrElse Not DiskParams.Value.IsNonImage)
             ButtonPreview.Visible = Not IsRunning
@@ -2686,7 +2686,11 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function CanStopFluxRead() As Boolean
-            Return _FluxReadActive AndAlso Not _RefineMode AndAlso Runner IsNot Nothing AndAlso Runner.IsRunning
+            Return _FluxReadActive AndAlso Not _RefineMode AndAlso Not IsFullDumpReread() AndAlso Runner IsNot Nothing AndAlso Runner.IsRunning
+        End Function
+
+        Private Function IsFullDumpReread() As Boolean
+            Return _FileReprocessMode AndAlso Not _ClearSelectionOnComplete
         End Function
 
         Private Sub CheckSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckSaveLog.CheckStateChanged
