@@ -31,13 +31,15 @@ Partial Class ReadDiskDestination
         Me.LabelFolderName = New System.Windows.Forms.Label()
         Me.TextBoxFolderName = New System.Windows.Forms.TextBox()
         Me.LabelPrefix = New System.Windows.Forms.Label()
+        Me.TextBoxPrefix = New DiskImageTool.PlaceholderTextBox()
         Me.ButtonBrowse = New System.Windows.Forms.Button()
         Me.LabelSecondaryImageFolder = New System.Windows.Forms.Label()
         Me.TextBoxImageFolder = New System.Windows.Forms.TextBox()
+        Me.ButtonFolderNameClear = New System.Windows.Forms.Button()
         Me.TableLayoutPanelDestinationImage = New System.Windows.Forms.TableLayoutPanel()
         Me.LabelFileName = New System.Windows.Forms.Label()
         Me.TextBoxFileName = New System.Windows.Forms.TextBox()
-        Me.TextBoxPrefix = New DiskImageTool.PlaceholderTextBox()
+        Me.ButtonFileNameClear = New System.Windows.Forms.Button()
         Me.GroupBoxDestination.SuspendLayout()
         Me.TableLayoutPanelDestinationFlux.SuspendLayout()
         Me.TableLayoutPanelDestinationImage.SuspendLayout()
@@ -90,6 +92,7 @@ Partial Class ReadDiskDestination
         Me.TableLayoutPanelDestinationFlux.Controls.Add(Me.ButtonBrowse, 2, 1)
         Me.TableLayoutPanelDestinationFlux.Controls.Add(Me.LabelSecondaryImageFolder, 1, 4)
         Me.TableLayoutPanelDestinationFlux.Controls.Add(Me.TextBoxImageFolder, 1, 5)
+        Me.TableLayoutPanelDestinationFlux.Controls.Add(Me.ButtonFolderNameClear, 2, 3)
         Me.TableLayoutPanelDestinationFlux.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TableLayoutPanelDestinationFlux.Location = New System.Drawing.Point(9, 19)
         Me.TableLayoutPanelDestinationFlux.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
@@ -108,10 +111,10 @@ Partial Class ReadDiskDestination
         '
         Me.ButtonImageFolderBrowse.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ButtonImageFolderBrowse.Image = Global.DiskImageTool.My.Resources.Resources.FolderOpened
-        Me.ButtonImageFolderBrowse.Location = New System.Drawing.Point(377, 97)
+        Me.ButtonImageFolderBrowse.Location = New System.Drawing.Point(377, 100)
         Me.ButtonImageFolderBrowse.Name = "ButtonImageFolderBrowse"
         Me.ButtonImageFolderBrowse.Size = New System.Drawing.Size(28, 23)
-        Me.ButtonImageFolderBrowse.TabIndex = 11
+        Me.ButtonImageFolderBrowse.TabIndex = 12
         Me.ButtonImageFolderBrowse.UseVisualStyleBackColor = True
         '
         'LabelRootFolder
@@ -149,23 +152,33 @@ Partial Class ReadDiskDestination
         '
         'TextBoxFolderName
         '
-        Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.TextBoxFolderName, 3)
+        Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.TextBoxFolderName, 2)
         Me.TextBoxFolderName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBoxFolderName.Location = New System.Drawing.Point(3, 58)
+        Me.TextBoxFolderName.Location = New System.Drawing.Point(3, 59)
+        Me.TextBoxFolderName.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
         Me.TextBoxFolderName.Name = "TextBoxFolderName"
-        Me.TextBoxFolderName.Size = New System.Drawing.Size(402, 20)
+        Me.TextBoxFolderName.Size = New System.Drawing.Size(368, 20)
         Me.TextBoxFolderName.TabIndex = 6
         '
         'LabelPrefix
         '
         Me.LabelPrefix.AutoEllipsis = True
         Me.LabelPrefix.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelPrefix.Location = New System.Drawing.Point(3, 81)
+        Me.LabelPrefix.Location = New System.Drawing.Point(3, 84)
         Me.LabelPrefix.Name = "LabelPrefix"
         Me.LabelPrefix.Size = New System.Drawing.Size(94, 13)
-        Me.LabelPrefix.TabIndex = 7
+        Me.LabelPrefix.TabIndex = 8
         Me.LabelPrefix.Text = "Prefix"
         Me.LabelPrefix.UseMnemonic = False
+        '
+        'TextBoxPrefix
+        '
+        Me.TextBoxPrefix.Location = New System.Drawing.Point(3, 101)
+        Me.TextBoxPrefix.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
+        Me.TextBoxPrefix.Name = "TextBoxPrefix"
+        Me.TextBoxPrefix.PlaceholderText = ""
+        Me.TextBoxPrefix.Size = New System.Drawing.Size(94, 20)
+        Me.TextBoxPrefix.TabIndex = 10
         '
         'ButtonBrowse
         '
@@ -182,21 +195,31 @@ Partial Class ReadDiskDestination
         Me.LabelSecondaryImageFolder.AutoEllipsis = True
         Me.TableLayoutPanelDestinationFlux.SetColumnSpan(Me.LabelSecondaryImageFolder, 2)
         Me.LabelSecondaryImageFolder.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LabelSecondaryImageFolder.Location = New System.Drawing.Point(103, 81)
+        Me.LabelSecondaryImageFolder.Location = New System.Drawing.Point(103, 84)
         Me.LabelSecondaryImageFolder.Name = "LabelSecondaryImageFolder"
         Me.LabelSecondaryImageFolder.Size = New System.Drawing.Size(302, 13)
-        Me.LabelSecondaryImageFolder.TabIndex = 8
+        Me.LabelSecondaryImageFolder.TabIndex = 9
         Me.LabelSecondaryImageFolder.Text = "Secondary Image Folder"
         Me.LabelSecondaryImageFolder.UseMnemonic = False
         '
         'TextBoxImageFolder
         '
         Me.TextBoxImageFolder.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBoxImageFolder.Location = New System.Drawing.Point(103, 98)
+        Me.TextBoxImageFolder.Location = New System.Drawing.Point(103, 101)
         Me.TextBoxImageFolder.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
         Me.TextBoxImageFolder.Name = "TextBoxImageFolder"
         Me.TextBoxImageFolder.Size = New System.Drawing.Size(268, 20)
-        Me.TextBoxImageFolder.TabIndex = 10
+        Me.TextBoxImageFolder.TabIndex = 11
+        '
+        'ButtonFolderNameClear
+        '
+        Me.ButtonFolderNameClear.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ButtonFolderNameClear.Image = Global.DiskImageTool.My.Resources.Resources.StatusErrorOutline
+        Me.ButtonFolderNameClear.Location = New System.Drawing.Point(377, 58)
+        Me.ButtonFolderNameClear.Name = "ButtonFolderNameClear"
+        Me.ButtonFolderNameClear.Size = New System.Drawing.Size(28, 23)
+        Me.ButtonFolderNameClear.TabIndex = 7
+        Me.ButtonFolderNameClear.UseVisualStyleBackColor = True
         '
         'TableLayoutPanelDestinationImage
         '
@@ -208,6 +231,7 @@ Partial Class ReadDiskDestination
         Me.TableLayoutPanelDestinationImage.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 34.0!))
         Me.TableLayoutPanelDestinationImage.Controls.Add(Me.LabelFileName, 0, 0)
         Me.TableLayoutPanelDestinationImage.Controls.Add(Me.TextBoxFileName, 0, 1)
+        Me.TableLayoutPanelDestinationImage.Controls.Add(Me.ButtonFileNameClear, 2, 1)
         Me.TableLayoutPanelDestinationImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TableLayoutPanelDestinationImage.Location = New System.Drawing.Point(9, 19)
         Me.TableLayoutPanelDestinationImage.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
@@ -234,21 +258,22 @@ Partial Class ReadDiskDestination
         '
         'TextBoxFileName
         '
-        Me.TableLayoutPanelDestinationImage.SetColumnSpan(Me.TextBoxFileName, 3)
+        Me.TableLayoutPanelDestinationImage.SetColumnSpan(Me.TextBoxFileName, 2)
         Me.TextBoxFileName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBoxFileName.Location = New System.Drawing.Point(3, 16)
+        Me.TextBoxFileName.Location = New System.Drawing.Point(3, 17)
+        Me.TextBoxFileName.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
         Me.TextBoxFileName.Name = "TextBoxFileName"
-        Me.TextBoxFileName.Size = New System.Drawing.Size(402, 20)
-        Me.TextBoxFileName.TabIndex = 6
+        Me.TextBoxFileName.Size = New System.Drawing.Size(368, 20)
+        Me.TextBoxFileName.TabIndex = 0
         '
-        'TextBoxPrefix
+        'ButtonFileNameClear
         '
-        Me.TextBoxPrefix.Location = New System.Drawing.Point(3, 98)
-        Me.TextBoxPrefix.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
-        Me.TextBoxPrefix.Name = "TextBoxPrefix"
-        Me.TextBoxPrefix.PlaceholderText = ""
-        Me.TextBoxPrefix.Size = New System.Drawing.Size(94, 20)
-        Me.TextBoxPrefix.TabIndex = 9
+        Me.ButtonFileNameClear.Image = Global.DiskImageTool.My.Resources.Resources.StatusErrorOutline
+        Me.ButtonFileNameClear.Location = New System.Drawing.Point(377, 16)
+        Me.ButtonFileNameClear.Name = "ButtonFileNameClear"
+        Me.ButtonFileNameClear.Size = New System.Drawing.Size(28, 23)
+        Me.ButtonFileNameClear.TabIndex = 1
+        Me.ButtonFileNameClear.UseVisualStyleBackColor = True
         '
         'ReadDiskDestination
         '
@@ -282,4 +307,6 @@ Partial Class ReadDiskDestination
     Friend WithEvents TableLayoutPanelDestinationImage As TableLayoutPanel
     Friend WithEvents LabelFileName As Label
     Friend WithEvents TextBoxFileName As TextBox
+    Friend WithEvents ButtonFolderNameClear As Button
+    Friend WithEvents ButtonFileNameClear As Button
 End Class

@@ -2602,6 +2602,9 @@ Do you wish to overwrite?</value>
   <data name="SelectTrack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\SelectTrack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="StatusErrorOutline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\images\StatusErrorOutline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="StepMode_Double" xml:space="preserve">
     <value>Double</value>
   </data>

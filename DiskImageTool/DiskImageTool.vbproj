@@ -963,6 +963,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\images\StatusErrorOutline.png" />
     <None Include="Resources\images\ImageProperties.png" />
     <None Include="Resources\images\FolderOpened.png" />
     <None Include="Resources\images\Fill4E.png" />

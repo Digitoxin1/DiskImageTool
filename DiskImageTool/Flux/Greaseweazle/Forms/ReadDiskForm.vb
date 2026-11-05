@@ -202,6 +202,7 @@ Namespace Flux.Greaseweazle
             End Get
             Set(value As String)
                 _PanelDestination.TextBoxFileName.Text = If(value, String.Empty).Trim
+                _PanelDestination.ButtonFileNameClear.Enabled = Not String.IsNullOrEmpty(_PanelDestination.TextBoxFileName.Text)
             End Set
         End Property
 
@@ -211,6 +212,7 @@ Namespace Flux.Greaseweazle
             End Get
             Set(value As String)
                 _PanelDestination.TextBoxFolderName.Text = If(value, String.Empty).Trim
+                _PanelDestination.ButtonFolderNameClear.Enabled = Not String.IsNullOrEmpty(_PanelDestination.TextBoxFolderName.Text)
             End Set
         End Property
 
