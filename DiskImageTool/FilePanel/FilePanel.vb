@@ -292,6 +292,10 @@ Public Class FilePanel
                     ScrollToIndex(CurrentImage.ImageData.BottomIndex)
                 End If
             End If
+        Else
+            ListViewFiles.Items.Clear()
+            ListViewFiles.Groups.Clear()
+            ListViewFiles.MultiSelect = False
         End If
 
         ListViewFiles.EndUpdate()

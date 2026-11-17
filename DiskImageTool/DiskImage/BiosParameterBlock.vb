@@ -212,7 +212,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidMediaDescriptor() As Boolean
-            Return ValidMediaDescriptor.Contains(MediaDescriptor)
+            Return ValidMediaDescriptor.Contains(MediaDescriptor) OrElse (BytesPerSector = 1024 AndAlso MediaDescriptor = &H1)
         End Function
 
         Public Function HasValidNumberOfFATs() As Boolean

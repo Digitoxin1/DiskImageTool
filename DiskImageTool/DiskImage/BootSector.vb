@@ -26,7 +26,7 @@
         End Enum
 
         Public Enum BootSectorSizes As UInteger
-            FMTownsSignature = 4
+            FujitsuSignature = 4
             JmpBoot = 3
             OEMName = 8
             DriveNumber = 1
@@ -244,24 +244,24 @@
 
         Public Function GetJmpBootOffset() As UInteger
             Dim Offset = BootSectorOffsets.JmpBoot
-            If IsFMTowns() Then
-                Offset += BootSectorSizes.FMTownsSignature
+            If IsFujitsu() Then
+                Offset += BootSectorSizes.FujitsuSignature
             End If
             Return Offset
         End Function
 
         Public Function GetOEMNameOffset() As UInteger
             Dim Offset = BootSectorOffsets.OEMName
-            If IsFMTowns() Then
-                Offset += BootSectorSizes.FMTownsSignature
+            If IsFujitsu() Then
+                Offset += BootSectorSizes.FujitsuSignature
             End If
             Return Offset
         End Function
 
         Public Function GetOEMNameSize() As UInteger
             Dim Size = BootSectorSizes.OEMName
-            If IsFMTowns() Then
-                Size -= BootSectorSizes.FMTownsSignature
+            If IsFujitsu() Then
+                Size -= BootSectorSizes.FujitsuSignature
             End If
             Return Size
         End Function
@@ -286,10 +286,10 @@
             Return ValidExtendedBootSignature.Contains(ExtendedBootSignature)
         End Function
 
-        Public Function IsFMTowns() As Boolean
-            Dim Signature = _FloppyImage.GetBytes(BootSectorOffsets.FMTownsSignature, BootSectorSizes.FMTownsSignature)
+        Public Function IsFujitsu() As Boolean
+            Dim Signature = _FloppyImage.GetBytes(BootSectorOffsets.FMTownsSignature, BootSectorSizes.FujitsuSignature)
 
-            If Signature(0) = &H49 AndAlso Signature(1) = &H50 AndAlso Signature(2) = &H4C AndAlso Signature(3) = &H34 Then
+            If Signature(0) = &H49 AndAlso Signature(1) = &H50 AndAlso Signature(2) = &H4C AndAlso Signature(3) >= &H31 AndAlso Signature(3) <= &H35 Then
                 Return True
             End If
 

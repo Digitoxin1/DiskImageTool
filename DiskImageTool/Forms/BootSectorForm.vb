@@ -261,7 +261,7 @@ Public Class BootSectorForm
         ElseIf Control Is TxtHiddenSectors Then
             Return Control.Text = "0"
         ElseIf Control Is HexJumpInstruction Then
-            Return BootSector.CheckJumpInstruction(HexJumpInstruction.GetHex, True, True)
+            Return BootSector.CheckJumpInstruction(HexJumpInstruction.GetHex, True, False)
         Else
             Return True
         End If
@@ -428,7 +428,11 @@ Public Class BootSectorForm
 
         ControlSetValue(TxtHiddenSectors, _BootSector.BPB.HiddenSectors, False)
         ControlSetValue(HexJumpInstruction, _BootSector.JmpBoot, False)
-        ControlSetValue(HexBootSectorSignature, _BootSector.BootStrapSignature.ToString("X4"), Array.ConvertAll(BootSector.ValidBootStrapSignature, Function(x) x.ToString("X4")), False)
+        If _BootSector.IsFujitsu Then
+            ControlSetValue(HexBootSectorSignature, _BootSector.BootStrapSignature.ToString("X4"), False)
+        Else
+            ControlSetValue(HexBootSectorSignature, _BootSector.BootStrapSignature.ToString("X4"), Array.ConvertAll(BootSector.ValidBootStrapSignature, Function(x) x.ToString("X4")), False)
+        End If
 
         PopulateAdditionalData(_BootSector)
 

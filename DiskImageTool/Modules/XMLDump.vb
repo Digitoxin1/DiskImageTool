@@ -314,7 +314,7 @@ Module XMLDump
             End If
 
             xw.WriteStartElement("bootstrapJmp")
-            If Not Disk.BootSector.CheckJumpInstruction(True, True) Then
+            If Not Disk.BootSector.CheckJumpInstruction(False, True) Then
                 xw.WriteAttributeString("invalid", "true")
             End If
             xw.WriteValue(BitConverter.ToString(Disk.BootSector.JmpBoot).Replace("-", ""))

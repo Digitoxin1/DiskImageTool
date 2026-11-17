@@ -32,7 +32,7 @@ Public Class TextViewForm
 
         If UseDosFont AndAlso Not IsChinese AndAlso Not UsingNSimSun Then
             CheckVgaFont.Visible = True
-            CheckVgaFont.Checked = True
+            CheckVgaFont.Checked = False
         Else
             CheckVgaFont.Visible = False
         End If

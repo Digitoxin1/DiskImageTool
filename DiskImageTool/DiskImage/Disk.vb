@@ -148,7 +148,9 @@
             If _BootSector.BPB.IsValid Then
                 'BPB = _BootSector.BPB
                 BPB = New BiosParameterBlock(_BootSector.Data)
+
                 Dim DiskFormat = FloppyDiskFormatGet(BPB.MediaDescriptor)
+
                 If DiskFormat = FloppyDiskFormat.Floppy160 Or DiskFormat = FloppyDiskFormat.Floppy180 Then
                     BPB.SectorsPerCluster = 1
                 End If

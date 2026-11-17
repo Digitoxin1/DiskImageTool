@@ -462,11 +462,13 @@ Public Class SummaryPanel
                 If Not Disk.BPB.HasValidMediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Invalid)
                     ForeColor = Color.Red
-                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
-                    'Do Nothing - This is normal for XDF
                 ElseIf Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> Disk.DiskParams.BPBParams.MediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
+                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                    'Do Nothing - This is normal for XDF
+                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyTandy2000 AndAlso Disk.FAT.MediaDescriptor = &HFD Then
+                    'Do Nothing - This is normal for Tandy 2000
                 ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
@@ -524,7 +526,7 @@ Public Class SummaryPanel
             End If
 
             If App.Globals.AppSettings.Debug Then
-                If Not Disk.BootSector.CheckJumpInstruction(True, True) Then
+                If Not Disk.BootSector.CheckJumpInstruction(False, True) Then
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
@@ -715,6 +717,8 @@ Public Class SummaryPanel
                     ForeColor = Color.Red
                     Visible = True
                 ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                    Visible = False
+                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyTandy2000 AndAlso Disk.FAT.MediaDescriptor = &HFD Then
                     Visible = False
                 ElseIf Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> Disk.DiskParams.BPBParams.MediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Mismatched)
