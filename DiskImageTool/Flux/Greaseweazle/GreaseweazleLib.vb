@@ -226,8 +226,12 @@ Namespace Flux.Greaseweazle
             sb.Append(opts.Revs.ToString(Globalization.CultureInfo.InvariantCulture))
 
             If opts.AdjustSpeed.HasValue Then
+                ' AdjustSpeed is seconds per revolution. The CLI treats a bare
+                ' number as RPM (60/N) and accepts an explicit rpm suffix.
+                Dim Rpm = 60.0 / opts.AdjustSpeed.Value
                 sb.Append(" --adjust-speed ")
-                sb.Append(opts.AdjustSpeed.Value.ToString(Globalization.CultureInfo.InvariantCulture))
+                sb.Append(Rpm.ToString("0.##", Globalization.CultureInfo.InvariantCulture))
+                sb.Append("rpm")
             End If
 
             sb.Append(" --retries ")
