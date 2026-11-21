@@ -33,17 +33,16 @@ Namespace Flux.Greaseweazle
             Dim FileNameWithOpts As String = filePath
             Dim FileName2WithOpts As String = ""
 
-            If outputType = ReadDiskOutputTypes.HFE Then
-                If HardwareStep Then
-                    AdjustSpeed = 60.0 / diskParams.RPM
-                End If
+            If outputType = ReadDiskOutputTypes.IMA Then
+                AdjustSpeed = GetAdjustSpeed(diskParams, False)
+
+            ElseIf outputType = ReadDiskOutputTypes.HFE Then
+                AdjustSpeed = GetAdjustSpeed(diskParams, HardwareStep)
                 Raw = True
                 FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
-                If HardwareStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
-                    AdjustSpeed = 60.0 / diskParams.RPM
-                End If
+                AdjustSpeed = GetAdjustSpeed(diskParams, HardwareStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown)
                 Raw = True
 
                 If Not String.IsNullOrEmpty(filePath2) AndAlso outputType2 <> ReadDiskOutputTypes.None Then
@@ -110,7 +109,12 @@ Namespace Flux.Greaseweazle
                 TrackSet.Step = 2
             End If
 
-            Return New ConvertOptions With {.InputFile = inputFilePath, .Format = Format, .TrackSet = TrackSet}
+            Return New ConvertOptions With {
+                .InputFile = inputFilePath,
+                .Format = Format,
+                .TrackSet = TrackSet,
+                .AdjustSpeed = GetAdjustSpeed(diskParams, doubleStep)
+            }
         End Function
 
         Friend Shared Function CheckRawFolderExists(FilePath As String) As (Result As Boolean, Overwritemode As Boolean)
@@ -303,10 +307,18 @@ Namespace Flux.Greaseweazle
             Return TextWidth + Control.Padding.Horizontal + Control.Margin.Horizontal + ExtraPadding
         End Function
 
+        Friend Shared Function GetAdjustSpeed(diskParams As FloppyDiskParams, apply As Boolean) As Double?
+            If diskParams.Format = FloppyDiskFormat.FloppyTandy2000 OrElse apply Then
+                Return 60.0 / diskParams.RPM
+            End If
+
+            Return Nothing
+        End Function
+
         Friend Shared Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean
             Dim ImageParams As FloppyDiskParams = FloppyDiskFormatGetParams(Format)
 
-            Return ImageParams.IsStandard AndAlso ImageParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DriveType = FloppyDriveType.Drive525HighDensity
+            Return ImageParams.IsStandard AndAlso ImageParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso ImageParams.BPBParams.TrackCount <= 40 AndAlso DriveType = FloppyDriveType.Drive525HighDensity
         End Function
     End Class
 

@@ -463,7 +463,7 @@
         Public Function FloppyDiskFormatIsStandard(DiskFormat As FloppyDiskFormat) As Boolean
             Select Case DiskFormat
                 Case FloppyDiskFormat.Floppy2HD, FloppyDiskFormat.FloppyXDF35, FloppyDiskFormat.FloppyXDF525, FloppyDiskFormat.FloppyXDFMicro,
-                             FloppyDiskFormat.FloppyTandy2000, FloppyDiskFormat.FloppyNoBPB, FloppyDiskFormat.FloppyUnknown
+                             FloppyDiskFormat.FloppyNoBPB, FloppyDiskFormat.FloppyUnknown
 
                     Return False
                 Case Else
@@ -672,11 +672,6 @@
 
             Public ReadOnly Property BitRateKbps As UShort
                 Get
-                    Select Case Format
-                        Case FloppyDiskFormat.FloppyTandy2000
-                            Return 500
-                    End Select
-
                     Select Case DriveType
                         Case FloppyDriveType.Drive525DoubleDensity, FloppyDriveType.Drive35DoubleDensity
                             Return 250
@@ -819,7 +814,7 @@
             Public ReadOnly Property RPM As UShort
                 Get
                     Select Case Format
-                        Case FloppyDiskFormat.FloppyTandy2000, FloppyDiskFormat.Floppy2HD
+                        Case FloppyDiskFormat.Floppy2HD
                             Return 360
                     End Select
 

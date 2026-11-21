@@ -506,7 +506,7 @@ Namespace Flux
                     item.Detected = False
                 End If
 
-                If Doublestep AndAlso item.IsStandard AndAlso item.DriveType = FloppyDriveType.Drive525DoubleDensity Then
+                If Doublestep AndAlso item.IsStandard AndAlso item.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso item.BPBParams.TrackCount <= 40 Then
                     item.Doublestep = True
                 Else
                     item.Doublestep = False

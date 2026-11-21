@@ -535,11 +535,10 @@ Namespace Flux.Greaseweazle
 
             If outputType = ReadDiskOutputTypes.HFE Then
                 OutputFileWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
-                If doubleStep Then
-                    AdjustSpeed = 60.0 / diskParams.RPM
-                End If
+                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, doubleStep)
             Else
                 Format = diskParams.Format.GetImageFormat().GetKey()
+                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, False)
             End If
 
             Dim TrackSet As New TrackSetSpec

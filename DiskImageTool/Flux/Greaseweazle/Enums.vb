@@ -102,7 +102,7 @@ Namespace Flux.Greaseweazle
                     Return GreaseweazleImageFormat.IBM_320
                 Case FloppyDiskFormat.Floppy360
                     Return GreaseweazleImageFormat.IBM_360
-                Case FloppyDiskFormat.Floppy720
+                Case FloppyDiskFormat.Floppy720, FloppyDiskFormat.FloppyTandy2000
                     Return GreaseweazleImageFormat.IBM_720
                 Case FloppyDiskFormat.Floppy1200
                     Return GreaseweazleImageFormat.IBM_1200

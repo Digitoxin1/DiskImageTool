@@ -186,7 +186,7 @@ Namespace Flux
                                                      outputType As FluxFileTypeEnum,
                                                      doubleStep As Boolean) As ConvertOptions
 
-            If Not diskParams.IsStandard And outputType = FluxFileTypeEnum.SectorImage Then
+            If Not diskParams.IsStandard AndAlso outputType = FluxFileTypeEnum.SectorImage Then
                 outputType = FluxFileTypeEnum.HFE
             End If
 
@@ -196,12 +196,11 @@ Namespace Flux
 
             If outputType = FluxFileTypeEnum.HFE Then
                 BitRateKbps = CInt(diskParams.BitRateKbps)
-                If doubleStep Then
-                    AdjustSpeed = 60.0 / diskParams.RPM
-                End If
+                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, doubleStep)
 
             ElseIf outputType = FluxFileTypeEnum.SectorImage Then
                 Format = diskParams.Format.GetImageFormat().GetKey()
+                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, False)
             End If
 
             Dim OutputFileWithOpts As String = outputFilePath
@@ -1124,7 +1123,7 @@ Namespace Flux
             Dim DiskParams = SelectedDiskParams()
 
             If DiskParams.HasValue Then
-                Is525DDStandard = DiskParams.Value.IsStandard AndAlso DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity
+                Is525DDStandard = DiskParams.Value.IsStandard AndAlso DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DiskParams.Value.BPBParams.TrackCount <= 40
                 IsNonImage = DiskParams.Value.IsNonImage
             End If
 
