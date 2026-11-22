@@ -337,11 +337,21 @@
                 StrDup(30, ChrW(&H2014))
             }
 
-            ' Standard 5.25"
+            ' Standard 5.25" SD
             result.AddRange(
                 DiskParamsArray.
-                    Where(Function(p) p.IsStandard AndAlso p.Is525).
+                    Where(Function(p) p.IsStandard AndAlso p.Is525 AndAlso Not p.Is525HD).
                     OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    Cast(Of Object)
+            )
+
+            result.Add(StrDup(30, ChrW(&H2014)))
+
+            ' Standard 5.25" HD
+            result.AddRange(
+                DiskParamsArray.
+                    Where(Function(p) p.IsStandard AndAlso p.Is525 AndAlso p.Is525HD).
+                    OrderBy(Function(p) p.Format).
                     Cast(Of Object)
             )
 
@@ -780,6 +790,17 @@
                 Get
                     Select Case DriveType
                         Case FloppyDriveType.Drive525DoubleDensity, FloppyDriveType.Drive525HighDensity
+                            Return True
+                        Case Else
+                            Return False
+                    End Select
+                End Get
+            End Property
+
+            Public ReadOnly Property Is525HD As Boolean
+                Get
+                    Select Case Format
+                        Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyTandy2000
                             Return True
                         Case Else
                             Return False
