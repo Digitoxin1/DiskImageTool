@@ -46,6 +46,8 @@
                 .LabelDrive.Text = My.Resources.Label_Drive
                 .ButtonDetect.Text = My.Resources.Label_Detect
                 .LabelImageFormat.Text = My.Resources.Label_DiskFormat
+                .CheckBoxAdjustSpeed.Text = My.Resources.Label_AdjustSpeed
+                .CheckBoxAdjustSpeed.Visible = False
 
                 .LabelRevs.Text = My.Resources.Label_Revs
                 .NumericRevs.Minimum = MIN_REVS
@@ -105,6 +107,7 @@
                 AddHandler .NumericRevs.ValueChanged, AddressOf NumericRevs_ValueChanged
                 AddHandler .NumericRetries.ValueChanged, AddressOf NumericRetries_ValueChanged
                 AddHandler .NumericSeekRetries.ValueChanged, AddressOf NumericRetries_ValueChanged
+                AddHandler .CheckBoxAdjustSpeed.CheckedChanged, AddressOf CheckBoxAdjustSpeed_CheckedChanged
             End With
 
             With _PanelOutput

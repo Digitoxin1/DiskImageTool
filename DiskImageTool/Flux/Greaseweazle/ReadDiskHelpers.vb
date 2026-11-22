@@ -11,6 +11,7 @@ Namespace Flux.Greaseweazle
                                           diskParams As FloppyDiskParams,
                                           outputType As ReadDiskOutputTypes,
                                           doubleStep As Boolean,
+                                          allowSpeedAdjustment As Boolean,
                                           trackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)),
                                           heads As TrackHeads?,
                                           retries As Integer,
@@ -34,12 +35,16 @@ Namespace Flux.Greaseweazle
             Dim FileName2WithOpts As String = ""
 
             If outputType = ReadDiskOutputTypes.HFE Then
-                AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
+                If allowSpeedAdjustment Then
+                    AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
+                End If
                 Raw = True
                 FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
-                AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
+                If allowSpeedAdjustment Then
+                    AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
+                End If
                 Raw = True
 
                 If Not String.IsNullOrEmpty(filePath2) AndAlso outputType2 <> ReadDiskOutputTypes.None Then
@@ -97,7 +102,7 @@ Namespace Flux.Greaseweazle
             Return Opts
         End Function
 
-        Friend Shared Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, driveType As FloppyDriveType, doubleStep As Boolean) As ConvertOptions
+        Friend Shared Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, driveType As FloppyDriveType, doubleStep As Boolean, allowSpeedAdjustment As Boolean) As ConvertOptions
             Dim Format = diskParams.Format.GetImageFormat().GetKey()
 
             Dim TrackSet As New TrackSetSpec
@@ -110,7 +115,7 @@ Namespace Flux.Greaseweazle
                 .InputFile = inputFilePath,
                 .Format = Format,
                 .TrackSet = TrackSet,
-                .AdjustSpeed = GetReadAdjustSpeed(diskParams, driveType)
+                .AdjustSpeed = If(allowSpeedAdjustment, GetReadAdjustSpeed(diskParams, driveType), Nothing)
             }
         End Function
 
@@ -304,12 +309,16 @@ Namespace Flux.Greaseweazle
             Return TextWidth + Control.Padding.Horizontal + Control.Margin.Horizontal + ExtraPadding
         End Function
 
-        Friend Shared Function GetReadAdjustSpeed(diskParams As FloppyDiskParams, driveType As FloppyDriveType) As Double?
+        Friend Shared Function SpeedAdjustAvailable(diskParams As FloppyDiskParams, driveType As FloppyDriveType) As Boolean
             If driveType = FloppyDriveType.DriveUnknown OrElse diskParams.IsNonImage OrElse diskParams.RPM = 0 Then
-                Return Nothing
+                Return False
             End If
 
-            If FloppyDriveGetRPM(driveType) = diskParams.RPM Then
+            Return FloppyDriveGetRPM(driveType) <> diskParams.RPM
+        End Function
+
+        Friend Shared Function GetReadAdjustSpeed(diskParams As FloppyDiskParams, driveType As FloppyDriveType) As Double?
+            If Not SpeedAdjustAvailable(diskParams, driveType) Then
                 Return Nothing
             End If
 

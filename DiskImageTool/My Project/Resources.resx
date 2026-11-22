@@ -1072,6 +1072,9 @@ Do you wish to overwrite?</value>
   <data name="Label_AdditionalHeader" xml:space="preserve">
     <value>Additional Header</value>
   </data>
+  <data name="Label_AdjustSpeed" xml:space="preserve">
+    <value>Adjust Speed</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>All Tracks</value>
   </data>

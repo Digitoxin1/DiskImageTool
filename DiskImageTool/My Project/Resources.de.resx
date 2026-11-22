@@ -830,6 +830,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_AdditionalHeader" xml:space="preserve">
     <value>Zusätzlicher Header</value>
   </data>
+  <data name="Label_AdjustSpeed" xml:space="preserve">
+    <value>Drehzahl anpassen</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Alle Spuren</value>
   </data>

@@ -830,6 +830,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_AdditionalHeader" xml:space="preserve">
     <value>En-tête supplémentaire</value>
   </data>
+  <data name="Label_AdjustSpeed" xml:space="preserve">
+    <value>Ajuster la vitesse</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Toutes les pistes</value>
   </data>

@@ -140,6 +140,7 @@ Namespace Flux.Greaseweazle
             EnableRawDrop()
 
             PanelCommandLine.Visible = True
+            RefreshDriveParams()
             _Initialized = True
             UpdateCommandLine()
         End Sub
@@ -457,6 +458,7 @@ Namespace Flux.Greaseweazle
             Dim PhysicalEven As Boolean
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As TrackHeads? = Nothing
+            Dim AllowSpeedAdjustment = _PanelDriveParams.CheckBoxAdjustSpeed.Checked
 
             If HasOutputFile Then
                 DoubleStep = _OutputLayout.HardwareDoubleStep
@@ -477,6 +479,7 @@ Namespace Flux.Greaseweazle
                                                             DiskParams.Value,
                                                             SelectedOutputType,
                                                             DoubleStep,
+                                                            AllowSpeedAdjustment,
                                                             TrackRanges,
                                                             Heads,
                                                             CInt(_PanelDriveParams.NumericRetries.Value),
@@ -527,7 +530,8 @@ Namespace Flux.Greaseweazle
                                                       outputFilePath As String,
                                                       diskParams As FloppyDiskParams,
                                                       outputType As ReadDiskOutputTypes,
-                                                      doubleStep As Boolean) As ConvertOptions
+                                                      doubleStep As Boolean,
+                                                      allowSpeedAdjustment As Boolean) As ConvertOptions
 
             Dim Format As String = Nothing
             Dim AdjustSpeed As Double? = Nothing
@@ -536,7 +540,9 @@ Namespace Flux.Greaseweazle
             If outputType = ReadDiskOutputTypes.HFE Then
                 OutputFileWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
                 Dim DriveType = If(_OutputDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _OutputDriveOption.Type)
-                AdjustSpeed = ReadDiskHelpers.GetReadAdjustSpeed(diskParams, DriveType)
+                If allowSpeedAdjustment Then
+                    AdjustSpeed = ReadDiskHelpers.GetReadAdjustSpeed(diskParams, DriveType)
+                End If
             Else
                 Format = diskParams.Format.GetImageFormat().GetKey()
             End If
@@ -968,9 +974,11 @@ Namespace Flux.Greaseweazle
                 Return False
             End If
 
+            Dim AllowSpeedAdjustment = _PanelDriveParams.CheckBoxAdjustSpeed.Checked
+
             Dim Opts As ConvertOptions
             Try
-                Opts = BuildSecondaryConvertOptions(_TempFilePath, OutputPath, DiskParams.Value, OutputType2, _OutputLayout.ConvertDoubleStep)
+                Opts = BuildSecondaryConvertOptions(_TempFilePath, OutputPath, DiskParams.Value, OutputType2, _OutputLayout.ConvertDoubleStep, AllowSpeedAdjustment)
             Catch
                 DeleteFileIfExists(OutputPath)
                 MsgBox(String.Format(My.Resources.Dialog_SaveFileError, SecondarySaveErrorPath(OutputPath)), MsgBoxStyle.Exclamation)
@@ -1606,9 +1614,11 @@ Namespace Flux.Greaseweazle
             _Status.PhysicalEvenReadMode = False
             ResetTrackGrid()
 
+            Dim AllowSpeedAdjustment = _PanelDriveParams.CheckBoxAdjustSpeed.Checked
+
             Dim Opts As ConvertOptions
             Try
-                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, DriveType, Layout.ConvertDoubleStep)
+                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, DriveType, Layout.ConvertDoubleStep, AllowSpeedAdjustment)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
@@ -1641,14 +1651,25 @@ Namespace Flux.Greaseweazle
             Dim DriveSelected As Boolean = HasOptionId
             Dim SelectMode As Boolean = IsIdle AndAlso CanRefine
             Dim CanEditSource = CanChangeSettings OrElse (_RefineMode AndAlso IsIdle)
+            Dim CanEditAdjustSpeed = CanChangeSettings OrElse SelectMode
+
+            Dim DiskParams = SelectedDiskParams
+            Dim DriveType = If(_SelectedDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _SelectedDriveOption.Type)
+            Dim ShowAdjustSpeed = DiskParams.HasValue AndAlso SelectedOutputType <> ReadDiskOutputTypes.IMA AndAlso ReadDiskHelpers.SpeedAdjustAvailable(DiskParams.Value, DriveType)
 
             With _PanelDriveParams
                 .ComboImageFormat.Enabled = CanEditSource AndAlso DriveSelected
                 .ComboDrives.Enabled = CanEditSource
 
-                .NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
-                .NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
-                .NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
+                .NumericRevs.Enabled = CanEditAdjustSpeed
+                .NumericRetries.Enabled = CanEditAdjustSpeed
+                .NumericSeekRetries.Enabled = CanEditAdjustSpeed
+
+                .CheckBoxAdjustSpeed.Enabled = CanEditAdjustSpeed
+                If ShowAdjustSpeed AndAlso Not .CheckBoxAdjustSpeed.Visible Then
+                    .CheckBoxAdjustSpeed.Checked = True
+                End If
+                .CheckBoxAdjustSpeed.Visible = ShowAdjustSpeed
             End With
         End Sub
 
@@ -2285,6 +2306,8 @@ Namespace Flux.Greaseweazle
 
             _Status.PhysicalEvenReadMode = physicalEvenFiles
 
+            Dim AllowSpeedAdjustment = _PanelDriveParams.CheckBoxAdjustSpeed.Checked
+
             Dim Opts As ReadOptions
             Try
                 Opts = ReadDiskHelpers.BuildReadOptions(filePath,
@@ -2292,6 +2315,7 @@ Namespace Flux.Greaseweazle
                                         diskParams,
                                         outputType,
                                         doubleStep,
+                                        AllowSpeedAdjustment,
                                         trackRanges,
                                         heads,
                                         CInt(_PanelDriveParams.NumericRetries.Value),
@@ -2841,6 +2865,14 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub NumericRetries_ValueChanged(sender As Object, e As EventArgs)
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            UpdateCommandLine()
+        End Sub
+
+        Private Sub CheckBoxAdjustSpeed_CheckedChanged(sender As Object, e As EventArgs)
             If Not _Initialized Then
                 Exit Sub
             End If

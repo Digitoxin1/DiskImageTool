@@ -2986,6 +2986,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Adjust Speed.
+        '''</summary>
+        Friend ReadOnly Property Label_AdjustSpeed() As String
+            Get
+                Return ResourceManager.GetString("Label_AdjustSpeed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to All Tracks.
         '''</summary>
         Friend ReadOnly Property Label_AllTracks() As String

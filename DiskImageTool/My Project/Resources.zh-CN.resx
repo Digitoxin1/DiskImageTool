@@ -830,6 +830,9 @@ Flux 映像集：“{0}”
   <data name="Label_AdditionalHeader" xml:space="preserve">
     <value>附加头</value>
   </data>
+  <data name="Label_AdjustSpeed" xml:space="preserve">
+    <value>调整转速</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>所有磁道</value>
   </data>

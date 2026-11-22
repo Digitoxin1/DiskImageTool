@@ -830,6 +830,9 @@ Archivo de imagen: '{1}'
   <data name="Label_AdditionalHeader" xml:space="preserve">
     <value>Encabezado adicional</value>
   </data>
+  <data name="Label_AdjustSpeed" xml:space="preserve">
+    <value>Ajustar la velocidad</value>
+  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Todas las Pistas</value>
   </data>
