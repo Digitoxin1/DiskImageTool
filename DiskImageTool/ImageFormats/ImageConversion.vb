@@ -656,7 +656,7 @@ Namespace ImageFormats
 
         Private Function Get86FHole(DiskFormat As FloppyDiskFormat) As D86F.DiskHole
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
                     Return D86F.DiskHole.HD
                 Case FloppyDiskFormat.Floppy2880
                     Return D86F.DiskHole.ED
@@ -778,7 +778,7 @@ Namespace ImageFormats
 
         Private Function GetHFEFloppyInterfaceMode(DiskFormat As FloppyDiskFormat) As HFE.HFEFloppyinterfaceMode
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
                 Case FloppyDiskFormat.Floppy2880
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_ED_FLOPPYMODE
@@ -887,7 +887,7 @@ Namespace ImageFormats
 
         Private Function GetPSISectorFormat(DiskFormat As FloppyDiskFormat) As PSI.DefaultSectorFormat
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
                     Return PSI.DefaultSectorFormat.IBM_MFM_HD
                 Case FloppyDiskFormat.Floppy2880
                     Return PSI.DefaultSectorFormat.IBM_MFM_ED
@@ -909,7 +909,7 @@ Namespace ImageFormats
 
         Private Function GetTranscopyDiskType(DiskFormat As FloppyDiskFormat) As TC.TransCopyDiskType
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.Floppy2HD
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
                     Return TC.TransCopyDiskType.MFMHighDensity
                 Case Else
                     Return TC.TransCopyDiskType.MFMDoubleDensity

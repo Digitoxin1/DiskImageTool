@@ -62,7 +62,7 @@ Namespace Bitstream
             Dim SectorCount = InferSectorCount(Image, BytesPerSector)
 
             If BytesPerSector = 1024 And SectorCount = 8 Then
-                DiskFormat = FloppyDiskFormat.Floppy2HD
+                DiskFormat = FloppyDiskFormat.Floppy2HD35
 
             ElseIf Image.TrackCount \ Image.TrackStep >= 79 Then
                 If SectorCount >= 36 Then

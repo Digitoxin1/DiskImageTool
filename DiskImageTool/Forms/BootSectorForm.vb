@@ -41,7 +41,8 @@ Public Class BootSectorForm
         New FormatParams With {.Format = FloppyDiskFormat.FloppyXDFMicro, .ToolTip = False, .MustMatch = True},
         New FormatParams With {.Format = FloppyDiskFormat.FloppyProCopy, .ToolTip = False},
         New FormatParams With {.Format = FloppyDiskFormat.FloppyTandy2000, .ToolTip = False},
-        New FormatParams With {.Format = FloppyDiskFormat.Floppy2HD, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy2HD35, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy2HD525, .ToolTip = False},
         New FormatParams With {.Format = FloppyDiskFormat.FloppyNoBPB, .ToolTip = False, .MustMatch = True},
         New FormatParams With {.Format = FloppyDiskFormat.FloppyUnknown, .ToolTip = False}
     }
@@ -65,7 +66,7 @@ Public Class BootSectorForm
         New KeyValuePair(Of String, FloppyDiskFormat)("F9", FloppyDiskFormat.FloppyXDF525),
         New KeyValuePair(Of String, FloppyDiskFormat)("F0", FloppyDiskFormat.FloppyXDF35),
         New KeyValuePair(Of String, FloppyDiskFormat)("ED", FloppyDiskFormat.FloppyTandy2000),
-        New KeyValuePair(Of String, FloppyDiskFormat)("FE", FloppyDiskFormat.Floppy2HD)
+        New KeyValuePair(Of String, FloppyDiskFormat)("FE", FloppyDiskFormat.Floppy2HD35)
     }
 
     Public Sub New(Data() As Byte, BootStrap As BootstrapDB)

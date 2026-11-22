@@ -104,10 +104,16 @@
                 FloppyDriveType.DriveUnknown
             ),
             New FloppyDiskParams(
-                FloppyDiskFormat.Floppy2HD,
+                FloppyDiskFormat.Floppy2HD35,
                 New FloppyDiskBPBParams(1024, &HFE, 2, 2, 1, 192, 1232, 1, 2, 8),
                 ".hdm",
                 FloppyDriveType.Drive35HighDensity
+            ),
+            New FloppyDiskParams(
+                FloppyDiskFormat.Floppy2HD525,
+                New FloppyDiskBPBParams(1024, &HFE, 2, 2, 1, 192, 1232, 1, 2, 8),
+                ".hdm",
+                FloppyDriveType.Drive525HighDensity
             )
         }
 
@@ -129,7 +135,8 @@
             FloppyXDFMicro = 14
             FloppyTandy2000 = 15
             FloppyNoBPB = 16
-            Floppy2HD = 17
+            Floppy2HD35 = 17
+            Floppy2HD525 = 18
         End Enum
 
         Public Enum FloppyDiskRegionEnum
@@ -284,7 +291,7 @@
                 Case 2880
                     Return FloppyDiskFormat.Floppy2880
                 Case 1232
-                    Return FloppyDiskFormat.Floppy2HD
+                    Return FloppyDiskFormat.Floppy2HD35
                 Case Else
                     Return FloppyDiskFormat.FloppyUnknown
             End Select
@@ -323,7 +330,9 @@
                 Case "Tandy 2000"
                     Return FloppyDiskFormat.FloppyTandy2000
                 Case "2HD (1.23M)"
-                    Return FloppyDiskFormat.Floppy2HD
+                    Return FloppyDiskFormat.Floppy2HD35
+                Case "2HD 5.25"" (1.23M)"
+                    Return FloppyDiskFormat.Floppy2HD525
                 Case "NO BPB"
                     Return FloppyDiskFormat.FloppyNoBPB
                 Case Else
@@ -341,7 +350,8 @@
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) p.IsStandard AndAlso p.Is525 AndAlso Not p.Is525HD).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    OrderByDescending(Function(p) p.IsIBMPC).
+                    ThenBy(Function(p) p.BPBParams.SizeInBytes).
                     Cast(Of Object)
             )
 
@@ -351,7 +361,8 @@
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) p.IsStandard AndAlso p.Is525 AndAlso p.Is525HD).
-                    OrderBy(Function(p) p.Format).
+                    OrderByDescending(Function(p) p.IsIBMPC).
+                    ThenBy(Function(p) p.BPBParams.SizeInBytes).
                     Cast(Of Object)
             )
 
@@ -361,7 +372,8 @@
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) p.IsStandard AndAlso Not p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    OrderByDescending(Function(p) p.IsIBMPC).
+                    ThenBy(Function(p) p.BPBParams.SizeInBytes).
                     Cast(Of Object)
             )
 
@@ -371,7 +383,8 @@
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) Not p.IsStandard AndAlso Not p.IsNonImage AndAlso p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    OrderByDescending(Function(p) p.IsIBMPC).
+                    ThenBy(Function(p) p.BPBParams.SizeInBytes).
                     Cast(Of Object)
             )
 
@@ -379,7 +392,8 @@
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) Not p.IsStandard AndAlso Not p.IsNonImage AndAlso Not p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    OrderByDescending(Function(p) p.IsIBMPC).
+                    ThenBy(Function(p) p.BPBParams.SizeInBytes).
                     Cast(Of Object)
             )
 
@@ -450,8 +464,10 @@
                     Return "XDF Micro"
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return "Tandy 2000"
-                Case FloppyDiskFormat.Floppy2HD
+                Case FloppyDiskFormat.Floppy2HD35
                     Return "2HD (1.23M)"
+                Case FloppyDiskFormat.Floppy2HD525
+                    Return "2HD 5.25"" (1.23M)"
                 Case FloppyDiskFormat.FloppyNoBPB
                     Return "No BPB"
                 Case Else
@@ -472,7 +488,7 @@
 
         Public Function FloppyDiskFormatIsStandard(DiskFormat As FloppyDiskFormat) As Boolean
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy2HD, FloppyDiskFormat.FloppyXDF35, FloppyDiskFormat.FloppyXDF525, FloppyDiskFormat.FloppyXDFMicro,
+                Case FloppyDiskFormat.FloppyXDF35, FloppyDiskFormat.FloppyXDF525, FloppyDiskFormat.FloppyXDFMicro,
                              FloppyDiskFormat.FloppyNoBPB, FloppyDiskFormat.FloppyUnknown
 
                     Return False
@@ -753,7 +769,7 @@
                             Special = "DMF 2048"
                         Case FloppyDiskFormat.FloppyXDF35, FloppyDiskFormat.FloppyXDF525, FloppyDiskFormat.FloppyXDFMicro
                             Special = "XDF"
-                        Case FloppyDiskFormat.Floppy2HD
+                        Case FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
                             Special = "2HD"
                         Case FloppyDiskFormat.FloppyProCopy
                             Special = "ProCopy"
@@ -800,10 +816,21 @@
             Public ReadOnly Property Is525HD As Boolean
                 Get
                     Select Case Format
-                        Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyTandy2000
+                        Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyTandy2000, FloppyDiskFormat.Floppy2HD525
                             Return True
                         Case Else
                             Return False
+                    End Select
+                End Get
+            End Property
+
+            Public ReadOnly Property IsIBMPC As Boolean
+                Get
+                    Select Case Format
+                        Case FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525, FloppyDiskFormat.FloppyTandy2000
+                            Return False
+                        Case Else
+                            Return True
                     End Select
                 End Get
             End Property
@@ -835,7 +862,7 @@
             Public ReadOnly Property RPM As UShort
                 Get
                     Select Case Format
-                        Case FloppyDiskFormat.Floppy2HD
+                        Case FloppyDiskFormat.Floppy2HD35
                             Return 360
                     End Select
 

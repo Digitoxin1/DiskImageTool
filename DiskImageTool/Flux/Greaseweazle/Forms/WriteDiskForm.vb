@@ -610,7 +610,7 @@ Namespace Flux.Greaseweazle
                 Return
             End If
 
-            _DoubleStep = (Opt.Type = FloppyDriveType.Drive525HighDensity AndAlso _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso _DiskParams.BPBParams.TrackCount <= 40)
+            _DoubleStep = (Opt.Type = FloppyDriveType.Drive525HighDensity AndAlso _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso _DiskParams.BPBParams.TrackCount <= 42)
 
             Dim Format As String = Nothing
 

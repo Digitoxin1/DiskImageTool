@@ -15,6 +15,7 @@ Namespace Flux.Greaseweazle
             IBM_1440
             IBM_DMF
             IBM_2880
+            PC98_2HD
         End Enum
 
 
@@ -112,6 +113,8 @@ Namespace Flux.Greaseweazle
                     Return GreaseweazleImageFormat.IBM_2880
                 Case FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyDMF2048
                     Return GreaseweazleImageFormat.IBM_DMF
+                Case FloppyDiskFormat.Floppy2HD35, FloppyDiskFormat.Floppy2HD525
+                    Return GreaseweazleImageFormat.PC98_2HD
                 Case Else
                     Return GreaseweazleImageFormat.None
             End Select
@@ -142,6 +145,8 @@ Namespace Flux.Greaseweazle
                     Return "ibm.2880"
                 Case GreaseweazleImageFormat.IBM_DMF
                     Return "ibm.dmf"
+                Case GreaseweazleImageFormat.PC98_2HD
+                    Return "pc98.2hd"
                 Case Else
                     Return "ibm.scan"
             End Select

@@ -1123,7 +1123,7 @@ Namespace Flux
             Dim DiskParams = SelectedDiskParams()
 
             If DiskParams.HasValue Then
-                Is525DDStandard = DiskParams.Value.IsStandard AndAlso DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DiskParams.Value.BPBParams.TrackCount <= 40
+                Is525DDStandard = DiskParams.Value.IsStandard AndAlso DiskParams.Value.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DiskParams.Value.BPBParams.TrackCount <= 42
                 IsNonImage = DiskParams.Value.IsNonImage
             End If
 
