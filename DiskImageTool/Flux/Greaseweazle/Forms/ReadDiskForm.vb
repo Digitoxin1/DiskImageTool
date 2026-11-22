@@ -1534,7 +1534,20 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Return DetectImageFormat(Response.FileName, True)
+            Return ResolveDetected2HDFormat(DetectImageFormat(Response.FileName, True))
+        End Function
+
+        Private Function ResolveDetected2HDFormat(DetectedFormat As FloppyDiskFormat) As FloppyDiskFormat
+            If DetectedFormat <> FloppyDiskFormat.Floppy2HD35 AndAlso DetectedFormat <> FloppyDiskFormat.Floppy2HD525 Then
+                Return DetectedFormat
+            End If
+
+            Dim DriveType = If(_SelectedDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _SelectedDriveOption.Type)
+            If DriveType = FloppyDriveType.Drive525DoubleDensity OrElse DriveType = FloppyDriveType.Drive525HighDensity Then
+                Return FloppyDiskFormat.Floppy2HD525
+            End If
+
+            Return FloppyDiskFormat.Floppy2HD35
         End Function
 
         Private Sub RefineFromRaw(SourceFile As String)
@@ -1552,6 +1565,7 @@ Namespace Flux.Greaseweazle
             Dim FormatResp = ConvertFirstTrack(SourceFile, False)
 
             Dim DetectedFormat As FloppyDiskFormat = If(FormatResp.Result, DetectImageFormat(FormatResp.FileName, True), FloppyDiskFormat.FloppyUnknown)
+            DetectedFormat = ResolveDetected2HDFormat(DetectedFormat)
 
             Dim TempRoot = InitTempImagePath()
 

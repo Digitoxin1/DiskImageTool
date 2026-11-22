@@ -65,7 +65,7 @@ Namespace Flux.Greaseweazle
 
             _NumericRetries.Value = DEFAULT_RETRIES
 
-            _LabelImageFormat.Text = _DiskParams.Description
+            _LabelImageFormat.Text = GetWriteFormatDescription()
 
             Dim Mode As String = If(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
@@ -146,9 +146,37 @@ Namespace Flux.Greaseweazle
                 Return True
             End If
 
+            If Is2HDFormat() AndAlso IsHighDensityDrive(Opt.Type) Then
+                Return True
+            End If
+
             Dim FloppyType = GreaseweazleFindCompatibleDriveType(_DiskParams, Opt.Type)
 
             Return FloppyType = Opt.Type
+        End Function
+
+        Private Function GetWriteFormatDescription() As String
+            Dim Text = _DiskParams.Description
+            If Not Is2HDFormat() Then
+                Return Text
+            End If
+
+            Dim Space = Text.IndexOf(" "c)
+            If Space < 0 Then
+                Return Text
+            End If
+
+            Return Text.Substring(Space + 1)
+        End Function
+
+        Private Function Is2HDFormat() As Boolean
+            Return _DiskParams.Format = FloppyDiskFormat.Floppy2HD35 OrElse _DiskParams.Format = FloppyDiskFormat.Floppy2HD525
+        End Function
+
+        Private Function IsHighDensityDrive(DriveType As FloppyDriveType) As Boolean
+            Return DriveType = FloppyDriveType.Drive525HighDensity OrElse
+                DriveType = FloppyDriveType.Drive35HighDensity OrElse
+                DriveType = FloppyDriveType.Drive35ExtraHighDensity
         End Function
 
         Private Function CheckKeepProcessing(state As ConsoleProcessRunner.ProcessStateEnum) As Boolean
