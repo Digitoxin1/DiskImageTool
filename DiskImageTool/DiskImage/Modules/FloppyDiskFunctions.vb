@@ -5,115 +5,134 @@
                 FloppyDiskFormat.FloppyUnknown,
                 New FloppyDiskBPBParams(0, &HF0, 0, 0, 0, 0, 0, 0, 0, 0),
                 "",
-                FloppyDriveType.DriveUnknown
+                FloppyDriveType.DriveUnknown,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy160,
                 New FloppyDiskBPBParams(512, &HFE, 2, 1, 1, 64, 320, 1, 1, 8),
                 ".160",
-                FloppyDriveType.Drive525DoubleDensity
+                FloppyDriveType.Drive525DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy180,
                 New FloppyDiskBPBParams(512, &HFC, 2, 1, 1, 64, 360, 1, 2, 9),
                 ".180",
-                FloppyDriveType.Drive525DoubleDensity
+                FloppyDriveType.Drive525DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy320,
                 New FloppyDiskBPBParams(512, &HFF, 2, 2, 1, 112, 640, 2, 1, 8),
                 ".320",
-                FloppyDriveType.Drive525DoubleDensity
+                FloppyDriveType.Drive525DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy360,
                 New FloppyDiskBPBParams(512, &HFD, 2, 2, 1, 112, 720, 2, 2, 9),
                 ".360",
-                FloppyDriveType.Drive525DoubleDensity
+                FloppyDriveType.Drive525DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy720,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 112, 1440, 2, 3, 9),
                 ".720",
-                FloppyDriveType.Drive35DoubleDensity
+                FloppyDriveType.Drive35DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy1200,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 224, 2400, 1, 7, 15),
                 ".120",
-                FloppyDriveType.Drive525HighDensity
+                FloppyDriveType.Drive525HighDensity,
+                360
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy1440,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 224, 2880, 1, 9, 18),
                 ".144",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy2880,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 240, 5760, 2, 9, 36),
                 ".288",
-                FloppyDriveType.Drive35ExtraHighDensity
+                FloppyDriveType.Drive35ExtraHighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyDMF1024,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 3360, 2, 5, 21),
                 ".dmf",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyDMF2048,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 3360, 4, 3, 21),
                 ".dmf",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyProCopy,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 16, 2880, 2, 5, 18),
                 "",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDF35,
                 New FloppyDiskBPBParams(512, &HF0, 2, 2, 1, 224, 3680, 1, 11, 23),
                 ".xdf",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDF525,
                 New FloppyDiskBPBParams(512, &HF9, 2, 2, 1, 224, 3040, 1, 9, 19),
                 ".xdf",
-                FloppyDriveType.Drive525HighDensity
+                FloppyDriveType.Drive525HighDensity,
+                360
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyXDFMicro,
                 New FloppyDiskBPBParams(512, &HF9, 2, 1, 1, 16, 8, 1, 1, 8),
                 ".xdf",
-                FloppyDriveType.DriveUnknown
+                FloppyDriveType.DriveUnknown,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyTandy2000,
                 New FloppyDiskBPBParams(512, &HED, 2, 2, 1, 112, 1440, 4, 2, 9),
                 "",
-                FloppyDriveType.Drive525DoubleDensity
+                FloppyDriveType.Drive525DoubleDensity,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.FloppyNoBPB,
                 New FloppyDiskBPBParams(0, &HF0, 0, 0, 0, 0, 0, 0, 0, 0),
                 "",
-                FloppyDriveType.DriveUnknown
+                FloppyDriveType.DriveUnknown,
+                300
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy2HD35,
                 New FloppyDiskBPBParams(1024, &HFE, 2, 2, 1, 192, 1232, 1, 2, 8),
                 ".hdm",
-                FloppyDriveType.Drive35HighDensity
+                FloppyDriveType.Drive35HighDensity,
+                360
             ),
             New FloppyDiskParams(
                 FloppyDiskFormat.Floppy2HD525,
                 New FloppyDiskBPBParams(1024, &HFE, 2, 2, 1, 192, 1232, 1, 2, 8),
                 ".hdm",
-                FloppyDriveType.Drive525HighDensity
+                FloppyDriveType.Drive525HighDensity,
+                360
             )
         }
 
@@ -497,6 +516,15 @@
             End Select
         End Function
 
+        Public Function FloppyDriveGetRPM(DriveType As FloppyDriveType) As UShort
+            Select Case DriveType
+                Case FloppyDriveType.Drive525HighDensity
+                    Return 360
+                Case Else
+                    Return 300
+            End Select
+        End Function
+
         Public Function GetDirectoryEntryFromCluster(Disk As Disk, Cluster As Integer) As DirectoryEntry
             If Disk.IsValidImage Then
                 If Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
@@ -686,12 +714,13 @@
         End Structure
 
         Public Structure FloppyDiskParams
-            Public Sub New(Format As FloppyDiskFormat, BPBParams As FloppyDiskBPBParams, FileExtension As String, DriveType As FloppyDriveType)
+            Public Sub New(Format As FloppyDiskFormat, BPBParams As FloppyDiskBPBParams, FileExtension As String, DriveType As FloppyDriveType, RPM As UShort)
                 Me.Format = Format
                 Me.BPBParams = BPBParams
                 Me.Gaps = GetGaps(Format)
                 Me.FileExtension = FileExtension
                 Me.DriveType = DriveType
+                Me.RPM = RPM
                 Me.Detected = False
                 Me.Doublestep = False
             End Sub
@@ -860,27 +889,6 @@
 
             Public ReadOnly Property DriveType As FloppyDriveType
             Public ReadOnly Property RPM As UShort
-                Get
-                    Select Case Format
-                        Case FloppyDiskFormat.Floppy2HD35
-                            Return 360
-                    End Select
-
-                    Select Case DriveType
-                        Case FloppyDriveType.Drive525DoubleDensity
-                            Return 300
-
-                        Case FloppyDriveType.Drive525HighDensity
-                            Return 360
-
-                        Case FloppyDriveType.Drive35DoubleDensity, FloppyDriveType.Drive35HighDensity, FloppyDriveType.Drive35ExtraHighDensity
-                            Return 300
-
-                        Case Else
-                            Return 300
-                    End Select
-                End Get
-            End Property
         End Structure
     End Module
 End Namespace
