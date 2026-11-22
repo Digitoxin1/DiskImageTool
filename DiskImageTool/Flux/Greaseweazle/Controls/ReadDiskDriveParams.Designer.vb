@@ -60,6 +60,7 @@ Partial Class ReadDiskDriveParams
         'TableLayoutPanelParams
         '
         Me.TableLayoutPanelParams.AutoSize = True
+        Me.TableLayoutPanelParams.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableLayoutPanelParams.ColumnCount = 3
         Me.TableLayoutPanelParams.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelParams.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
@@ -87,7 +88,7 @@ Partial Class ReadDiskDriveParams
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelParams.Size = New System.Drawing.Size(233, 121)
+        Me.TableLayoutPanelParams.Size = New System.Drawing.Size(233, 118)
         Me.TableLayoutPanelParams.TabIndex = 0
         '
         'LabelDrive
@@ -131,6 +132,7 @@ Partial Class ReadDiskDriveParams
         Me.ComboImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImageFormat.FormattingEnabled = True
         Me.ComboImageFormat.Location = New System.Drawing.Point(3, 57)
+        Me.ComboImageFormat.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
         Me.ComboImageFormat.Name = "ComboImageFormat"
         Me.ComboImageFormat.Size = New System.Drawing.Size(227, 21)
         Me.ComboImageFormat.TabIndex = 4
@@ -138,7 +140,7 @@ Partial Class ReadDiskDriveParams
         'LabelRevs
         '
         Me.LabelRevs.AutoSize = True
-        Me.LabelRevs.Location = New System.Drawing.Point(3, 81)
+        Me.LabelRevs.Location = New System.Drawing.Point(3, 82)
         Me.LabelRevs.Name = "LabelRevs"
         Me.LabelRevs.Size = New System.Drawing.Size(32, 13)
         Me.LabelRevs.TabIndex = 5
@@ -148,7 +150,7 @@ Partial Class ReadDiskDriveParams
         'LabelRetries
         '
         Me.LabelRetries.AutoSize = True
-        Me.LabelRetries.Location = New System.Drawing.Point(80, 81)
+        Me.LabelRetries.Location = New System.Drawing.Point(80, 82)
         Me.LabelRetries.Name = "LabelRetries"
         Me.LabelRetries.Size = New System.Drawing.Size(40, 13)
         Me.LabelRetries.TabIndex = 6
@@ -158,7 +160,7 @@ Partial Class ReadDiskDriveParams
         'LabelSeekRetries
         '
         Me.LabelSeekRetries.AutoSize = True
-        Me.LabelSeekRetries.Location = New System.Drawing.Point(157, 81)
+        Me.LabelSeekRetries.Location = New System.Drawing.Point(157, 82)
         Me.LabelSeekRetries.Name = "LabelSeekRetries"
         Me.LabelSeekRetries.Size = New System.Drawing.Size(68, 13)
         Me.LabelSeekRetries.TabIndex = 7
@@ -168,8 +170,8 @@ Partial Class ReadDiskDriveParams
         'NumericRevs
         '
         Me.NumericRevs.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.NumericRevs.Location = New System.Drawing.Point(3, 97)
-        Me.NumericRevs.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
+        Me.NumericRevs.Location = New System.Drawing.Point(3, 98)
+        Me.NumericRevs.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.NumericRevs.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericRevs.Name = "NumericRevs"
         Me.NumericRevs.Size = New System.Drawing.Size(71, 20)
@@ -178,8 +180,8 @@ Partial Class ReadDiskDriveParams
         'NumericRetries
         '
         Me.NumericRetries.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.NumericRetries.Location = New System.Drawing.Point(80, 97)
-        Me.NumericRetries.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
+        Me.NumericRetries.Location = New System.Drawing.Point(80, 98)
+        Me.NumericRetries.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.NumericRetries.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericRetries.Name = "NumericRetries"
         Me.NumericRetries.Size = New System.Drawing.Size(71, 20)
@@ -188,8 +190,8 @@ Partial Class ReadDiskDriveParams
         'NumericSeekRetries
         '
         Me.NumericSeekRetries.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.NumericSeekRetries.Location = New System.Drawing.Point(157, 97)
-        Me.NumericSeekRetries.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
+        Me.NumericSeekRetries.Location = New System.Drawing.Point(157, 98)
+        Me.NumericSeekRetries.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.NumericSeekRetries.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericSeekRetries.Name = "NumericSeekRetries"
         Me.NumericSeekRetries.Size = New System.Drawing.Size(73, 20)
@@ -213,7 +215,6 @@ Partial Class ReadDiskDriveParams
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
-        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.Controls.Add(Me.GroupBoxParams)
         Me.Name = "ReadDiskDriveParams"
         Me.Size = New System.Drawing.Size(248, 153)

@@ -77,7 +77,7 @@ Partial Class ReadDiskOutput
         Me.TableLayoutPanelOutput.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelOutput.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelOutput.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelOutput.Size = New System.Drawing.Size(179, 121)
+        Me.TableLayoutPanelOutput.Size = New System.Drawing.Size(179, 119)
         Me.TableLayoutPanelOutput.TabIndex = 0
         '
         'LabelOutputType
@@ -106,7 +106,7 @@ Partial Class ReadDiskOutput
         '
         Me.LabelLocation.AutoSize = True
         Me.TableLayoutPanelOutput.SetColumnSpan(Me.LabelLocation, 2)
-        Me.LabelLocation.Location = New System.Drawing.Point(3, 81)
+        Me.LabelLocation.Location = New System.Drawing.Point(3, 82)
         Me.LabelLocation.Name = "LabelLocation"
         Me.LabelLocation.Size = New System.Drawing.Size(134, 13)
         Me.LabelLocation.TabIndex = 6
@@ -141,6 +141,7 @@ Partial Class ReadDiskOutput
         Me.ComboBoxSecondaryOutput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBoxSecondaryOutput.FormattingEnabled = True
         Me.ComboBoxSecondaryOutput.Location = New System.Drawing.Point(3, 57)
+        Me.ComboBoxSecondaryOutput.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
         Me.ComboBoxSecondaryOutput.Name = "ComboBoxSecondaryOutput"
         Me.ComboBoxSecondaryOutput.Size = New System.Drawing.Size(119, 21)
         Me.ComboBoxSecondaryOutput.TabIndex = 4
@@ -151,6 +152,7 @@ Partial Class ReadDiskOutput
         Me.ComboBoxSecondaryExtension.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBoxSecondaryExtension.FormattingEnabled = True
         Me.ComboBoxSecondaryExtension.Location = New System.Drawing.Point(128, 57)
+        Me.ComboBoxSecondaryExtension.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
         Me.ComboBoxSecondaryExtension.Name = "ComboBoxSecondaryExtension"
         Me.ComboBoxSecondaryExtension.Size = New System.Drawing.Size(48, 21)
         Me.ComboBoxSecondaryExtension.TabIndex = 5
@@ -161,7 +163,8 @@ Partial Class ReadDiskOutput
         Me.ComboBoxSecondaryLocation.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ComboBoxSecondaryLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBoxSecondaryLocation.FormattingEnabled = True
-        Me.ComboBoxSecondaryLocation.Location = New System.Drawing.Point(3, 97)
+        Me.ComboBoxSecondaryLocation.Location = New System.Drawing.Point(3, 98)
+        Me.ComboBoxSecondaryLocation.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.ComboBoxSecondaryLocation.Name = "ComboBoxSecondaryLocation"
         Me.ComboBoxSecondaryLocation.Size = New System.Drawing.Size(173, 21)
         Me.ComboBoxSecondaryLocation.TabIndex = 7

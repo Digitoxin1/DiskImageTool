@@ -33,16 +33,13 @@ Namespace Flux.Greaseweazle
             Dim FileNameWithOpts As String = filePath
             Dim FileName2WithOpts As String = ""
 
-            If outputType = ReadDiskOutputTypes.IMA Then
-                AdjustSpeed = GetAdjustSpeed(diskParams, False)
-
-            ElseIf outputType = ReadDiskOutputTypes.HFE Then
-                AdjustSpeed = GetAdjustSpeed(diskParams, HardwareStep)
+            If outputType = ReadDiskOutputTypes.HFE Then
+                AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
                 Raw = True
                 FileNameWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
 
             ElseIf outputType = ReadDiskOutputTypes.RAW Then
-                AdjustSpeed = GetAdjustSpeed(diskParams, HardwareStep AndAlso diskParams.Format <> FloppyDiskFormat.FloppyUnknown)
+                AdjustSpeed = GetReadAdjustSpeed(diskParams, opt.Type)
                 Raw = True
 
                 If Not String.IsNullOrEmpty(filePath2) AndAlso outputType2 <> ReadDiskOutputTypes.None Then
@@ -305,6 +302,18 @@ Namespace Flux.Greaseweazle
             Control.Width = TextWidth
 
             Return TextWidth + Control.Padding.Horizontal + Control.Margin.Horizontal + ExtraPadding
+        End Function
+
+        Friend Shared Function GetReadAdjustSpeed(diskParams As FloppyDiskParams, driveType As FloppyDriveType) As Double?
+            If driveType = FloppyDriveType.DriveUnknown OrElse diskParams.IsNonImage OrElse diskParams.RPM = 0 Then
+                Return Nothing
+            End If
+
+            If FloppyDriveGetRPM(driveType) = diskParams.RPM Then
+                Return Nothing
+            End If
+
+            Return 60.0 / diskParams.RPM
         End Function
 
         Friend Shared Function GetAdjustSpeed(diskParams As FloppyDiskParams, apply As Boolean) As Double?
