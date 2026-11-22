@@ -97,7 +97,7 @@ Namespace Flux.Greaseweazle
             Return Opts
         End Function
 
-        Friend Shared Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, doubleStep As Boolean) As ConvertOptions
+        Friend Shared Function BuildRefineConvertOptions(inputFilePath As String, diskParams As FloppyDiskParams, driveType As FloppyDriveType, doubleStep As Boolean) As ConvertOptions
             Dim Format = diskParams.Format.GetImageFormat().GetKey()
 
             Dim TrackSet As New TrackSetSpec
@@ -110,7 +110,7 @@ Namespace Flux.Greaseweazle
                 .InputFile = inputFilePath,
                 .Format = Format,
                 .TrackSet = TrackSet,
-                .AdjustSpeed = GetAdjustSpeed(diskParams, doubleStep)
+                .AdjustSpeed = GetReadAdjustSpeed(diskParams, driveType)
             }
         End Function
 
@@ -314,14 +314,6 @@ Namespace Flux.Greaseweazle
             End If
 
             Return 60.0 / diskParams.RPM
-        End Function
-
-        Friend Shared Function GetAdjustSpeed(diskParams As FloppyDiskParams, apply As Boolean) As Double?
-            If diskParams.Format = FloppyDiskFormat.FloppyTandy2000 OrElse apply Then
-                Return 60.0 / diskParams.RPM
-            End If
-
-            Return Nothing
         End Function
 
         Friend Shared Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean

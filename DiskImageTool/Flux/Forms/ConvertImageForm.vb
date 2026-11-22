@@ -196,11 +196,12 @@ Namespace Flux
 
             If outputType = FluxFileTypeEnum.HFE Then
                 BitRateKbps = CInt(diskParams.BitRateKbps)
-                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, doubleStep)
+                If doubleStep Then
+                    AdjustSpeed = 60.0 / diskParams.RPM
+                End If
 
             ElseIf outputType = FluxFileTypeEnum.SectorImage Then
                 Format = diskParams.Format.GetImageFormat().GetKey()
-                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, False)
             End If
 
             Dim OutputFileWithOpts As String = outputFilePath

@@ -35,6 +35,7 @@ Partial Class ReadDiskDriveParams
         Me.NumericRetries = New System.Windows.Forms.NumericUpDown()
         Me.NumericSeekRetries = New System.Windows.Forms.NumericUpDown()
         Me.ButtonDetect = New System.Windows.Forms.Button()
+        Me.CheckBoxAdjustSpeed = New System.Windows.Forms.CheckBox()
         Me.GroupBoxParams.SuspendLayout()
         Me.TableLayoutPanelParams.SuspendLayout()
         CType(Me.NumericRevs, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -76,6 +77,7 @@ Partial Class ReadDiskDriveParams
         Me.TableLayoutPanelParams.Controls.Add(Me.NumericRetries, 1, 5)
         Me.TableLayoutPanelParams.Controls.Add(Me.NumericSeekRetries, 2, 5)
         Me.TableLayoutPanelParams.Controls.Add(Me.ButtonDetect, 2, 1)
+        Me.TableLayoutPanelParams.Controls.Add(Me.CheckBoxAdjustSpeed, 1, 2)
         Me.TableLayoutPanelParams.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TableLayoutPanelParams.Location = New System.Drawing.Point(6, 19)
         Me.TableLayoutPanelParams.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
@@ -88,6 +90,7 @@ Partial Class ReadDiskDriveParams
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanelParams.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableLayoutPanelParams.Size = New System.Drawing.Size(233, 118)
         Me.TableLayoutPanelParams.TabIndex = 0
         '
@@ -109,6 +112,7 @@ Partial Class ReadDiskDriveParams
         Me.ComboDrives.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboDrives.FormattingEnabled = True
         Me.ComboDrives.Location = New System.Drawing.Point(3, 16)
+        Me.ComboDrives.Margin = New System.Windows.Forms.Padding(3, 3, 3, 2)
         Me.ComboDrives.MinimumSize = New System.Drawing.Size(136, 0)
         Me.ComboDrives.Name = "ComboDrives"
         Me.ComboDrives.Size = New System.Drawing.Size(148, 21)
@@ -117,8 +121,8 @@ Partial Class ReadDiskDriveParams
         'LabelImageFormat
         '
         Me.LabelImageFormat.AutoSize = True
-        Me.TableLayoutPanelParams.SetColumnSpan(Me.LabelImageFormat, 3)
         Me.LabelImageFormat.Location = New System.Drawing.Point(3, 41)
+        Me.LabelImageFormat.Margin = New System.Windows.Forms.Padding(3, 1, 3, 3)
         Me.LabelImageFormat.Name = "LabelImageFormat"
         Me.LabelImageFormat.Size = New System.Drawing.Size(63, 13)
         Me.LabelImageFormat.TabIndex = 3
@@ -132,10 +136,10 @@ Partial Class ReadDiskDriveParams
         Me.ComboImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImageFormat.FormattingEnabled = True
         Me.ComboImageFormat.Location = New System.Drawing.Point(3, 57)
-        Me.ComboImageFormat.Margin = New System.Windows.Forms.Padding(3, 3, 3, 4)
+        Me.ComboImageFormat.Margin = New System.Windows.Forms.Padding(3, 0, 3, 4)
         Me.ComboImageFormat.Name = "ComboImageFormat"
         Me.ComboImageFormat.Size = New System.Drawing.Size(227, 21)
-        Me.ComboImageFormat.TabIndex = 4
+        Me.ComboImageFormat.TabIndex = 5
         '
         'LabelRevs
         '
@@ -143,7 +147,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelRevs.Location = New System.Drawing.Point(3, 82)
         Me.LabelRevs.Name = "LabelRevs"
         Me.LabelRevs.Size = New System.Drawing.Size(32, 13)
-        Me.LabelRevs.TabIndex = 5
+        Me.LabelRevs.TabIndex = 6
         Me.LabelRevs.Text = "Revs"
         Me.LabelRevs.UseMnemonic = False
         '
@@ -153,7 +157,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelRetries.Location = New System.Drawing.Point(80, 82)
         Me.LabelRetries.Name = "LabelRetries"
         Me.LabelRetries.Size = New System.Drawing.Size(40, 13)
-        Me.LabelRetries.TabIndex = 6
+        Me.LabelRetries.TabIndex = 7
         Me.LabelRetries.Text = "Retries"
         Me.LabelRetries.UseMnemonic = False
         '
@@ -163,7 +167,7 @@ Partial Class ReadDiskDriveParams
         Me.LabelSeekRetries.Location = New System.Drawing.Point(157, 82)
         Me.LabelSeekRetries.Name = "LabelSeekRetries"
         Me.LabelSeekRetries.Size = New System.Drawing.Size(68, 13)
-        Me.LabelSeekRetries.TabIndex = 7
+        Me.LabelSeekRetries.TabIndex = 8
         Me.LabelSeekRetries.Text = "Seek Retries"
         Me.LabelSeekRetries.UseMnemonic = False
         '
@@ -175,7 +179,7 @@ Partial Class ReadDiskDriveParams
         Me.NumericRevs.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericRevs.Name = "NumericRevs"
         Me.NumericRevs.Size = New System.Drawing.Size(71, 20)
-        Me.NumericRevs.TabIndex = 8
+        Me.NumericRevs.TabIndex = 9
         '
         'NumericRetries
         '
@@ -185,7 +189,7 @@ Partial Class ReadDiskDriveParams
         Me.NumericRetries.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericRetries.Name = "NumericRetries"
         Me.NumericRetries.Size = New System.Drawing.Size(71, 20)
-        Me.NumericRetries.TabIndex = 9
+        Me.NumericRetries.TabIndex = 10
         '
         'NumericSeekRetries
         '
@@ -195,7 +199,7 @@ Partial Class ReadDiskDriveParams
         Me.NumericSeekRetries.MinimumSize = New System.Drawing.Size(68, 0)
         Me.NumericSeekRetries.Name = "NumericSeekRetries"
         Me.NumericSeekRetries.Size = New System.Drawing.Size(73, 20)
-        Me.NumericSeekRetries.TabIndex = 10
+        Me.NumericSeekRetries.TabIndex = 11
         '
         'ButtonDetect
         '
@@ -203,12 +207,25 @@ Partial Class ReadDiskDriveParams
         Me.ButtonDetect.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ButtonDetect.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ButtonDetect.Location = New System.Drawing.Point(157, 15)
-        Me.ButtonDetect.Margin = New System.Windows.Forms.Padding(3, 2, 3, 3)
+        Me.ButtonDetect.Margin = New System.Windows.Forms.Padding(3, 2, 3, 2)
         Me.ButtonDetect.Name = "ButtonDetect"
         Me.ButtonDetect.Size = New System.Drawing.Size(73, 23)
         Me.ButtonDetect.TabIndex = 2
         Me.ButtonDetect.Text = "Detect"
         Me.ButtonDetect.UseVisualStyleBackColor = True
+        '
+        'CheckBoxAdjustSpeed
+        '
+        Me.CheckBoxAdjustSpeed.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.CheckBoxAdjustSpeed.AutoSize = True
+        Me.TableLayoutPanelParams.SetColumnSpan(Me.CheckBoxAdjustSpeed, 2)
+        Me.CheckBoxAdjustSpeed.Location = New System.Drawing.Point(141, 40)
+        Me.CheckBoxAdjustSpeed.Margin = New System.Windows.Forms.Padding(3, 0, 3, 0)
+        Me.CheckBoxAdjustSpeed.Name = "CheckBoxAdjustSpeed"
+        Me.CheckBoxAdjustSpeed.Size = New System.Drawing.Size(89, 17)
+        Me.CheckBoxAdjustSpeed.TabIndex = 4
+        Me.CheckBoxAdjustSpeed.Text = "Adjust Speed"
+        Me.CheckBoxAdjustSpeed.UseVisualStyleBackColor = True
         '
         'ReadDiskDriveParams
         '
@@ -217,7 +234,7 @@ Partial Class ReadDiskDriveParams
         Me.AutoSize = True
         Me.Controls.Add(Me.GroupBoxParams)
         Me.Name = "ReadDiskDriveParams"
-        Me.Size = New System.Drawing.Size(248, 153)
+        Me.Size = New System.Drawing.Size(248, 154)
         Me.GroupBoxParams.ResumeLayout(False)
         Me.GroupBoxParams.PerformLayout()
         Me.TableLayoutPanelParams.ResumeLayout(False)
@@ -243,4 +260,5 @@ Partial Class ReadDiskDriveParams
     Friend WithEvents NumericRetries As NumericUpDown
     Friend WithEvents NumericSeekRetries As NumericUpDown
     Friend WithEvents ButtonDetect As Button
+    Friend WithEvents CheckBoxAdjustSpeed As CheckBox
 End Class

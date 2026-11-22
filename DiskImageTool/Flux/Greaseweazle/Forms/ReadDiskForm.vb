@@ -535,10 +535,10 @@ Namespace Flux.Greaseweazle
 
             If outputType = ReadDiskOutputTypes.HFE Then
                 OutputFileWithOpts &= "::bitrate=" & CInt(diskParams.BitRateKbps)
-                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, doubleStep)
+                Dim DriveType = If(_OutputDriveOption Is Nothing, FloppyDriveType.DriveUnknown, _OutputDriveOption.Type)
+                AdjustSpeed = ReadDiskHelpers.GetReadAdjustSpeed(diskParams, DriveType)
             Else
                 Format = diskParams.Format.GetImageFormat().GetKey()
-                AdjustSpeed = ReadDiskHelpers.GetAdjustSpeed(diskParams, False)
             End If
 
             Dim TrackSet As New TrackSetSpec
@@ -1608,7 +1608,7 @@ Namespace Flux.Greaseweazle
 
             Dim Opts As ConvertOptions
             Try
-                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, Layout.ConvertDoubleStep)
+                Opts = ReadDiskHelpers.BuildRefineConvertOptions(_TempFilePath, DiskParams.Value, DriveType, Layout.ConvertDoubleStep)
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
                 ApplyProcessState(ConsoleProcessRunner.ProcessStateEnum.Error)
