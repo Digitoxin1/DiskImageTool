@@ -627,6 +627,10 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim TrackSet = BuildUserSpec(TrackRanges, Heads, _DoubleStep)
+            Dim Densel As Boolean? = Nothing
+            If ReadDiskHelpers.UseLowDensel(_DiskParams, Opt.Type) Then
+                Densel = False
+            End If
 
             Dim Opts As New WriteOptions With {
                 .FileName = FilePath,
@@ -636,6 +640,7 @@ Namespace Flux.Greaseweazle
                 .EraseEmpty = _CheckBoxEraseEmpty.Checked,
                 .NoVerify = VerifyAllowed() AndAlso CheckboxNoVerify.Checked,
                 .Retries = If(RetriesAllowed(), CInt(_NumericRetries.Value), DEFAULT_RETRIES),
+                .Densel = Densel,
                 .Live = True,
                 .Device = ConfiguredDevice(),
                 .Drive = Drive

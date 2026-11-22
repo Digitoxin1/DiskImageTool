@@ -234,6 +234,11 @@ Namespace Flux.Greaseweazle
                 sb.Append("rpm")
             End If
 
+            If opts.Densel.HasValue Then
+                sb.Append(" --densel ")
+                sb.Append(If(opts.Densel.Value, "H", "L"))
+            End If
+
             sb.Append(" --retries ")
             sb.Append(opts.Retries.ToString(Globalization.CultureInfo.InvariantCulture))
 
@@ -478,7 +483,7 @@ Namespace Flux.Greaseweazle
             Return Combo.SelectedItem
         End Function
 
-        Public Function ReadFirstTrack(DriveId As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String, Output As String)
+        Public Function ReadFirstTrack(DriveId As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing, Optional DriveType As FloppyDriveType = FloppyDriveType.DriveUnknown) As (Result As Boolean, FileName As String, Output As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -537,12 +542,18 @@ Namespace Flux.Greaseweazle
                 spec.Heads.Add(1)
             End If
 
+            Dim Densel As Boolean? = Nothing
+            If ImageParams.HasValue AndAlso ReadDiskHelpers.UseLowDensel(ImageParams.Value, DriveType) Then
+                Densel = False
+            End If
+
             Try
                 Dim Opts As New ReadOptions With {
                     .FileName = FileName,
                     .Format = Format,
                     .TrackSet = spec,
                     .Revs = 3,
+                    .Densel = Densel,
                     .Live = True,
                     .Device = ConfiguredDevice(),
                     .Drive = Drive

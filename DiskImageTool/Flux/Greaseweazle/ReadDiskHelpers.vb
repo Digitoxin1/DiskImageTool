@@ -80,6 +80,10 @@ Namespace Flux.Greaseweazle
             Dim TrackSet = BuildUserSpec(trackRanges, heads, HardwareStep, Not physicalEvenFiles, physicalEvenFiles)
 
             Dim Drive = MakeDriveSpec(opt.Id)
+            Dim Densel As Boolean? = Nothing
+            If UseLowDensel(diskParams, opt.Type) Then
+                Densel = False
+            End If
 
             Dim Opts = New ReadOptions With {
                 .FileName = FileNameWithOpts,
@@ -88,6 +92,7 @@ Namespace Flux.Greaseweazle
                 .Revs = revs,
                 .Raw = Raw,
                 .AdjustSpeed = AdjustSpeed,
+                .Densel = Densel,
                 .Retries = retries,
                 .SeekRetries = seekRetries,
                 .Live = True,
@@ -323,6 +328,10 @@ Namespace Flux.Greaseweazle
             End If
 
             Return 60.0 / diskParams.RPM
+        End Function
+
+        Friend Shared Function UseLowDensel(diskParams As FloppyDiskParams, driveType As FloppyDriveType) As Boolean
+            Return driveType = FloppyDriveType.Drive525HighDensity AndAlso diskParams.DriveType = FloppyDriveType.Drive525DoubleDensity
         End Function
 
         Friend Shared Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean

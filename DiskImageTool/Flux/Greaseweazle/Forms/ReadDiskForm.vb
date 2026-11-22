@@ -1433,7 +1433,7 @@ Namespace Flux.Greaseweazle
                     Exit Sub
                 End If
 
-                Dim Response = ReadFirstTrack(_SelectedDriveOption.Id, True, DiskParams.Value)
+                Dim Response = ReadFirstTrack(_SelectedDriveOption.Id, True, DiskParams.Value, _SelectedDriveOption.Type)
                 ShowFirstTrackPreview(Response.Result, Response.FileName, DiskParams.Value, Caption)
             End If
         End Sub
