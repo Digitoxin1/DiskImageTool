@@ -14,6 +14,9 @@ Public Class FloppyTrackGrid
     Private Shared ReadOnly DEFAULT_BACKCOLOR As Color = Color.White
     Private Shared ReadOnly DEFAULT_FORECOLOR As Color = SystemColors.ControlText
     Private Shared ReadOnly DISABLED_COLOR As Color = Color.LightGray
+    Private Shared ReadOnly PAUSED_BACKCOLOR As Color = Color.LightSteelBlue
+    Private Shared ReadOnly PAUSED_FORECOLOR As Color = Color.Black
+    Private Shared ReadOnly PAUSE_IMAGE As Image = My.Resources.Pause
     Private Shared ReadOnly SELECTED_BACKCOLOR As Color = Color.LightSkyBlue
     Private ReadOnly _SelectedTracks As HashSet(Of UShort)
     Private ReadOnly _ToolTip As ToolTip
@@ -32,11 +35,17 @@ Public Class FloppyTrackGrid
     Private _Label As String
     Private _LastSelected As (Track As Integer, Selected As Boolean) = (-1, False)
     Private _NoEventSelectionChanged As Boolean = False
+    Private _OverlayTrack As Integer = -1
+    Private _PauseMaxTrack As Integer = -1
+    Private _PauseMode As Boolean = False
+    Private _PauseTrack As Integer = -1
     Private _SelectEnabled As Boolean = False
     Private _Side As Byte
     Private _TrackCount As Integer
+
     Public Event CellClicked(sender As Object, Track As Integer, Row As Integer, Col As Integer, Shift As Boolean)
     Public Event CheckChanged(sender As Object, Checked As Boolean)
+    Public Event PauseTrackChanged(sender As Object, Track As Integer)
     Public Event SelectionChanged(sender As Object, Track As Integer, Selected As Boolean)
 
     Public Sub New()
@@ -142,6 +151,24 @@ Public Class FloppyTrackGrid
                 EventCheckChanged(value)
             End If
         End Set
+    End Property
+
+    Public ReadOnly Property PauseMaxTrack As Integer
+        Get
+            Return _PauseMaxTrack
+        End Get
+    End Property
+
+    Public ReadOnly Property PauseMode As Boolean
+        Get
+            Return _PauseMode
+        End Get
+    End Property
+
+    Public ReadOnly Property PauseTrack As Integer
+        Get
+            Return _PauseTrack
+        End Get
     End Property
 
     Public ReadOnly Property SelectedTracks As HashSet(Of UShort)
@@ -297,6 +324,8 @@ Public Class FloppyTrackGrid
     End Function
 
     Public Sub ResetAll()
+        EndPause()
+
         For TrackIndex = 0 To _TrackCount - 1
             ResetCellInternal(TrackIndex)
         Next
@@ -422,6 +451,103 @@ Public Class FloppyTrackGrid
         _NoEventSelectionChanged = False
     End Sub
 
+    Public Sub BeginPause(Track As Integer, Optional MaxTrack As Integer = -1)
+        If Track < 0 OrElse Track >= _ActiveTrackCount Then
+            EndPause()
+            Return
+        End If
+
+        Dim ResolvedMax As Integer = Track
+        If MaxTrack > ResolvedMax Then
+            ResolvedMax = MaxTrack
+        End If
+        If ResolvedMax >= _ActiveTrackCount Then
+            ResolvedMax = _ActiveTrackCount - 1
+        End If
+
+        _PauseMaxTrack = ResolvedMax
+        _PauseMode = True
+        _FooterHasFocus = False
+        ClearSelected()
+        _IsChecked = False
+        SetPauseTrack(Track, False)
+        InvalidateFooter()
+    End Sub
+
+    Public Sub EndPause()
+        If Not _PauseMode AndAlso _PauseTrack < 0 Then
+            Return
+        End If
+
+        _PauseMode = False
+        _PauseMaxTrack = -1
+        _FooterHasFocus = False
+        SetPauseTrack(-1, False)
+        InvalidateFooter()
+    End Sub
+
+    Private Sub SetCellOverlay(TrackIndex As Integer, Overlay As String)
+        If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
+            Return
+        End If
+
+        If String.IsNullOrEmpty(Overlay) Then
+            Dim Cell = _Cells(TrackIndex)
+            If Cell.Overlay <> "" Then
+                Cell.Overlay = ""
+                _Cells(TrackIndex) = Cell
+                If _OverlayTrack = TrackIndex Then
+                    _OverlayTrack = -1
+                End If
+                Invalidate(GetCellRectangle(TrackIndex))
+            End If
+            Return
+        End If
+
+        If _OverlayTrack >= 0 AndAlso _OverlayTrack <> TrackIndex AndAlso _OverlayTrack < _Cells.Count Then
+            Dim Previous = _Cells(_OverlayTrack)
+            Previous.Overlay = ""
+            _Cells(_OverlayTrack) = Previous
+            Invalidate(GetCellRectangle(_OverlayTrack))
+        End If
+
+        Dim Current = _Cells(TrackIndex)
+        Current.Overlay = Overlay
+        _Cells(TrackIndex) = Current
+        _OverlayTrack = TrackIndex
+        Invalidate(GetCellRectangle(TrackIndex))
+    End Sub
+
+    Private Sub SetPauseTrack(Track As Integer, Notify As Boolean)
+        If _PauseTrack >= 0 AndAlso _PauseTrack <> Track Then
+            SetCellOverlay(_PauseTrack, "")
+        End If
+
+        _PauseTrack = Track
+
+        If Track >= 0 Then
+            SetCellOverlay(Track, "P")
+        End If
+
+        If Notify Then
+            RaiseEvent PauseTrackChanged(Me, Track)
+        End If
+    End Sub
+
+    Private Sub TryMovePauseTrack(Track As Integer)
+        If Not _PauseMode OrElse Track < 0 OrElse Track > _PauseMaxTrack OrElse Track = _PauseTrack Then
+            Return
+        End If
+
+        SetPauseTrack(Track, True)
+    End Sub
+
+    Private ReadOnly Property AllowSelection As Boolean
+        Get
+            Return _SelectEnabled AndAlso Not _PauseMode
+        End Get
+    End Property
+
     Public Sub SetCellText(TrackIndex As Integer, Text As String)
         SetCell(TrackIndex, Text:=Text)
     End Sub
@@ -496,7 +622,7 @@ Public Class FloppyTrackGrid
 
         _FooterHasFocus = False
 
-        If Not _SelectEnabled OrElse _Disabled OrElse _IsBusy Then
+        If Not AllowSelection OrElse _Disabled OrElse _IsBusy Then
             Return
         End If
 
@@ -520,7 +646,7 @@ Public Class FloppyTrackGrid
     Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
         MyBase.OnKeyDown(e)
 
-        If _Disabled OrElse _IsBusy OrElse Not _SelectEnabled OrElse _TrackCount = 0 Then
+        If _Disabled OrElse _IsBusy OrElse Not AllowSelection OrElse _TrackCount = 0 Then
             Exit Sub
         End If
 
@@ -580,7 +706,7 @@ Public Class FloppyTrackGrid
         ' --- If footer has focus, handle Space here and skip cell logic ---
         If _FooterHasFocus Then
             If e.KeyCode = Keys.Space Then
-                If Not _Disabled AndAlso _SelectEnabled Then
+                If Not _Disabled AndAlso AllowSelection Then
                     IsChecked = Not IsChecked
                 End If
                 e.Handled = True
@@ -683,7 +809,7 @@ Public Class FloppyTrackGrid
         End If
 
         '' First, check if click is on footer checkbox or footer text
-        If e.Button = MouseButtons.Left AndAlso _SelectEnabled AndAlso Not _Disabled Then
+        If e.Button = MouseButtons.Left AndAlso AllowSelection AndAlso Not _Disabled Then
             If _FooterCheckRect.Contains(e.Location) OrElse _FooterTextRect.Contains(e.Location) Then
 
                 If Not Me.Focused Then
@@ -757,10 +883,14 @@ Public Class FloppyTrackGrid
                             cell = _Cells(TrackIndex)
                         End If
 
+                        Dim Paused = Not _Disabled AndAlso Not String.IsNullOrEmpty(cell.Overlay)
+
                         ' Fill background
                         Dim BackColor = cell.BackColor
                         If _Disabled Then
                             BackColor = DISABLED_COLOR
+                        ElseIf Paused Then
+                            BackColor = PAUSED_BACKCOLOR
                         ElseIf Not _HideSelection AndAlso cell.Selected AndAlso cell.BackColor = DEFAULT_BACKCOLOR Then
                             BackColor = SELECTED_BACKCOLOR
                         End If
@@ -769,7 +899,7 @@ Public Class FloppyTrackGrid
                             g.FillRectangle(b, rect)
                         End Using
 
-                        If Not _HideSelection AndAlso cell.Selected AndAlso Not _Disabled AndAlso cell.BackColor <> DEFAULT_BACKCOLOR Then
+                        If Not Paused AndAlso Not _HideSelection AndAlso cell.Selected AndAlso Not _Disabled AndAlso cell.BackColor <> DEFAULT_BACKCOLOR Then
                             Using b As New SolidBrush(Color.FromArgb(70, Color.Black))
                                 g.FillRectangle(b, rect)
                             End Using
@@ -778,15 +908,21 @@ Public Class FloppyTrackGrid
                         ' Draw border (full size so borders are shared)
                         g.DrawRectangle(BORDER_PEN, rect)
 
-                        ' Draw centered text, if any
-                        If Not String.IsNullOrEmpty(cell.Text) Then
+                        If Paused Then
+                            If Not DrawPauseImage(g, rect) Then
+                                Using fb As New SolidBrush(PAUSED_FORECOLOR)
+                                    Dim textRect As New Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height)
+                                    g.DrawString(cell.Overlay, GridFont, fb, textRect, sf)
+                                End Using
+                            End If
+                        ElseIf Not String.IsNullOrEmpty(cell.Text) Then
                             Using fb As New SolidBrush(cell.ForeColor)
                                 Dim textRect As New Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height)
                                 g.DrawString(cell.Text, GridFont, fb, textRect, sf)
                             End Using
                         End If
 
-                        If _SelectEnabled AndAlso Not _Disabled AndAlso Not _FooterHasFocus AndAlso TrackIndex = _FocusedTrack AndAlso Me.Focused Then
+                        If AllowSelection AndAlso Not _Disabled AndAlso Not _FooterHasFocus AndAlso TrackIndex = _FocusedTrack AndAlso Me.Focused Then
                             Dim focusRect As New Rectangle(
                                 rect.X + 2,
                                 rect.Y + 2,
@@ -805,6 +941,35 @@ Public Class FloppyTrackGrid
         ' Draw footer row (with checkbox + label)
         DrawFooter(g)
     End Sub
+
+    Private Shared Function DrawPauseImage(g As Graphics, rect As Rectangle) As Boolean
+        If PAUSE_IMAGE Is Nothing Then
+            Return False
+        End If
+
+        Dim MaxWidth As Integer = rect.Width - 2
+        Dim MaxHeight As Integer = rect.Height - 2
+        If MaxWidth < 1 OrElse MaxHeight < 1 Then
+            Return False
+        End If
+
+        Dim Scale As Single = Math.Min(MaxWidth / CSng(PAUSE_IMAGE.Width), MaxHeight / CSng(PAUSE_IMAGE.Height))
+        If Scale > 1.0F Then
+            Scale = 1.0F
+        End If
+
+        Dim DrawWidth As Integer = Math.Max(1, CInt(PAUSE_IMAGE.Width * Scale))
+        Dim DrawHeight As Integer = Math.Max(1, CInt(PAUSE_IMAGE.Height * Scale))
+        Dim DrawX As Integer = rect.X + (rect.Width - DrawWidth + 1) \ 2
+        Dim DrawY As Integer = rect.Y + (rect.Height - DrawHeight + 1) \ 2
+
+        Dim PreviousMode = g.InterpolationMode
+        g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+        g.DrawImage(PAUSE_IMAGE, New Rectangle(DrawX, DrawY, DrawWidth, DrawHeight))
+        g.InterpolationMode = PreviousMode
+
+        Return True
+    End Function
 
     '=== Painting ===
     Protected Overrides Sub OnSizeChanged(e As EventArgs)
@@ -865,7 +1030,7 @@ Public Class FloppyTrackGrid
         Dim cbY As Integer = innerFooterRect.Y + (innerFooterRect.Height - glyphSize.Height) \ 2
         Dim cbRect As New Rectangle(startX, cbY, glyphSize.Width, glyphSize.Height)
 
-        If Not _Disabled AndAlso _SelectEnabled Then
+        If Not _Disabled AndAlso AllowSelection Then
             ' Draw checkbox
             Dim state As CheckBoxState = If(_IsChecked,
                                         CheckBoxState.CheckedNormal,
@@ -898,7 +1063,7 @@ Public Class FloppyTrackGrid
         _FooterCheckRect = cbRect
         _FooterTextRect = textRect
 
-        If _SelectEnabled AndAlso Not _Disabled AndAlso _FooterHasFocus AndAlso Me.Focused Then
+        If AllowSelection AndAlso Not _Disabled AndAlso _FooterHasFocus AndAlso Me.Focused Then
             Dim tightSize As Size = TextRenderer.MeasureText(g, _Label, HeaderFont, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPadding Or TextFormatFlags.NoClipping)
 
             ' Create a tight box around the text only
@@ -924,6 +1089,11 @@ Public Class FloppyTrackGrid
         End If
 
         Dim Shift As Boolean = (ModifierKeys And Keys.Shift) = Keys.Shift
+
+        If _PauseMode Then
+            TryMovePauseTrack(Track)
+            Return
+        End If
 
         If _SelectEnabled Then
             If Shift AndAlso _LastSelected.Track > -1 AndAlso _LastSelected.Track <> Track Then
@@ -1054,6 +1224,7 @@ Public Class FloppyTrackGrid
 
     Private Sub ResetCellInternal(trackIndex As Integer)
         SetCell(trackIndex, Text:="", BackColor:=DEFAULT_BACKCOLOR, ForeColor:=DEFAULT_FORECOLOR, Tooltip:="")
+        SetCellOverlay(trackIndex, "")
     End Sub
     Private Sub ResizeCellList(NewCount As Integer)
         If _Cells Is Nothing Then
@@ -1110,6 +1281,7 @@ Public Class FloppyTrackGrid
         Public ReadOnly Track As UShort
         Public BackColor As Color
         Public ForeColor As Color
+        Public Overlay As String
         Public Selected As Boolean
         Public Text As String
         Private _FluxHostDate As String
@@ -1124,6 +1296,7 @@ Public Class FloppyTrackGrid
             Me.BackColor = DEFAULT_BACKCOLOR
             Me.ForeColor = DEFAULT_FORECOLOR
             Me.Text = String.Empty
+            Me.Overlay = String.Empty
             Me.Selected = False
             _Tooltip = String.Empty
             _FluxName = String.Empty

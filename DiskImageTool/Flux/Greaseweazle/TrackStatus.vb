@@ -22,6 +22,7 @@ Namespace Flux.Greaseweazle
             Aborted
             [Error]
             Unexpected
+            Paused
         End Enum
 
         Friend Event UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String) Implements ITrackStatus.UpdateGridTooltip
@@ -49,6 +50,14 @@ Namespace Flux.Greaseweazle
                 Return _TotalUnexpectedSectors
             End Get
         End Property
+
+        Friend Function CurrentDisplayTrack(doubleStep As Boolean) As (HasCurrent As Boolean, DisplayTrack As Integer, Cylinder As Integer)
+            If _CurrentStatusInfo Is Nothing Then
+                Return (False, 0, 0)
+            End If
+
+            Return (True, DisplayTrackIndex(_CurrentStatusInfo.Track, doubleStep), _CurrentStatusInfo.Track)
+        End Function
 
         Friend Function CurrentTrackIdentity() As (HasCurrent As Boolean, Track As Integer, Side As Integer)
             If _CurrentStatusInfo Is Nothing Then
@@ -446,6 +455,8 @@ Namespace Flux.Greaseweazle
                     Return My.Resources.Label_Failed
                 Case TrackStatusEnum.Success
                     Return My.Resources.Label_Complete
+                Case TrackStatusEnum.Paused
+                    Return My.Resources.Label_Paused
                 Case TrackStatusEnum.Aborted
                     Return My.Resources.Label_Aborted
                 Case TrackStatusEnum.Error

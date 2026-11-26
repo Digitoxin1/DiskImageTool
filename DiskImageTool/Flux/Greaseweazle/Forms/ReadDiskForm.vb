@@ -43,6 +43,7 @@ Namespace Flux.Greaseweazle
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboImageLocationNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
+        Private _DumpComplete As Boolean = False
         Private _FileReprocessMode As Boolean = False
         Private _FluxReadActive As Boolean = False
         Private _FluxReadStop As FluxReadStop = FluxReadStop.None
@@ -110,6 +111,8 @@ Namespace Flux.Greaseweazle
             Me.HelpButton = True
             Me.Text = My.Resources.Label_ReadDisk
             CheckSaveLog.Visible = True
+
+            AddHandler TableSide0.PauseTrackChanged, AddressOf Side0_PauseTrackChanged
 
             InitializeHelp()
 
@@ -359,11 +362,29 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function AllFluxTracksWritten() As Boolean
-            If Not SideTracksWritten(TableSide0, 0) Then
+            Dim LastFormatTrack = FormatLastDisplayTrack()
+
+            If LastFormatTrack < 0 Then
                 Return False
             End If
 
-            Return TableSide1 Is Nothing OrElse TableSide1.Disabled OrElse SideTracksWritten(TableSide1, 1)
+            Return CylinderFullyWritten(DisplayTrackCylinder(LastFormatTrack))
+        End Function
+
+        Private Function LastCompletedDisplayTrack() As Integer
+            Dim LastFormatTrack = FormatLastDisplayTrack()
+
+            If LastFormatTrack < 0 Then
+                Return -1
+            End If
+
+            For Track = LastFormatTrack To 0 Step -1
+                If CylinderFullyWritten(DisplayTrackCylinder(Track)) Then
+                    Return Track
+                End If
+            Next
+
+            Return -1
         End Function
 
         Private Sub ApplyOutputSession(diskParams As FloppyDiskParams?, drive As DriveOption, layout As FluxLayout)
@@ -377,6 +398,11 @@ Namespace Flux.Greaseweazle
             Dim Completed As Boolean = False
             Dim KeptPartial As Boolean = False
             Dim StopAction = _FluxReadStop
+            Dim RefineConvert = _RefineMode AndAlso Not _FluxReadActive
+            Dim PauseAt = -1
+            If StopAction = FluxReadStop.KeepAndSelect OrElse RefineConvert Then
+                PauseAt = CurrentPauseDisplayTrack()
+            End If
 
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
@@ -388,7 +414,7 @@ Namespace Flux.Greaseweazle
                     End If
 
                     If KeptPartial Then
-                        _Status.UpdateTrackStatusType(DiskImageTool.Flux.Greaseweazle.TrackStatus.TrackStatusEnum.Success)
+                        _Status.UpdateTrackStatusType(DiskImageTool.Flux.Greaseweazle.TrackStatus.TrackStatusEnum.Paused)
                     Else
                         TrackStatus.UpdateTrackStatusAborted()
                     End If
@@ -425,7 +451,7 @@ Namespace Flux.Greaseweazle
                 Else
                     _ReadLog?.DiscardOpenTrack()
 
-                    If Not _FileReprocessMode OrElse (StopAction = FluxReadStop.Discard AndAlso Not _RefineMode) Then
+                    If Not _FileReprocessMode OrElse (StopAction = FluxReadStop.Discard AndAlso Not _DumpComplete) Then
                         ClearOutputFile(True)
                     End If
 
@@ -436,10 +462,21 @@ Namespace Flux.Greaseweazle
                 _FluxReadStop = FluxReadStop.None
             End If
 
+            If Finished Then
+                If KeptPartial Then
+                    _DumpComplete = False
+                ElseIf Completed Then
+                    _DumpComplete = (Not RefineConvert) OrElse AllFluxTracksWritten()
+                End If
+            End If
+
             RefreshFormState()
 
             If Finished AndAlso StopAction = FluxReadStop.KeepAndSelect Then
-                SelectUndumpedTracks()
+                PlacePauseMark(PauseAt)
+            ElseIf Finished AndAlso Completed AndAlso RefineConvert AndAlso Not _DumpComplete Then
+                PlacePauseMark(PauseAt)
+                _Status.UpdateTrackStatusType(DiskImageTool.Flux.Greaseweazle.TrackStatus.TrackStatusEnum.Paused)
             End If
         End Sub
 
@@ -462,7 +499,10 @@ Namespace Flux.Greaseweazle
             If HasOutputFile Then
                 DoubleStep = _OutputLayout.HardwareDoubleStep
                 PhysicalEven = _OutputLayout.PhysicalEvenFiles
-                If HasSelectedTracks Then
+                If PauseTrack >= 0 Then
+                    TrackRanges = PauseResumeRanges()
+                    Heads = PauseResumeHeads()
+                ElseIf HasSelectedTracks Then
                     TrackRanges = GetSelectedTrackRanges(_OutputLayout.DisplayDoubleStep)
                     Heads = GetSelectedTrackHeads()
                 End If
@@ -656,7 +696,9 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub ClearOutputFile(Delete As Boolean)
+            ClearPauseMark()
             _ClearSelectionOnComplete = False
+            _DumpComplete = False
             If Not HasOutputFile Then
                 Exit Sub
             End If
@@ -729,6 +771,129 @@ Namespace Flux.Greaseweazle
             ClearSideSelection(TableSide1)
         End Sub
 
+        Private Sub ClearPauseMark()
+            If TableSide0 IsNot Nothing Then
+                TableSide0.EndPause()
+            End If
+        End Sub
+
+        Private Function CurrentPauseDisplayTrack() As Integer
+            If TableSide0 Is Nothing OrElse TableSide0.ActiveTrackCount < 1 Then
+                Return -1
+            End If
+
+            Dim Track = NextDisplayTrack()
+            If Track >= TableSide0.ActiveTrackCount Then
+                Return -1
+            End If
+
+            Return Track
+        End Function
+
+        Private Function NextDisplayTrack() As Integer
+            Dim Current = _Status.CurrentDisplayTrack(_OutputLayout.DisplayDoubleStep)
+            If Not Current.HasCurrent OrElse Current.DisplayTrack < 0 Then
+                Return 0
+            End If
+
+            Dim Track = Current.DisplayTrack
+            If CylinderFullyWritten(Current.Cylinder) Then
+                Track += 1
+            End If
+
+            Return Track
+        End Function
+
+        Private Function CylinderFullyWritten(Cylinder As Integer) As Boolean
+            If Not FluxTrackWritten(Cylinder, 0) Then
+                Return False
+            End If
+
+            If FormatHeadCount() > 1 Then
+                Return FluxTrackWritten(Cylinder, 1)
+            End If
+
+            Return True
+        End Function
+
+        Private Function FormatHeadCount() As Integer
+            Dim DiskParams = SelectedDiskParams
+            If Not DiskParams.HasValue Then
+                DiskParams = _OutputDiskParams
+            End If
+
+            If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
+                Return 2
+            End If
+
+            Dim Heads = CInt(DiskParams.Value.BPBParams.NumberOfHeads)
+            If Heads < 1 Then
+                Return 1
+            End If
+
+            Return Heads
+        End Function
+
+        Private Function PauseResumeHeads() As TrackHeads
+            If TableSide1 IsNot Nothing AndAlso Not TableSide1.Disabled Then
+                Return TrackHeads.Both
+            End If
+
+            Return TrackHeads.Head0
+        End Function
+
+        Private Function PauseResumeRanges() As List(Of (StartTrack As UShort, EndTrack As UShort))
+            Dim Selected As New HashSet(Of UShort)
+            If TableSide0 Is Nothing OrElse PauseTrack < 0 OrElse TableSide0.ActiveTrackCount < 1 Then
+                Return BuildRanges(Selected, _OutputLayout.DisplayDoubleStep)
+            End If
+
+            For Track = PauseTrack To TableSide0.ActiveTrackCount - 1
+                Selected.Add(CUShort(Track))
+            Next
+
+            Return BuildRanges(Selected, _OutputLayout.DisplayDoubleStep)
+        End Function
+
+        Private ReadOnly Property PauseTrack As Integer
+            Get
+                If TableSide0 Is Nothing OrElse Not TableSide0.PauseMode Then
+                    Return -1
+                End If
+
+                Return TableSide0.PauseTrack
+            End Get
+        End Property
+
+        Private ReadOnly Property PauseMaxTrack As Integer
+            Get
+                If TableSide0 Is Nothing OrElse Not TableSide0.PauseMode Then
+                    Return -1
+                End If
+
+                Return TableSide0.PauseMaxTrack
+            End Get
+        End Property
+
+        Private Sub PlacePauseMark(Track As Integer, Optional MaxTrack As Integer = -1)
+            ClearTrackSelection()
+
+            If TableSide0 Is Nothing OrElse Track < 0 Then
+                ClearPauseMark()
+                RefreshGridSelection()
+                Return
+            End If
+
+            TableSide0.BeginPause(Track, MaxTrack)
+            _ClearSelectionOnComplete = True
+            RefreshGridSelection()
+            RefreshProcessButtonState()
+        End Sub
+
+        Private Sub Side0_PauseTrackChanged(sender As Object, Track As Integer)
+            UpdateCommandLine()
+        End Sub
+
         Private Sub CloseForm(NewFilePath As String, NewFileName As String, Optional NewImage As Boolean = True)
             CacheFilenameTemplate()
 
@@ -774,6 +939,7 @@ Namespace Flux.Greaseweazle
 
         Private Function CountFluxTracks(firstTrackPath As String) As Integer
             Dim Folder = IO.Path.GetDirectoryName(firstTrackPath)
+
             If String.IsNullOrEmpty(Folder) OrElse Not IO.Directory.Exists(Folder) Then
                 Return 0
             End If
@@ -950,7 +1116,7 @@ Namespace Flux.Greaseweazle
                 Return True
             End If
 
-            If Not AllFluxTracksWritten() Then
+            If Not _DumpComplete Then
                 DeleteSecondaryImage()
                 Return True
             End If
@@ -1714,12 +1880,12 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshGridSelection()
-            GridSelectEnabled(CanRefine)
+            GridSelectEnabled(CanRefine AndAlso _DumpComplete)
             GridHideSelection(Not IsIdle)
         End Sub
 
         Private Sub RefreshImportButtonItems(IsFluxOutput As Boolean)
-            Dim IncompleteDump = IsIdle AndAlso HasOutputFile AndAlso Not AllFluxTracksWritten()
+            Dim IncompleteDump = IsIdle AndAlso HasOutputFile AndAlso Not _DumpComplete
             Dim SingleStateMode As Boolean = IsFluxOutput AndAlso (Not SecondaryOutputSelected() OrElse IncompleteDump)
             Dim Mode = App.UserState.Flux.Convert.ConversionMode
 
@@ -1869,7 +2035,7 @@ Namespace Flux.Greaseweazle
             If IsRunning Then
                 ButtonRead.Enabled = Not Busy
             Else
-                Dim TracksSelected As Boolean = CanRefine AndAlso HasSelectedTracks
+                Dim TracksSelected As Boolean = CanRefine AndAlso (HasSelectedTracks OrElse PauseTrack >= 0)
 
                 Dim PhysicalEvenBlocked = HasOutputFile AndAlso _OutputLayout.PhysicalEvenFiles AndAlso Not CheckCompatibility()
                 ButtonRead.Enabled = Not Busy AndAlso DriveSelected AndAlso Not PhysicalEvenBlocked AndAlso (Not HasOutputFile OrElse TracksSelected)
@@ -1938,7 +2104,13 @@ Namespace Flux.Greaseweazle
             Dim Heads As TrackHeads? = Nothing
             Dim AppendLog As Boolean = False
 
-            If HasSelectedTracks Then
+            Dim ResumeFromPause = PauseTrack >= 0
+
+            If ResumeFromPause Then
+                TrackRanges = PauseResumeRanges()
+                Heads = PauseResumeHeads()
+                AppendLog = True
+            ElseIf HasSelectedTracks Then
                 TrackRanges = GetSelectedTrackRanges(_OutputLayout.DisplayDoubleStep)
                 Heads = GetSelectedTrackHeads()
 
@@ -1954,7 +2126,12 @@ Namespace Flux.Greaseweazle
                 InitLogFilePath(If(CheckSaveLog.Checked, IO.Path.Combine(IO.Path.GetDirectoryName(_TempFilePath), Settings.LogFileName), ""), Append:=AppendLog)
             End If
 
-            Return StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
+            Dim Started = StartReadRun(_TempFilePath, _SelectedDriveOption, DiskParams.Value, SelectedOutputType, _OutputLayout.HardwareDoubleStep, TrackRanges, Heads, Nothing, ReadDiskOutputTypes.None, _OutputLayout.PhysicalEvenFiles)
+            If Started AndAlso ResumeFromPause Then
+                ClearPauseMark()
+            End If
+
+            Return Started
         End Function
 
         Private Sub ResetOutputTypes(Optional OutputType As ReadDiskOutputTypes? = Nothing)
@@ -2169,46 +2346,6 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub SelectUndumpedTracks()
-            Dim SelectSide0 = TableSide0 IsNot Nothing AndAlso Not TableSide0.Disabled
-            Dim SelectSide1 = TableSide1 IsNot Nothing AndAlso Not TableSide1.Disabled
-
-            ' Keep the footer boxes from copying the other side's selection while cells are chosen.
-            If SelectSide0 Then
-                TableSide0.SetCheckStateSilent(True)
-            End If
-            If SelectSide1 Then
-                TableSide1.SetCheckStateSilent(True)
-            End If
-
-            If SelectSide0 Then
-                Dim ResumePending = SelectSide1
-                For Track = 0 To TableSide0.ActiveTrackCount - 1
-                    Dim Cyl = DisplayTrackCylinder(Track)
-                    Dim SelectCell = Not FluxTrackWritten(Cyl, 0)
-                    If ResumePending AndAlso Not SelectCell AndAlso Track < TableSide1.ActiveTrackCount AndAlso Not FluxTrackWritten(Cyl, 1) Then
-                        SelectCell = True
-                        ResumePending = False
-                    End If
-                    TableSide0.SetCellSelected(Track, SelectCell, True)
-                Next
-                If TableSide0.SelectedTracks.Count = 0 Then
-                    TableSide0.SetCheckStateSilent(False)
-                End If
-            End If
-
-            If SelectSide1 Then
-                For Track = 0 To TableSide1.ActiveTrackCount - 1
-                    TableSide1.SetCellSelected(Track, Not FluxTrackWritten(DisplayTrackCylinder(Track), 1), True)
-                Next
-                If TableSide1.SelectedTracks.Count = 0 Then
-                    TableSide1.SetCheckStateSilent(False)
-                End If
-            End If
-
-            RefreshProcessButtonState()
-        End Sub
-
         Private Sub SetFilenames(UseCache As Boolean)
             If UseCache Then
                 FileNameInput = _CachedFileNameTemplate
@@ -2293,18 +2430,22 @@ Namespace Flux.Greaseweazle
             DeleteTempFileIfExists(FileName)
         End Sub
 
-        Private Function SideTracksWritten(Grid As FloppyTrackGrid, Head As Integer) As Boolean
-            If Grid Is Nothing Then
-                Return False
+        Private Function FormatLastDisplayTrack() As Integer
+            Dim DiskParams = SelectedDiskParams
+            If Not DiskParams.HasValue Then
+                DiskParams = _OutputDiskParams
             End If
 
-            For Track = 0 To Grid.ActiveTrackCount - 1
-                If Not FluxTrackWritten(DisplayTrackCylinder(Track), Head) Then
-                    Return False
-                End If
-            Next
+            If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
+                Return -1
+            End If
 
-            Return True
+            Dim TrackCount = DiskParams.Value.BPBParams.TrackCount
+            If TrackCount < 1 Then
+                Return -1
+            End If
+
+            Return TrackCount - 1
         End Function
         Private Function StartReadRun(filePath As String,
                                  opt As DriveOption,
@@ -2720,7 +2861,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function CanStopFluxRead() As Boolean
-            Return _FluxReadActive AndAlso Not _RefineMode AndAlso Not IsFullDumpReread() AndAlso Runner IsNot Nothing AndAlso Runner.IsRunning
+            Return _FluxReadActive AndAlso Not IsFullDumpReread() AndAlso Runner IsNot Nothing AndAlso Runner.IsRunning
         End Function
 
         Private Function IsFullDumpReread() As Boolean

@@ -1763,6 +1763,9 @@ Do you wish to overwrite?</value>
   <data name="Label_Pause" xml:space="preserve">
     <value>Pause</value>
   </data>
+  <data name="Label_Paused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Please Select</value>
   </data>
@@ -2556,6 +2559,9 @@ Do you wish to overwrite?</value>
   </data>
   <data name="PasteReplace" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\PasteReplace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\images\Pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PropertiesFolderClosed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\images\PropertiesFolderClosed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

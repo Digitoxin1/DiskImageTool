@@ -1499,6 +1499,9 @@ Flux 映像集：“{0}”
   <data name="Label_Pause" xml:space="preserve">
     <value>暂停</value>
   </data>
+  <data name="Label_Paused" xml:space="preserve">
+    <value>已暂停</value>
+  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>请选择</value>
   </data>

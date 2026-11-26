@@ -1,6 +1,8 @@
 ﻿Namespace Flux.Greaseweazle
     Partial Public Class ReadDiskForm
         Private ReadOnly _KryofluxStatus As Kryoflux.TrackStatus
+        Private _VerifyPauseTrack As Integer = -1
+        Private _VerifyPauseMaxTrack As Integer = -1
 
         Private Shared Function GetVerifyLogFileName() As String
             Dim KfLogName = Flux.Kryoflux.Settings().LogFileName
@@ -92,8 +94,23 @@
                     Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format, StartTrack, EndTrack, Heads)
                     Arguments = Args.Arguments
                 Else
-                    Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
-                    Arguments = Args.Arguments
+                    Dim IncompleteEnd As Integer = -1
+
+                    If Not _DumpComplete Then
+                        Dim LastTrack = LastCompletedDisplayTrack()
+                        If LastTrack < 0 Then
+                            Exit Sub
+                        End If
+                        IncompleteEnd = DisplayTrackCylinder(LastTrack)
+                    End If
+
+                    If IncompleteEnd >= 0 Then
+                        Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format, 0, IncompleteEnd)
+                        Arguments = Args.Arguments
+                    Else
+                        Dim Args = Flux.Kryoflux.GenerateCommandLineImport(_TempFilePath, "", DiskParams.Value, TrackCount, DtcDoubleStep, Flux.Kryoflux.CommandLineBuilder.LogMask.Format)
+                        Arguments = Args.Arguments
+                    End If
                 End If
             Catch ex As Exception
                 HandleRunFailure(ex.Message)
@@ -113,6 +130,8 @@
                 GridResetSelectedCells()
                 InitLogFilePath("")
             Else
+                _VerifyPauseTrack = PauseTrack
+                _VerifyPauseMaxTrack = PauseMaxTrack
                 ResetTrackGrid(ResetSelected:=False)
                 InitLogFilePath(GetVerifyLogPath())
             End If
@@ -149,7 +168,26 @@
                     _KryofluxStatus.UpdateTrackStatusError()
             End Select
 
+            Select Case state
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed,
+                     ConsoleProcessRunner.ProcessStateEnum.Error,
+                     ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    RestoreVerifyPauseMark()
+            End Select
+
             RefreshFormState()
+        End Sub
+
+        Private Sub RestoreVerifyPauseMark()
+            If _VerifyPauseTrack < 0 Then
+                Return
+            End If
+
+            Dim Track = _VerifyPauseTrack
+            Dim MaxTrack = _VerifyPauseMaxTrack
+            _VerifyPauseTrack = -1
+            _VerifyPauseMaxTrack = -1
+            PlacePauseMark(Track, MaxTrack)
         End Sub
 #End Region
     End Class

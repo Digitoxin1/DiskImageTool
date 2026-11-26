@@ -5110,6 +5110,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Paused.
+        '''</summary>
+        Friend ReadOnly Property Label_Paused() As String
+            Get
+                Return ResourceManager.GetString("Label_Paused", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Per-track RPM and bit rate.
         '''</summary>
         Friend ReadOnly Property Label_PerTrackRates() As String
@@ -7531,6 +7540,16 @@ Namespace My.Resources
         Friend ReadOnly Property PasteReplace() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("PasteReplace", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property Pause() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Pause", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

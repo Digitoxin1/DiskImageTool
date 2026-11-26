@@ -1499,6 +1499,9 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Pause" xml:space="preserve">
     <value>Anhalten</value>
   </data>
+  <data name="Label_Paused" xml:space="preserve">
+    <value>Pausiert</value>
+  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Bitte auswählen</value>
   </data>

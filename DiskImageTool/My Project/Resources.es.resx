@@ -1499,6 +1499,9 @@ Archivo de imagen: '{1}'
   <data name="Label_Pause" xml:space="preserve">
     <value>Pausa</value>
   </data>
+  <data name="Label_Paused" xml:space="preserve">
+    <value>En pausa</value>
+  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Seleccione, por favor</value>
   </data>

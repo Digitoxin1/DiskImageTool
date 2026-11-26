@@ -1499,6 +1499,9 @@ Voulez-vous écraser ?</value>
   <data name="Label_Pause" xml:space="preserve">
     <value>Pause</value>
   </data>
+  <data name="Label_Paused" xml:space="preserve">
+    <value>En pause</value>
+  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Veuillez sélectionner</value>
   </data>
