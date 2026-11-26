@@ -303,12 +303,6 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>确定要中止吗？</value>
   </data>
-  <data name="Dialog_AbortRead" xml:space="preserve">
-    <value>要保留还是丢弃目前的进度？</value>
-  </data>
-  <data name="Dialog_AbortReadTitle" xml:space="preserve">
-    <value>中止读取操作</value>
-  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>这是已验证的映像。确定要调整此映像的大小吗？</value>
   </data>
@@ -1336,9 +1330,6 @@ Flux 映像集：“{0}”
   </data>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>跳转指令</value>
-  </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>保留(&amp;K)</value>
   </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>保留数据</value>

@@ -782,13 +782,14 @@ Public Class SummaryPanel
 
         Dim DiskCount = TitleData.DiskCount
         Dim DiskName = TitleData.Disk
+        Dim IsSet = TitleData.IsSet
 
         If Left(DiskName.ToLower(), 5) = "disk " Then
             DiskName = Mid(DiskName, 6)
         End If
 
         If DiskName.Length > 0 AndAlso DiskCount > 0 Then
-            If IsNumeric(DiskName) Then
+            If IsNumeric(DiskName) AndAlso Not IsSet Then
                 DiskName &= " of " & DiskCount
             ElseIf DiskCount > 1 Then
                 DiskName &= "  (Set of " & DiskCount & ")"

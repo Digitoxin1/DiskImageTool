@@ -935,24 +935,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Would you like to keep or discard your progress?.
-        '''</summary>
-        Friend ReadOnly Property Dialog_AbortRead() As String
-            Get
-                Return ResourceManager.GetString("Dialog_AbortRead", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Abort Read Operation.
-        '''</summary>
-        Friend ReadOnly Property Dialog_AbortReadTitle() As String
-            Get
-                Return ResourceManager.GetString("Dialog_AbortReadTitle", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to adjust the image size for this image?.
         '''</summary>
         Friend ReadOnly Property Dialog_AdjustImageSize() As String
@@ -4611,15 +4593,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_kbps() As String
             Get
                 Return ResourceManager.GetString("Label_kbps", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to &amp;Keep.
-        '''</summary>
-        Friend ReadOnly Property Label_Keep() As String
-            Get
-                Return ResourceManager.GetString("Label_Keep", resourceCulture)
             End Get
         End Property
         

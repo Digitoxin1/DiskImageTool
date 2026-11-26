@@ -26,9 +26,9 @@
     <oemname namehex="48494C4F57312E02" company="Iron Byte" description="NARCOPOLICE DISK 2 OF 2"/>
   </bootstrap>
   <bootstrap crc32="75CB7832" jmp="EBFE90">
-    <oemname namehex="534EAF7D6F6F6C73" suggestion="false"/>
+    <oemname namehex="534EAF7D6F6F6C73" suggestion="false" verified="true"/>
     <oemname namehex="534EACDC6F6F6C73" suggestion="false"/>
-    <oemname namehex="534E1A756F6F6C73" suggestion="false"/>
+    <oemname namehex="534E1A756F6F6C73" suggestion="false" verified="true"/>
     <oemname namehex="534E19206F6F6C73" suggestion="false"/>
   </bootstrap>
   <bootstrap crc32="295DAB6C" jmp="EB3C90">
@@ -927,7 +927,7 @@
   </bootstrap>
   <bootstrap crc32="43A1CAF3" jmp="EB3E90">
     <oemname name="PC Tools" verified="true"/>
-    <oemname name="UBI-SOFT" company="UBI Soft" suggestion="false"/>
+    <oemname name="UBI-SOFT" company="UBI Soft" suggestion="false" verified="true"/>
     <oemname name="        " suggestion="false"/>
   </bootstrap>
   <bootstrap crc32="DF630E60" jmp="EB3E90">
@@ -1130,7 +1130,7 @@
     <oemname name="TechMate"/>
   </bootstrap>
   <bootstrap crc32="7EC5E93C" jmp="EB7E90">
-    <oemname name="THE DEEP"/>
+    <oemname name="THE DEEP" verified="true"/>
   </bootstrap>
   <bootstrap crc32="20898956" jmp="EB2C90">
     <oemname name="TLC DSK " company="The Learning Company" description="Challenge of the Ancient Empires! Program/Artifacts Disk"/>

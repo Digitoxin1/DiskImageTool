@@ -423,12 +423,6 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>Are you sure you wish to abort?</value>
   </data>
-  <data name="Dialog_AbortRead" xml:space="preserve">
-    <value>Would you like to keep or discard your progress?</value>
-  </data>
-  <data name="Dialog_AbortReadTitle" xml:space="preserve">
-    <value>Abort Read Operation</value>
-  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>This is a verified image.  Are you sure you wish to adjust the image size for this image?</value>
   </data>
@@ -1600,9 +1594,6 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Jump Instruction</value>
-  </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>&amp;Keep</value>
   </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Keep Data</value>

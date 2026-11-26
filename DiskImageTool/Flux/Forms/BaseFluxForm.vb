@@ -597,7 +597,7 @@ Namespace Flux
             End If
         End Sub
 
-        Private Function ConfirmCancel() As Boolean
+        Protected Function ConfirmCancel() As Boolean
             Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
         End Function
 

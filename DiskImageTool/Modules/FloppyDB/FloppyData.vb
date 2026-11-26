@@ -10,6 +10,7 @@ Namespace FloppyDB
         Private ReadOnly _DiskCount As Integer?
         Private ReadOnly _Fixed As Boolean?
         Private ReadOnly _Int As String
+        Private ReadOnly _IsSet As Boolean?
         Private ReadOnly _IsTDC As Boolean?
         Private ReadOnly _Language As String
         Private ReadOnly _Media As FloppyDiskFormat?
@@ -56,6 +57,7 @@ Namespace FloppyDB
                 _DiskCount = Inherited._DiskCount
                 _Fixed = Inherited._Fixed
                 _Int = Inherited._Int
+                _IsSet = Inherited._IsSet
                 _IsTDC = Inherited._IsTDC
                 _Language = Inherited._Language
                 _Media = Inherited._Media
@@ -101,6 +103,7 @@ Namespace FloppyDB
                 If Node.HasAttribute("tdc") Then _IsTDC = (Node.GetAttribute("tdc") = "1")
                 If Node.HasAttribute("fixed") Then _Fixed = (Node.GetAttribute("fixed") = "1")
                 If Node.HasAttribute("addon") Then _AddOn = (Node.GetAttribute("addon") = "1")
+                If Node.HasAttribute("set") Then _IsSet = (Node.GetAttribute("set") = "1")
 
                 If Node.Name = "media" Then
                     Dim mediaDiskCount As Integer = 0
@@ -154,6 +157,12 @@ Namespace FloppyDB
         Public ReadOnly Property Int As String
             Get
                 Return If(_Int, "")
+            End Get
+        End Property
+
+        Public ReadOnly Property IsSet As Boolean
+            Get
+                Return If(_IsSet, False)
             End Get
         End Property
 

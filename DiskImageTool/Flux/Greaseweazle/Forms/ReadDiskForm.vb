@@ -67,7 +67,6 @@ Namespace Flux.Greaseweazle
 
         Private Enum FluxReadStop
             None
-            Keep
             KeepAndSelect
             Discard
         End Enum
@@ -382,7 +381,7 @@ Namespace Flux.Greaseweazle
             Select Case state
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     Finished = True
-                    KeptPartial = StopAction = FluxReadStop.Keep OrElse StopAction = FluxReadStop.KeepAndSelect
+                    KeptPartial = StopAction = FluxReadStop.KeepAndSelect
 
                     If _FluxReadActive Then
                         FinalizeAbortedFluxTrack()
@@ -2524,12 +2523,8 @@ Namespace Flux.Greaseweazle
             End If
 
             If CanStopFluxRead() Then
-                Dim Choice = AbortReadForm.Display(Me, My.Resources.Dialog_AbortRead)
-
-                If Choice = AbortReadResult.Discard Then
+                If ConfirmCancel() Then
                     StopFluxRead(FluxReadStop.Discard)
-                ElseIf Choice = AbortReadResult.Keep Then
-                    StopFluxRead(FluxReadStop.Keep)
                 End If
             Else
                 CancelIfRunning()

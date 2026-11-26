@@ -303,12 +303,6 @@
   <data name="Dialog_Abort" xml:space="preserve">
     <value>Voulez-vous vraiment annuler ?</value>
   </data>
-  <data name="Dialog_AbortRead" xml:space="preserve">
-    <value>Souhaitez-vous conserver ou ignorer la progression ?</value>
-  </data>
-  <data name="Dialog_AbortReadTitle" xml:space="preserve">
-    <value>Annuler l’opération de lecture</value>
-  </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>Il s’agit d’une image vérifiée. Souhaitez-vous ajuster la taille de cette image ?</value>
   </data>
@@ -1336,9 +1330,6 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_JumpInstruction" xml:space="preserve">
     <value>Instruction de saut</value>
-  </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>&amp;Conserver</value>
   </data>
   <data name="Label_KeepData" xml:space="preserve">
     <value>Conserver les données</value>
